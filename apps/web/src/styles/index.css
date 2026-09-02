@@ -1,43 +1,33 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&family=Syne:wght@600;700;800&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* ─── CSS Custom Properties (from design tokens) ─── */
+/* ─── Global Design Tokens ─── */
 :root {
-  --color-ink: #111111;
-  --color-paper: #FAF7F2;
+  --color-ink: #090A0C;
+  --color-carbon: #121318;
+  --color-steel: #1E2028;
+  --color-paper: #F8F6F0;
+  --color-canvas: #FAF8F5;
   --color-white: #FFFFFF;
-  --color-muted: #6B6B6B;
-  --color-border: #E8E3DC;
-  --color-accent: #D9A441;
-  --color-accent-hover: #C4932E;
-  --color-accent-light: #F5E6C4;
-  --color-success: #2E7D32;
-  --color-success-light: #E8F5E9;
-  --color-danger: #C62828;
-  --color-danger-light: #FFEBEE;
-
-  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
-  --font-display: 'Inter', system-ui, -apple-system, sans-serif;
-
-  --shadow-soft: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
-  --shadow-card: 0 4px 12px rgba(0,0,0,0.05);
-  --shadow-elevated: 0 8px 30px rgba(0,0,0,0.08);
-  --shadow-drawer: 0 -4px 30px rgba(0,0,0,0.12);
-
-  --radius-sm: 0.25rem;
-  --radius-md: 0.5rem;
-  --radius-lg: 0.75rem;
-  --radius-xl: 1rem;
-
-  --transition-hover: 150ms ease;
-  --transition-page: 250ms ease-out;
-  --transition-drawer: 280ms ease-out;
+  --color-muted: #717582;
+  --color-border: #E6E1D8;
+  --color-border-dark: #2B2D38;
+  
+  --color-brand-red: #FE260A;
+  --color-brand-red-hover: #E02008;
+  --color-brand-glow: rgba(254, 38, 10, 0.4);
+  --color-accent-gold: #D4AF37;
+  --color-accent-lime: #D8FF00;
+  
+  --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  --font-display: 'Syne', 'Plus Jakarta Sans', sans-serif;
+  --font-mono: 'Space Grotesk', monospace;
 }
 
-/* ─── Base reset & defaults ─── */
+/* ─── Base Styles ─── */
 @layer base {
   *,
   *::before,
@@ -61,35 +51,36 @@
     color: var(--color-ink);
     line-height: 1.6;
     min-height: 100dvh;
+    overflow-x: hidden;
   }
 
-  /* Respect reduced motion */
-  @media (prefers-reduced-motion: reduce) {
-    *,
-    *::before,
-    *::after {
-      animation-duration: 0.01ms !important;
-      animation-iteration-count: 1 !important;
-      transition-duration: 0.01ms !important;
-      scroll-behavior: auto !important;
-    }
+  /* Custom Sleek Scrollbar */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: #121318;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #2E313D;
+    border-radius: 9999px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #FE260A;
   }
 
   /* Focus visible ring */
   :focus-visible {
-    outline: 2px solid var(--color-accent);
+    outline: 2px solid var(--color-brand-red);
     outline-offset: 2px;
-    border-radius: var(--radius-sm);
   }
 
-  /* Remove default focus styles for mouse users */
   :focus:not(:focus-visible) {
     outline: none;
   }
 
-  img,
-  video,
-  svg {
+  img, video, svg {
     display: block;
     max-width: 100%;
     height: auto;
@@ -106,25 +97,104 @@
     border: none;
     background: none;
   }
-
-  input,
-  textarea,
-  select {
-    font: inherit;
-  }
 }
 
-/* ─── Utility classes ─── */
+/* ─── Custom Utility Components ─── */
 @layer utilities {
-  .text-balance {
-    text-wrap: balance;
-  }
-
   .container-page {
     @apply mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8;
   }
 
+  .container-wide {
+    @apply mx-auto w-full max-w-[1400px] px-4 sm:px-6 lg:px-10;
+  }
+
   .container-narrow {
     @apply mx-auto w-full max-w-3xl px-4 sm:px-6;
+  }
+
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  /* Luxury Glassmorphism */
+  .glass-dark {
+    background: rgba(18, 19, 24, 0.75);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .glass-light {
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(0, 0, 0, 0.06);
+  }
+
+  .glass-card {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(250, 248, 245, 0.8) 100%);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(230, 225, 216, 0.8);
+  }
+
+  .glow-border {
+    position: relative;
+  }
+  .glow-border::after {
+    content: '';
+    position: absolute;
+    inset: -1px;
+    border-radius: inherit;
+    padding: 1px;
+    background: linear-gradient(135deg, rgba(254, 38, 10, 0.6), transparent 50%, rgba(216, 255, 0, 0.4));
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+  }
+
+  /* Text Gradients */
+  .text-gradient-red {
+    background: linear-gradient(135deg, #FE260A 0%, #FF6B4A 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .text-gradient-metallic {
+    background: linear-gradient(135deg, #FFFFFF 0%, #B8B8C0 50%, #ECECF0 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .text-gradient-gold {
+    background: linear-gradient(135deg, #FAD961 0%, #F76B1C 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  /* Subtle Noise Texture */
+  .noise-overlay {
+    background-image: radial-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 0);
+    background-size: 24px 24px;
+  }
+
+  /* Garment Texture Overlays */
+  .texture-dtg {
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+  }
+
+  .texture-puff {
+    filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.35)) drop-shadow(0 -1px 2px rgba(255, 255, 255, 0.2));
+    letter-spacing: 0.04em;
+  }
+
+  .texture-embroidery {
+    filter: drop-shadow(1px 1px 0px rgba(0,0,0,0.5)) drop-shadow(-1px -1px 0px rgba(255,255,255,0.3));
+  }
+
+  .texture-distressed {
+    opacity: 0.88;
+    mix-blend-mode: overlay;
   }
 }

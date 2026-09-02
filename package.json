@@ -8,9 +8,11 @@
     "packages/*"
   ],
   "scripts": {
-    "dev:web": "npm run dev -w apps/web",
+    "dev:frontend": "npm run dev -w apps/frontend",
+    "dev:web": "npm run dev -w apps/frontend",
     "dev:api": "npm run dev -w apps/api",
-    "build:web": "npm run build -w apps/web",
+    "build:frontend": "npm run build -w apps/frontend",
+    "build:web": "npm run build -w apps/frontend",
     "build:api": "npm run build -w apps/api",
     "build": "npm run build --workspaces --if-present",
     "lint": "npm run lint --workspaces --if-present",

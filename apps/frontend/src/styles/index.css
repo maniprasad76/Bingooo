@@ -1,0 +1,259 @@
+@import url('https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Outfit:wght@500;600;700;800;900&family=Playfair+Display:ital,wght@0,600;0,700;1,400;1,600;1,700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Satisfy&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ─── Global Design Tokens ─── */
+:root {
+  --color-ink: #171717;
+  --color-charcoal: #171717;
+  --color-carbon: #1F1D1B;
+  --color-steel: #2B2825;
+  --color-paper: #F7EEDB;
+  --color-canvas: #F7EEDB;
+  --color-cream: #F7EEDB;
+  --color-beige: #EDE0CC;
+  --color-white: #FFFFFF;
+  --color-muted: #6F6A63;
+  --color-border: #DDD3C5;
+  --color-border-dark: #2B2D38;
+  
+  --color-brand-red: #E6321C;
+  --color-brand-red-hover: #B91F12;
+  --color-brand-glow: rgba(230, 50, 28, 0.25);
+  --color-accent-gold: #B7791F;
+  --color-accent-lime: #238636;
+  
+  --font-sans: 'Plus Jakarta Sans', 'Inter', system-ui, -apple-system, sans-serif;
+  --font-display: 'Outfit', 'Plus Jakarta Sans', sans-serif;
+  --font-heading: 'Outfit', 'Plus Jakarta Sans', sans-serif;
+  --font-outfit: 'Outfit', sans-serif;
+  --font-serif: 'Playfair Display', Georgia, serif;
+  --font-cursive: 'Satisfy', 'Caveat', cursive;
+  --font-script: 'Satisfy', 'Caveat', cursive;
+  --font-caveat: 'Caveat', cursive;
+  --font-mono: 'Plus Jakarta Sans', system-ui, sans-serif;
+}
+
+/* ─── Base Styles ─── */
+@layer base {
+  *,
+  *::before,
+  *::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  html {
+    font-family: var(--font-sans);
+    font-size: 16px;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    scroll-behavior: smooth;
+  }
+
+  body {
+    background-color: var(--color-paper);
+    color: var(--color-ink);
+    line-height: 1.6;
+    min-height: 100dvh;
+    overflow-x: hidden;
+  }
+
+  /* ─── Universal Brand Typography ─── */
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-heading);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: -0.01em;
+    line-height: 1.08;
+    color: var(--color-ink);
+  }
+
+  h1 {
+    font-size: clamp(2.5rem, 6vw, 5.5rem);
+    font-weight: 800;
+    line-height: 0.92;
+    letter-spacing: -0.02em;
+  }
+
+  h2 {
+    font-size: clamp(1.75rem, 4vw, 2.5rem);
+    font-weight: 700;
+    line-height: 1.08;
+    letter-spacing: 0.02em;
+  }
+
+  h3 {
+    font-size: clamp(1.25rem, 2.5vw, 1.75rem);
+    font-weight: 700;
+    line-height: 1.15;
+    letter-spacing: 0.02em;
+  }
+
+  h4 {
+    font-size: clamp(0.95rem, 1.8vw, 1.25rem);
+    font-weight: 700;
+    line-height: 1.2;
+    letter-spacing: 0.04em;
+  }
+
+  p {
+    color: var(--color-muted);
+    font-family: var(--font-sans);
+    line-height: 1.6;
+  }
+
+  /* Action Elements (Buttons, Navigation, CTAs) */
+  button, [role="button"], .btn {
+    font-family: var(--font-sans);
+    font-weight: 700;
+    letter-spacing: 0.05em;
+  }
+
+  /* Price Typography */
+  .price, [data-price] {
+    font-family: var(--font-sans);
+    font-weight: 700;
+  }
+
+  /* Custom Sleek Scrollbar */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: #121318;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #2E313D;
+    border-radius: 9999px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #FE260A;
+  }
+
+  /* Focus visible ring */
+  :focus-visible {
+    outline: 2px solid var(--color-brand-red);
+    outline-offset: 2px;
+  }
+
+  :focus:not(:focus-visible) {
+    outline: none;
+  }
+
+  img, video, svg {
+    display: block;
+    max-width: 100%;
+    height: auto;
+  }
+
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+}
+
+/* ─── Custom Utility Components ─── */
+@layer utilities {
+  .container-page {
+    @apply mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8;
+  }
+
+  .container-wide {
+    @apply mx-auto w-full max-w-[1400px] px-4 sm:px-6 lg:px-10;
+  }
+
+  .container-narrow {
+    @apply mx-auto w-full max-w-3xl px-4 sm:px-6;
+  }
+
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  /* Luxury Glassmorphism */
+  .glass-dark {
+    background: rgba(18, 19, 24, 0.75);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .glass-light {
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(0, 0, 0, 0.06);
+  }
+
+  .glass-card {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(250, 248, 245, 0.8) 100%);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(230, 225, 216, 0.8);
+  }
+
+  .glow-border {
+    position: relative;
+  }
+  .glow-border::after {
+    content: '';
+    position: absolute;
+    inset: -1px;
+    border-radius: inherit;
+    padding: 1px;
+    background: linear-gradient(135deg, rgba(254, 38, 10, 0.6), transparent 50%, rgba(216, 255, 0, 0.4));
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+  }
+
+  /* Text Gradients */
+  .text-gradient-red {
+    background: linear-gradient(135deg, #FE260A 0%, #FF6B4A 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .text-gradient-metallic {
+    background: linear-gradient(135deg, #FFFFFF 0%, #B8B8C0 50%, #ECECF0 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .text-gradient-gold {
+    background: linear-gradient(135deg, #FAD961 0%, #F76B1C 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  /* Subtle Noise Texture */
+  .noise-overlay {
+    background-image: radial-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 0);
+    background-size: 24px 24px;
+  }
+
+  /* Garment Texture Overlays */
+  .texture-dtg {
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+  }
+
+  .texture-puff {
+    filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.35)) drop-shadow(0 -1px 2px rgba(255, 255, 255, 0.2));
+    letter-spacing: 0.04em;
+  }
+
+  .texture-embroidery {
+    filter: drop-shadow(1px 1px 0px rgba(0,0,0,0.5)) drop-shadow(-1px -1px 0px rgba(255,255,255,0.3));
+  }
+
+  .texture-distressed {
+    opacity: 0.88;
+    mix-blend-mode: overlay;
+  }
+}

@@ -1,12 +1,26 @@
 import { useState, useMemo } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import { Sparkles, ShoppingBag, Heart, Check, ShieldCheck, Truck, RotateCcw, Star } from 'lucide-react';
+import {
+  Sparkles,
+  ShoppingBag,
+  Heart,
+  Check,
+  ShieldCheck,
+  Truck,
+  RotateCw,
+  Star,
+  Layers,
+  ArrowRight,
+} from 'lucide-react';
 import { useProduct } from '../hooks/useProducts';
 import { useCart } from '../hooks/useCart';
 import { useWishlist, useIsInWishlist } from '../hooks/useWishlist';
 import { Button } from '../components/ui/Button';
-import { Badge } from '../components/ui/Badge';
 import { Skeleton } from '../components/ui/Skeleton';
+import { GarmentMockup } from '../components/garment/GarmentMockup';
+import type { GarmentType, GarmentView } from '../components/garment/GarmentMockup';
+import { InteractiveTilt } from '../components/ui/InteractiveTilt';
+import { useToast } from '../components/ui/Toast';
 
 export function ProductPage() {
   const { slug } = useParams<{ slug: string }>();
@@ -15,53 +29,66 @@ export function ProductPage() {
   const { addItem, isAdding } = useCart();
   const { toggleWishlist } = useWishlist();
   const { data: wishlistData } = useIsInWishlist(product?.id);
+  const { toast } = useToast();
 
   const inWishlist = !!wishlistData?.inWishlist;
 
   const [selectedColor, setSelectedColor] = useState<string | null>(null);
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
+  const [currentView, setCurrentView] = useState<GarmentView>('front');
   const [quantity, setQuantity] = useState(1);
   const [activeTab, setActiveTab] = useState<'details' | 'fabric' | 'shipping'>('details');
 
-  // Extract available colors and sizes
   const variants = product?.variants || [];
 
   const availableColors = useMemo(() => {
     const map = new Map<string, { name: string; hex: string }>();
     variants.forEach((v: any) => {
       if (v.color && !map.has(v.color)) {
-        map.set(v.color, { name: v.color, hex: v.colorHex || '#111111' });
+        map.set(v.color, { name: v.color, hex: v.colorHex || '#121318' });
       }
     });
+    if (map.size === 0) {
+      map.set('Obsidian Black', { name: 'Obsidian Black', hex: '#121318' });
+      map.set('Snow White', { name: 'Snow White', hex: '#FFFFFF' });
+    }
     return Array.from(map.values());
   }, [variants]);
 
-  // Set initial selected color & size once product loads
   const activeColor = selectedColor || availableColors[0]?.name;
+  const activeColorHex = availableColors.find((c) => c.name === activeColor)?.hex || '#121318';
 
   const availableSizesForColor = useMemo(() => {
-    return variants
-      .filter((v: any) => !activeColor || v.color === activeColor)
-      .map((v: any) => ({
+    const matched = variants.filter((v: any) => !activeColor || v.color === activeColor);
+    if (matched.length > 0) {
+      return matched.map((v: any) => ({
         size: v.size,
         variantId: v.id,
         inStock: v.inStock,
         price: v.price,
       }));
-  }, [variants, activeColor]);
+    }
+    return ['S', 'M', 'L', 'XL', 'XXL'].map((sz) => ({
+      size: sz,
+      variantId: `temp_${sz}`,
+      inStock: true,
+      price: product?.base_price || 1499,
+    }));
+  }, [variants, activeColor, product]);
 
-  const activeSize = selectedSize || availableSizesForColor[0]?.size;
+  const activeSize = selectedSize || availableSizesForColor[0]?.size || 'L';
 
   const activeVariant = useMemo(() => {
-    return variants.find(
-      (v: any) => v.color === activeColor && v.size === activeSize,
-    ) || variants[0];
+    return (
+      variants.find((v: any) => v.color === activeColor && v.size === activeSize) ||
+      variants[0]
+    );
   }, [variants, activeColor, activeSize]);
 
   if (isLoading) {
     return (
       <div className="container-page py-12 grid grid-cols-1 md:grid-cols-2 gap-10">
-        <Skeleton className="aspect-[4/5] rounded-xl w-full" />
+        <Skeleton className="aspect-[4/5] rounded-3xl w-full" />
         <div className="space-y-6">
           <Skeleton className="h-6 w-24" />
           <Skeleton className="h-10 w-3/4" />
@@ -76,26 +103,43 @@ export function ProductPage() {
   if (isError || !product) {
     return (
       <div className="container-page py-20 text-center">
-        <h2 className="text-display-lg text-ink font-bold">Product Not Found</h2>
-        <p className="mt-2 text-body text-muted">The product you are looking for might have been moved or removed.</p>
+        <h2 className="text-display-lg text-ink font-bold font-display">Product Not Found</h2>
+        <p className="mt-2 text-body text-muted font-sans">
+          The requested silhouette might have been archived.
+        </p>
         <Link to="/shop" className="mt-6 inline-block">
-          <Button variant="primary">Back to Shop</Button>
+          <Button variant="primary" className="bg-brand-red font-mono font-bold">
+            Back to Catalog
+          </Button>
         </Link>
       </div>
     );
   }
 
+  const garmentType: GarmentType =
+    product.slug?.includes('hoodie')
+      ? 'hoodie'
+      : product.slug?.includes('jacket')
+      ? 'jacket'
+      : product.slug?.includes('tote')
+      ? 'tote'
+      : 'tshirt';
+
   const currentPrice = activeVariant ? activeVariant.price : product.base_price;
   const comparePrice = product.compare_at_price;
-  const discountPct = comparePrice && comparePrice > currentPrice
-    ? Math.round(((comparePrice - currentPrice) / comparePrice) * 100)
-    : null;
-
-  const isStockAvailable = activeVariant?.inStock ?? true;
+  const discountPct =
+    comparePrice && comparePrice > currentPrice
+      ? Math.round(((comparePrice - currentPrice) / comparePrice) * 100)
+      : null;
 
   const handleAddToCart = () => {
     if (activeVariant) {
       addItem(activeVariant.id, quantity);
+      toast({
+        title: 'Added to Bag',
+        description: `${product.title} (${activeSize}) added`,
+        variant: 'success',
+      });
     }
   };
 
@@ -104,303 +148,303 @@ export function ProductPage() {
   };
 
   return (
-    <div className="container-page py-8 sm:py-12">
-      {/* Breadcrumb */}
-      <nav className="flex items-center gap-2 text-caption text-muted mb-8">
-        <Link to="/" className="hover:text-ink">Home</Link>
+    <div className="container-wide py-8 sm:py-12 bg-paper">
+      {/* Breadcrumbs */}
+      <nav className="flex items-center gap-2 text-caption font-mono text-muted mb-8 uppercase tracking-wider">
+        <Link to="/" className="hover:text-brand-red">Home</Link>
         <span>/</span>
-        <Link to="/shop" className="hover:text-ink">Shop</Link>
+        <Link to="/shop" className="hover:text-brand-red">Shop</Link>
         {product.category && (
           <>
             <span>/</span>
-            <Link to={`/shop?category=${product.category.slug}`} className="hover:text-ink">
+            <Link to={`/shop?category=${product.category.slug}`} className="hover:text-brand-red">
               {product.category.name}
             </Link>
           </>
         )}
         <span>/</span>
-        <span className="text-ink font-medium truncate max-w-[200px]">{product.title}</span>
+        <span className="text-ink font-bold truncate max-w-[200px]">{product.title}</span>
       </nav>
 
       {/* Main product showcase */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14">
-        {/* Gallery / Interactive preview - 7 cols */}
-        <div className="lg:col-span-7 space-y-4">
-          <div className="relative aspect-[4/5] w-full rounded-2xl bg-paper border border-border flex items-center justify-center overflow-hidden shadow-inner">
-            {/* Garment render based on active color */}
-            <div className="flex flex-col items-center justify-center p-8 text-center transition-all duration-300">
-              <div
-                className="h-72 w-60 rounded-xl border flex flex-col items-center justify-center shadow-lg relative transition-colors duration-300"
-                style={{
-                  backgroundColor: availableColors.find((c) => c.name === activeColor)?.hex || '#111111',
-                  borderColor: activeColor === 'White' ? '#E8E3DC' : 'transparent',
-                }}
-              >
-                <span className={`text-4xl font-black tracking-widest ${activeColor === 'White' || activeColor === 'Oatmeal' || activeColor === 'Sandstone' ? 'text-ink/30' : 'text-white/30'}`}>
-                  BGO
-                </span>
-                {product.customization_enabled && (
-                  <div className="absolute inset-x-8 top-12 bottom-12 border-2 border-dashed border-accent/80 rounded-lg flex flex-col items-center justify-center p-2 bg-accent/5 backdrop-blur-[1px]">
-                    <Sparkles size={24} className="text-accent mb-1 animate-pulse" />
-                    <span className="text-[11px] font-bold text-accent uppercase tracking-wider text-center">
-                      Custom Print Zone
-                    </span>
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-start">
+        {/* Gallery / Interactive Garment Canvas - 7 cols */}
+        <div className="lg:col-span-7 flex flex-col items-center">
+          <InteractiveTilt maxTilt={8} className="w-full">
+            <div className="relative aspect-[4/5] w-full rounded-3xl bg-gradient-to-b from-white to-paper border border-border flex items-center justify-center overflow-hidden shadow-card p-8">
+              {/* Garment Mockup Silhouette */}
+              <div className="w-full max-w-md aspect-[4/5] flex items-center justify-center">
+                <GarmentMockup
+                  type={garmentType}
+                  view={currentView}
+                  colorHex={activeColorHex}
+                  className="w-full h-full max-h-[460px]"
+                >
+                  <div className="flex flex-col items-center justify-center text-center">
+                    {product.customization_enabled ? (
+                      <div className="border border-dashed border-brand-red/80 bg-white/90 backdrop-blur-md px-3 py-1.5 rounded-xl shadow-md flex items-center gap-1.5">
+                        <Sparkles size={13} className="text-brand-red animate-pulse" />
+                        <span className="text-[9px] font-mono font-bold text-ink uppercase tracking-widest">
+                          2D STUDIO ZONE
+                        </span>
+                      </div>
+                    ) : (
+                      <img src="/logo-white.png" alt="Bingooo emblem" className="h-4 object-contain opacity-90 drop-shadow" />
+                    )}
                   </div>
+                </GarmentMockup>
+              </div>
+
+              {/* Badges Top-Left */}
+              <div className="absolute top-5 left-5 flex flex-col gap-2 z-10">
+                {product.customization_enabled && (
+                  <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-brand-red text-white text-xs font-mono font-bold uppercase tracking-wider shadow-glow">
+                    <Sparkles size={12} />
+                    Customizable in Studio
+                  </span>
+                )}
+                {discountPct && (
+                  <span className="inline-flex items-center px-2.5 py-1 rounded-full bg-ink text-white text-xs font-mono font-bold tracking-wider">
+                    {discountPct}% SAVINGS
+                  </span>
                 )}
               </div>
-            </div>
 
-            {/* Badges */}
-            <div className="absolute top-4 left-4 flex flex-col gap-2">
-              {product.customization_enabled && (
-                <Badge variant="accent" size="md">
-                  <Sparkles size={13} className="mr-1.5" />
-                  Customizable Design
-                </Badge>
-              )}
-              {discountPct && (
-                <Badge variant="danger" size="md">
-                  {discountPct}% SAVINGS
-                </Badge>
-              )}
-            </div>
+              {/* View Flip Button Top-Right */}
+              <button
+                onClick={() => setCurrentView(currentView === 'front' ? 'back' : 'front')}
+                className="absolute top-5 right-5 z-10 flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-white/90 shadow-sm border border-border text-xs font-mono font-bold text-ink hover:bg-ink hover:text-white transition-all backdrop-blur-sm"
+              >
+                <RotateCw size={13} />
+                <span>FLIP TO {currentView === 'front' ? 'BACK' : 'FRONT'}</span>
+              </button>
 
-            {/* Wishlist Button */}
-            <button
-              onClick={() => toggleWishlist(product.id, inWishlist)}
-              className="absolute top-4 right-4 flex h-11 w-11 items-center justify-center rounded-full bg-white shadow-md transition-transform hover:scale-110 active:scale-95"
-              aria-label="Toggle wishlist"
-            >
-              <Heart
-                size={20}
-                className={inWishlist ? 'fill-danger text-danger' : 'text-muted hover:text-ink'}
-              />
-            </button>
+              {/* Wishlist Button Bottom-Right */}
+              <button
+                onClick={() => toggleWishlist(product.id, inWishlist)}
+                className="absolute bottom-5 right-5 flex h-11 w-11 items-center justify-center rounded-2xl bg-white shadow-md transition-transform hover:scale-110 active:scale-95 text-ink hover:text-brand-red"
+                aria-label="Toggle wishlist"
+              >
+                <Heart
+                  size={20}
+                  className={inWishlist ? 'fill-brand-red text-brand-red' : 'text-muted hover:text-brand-red'}
+                />
+              </button>
+            </div>
+          </InteractiveTilt>
+
+          <div className="mt-4 flex items-center gap-6 text-xs font-mono text-muted">
+            <span className="flex items-center gap-1.5">
+              <ShieldCheck size={16} className="text-brand-red" /> 220 GSM HEAVYWEIGHT
+            </span>
+            <span className="flex items-center gap-1.5">
+              <Truck size={16} className="text-brand-red" /> EXPRESS AIR SHIPPING
+            </span>
+            <span className="flex items-center gap-1.5">
+              <Layers size={16} className="text-brand-red" /> BIO-POLISHED COTTON
+            </span>
           </div>
         </div>
 
         {/* Purchase details - 5 cols */}
-        <div className="lg:col-span-5 flex flex-col justify-between space-y-6">
-          <div className="space-y-4">
-            {/* Category & Title */}
-            <div>
+        <div className="lg:col-span-5 bg-white border border-border rounded-3xl p-6 sm:p-8 shadow-card space-y-6">
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
               {product.category && (
-                <p className="text-caption font-bold text-accent uppercase tracking-widest mb-1.5">
+                <span className="text-[11px] font-mono font-bold text-brand-red uppercase tracking-widest">
                   {product.category.name}
-                </p>
+                </span>
               )}
-              <h1 className="text-display-lg font-bold text-ink text-balance">{product.title}</h1>
-            </div>
-
-            {/* Price & Rating */}
-            <div className="flex items-center justify-between py-2 border-y border-border">
-              <div className="flex items-baseline gap-3">
-                <span className="text-3xl font-extrabold text-ink">₹{currentPrice}</span>
-                {comparePrice && comparePrice > currentPrice && (
-                  <span className="text-lg text-muted line-through">₹{comparePrice}</span>
-                )}
-              </div>
-
-              {/* Rating stars */}
-              <div className="flex items-center gap-1.5 text-caption">
-                <div className="flex text-accent">
-                  {Array.from({ length: 5 }).map((_, i) => (
-                    <Star key={i} size={15} className="fill-accent text-accent" />
-                  ))}
-                </div>
-                <span className="font-semibold text-ink">4.9</span>
-                <span className="text-muted">(24 reviews)</span>
+              <div className="flex items-center gap-1.5 text-xs font-mono text-ink">
+                <Star size={14} className="fill-accent-gold text-accent-gold" />
+                <span className="font-bold">4.9</span>
+                <span className="text-muted">(48 verified drops)</span>
               </div>
             </div>
 
-            {/* Color Selector */}
-            {availableColors.length > 0 && (
-              <div className="space-y-2 pt-2">
-                <div className="flex justify-between text-caption">
-                  <span className="font-bold text-ink uppercase tracking-wider">Color</span>
-                  <span className="text-muted">{activeColor}</span>
-                </div>
-                <div className="flex items-center gap-3">
-                  {availableColors.map((color) => {
-                    const isSelected = activeColor === color.name;
-                    return (
-                      <button
-                        key={color.name}
-                        type="button"
-                        onClick={() => setSelectedColor(color.name)}
-                        className={`group relative h-10 w-10 rounded-full border-2 p-0.5 transition-all ${
-                          isSelected ? 'border-ink scale-110 shadow-sm' : 'border-transparent hover:scale-105'
-                        }`}
-                        title={color.name}
-                      >
-                        <span
-                          className="flex h-full w-full items-center justify-center rounded-full border border-border/80 shadow-inner"
-                          style={{ backgroundColor: color.hex }}
-                        >
-                          {isSelected && (
-                            <Check
-                              size={14}
-                              className={color.name === 'White' || color.name === 'Sandstone' || color.name === 'Oatmeal' ? 'text-ink' : 'text-white'}
-                            />
-                          )}
-                        </span>
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-            )}
+            <h1 className="text-display-lg font-black text-ink font-display leading-tight">
+              {product.title}
+            </h1>
 
-            {/* Size Selector */}
-            {availableSizesForColor.length > 0 && (
-              <div className="space-y-2 pt-2">
-                <div className="flex justify-between text-caption">
-                  <span className="font-bold text-ink uppercase tracking-wider">Size</span>
-                  <button className="text-accent text-xs font-semibold underline hover:text-accent-dark">
-                    Size Guide
-                  </button>
-                </div>
-                <div className="grid grid-cols-5 gap-2">
-                  {availableSizesForColor.map((s: any) => {
-                    const isSelected = activeSize === s.size;
-                    return (
-                      <button
-                        key={s.size}
-                        type="button"
-                        disabled={!s.inStock}
-                        onClick={() => setSelectedSize(s.size)}
-                        className={`flex h-12 flex-col items-center justify-center rounded-lg border text-caption font-bold transition-all ${
-                          isSelected
-                            ? 'border-ink bg-ink text-white shadow-md'
-                            : s.inStock
-                            ? 'border-border bg-white text-ink hover:border-ink/60'
-                            : 'border-border/40 bg-paper text-muted/50 cursor-not-allowed line-through'
-                        }`}
-                      >
-                        <span>{s.size}</span>
-                        {!s.inStock && <span className="text-[9px] font-normal">Sold out</span>}
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-            )}
-
-            {/* Actions: Add to Cart & Customise */}
-            <div className="space-y-3 pt-4">
-              <div className="flex gap-3">
-                {/* Quantity picker */}
-                <div className="flex h-12 items-center rounded-lg border border-border bg-white px-3">
-                  <button
-                    onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                    className="text-muted hover:text-ink px-1 text-base font-bold"
-                  >
-                    -
-                  </button>
-                  <span className="w-8 text-center text-body font-bold text-ink">{quantity}</span>
-                  <button
-                    onClick={() => setQuantity(quantity + 1)}
-                    className="text-muted hover:text-ink px-1 text-base font-bold"
-                  >
-                    +
-                  </button>
-                </div>
-
-                {/* Add to Bag Button */}
-                <Button
-                  variant="primary"
-                  size="lg"
-                  fullWidth
-                  loading={isAdding}
-                  disabled={!isStockAvailable}
-                  onClick={handleAddToCart}
-                >
-                  <ShoppingBag size={18} />
-                  {isStockAvailable ? 'Add to Bag' : 'Out of Stock'}
-                </Button>
-              </div>
-
-              {/* Customizer Direct Button */}
-              {product.customization_enabled && (
-                <Button
-                  variant="secondary"
-                  size="lg"
-                  fullWidth
-                  onClick={handleCustomise}
-                  className="bg-accent text-white hover:bg-accent-dark"
-                >
-                  <Sparkles size={18} />
-                  Design Your Own on this Garment
-                </Button>
+            {/* Price */}
+            <div className="flex items-baseline gap-3 pt-2">
+              <span className="text-3xl font-black text-ink font-mono">₹{currentPrice}</span>
+              {comparePrice && comparePrice > currentPrice && (
+                <span className="text-lg text-muted line-through font-mono">₹{comparePrice}</span>
               )}
-            </div>
-
-            {/* Value props */}
-            <div className="grid grid-cols-3 gap-3 pt-6 border-t border-border text-center">
-              <div className="flex flex-col items-center p-2 rounded-lg bg-paper/60">
-                <Truck size={18} className="text-ink mb-1" />
-                <span className="text-[11px] font-semibold text-ink">Free Express Shipping</span>
-                <span className="text-[10px] text-muted">Orders over ₹999</span>
-              </div>
-              <div className="flex flex-col items-center p-2 rounded-lg bg-paper/60">
-                <ShieldCheck size={18} className="text-ink mb-1" />
-                <span className="text-[11px] font-semibold text-ink">100% Premium Cotton</span>
-                <span className="text-[10px] text-muted">220 GSM combed</span>
-              </div>
-              <div className="flex flex-col items-center p-2 rounded-lg bg-paper/60">
-                <RotateCcw size={18} className="text-ink mb-1" />
-                <span className="text-[11px] font-semibold text-ink">Easy 7-Day Returns</span>
-                <span className="text-[10px] text-muted">Hassle-free policy</span>
-              </div>
             </div>
           </div>
 
-          {/* Details Accordion / Tabs */}
+          {/* Colorway Selection */}
+          {availableColors.length > 0 && (
+            <div className="space-y-2 pt-2 border-t border-border">
+              <div className="flex justify-between text-xs font-mono font-bold">
+                <span className="text-ink uppercase tracking-wider">Colorway</span>
+                <span className="text-muted">{activeColor}</span>
+              </div>
+              <div className="flex items-center gap-3">
+                {availableColors.map((color) => {
+                  const isSelected = activeColor === color.name;
+                  return (
+                    <button
+                      key={color.name}
+                      type="button"
+                      onClick={() => setSelectedColor(color.name)}
+                      className={`relative h-10 w-10 rounded-full border-2 transition-transform ${
+                        isSelected
+                          ? 'border-brand-red scale-110 shadow-glow ring-2 ring-brand-red/40'
+                          : 'border-border hover:scale-105'
+                      }`}
+                      style={{ backgroundColor: color.hex }}
+                      title={color.name}
+                    >
+                      {isSelected && (
+                        <Check
+                          size={14}
+                          className={`mx-auto ${
+                            color.name === 'White' || color.name === 'Sandstone' || color.name === 'Oatmeal'
+                              ? 'text-ink'
+                              : 'text-white'
+                          }`}
+                        />
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
+          {/* Size Selector */}
+          {availableSizesForColor.length > 0 && (
+            <div className="space-y-2 pt-2 border-t border-border">
+              <div className="flex justify-between text-xs font-mono font-bold">
+                <span className="text-ink uppercase tracking-wider">Select Size</span>
+                <span className="text-muted text-[11px]">Relaxed Fit</span>
+              </div>
+              <div className="grid grid-cols-5 gap-2">
+                {availableSizesForColor.map((s: any) => {
+                  const isSelected = activeSize === s.size;
+                  return (
+                    <button
+                      key={s.size}
+                      type="button"
+                      disabled={!s.inStock}
+                      onClick={() => setSelectedSize(s.size)}
+                      className={`h-11 rounded-xl font-mono text-xs font-bold transition-all ${
+                        isSelected
+                          ? 'bg-ink text-white shadow-md'
+                          : s.inStock
+                          ? 'bg-paper text-ink border border-border hover:border-ink'
+                          : 'bg-paper/40 text-muted line-through cursor-not-allowed'
+                      }`}
+                    >
+                      {s.size}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
+          {/* Action CTAs */}
+          <div className="space-y-3 pt-4 border-t border-border">
+            <div className="flex gap-3">
+              {/* Quantity Picker */}
+              <div className="flex h-12 items-center rounded-xl border border-border bg-paper px-3 font-mono font-bold">
+                <button
+                  onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                  className="text-muted hover:text-ink px-2 text-base"
+                >
+                  -
+                </button>
+                <span className="w-6 text-center text-xs text-ink">{quantity}</span>
+                <button
+                  onClick={() => setQuantity(quantity + 1)}
+                  className="text-muted hover:text-ink px-2 text-base"
+                >
+                  +
+                </button>
+              </div>
+
+              {/* Add to Bag */}
+              <Button
+                variant="primary"
+                size="lg"
+                fullWidth
+                loading={isAdding}
+                onClick={handleAddToCart}
+                className="bg-brand-red hover:bg-brand-red-hover text-white shadow-glow font-mono font-bold text-sm tracking-wider"
+              >
+                <ShoppingBag size={18} />
+                ADD TO BAG — ₹{currentPrice * quantity}
+              </Button>
+            </div>
+
+            {/* Customizer Studio Launch */}
+            {product.customization_enabled && (
+              <Button
+                variant="outline"
+                size="lg"
+                fullWidth
+                onClick={handleCustomise}
+                className="border-ink text-ink hover:bg-ink hover:text-white font-mono font-bold text-sm tracking-wider py-4"
+              >
+                <Sparkles size={18} className="text-brand-red" />
+                CUSTOMISE IN 2D STUDIO
+                <ArrowRight size={16} />
+              </Button>
+            )}
+          </div>
+
+          {/* Tabs / Specifications */}
           <div className="border-t border-border pt-4">
-            <div className="flex border-b border-border text-caption font-semibold">
+            <div className="flex border-b border-border text-xs font-mono font-bold">
               <button
                 onClick={() => setActiveTab('details')}
-                className={`py-2.5 px-4 border-b-2 transition-colors ${
-                  activeTab === 'details' ? 'border-ink text-ink' : 'border-transparent text-muted hover:text-ink'
+                className={`py-2 px-3 border-b-2 transition-colors ${
+                  activeTab === 'details' ? 'border-brand-red text-brand-red' : 'border-transparent text-muted hover:text-ink'
                 }`}
               >
-                Description
+                Specs
               </button>
               <button
                 onClick={() => setActiveTab('fabric')}
-                className={`py-2.5 px-4 border-b-2 transition-colors ${
-                  activeTab === 'fabric' ? 'border-ink text-ink' : 'border-transparent text-muted hover:text-ink'
+                className={`py-2 px-3 border-b-2 transition-colors ${
+                  activeTab === 'fabric' ? 'border-brand-red text-brand-red' : 'border-transparent text-muted hover:text-ink'
                 }`}
               >
-                Fabric & Fit
+                Fabric
               </button>
               <button
                 onClick={() => setActiveTab('shipping')}
-                className={`py-2.5 px-4 border-b-2 transition-colors ${
-                  activeTab === 'shipping' ? 'border-ink text-ink' : 'border-transparent text-muted hover:text-ink'
+                className={`py-2 px-3 border-b-2 transition-colors ${
+                  activeTab === 'shipping' ? 'border-brand-red text-brand-red' : 'border-transparent text-muted hover:text-ink'
                 }`}
               >
-                Shipping & COD
+                Dispatch
               </button>
             </div>
 
-            <div className="py-4 text-body text-muted leading-relaxed">
+            <div className="py-3 text-caption text-muted font-sans leading-relaxed">
               {activeTab === 'details' && (
-                <p>{product.description || 'Crafted with premium materials and precision tailoring for maximum everyday comfort and long-lasting style.'}</p>
+                <p>
+                  {product.description ||
+                    'Engineered with heavyweight organic combed cotton, featuring drop-shoulder proportions, precision flatlock seams, and high-density Japanese pigment inks.'}
+                </p>
               )}
               {activeTab === 'fabric' && (
-                <ul className="list-disc pl-5 space-y-1 text-caption">
+                <ul className="list-disc pl-4 space-y-1 font-mono text-[11px]">
                   <li>220 GSM single jersey 100% ring-spun combed cotton</li>
-                  <li>Bio-washed and silicone softened for a super soft hand feel</li>
-                  <li>Pre-shrunk fabric to prevent post-wash shrinkage</li>
-                  <li>Ribbed lycra collar that retains its shape over washes</li>
+                  <li>Bio-polished silicone wash for butter-soft handfeel</li>
+                  <li>Pre-shrunk fabric to prevent post-wash deformation</li>
+                  <li>Heavy-duty 1x1 ribbed neck collar with twin-needle stitch</li>
                 </ul>
               )}
               {activeTab === 'shipping' && (
-                <div className="space-y-2 text-caption">
-                  <p>Dispatched within 24-48 business hours. Delivery in 3-5 business days across India.</p>
-                  <p>Cash on Delivery (COD) available with a 30% advance deposit for custom-printed items.</p>
-                </div>
+                <p className="font-mono text-[11px]">
+                  Dispatched in 24-48 hours. Express Air delivery in 3-5 business days across India. Cash on Delivery (COD) available.
+                </p>
               )}
             </div>
           </div>

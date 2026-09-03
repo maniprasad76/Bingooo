@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import {
   Heart,
@@ -15,57 +15,6 @@ import {
 import { useWishlist } from '../hooks/useWishlist';
 import { useCart } from '../hooks/useCart';
 import { useToast } from '../components/ui/Toast';
-
-const DEFAULT_WISHLIST_ITEMS = [
-  {
-    id: 'wish-1',
-    slug: 'chaos-printed-tee',
-    title: 'Chaos Printed Tee',
-    price: 799,
-    rating: 4.7,
-    reviewsCount: 98,
-    color: 'Off White',
-    colorHex: '#F7EEDB',
-    size: 'L',
-    image: '',
-  },
-  {
-    id: 'wish-2',
-    slug: 'logo-hoodie',
-    title: 'Logo Hoodie',
-    price: 1199,
-    rating: 4.8,
-    reviewsCount: 112,
-    color: 'Black',
-    colorHex: '#171717',
-    size: 'M',
-    image: '',
-  },
-  {
-    id: 'wish-3',
-    slug: 'baggy-fit-jeans',
-    title: 'Baggy Fit Jeans',
-    price: 1299,
-    rating: 4.6,
-    reviewsCount: 87,
-    color: 'Blue',
-    colorHex: '#597692',
-    size: '32',
-    image: '',
-  },
-  {
-    id: 'wish-4',
-    slug: 'custom-design-tee',
-    title: 'Custom Design Tee',
-    price: 699,
-    rating: 4.8,
-    reviewsCount: 64,
-    color: 'Beige',
-    colorHex: '#D4C4A8',
-    size: 'M',
-    image: '',
-  },
-];
 
 const RELATED_PRODUCTS = [
   {
@@ -124,38 +73,45 @@ export function WishlistPage() {
   const { toast } = useToast();
   const navigate = useNavigate();
 
-  const [items, setItems] = useState<any[]>(
-    wishlist && wishlist.length > 0
-      ? wishlist.map((p: any) => ({
-          id: p.id,
-          slug: p.slug,
-          title: p.title,
-          price: p.base_price,
-          rating: 4.8,
-          reviewsCount: 100,
-          color: p.variants?.[0]?.color || 'Black',
-          colorHex: p.variants?.[0]?.colorHex || '#171717',
-          size: p.variants?.[0]?.size || 'L',
-          image: p.images?.[0]?.url,
-        }))
-      : DEFAULT_WISHLIST_ITEMS
-  );
+  const items = useMemo(() => {
+    return (wishlist || []).map((p: any) => ({
+      id: p.id,
+      slug: p.slug,
+      title: p.title,
+      price: p.base_price,
+      rating: 4.8,
+      reviewsCount: 100,
+      color: p.variants?.[0]?.color || 'Black',
+      colorHex: p.variants?.[0]?.colorHex || '#171717',
+      size: p.variants?.[0]?.size || 'L',
+      variantId: p.variants?.[0]?.id,
+      image: p.images?.[0]?.url,
+    }));
+  }, [wishlist]);
 
   const handleAddToCart = (item: any) => {
-    addItem(item.id, 1);
+    if (!item.variantId) {
+      navigate(`/product/${item.slug}`);
+      return;
+    }
+    addItem(item.variantId, 1);
     toast({
-      title: `${item.title} added to cart`,
+      title: `${item.title} added to bag`,
       description: `Color: ${item.color} • Size: ${item.size}`,
       variant: 'success',
     });
   };
 
   const handleMoveAllToCart = () => {
+    if (items.length === 0) {
+      toast({ title: 'Wishlist is empty', variant: 'info' });
+      return;
+    }
     items.forEach((item) => {
-      addItem(item.id, 1);
+      if (item.variantId) addItem(item.variantId, 1);
     });
     toast({
-      title: 'All items added to cart!',
+      title: 'All items added to bag!',
       description: `${items.length} items moved to your shopping bag.`,
       variant: 'success',
     });
@@ -163,9 +119,7 @@ export function WishlistPage() {
   };
 
   const handleRemove = (id: string) => {
-    setItems((prev) => prev.filter((it) => it.id !== id));
     toggleWishlist(id, true);
-    toast({ title: 'Item removed from wishlist', variant: 'info' });
   };
 
   return (
@@ -199,98 +153,121 @@ export function WishlistPage() {
           </button>
         </div>
 
-        {/* ─── 4 Wishlist Cards Grid (Exact Image 1) ─── */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-          {items.map((item) => (
-            <div
-              key={item.id}
-              className="group flex flex-col justify-between rounded-xl bg-white border border-[#DDD3C5] p-3 sm:p-4 shadow-sm hover:shadow-md transition-all text-left"
-            >
-              {/* Image Container with Red Heart Button */}
-              <div className="relative aspect-[3/4] sm:aspect-[4/5] rounded-lg bg-[#F7EEDB]/60 border border-[#DDD3C5]/60 overflow-hidden flex items-center justify-center">
-                <Link
-                  to={`/product/${item.slug}`}
-                  className="w-full h-full flex flex-col items-center justify-center p-4 text-center group-hover:scale-105 transition-transform duration-300"
-                >
-                  {item.image ? (
-                    <img src={item.image} alt={item.title} className="w-full h-full object-cover" />
-                  ) : (
-                    <Shirt size={44} className="text-[#171717]/40 mb-1" />
-                  )}
-                  <span className="text-[10px] font-mono uppercase tracking-wider text-[#6F6A63]">
-                    {item.title}
-                  </span>
-                </Link>
-
-                {/* Filled Red Heart in White Circle Top-Right */}
-                <button
-                  type="button"
-                  onClick={() => handleRemove(item.id)}
-                  className="absolute top-2.5 right-2.5 p-1.5 rounded-full bg-white shadow-xs text-[#E6321C] hover:scale-110 transition-transform"
-                  aria-label="Remove from wishlist"
-                >
-                  <Heart size={16} className="fill-[#E6321C] text-[#E6321C]" />
-                </button>
-              </div>
-
-              {/* Product Meta */}
-              <div className="mt-3 flex flex-col flex-1 justify-between">
-                <div>
-                  <div className="flex items-start justify-between gap-2">
-                    <Link to={`/product/${item.slug}`}>
-                      <h3 className="font-sans font-bold text-xs sm:text-sm text-[#171717] hover:text-[#E6321C] transition-colors line-clamp-1">
-                        {item.title}
-                      </h3>
-                    </Link>
-                    <span className="font-sans font-extrabold text-sm text-[#171717] shrink-0">
-                      ₹{item.price}
-                    </span>
-                  </div>
-
-                  {/* Rating */}
-                  <div className="mt-1 flex items-center gap-1 text-[11px] font-semibold text-[#6F6A63]">
-                    <Star size={12} className="fill-[#E6321C] text-[#E6321C]" />
-                    <span className="text-[#171717] font-bold">{item.rating}</span>
-                    <span>({item.reviewsCount})</span>
-                  </div>
-
-                  {/* Color & Size */}
-                  <div className="mt-2 text-[11px] text-[#6F6A63] font-sans space-y-0.5">
-                    <div className="flex items-center gap-1.5">
-                      <span>Color: {item.color}</span>
-                      <span
-                        className="h-2.5 w-2.5 rounded-full border border-black/20"
-                        style={{ backgroundColor: item.colorHex }}
-                      />
-                    </div>
-                    <div>Size: {item.size}</div>
-                  </div>
-                </div>
-
-                {/* Actions: ADD TO CART (solid red) & REMOVE (outline) */}
-                <div className="mt-4 pt-3 border-t border-[#DDD3C5]/60 space-y-2">
-                  <button
-                    type="button"
-                    onClick={() => handleAddToCart(item)}
-                    className="w-full flex items-center justify-center gap-1.5 py-2.5 rounded-lg bg-[#E6321C] hover:bg-[#B91F12] text-white font-sans font-bold text-xs uppercase tracking-wider transition-colors shadow-sm"
+        {/* ─── 4 Wishlist Cards Grid / Empty State ─── */}
+        {items.length === 0 ? (
+          <div className="py-20 text-center rounded-2xl border border-dashed border-[#DDD3C5] bg-[#FDF9F4] p-8 max-w-xl mx-auto shadow-sm">
+            <div className="h-16 w-16 mx-auto mb-4 rounded-2xl bg-[#EDE0CC] flex items-center justify-center text-[#171717]">
+              <Heart size={28} className="text-[#E6321C]" />
+            </div>
+            <h2 className="font-heading font-extrabold text-2xl uppercase tracking-tight text-[#171717]">
+              Your wishlist is empty
+            </h2>
+            <p className="mt-2 text-sm text-[#6F6A63] max-w-sm mx-auto">
+              Save pieces you love by tapping the heart icon while exploring our catalog.
+            </p>
+            <div className="mt-6">
+              <Link
+                to="/shop"
+                className="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-[#E6321C] text-white font-sans font-bold text-xs uppercase tracking-wider hover:bg-[#B91F12] transition-colors shadow-sm"
+              >
+                <ShoppingBag size={14} />
+                <span>Explore Catalog</span>
+              </Link>
+            </div>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+            {items.map((item) => (
+              <div
+                key={item.id}
+                className="group flex flex-col justify-between rounded-xl bg-white border border-[#DDD3C5] p-3 sm:p-4 shadow-sm hover:shadow-md transition-all text-left"
+              >
+                {/* Image Container with Red Heart Button */}
+                <div className="relative aspect-[3/4] sm:aspect-[4/5] rounded-lg bg-[#F7EEDB]/60 border border-[#DDD3C5]/60 overflow-hidden flex items-center justify-center">
+                  <Link
+                    to={`/product/${item.slug}`}
+                    className="w-full h-full flex flex-col items-center justify-center p-4 text-center group-hover:scale-105 transition-transform duration-300"
                   >
-                    <ShoppingBag size={13} />
-                    <span>ADD TO CART</span>
-                  </button>
+                    {item.image ? (
+                      <img src={item.image} alt={item.title} className="w-full h-full object-cover" />
+                    ) : (
+                      <Shirt size={44} className="text-[#171717]/40 mb-1" />
+                    )}
+                    <span className="text-[10px] font-mono uppercase tracking-wider text-[#6F6A63]">
+                      {item.title}
+                    </span>
+                  </Link>
 
+                  {/* Filled Red Heart in White Circle Top-Right */}
                   <button
                     type="button"
                     onClick={() => handleRemove(item.id)}
-                    className="w-full flex items-center justify-center gap-1.5 py-2 rounded-lg border border-[#DDD3C5] hover:border-[#171717] bg-white text-[#6F6A63] hover:text-[#171717] font-sans font-bold text-xs uppercase tracking-wider transition-colors"
+                    className="absolute top-2.5 right-2.5 p-1.5 rounded-full bg-white shadow-xs text-[#E6321C] hover:scale-110 transition-transform"
+                    aria-label="Remove from wishlist"
                   >
-                    <Trash2 size={13} />
-                    <span>REMOVE</span>
+                    <Heart size={16} className="fill-[#E6321C] text-[#E6321C]" />
                   </button>
                 </div>
+
+                {/* Product Meta */}
+                <div className="mt-3 flex flex-col flex-1 justify-between">
+                  <div>
+                    <div className="flex items-start justify-between gap-2">
+                      <Link to={`/product/${item.slug}`}>
+                        <h3 className="font-sans font-bold text-xs sm:text-sm text-[#171717] hover:text-[#E6321C] transition-colors line-clamp-1">
+                          {item.title}
+                        </h3>
+                      </Link>
+                      <span className="font-sans font-extrabold text-sm text-[#171717] shrink-0">
+                        ₹{item.price}
+                      </span>
+                    </div>
+
+                    {/* Rating */}
+                    <div className="mt-1 flex items-center gap-1 text-[11px] font-semibold text-[#6F6A63]">
+                      <Star size={12} className="fill-[#E6321C] text-[#E6321C]" />
+                      <span className="text-[#171717] font-bold">{item.rating}</span>
+                      <span>({item.reviewsCount})</span>
+                    </div>
+
+                    {/* Color & Size */}
+                    <div className="mt-2 text-[11px] text-[#6F6A63] font-sans space-y-0.5">
+                      <div className="flex items-center gap-1.5">
+                        <span>Color: {item.color}</span>
+                        <span
+                          className="h-2.5 w-2.5 rounded-full border border-black/20"
+                          style={{ backgroundColor: item.colorHex }}
+                        />
+                      </div>
+                      <div>Size: {item.size}</div>
+                    </div>
+                  </div>
+
+                  {/* Actions: ADD TO CART & REMOVE */}
+                  <div className="mt-4 pt-3 border-t border-[#DDD3C5]/60 space-y-2">
+                    <button
+                      type="button"
+                      onClick={() => handleAddToCart(item)}
+                      className="w-full flex items-center justify-center gap-1.5 py-2.5 rounded-lg bg-[#E6321C] hover:bg-[#B91F12] text-white font-sans font-bold text-xs uppercase tracking-wider transition-colors shadow-sm"
+                    >
+                      <ShoppingBag size={13} />
+                      <span>ADD TO CART</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => handleRemove(item.id)}
+                      className="w-full flex items-center justify-center gap-1.5 py-2 rounded-lg border border-[#DDD3C5] hover:border-[#171717] bg-white text-[#6F6A63] hover:text-[#171717] font-sans font-bold text-xs uppercase tracking-wider transition-colors"
+                    >
+                      <Trash2 size={13} />
+                      <span>REMOVE</span>
+                    </button>
+                  </div>
+                </div>
               </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
 
         {/* ─── Middle Callout Banner (Exact Image 1) ─── */}
         <div className="rounded-2xl border border-[#DDD3C5] bg-[#F7EEDB] p-6 sm:p-8 flex flex-col sm:flex-row items-center justify-between gap-6 shadow-xs">

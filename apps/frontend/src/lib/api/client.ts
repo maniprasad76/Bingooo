@@ -3,7 +3,12 @@
 // Handles auth token injection, query params, standard error parsing
 // ─────────────────────────────────────────────────────────
 
-const API_BASE = '/api/v1';
+/**
+ * The Vite proxy is used in local development.  A deployed storefront can set
+ * VITE_API_URL to point at its API without changing any application code.
+ */
+const configuredApiUrl = import.meta.env.VITE_API_URL?.replace(/\/$/, '');
+const API_BASE = configuredApiUrl ? `${configuredApiUrl}/api/v1` : '/api/v1';
 
 interface RequestOptions extends Omit<RequestInit, 'body'> {
   body?: unknown;

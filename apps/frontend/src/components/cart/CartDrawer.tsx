@@ -5,7 +5,6 @@ import { Button } from '../ui/Button';
 import { Logo } from '../ui/Logo';
 import { useCartStore } from '../../store/cart';
 import { useCart } from '../../hooks/useCart';
-import { GarmentMockup } from '../garment/GarmentMockup';
 
 export function CartDrawer() {
   const { drawerOpen, closeDrawer } = useCartStore();
@@ -23,7 +22,7 @@ export function CartDrawer() {
   const remainingForFree = Math.max(0, freeShippingThreshold - subtotal);
 
   return (
-    <Drawer isOpen={drawerOpen} onClose={closeDrawer} title="Your Shopping Bag" position="right" size="md">
+    <Drawer isOpen={drawerOpen} onClose={closeDrawer} title="YOUR BAG" position="right" size="md">
       <div className="flex h-full flex-col justify-between bg-white font-sans">
         {/* Free shipping progress bar */}
         <div className="border-b border-border bg-paper/60 p-4">
@@ -83,19 +82,23 @@ export function CartDrawer() {
             cart.items.map((item: any) => (
               <div key={item.id} className="flex gap-4 py-4 first:pt-0 last:pb-0">
                 {/* Thumbnail / Realistic Garment preview */}
-                <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-xl bg-paper border border-border flex items-center justify-center p-1">
-                  <GarmentMockup
-                    type={item.product?.slug?.includes('hoodie') ? 'hoodie' : 'tshirt'}
-                    view="front"
-                    colorHex={item.variant?.colorHex || '#121318'}
-                    className="w-full h-full"
-                  >
-                    {item.customization && (
-                      <div className="flex items-center justify-center">
-                        <img src="/logo.png" alt="Custom logo" className="h-2 object-contain" />
-                      </div>
-                    )}
-                  </GarmentMockup>
+                <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-xl bg-[#EDE0CC] border border-border flex items-center justify-center p-1">
+                  <img
+                    src={
+                      item.customization?.previewUrl ||
+                      item.product?.images?.[0]?.url ||
+                      item.product?.images?.[0]?.object_key ||
+                      (item.product?.slug?.includes('graphic')
+                        ? '/custom/tshirt-step-3-black.png'
+                        : item.product?.slug?.includes('classic')
+                        ? '/custom/tshirt-step-1.png'
+                        : item.product?.slug?.includes('hoodie')
+                        ? '/custom/tshirt-step-2.png'
+                        : '/custom/tshirt-step-1.png')
+                    }
+                    alt={item.product?.title || 'Garment item'}
+                    className="h-full w-full object-contain p-1"
+                  />
 
                   {item.customization && (
                     <span className="absolute bottom-1 right-1 px-1 py-0.5 rounded bg-brand-red text-white text-[8px] font-mono font-bold uppercase">

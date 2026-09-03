@@ -177,7 +177,7 @@ export function ContactPage() {
                       placeholder="Full Name"
                       value={formData.fullName}
                       onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
-                      className="w-full h-12 rounded-xl border border-[#DDD3C5] bg-[#FAF8F5] px-4 text-xs font-sans text-[#171717] placeholder:text-[#6F6A63] focus:border-[#E6321C] focus:outline-none"
+                      className="w-full h-12 rounded-xl border border-[#DDD3C5] bg-white px-4 text-xs font-sans text-[#171717] placeholder:text-[#6F6A63] focus:border-[#E6321C] focus:outline-none"
                     />
                   </div>
                   <div>
@@ -187,7 +187,7 @@ export function ContactPage() {
                       placeholder="Email Address"
                       value={formData.email}
                       onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                      className="w-full h-12 rounded-xl border border-[#DDD3C5] bg-[#FAF8F5] px-4 text-xs font-sans text-[#171717] placeholder:text-[#6F6A63] focus:border-[#E6321C] focus:outline-none"
+                      className="w-full h-12 rounded-xl border border-[#DDD3C5] bg-white px-4 text-xs font-sans text-[#171717] placeholder:text-[#6F6A63] focus:border-[#E6321C] focus:outline-none"
                     />
                   </div>
                 </div>
@@ -198,7 +198,7 @@ export function ContactPage() {
                     placeholder="Phone Number"
                     value={formData.phone}
                     onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                    className="w-full h-12 rounded-xl border border-[#DDD3C5] bg-[#FAF8F5] px-4 text-xs font-sans text-[#171717] placeholder:text-[#6F6A63] focus:border-[#E6321C] focus:outline-none"
+                    className="w-full h-12 rounded-xl border border-[#DDD3C5] bg-white px-4 text-xs font-sans text-[#171717] placeholder:text-[#6F6A63] focus:border-[#E6321C] focus:outline-none"
                   />
                 </div>
 
@@ -209,7 +209,7 @@ export function ContactPage() {
                     placeholder="Subject"
                     value={formData.subject}
                     onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
-                    className="w-full h-12 rounded-xl border border-[#DDD3C5] bg-[#FAF8F5] px-4 text-xs font-sans text-[#171717] placeholder:text-[#6F6A63] focus:border-[#E6321C] focus:outline-none"
+                    className="w-full h-12 rounded-xl border border-[#DDD3C5] bg-white px-4 text-xs font-sans text-[#171717] placeholder:text-[#6F6A63] focus:border-[#E6321C] focus:outline-none"
                   />
                 </div>
 
@@ -220,7 +220,7 @@ export function ContactPage() {
                     placeholder="Your Message"
                     value={formData.message}
                     onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                    className="w-full rounded-xl border border-[#DDD3C5] bg-[#FAF8F5] p-4 text-xs font-sans text-[#171717] placeholder:text-[#6F6A63] focus:border-[#E6321C] focus:outline-none resize-none"
+                    className="w-full rounded-xl border border-[#DDD3C5] bg-white p-4 text-xs font-sans text-[#171717] placeholder:text-[#6F6A63] focus:border-[#E6321C] focus:outline-none resize-none"
                   />
                 </div>
 

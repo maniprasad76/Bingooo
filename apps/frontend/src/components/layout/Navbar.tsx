@@ -7,12 +7,11 @@ import { useCartStore } from '../../store/cart';
 import { Logo } from '../ui/Logo';
 
 const navLinks = [
-  { label: 'MEN', href: '/shop' },
-  { label: 'T-SHIRTS', href: '/shop?category=t-shirts' },
-  { label: 'HOODIES', href: '/shop?category=hoodies' },
-  { label: 'JEANS', href: '/shop?category=jeans' },
+  { label: 'HOME', href: '/' },
+  { label: 'SHOP', href: '/shop' },
   { label: 'CUSTOM', href: '/customize' },
-  { label: 'NEW ARRIVALS', href: '/shop?sort=newest' },
+  { label: 'ABOUT US', href: '/about' },
+  { label: 'CONTACT US', href: '/contact' },
 ];
 
 export function Navbar() {
@@ -21,33 +20,36 @@ export function Navbar() {
   const itemCount = useCartStore((s) => s.itemCount);
 
   return (
-    <header className="sticky top-0 z-40 w-full transition-all duration-300">
-      {/* ─── Top Announcement Bar ─── */}
-      <div className="w-full bg-[#F7EEDB] border-b border-[#DDD3C5] py-2 px-4 text-center font-heading text-xs tracking-[0.14em] font-bold text-[#171717] uppercase flex items-center justify-center gap-2">
-        <Truck size={14} className="text-[#E6321C]" />
+    <header className="sticky top-0 z-40 w-full transition-all duration-300 shadow-2xs">
+      {/* ─── Slim Announcement Bar ─── */}
+      <div className="w-full bg-[#F7EEDB] border-b border-[#DDD3C5] py-1.5 px-3 text-center font-heading text-[10px] sm:text-xs tracking-[0.12em] font-bold text-[#171717] uppercase flex items-center justify-center gap-1.5">
+        <Truck size={13} className="text-[#E6321C] shrink-0" />
         <span>
           <strong className="text-[#E6321C] font-extrabold">FREE</strong> SHIPPING ON ORDERS ABOVE ₹999
         </span>
       </div>
 
-      {/* ─── Main Header Navigation ─── */}
+      {/* ─── Main Header Navigation (Compact & Adaptable) ─── */}
       <nav className="w-full bg-[#FAF8F5]/95 backdrop-blur-md border-b border-[#DDD3C5]">
-        <div className="max-w-[1360px] mx-auto px-4 sm:px-8 h-18 sm:h-20 flex items-center justify-between gap-4">
-          {/* Left: Brand Logo */}
+        <div className="max-w-[1360px] mx-auto px-4 sm:px-8 h-14 sm:h-16 lg:h-17 flex items-center justify-between gap-3 sm:gap-4">
+          {/* Left: Brand Logo (Responsive Sizing) */}
           <Link to="/" className="flex items-center gap-2 shrink-0 py-1 group" aria-label="Bingooo Home">
-            <Logo variant="red" size="md" className="transition-transform duration-300 group-hover:scale-105" />
+            <Logo variant="red" size="sm" className="sm:hidden transition-transform duration-200 group-hover:scale-105" />
+            <Logo variant="red" size="md" className="hidden sm:inline-flex transition-transform duration-200 group-hover:scale-105" />
           </Link>
 
           {/* Center: Desktop Navigation */}
-          <ul className="hidden items-center gap-7 lg:gap-9 md:flex">
+          <ul className="hidden items-center gap-6 lg:gap-8 md:flex">
             {navLinks.map((link) => {
-              const isActive = location.pathname === link.href || (link.href.includes('?') && location.search === link.href.split('?')[1]);
+              const isActive =
+                location.pathname === link.href ||
+                (link.href.includes('?') && location.search === link.href.split('?')[1]);
               return (
                 <li key={link.label}>
                   <Link
                     to={link.href}
                     className={cn(
-                      'relative py-1 font-heading text-sm font-bold tracking-[0.06em] uppercase transition-colors duration-200',
+                      'relative py-1 font-heading text-xs lg:text-sm font-bold tracking-[0.06em] uppercase transition-colors duration-200',
                       isActive ? 'text-[#E6321C]' : 'text-[#171717] hover:text-[#E6321C]'
                     )}
                   >
@@ -64,39 +66,42 @@ export function Navbar() {
             })}
           </ul>
 
-          {/* Right: Utility Icons & Cart */}
-          <div className="flex items-center gap-2 sm:gap-4">
+          {/* Right: Utility Icons & Cart (Clean & Non-Crowded on Mobile) */}
+          <div className="flex items-center gap-1 sm:gap-2">
             <IconButton href="/shop" label="Search">
-              <Search size={19} className="stroke-[1.8]" />
+              <Search size={18} className="stroke-[1.8]" />
             </IconButton>
 
-            <IconButton href="/account" label="Account">
-              <User size={19} className="stroke-[1.8]" />
+            {/* Desktop Only: Account & Wishlist (Handled by floating dock on mobile) */}
+            <IconButton href="/account" label="Account" className="hidden sm:flex">
+              <User size={18} className="stroke-[1.8]" />
             </IconButton>
 
-            <IconButton href="/account/wishlist" label="Wishlist">
-              <Heart size={19} className="stroke-[1.8]" />
+            <IconButton href="/account/wishlist" label="Wishlist" className="hidden sm:flex">
+              <Heart size={18} className="stroke-[1.8]" />
             </IconButton>
 
             {/* Cart Drawer Trigger */}
             <button
               onClick={() => useCartStore.getState().openDrawer()}
-              className="relative flex h-10 w-10 items-center justify-center rounded-lg text-[#171717] hover:text-[#E6321C] transition-colors"
+              className="relative flex h-9 w-9 sm:h-10 sm:w-10 items-center justify-center rounded-lg text-[#171717] hover:text-[#E6321C] transition-colors"
               aria-label="Open Shopping Bag"
             >
-              <ShoppingBag size={20} className="stroke-[1.8]" />
-              <span className="absolute -right-1 -top-1 flex h-4.5 min-w-4.5 px-1 items-center justify-center rounded-full bg-[#E6321C] text-[10px] font-bold text-white shadow-sm">
-                {itemCount}
-              </span>
+              <ShoppingBag size={19} className="stroke-[1.8]" />
+              {itemCount > 0 && (
+                <span className="absolute -right-0.5 -top-0.5 flex h-4 min-w-4 px-1 items-center justify-center rounded-full bg-[#E6321C] text-[9px] font-bold text-white shadow-xs">
+                  {itemCount}
+                </span>
+              )}
             </button>
 
             {/* Mobile Menu Toggle */}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="flex h-10 w-10 items-center justify-center rounded-lg text-[#171717] hover:text-[#E6321C] transition-colors md:hidden"
+              className="flex h-9 w-9 sm:h-10 sm:w-10 items-center justify-center rounded-lg text-[#171717] hover:text-[#E6321C] transition-colors md:hidden"
               aria-label={mobileMenuOpen ? 'Close navigation' : 'Open navigation'}
             >
-              {mobileMenuOpen ? <X size={22} /> : <Menu size={22} />}
+              {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
             </button>
           </div>
         </div>
@@ -109,31 +114,31 @@ export function Navbar() {
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
-            className="border-b border-[#EAE0D4] bg-[#FAF7F2] px-6 py-6 md:hidden shadow-xl"
+            className="border-b border-[#DDD3C5] bg-[#FAF8F5] px-5 py-5 md:hidden shadow-xl"
           >
-            <ul className="flex flex-col gap-3 font-semibold text-sm">
+            <ul className="flex flex-col gap-2.5 font-heading text-xs font-bold uppercase tracking-wider">
               {navLinks.map((link) => (
                 <li key={link.label}>
                   <Link
                     to={link.href}
-                    className="flex items-center justify-between text-[#22201E] hover:text-[#C84825] py-2 border-b border-[#EAE0D4]/60 tracking-wider"
+                    className="flex items-center justify-between text-[#171717] hover:text-[#E6321C] py-2 border-b border-[#DDD3C5]/50"
                     onClick={() => setMobileMenuOpen(false)}
                   >
                     <span>{link.label}</span>
                   </Link>
                 </li>
               ))}
-              <li className="pt-3 flex gap-4">
+              <li className="pt-3 flex gap-3">
                 <Link
                   to="/customize"
-                  className="flex-1 py-3 text-center bg-[#C84825] text-white rounded-md text-xs font-bold uppercase tracking-wider"
+                  className="flex-1 py-2.5 text-center bg-[#E6321C] hover:bg-[#B91F12] text-white rounded-lg text-xs font-bold uppercase tracking-wider transition-colors shadow-xs"
                   onClick={() => setMobileMenuOpen(false)}
                 >
                   Create Custom
                 </Link>
                 <Link
                   to="/shop"
-                  className="flex-1 py-3 text-center border border-[#C84825] text-[#C84825] rounded-md text-xs font-bold uppercase tracking-wider"
+                  className="flex-1 py-2.5 text-center border border-[#171717] hover:border-[#E6321C] text-[#171717] hover:text-[#E6321C] rounded-lg text-xs font-bold uppercase tracking-wider transition-colors"
                   onClick={() => setMobileMenuOpen(false)}
                 >
                   Shop Drops
@@ -162,7 +167,7 @@ function IconButton({
     <Link
       to={href}
       className={cn(
-        'flex h-10 w-10 items-center justify-center rounded-lg text-[#22201E] hover:text-[#C84825] transition-colors',
+        'flex h-9 w-9 sm:h-10 sm:w-10 items-center justify-center rounded-lg text-[#171717] hover:text-[#E6321C] transition-colors',
         className
       )}
       aria-label={label}

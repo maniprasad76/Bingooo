@@ -25,6 +25,14 @@ export default {
         white: '#FFFFFF',
         muted: '#6F6A63',
         border: '#DDD3C5',
+        ink: '#171717',
+        paper: '#F7EEDB',
+        accent: {
+          DEFAULT: '#E6321C',
+          dark: '#B91F12',
+          hover: '#B91F12',
+          light: '#FDF0EE',
+        },
         // ── Semantic Surface ──
         surface: '#FFFFFF',
         canvas: '#F7EEDB',
@@ -47,10 +55,11 @@ export default {
         },
       },
       fontFamily: {
-        sans: ['"Plus Jakarta Sans"', 'Inter', 'system-ui', '-apple-system', 'sans-serif'],
-        display: ['Outfit', '"Plus Jakarta Sans"', 'sans-serif'],
-        heading: ['Outfit', '"Plus Jakarta Sans"', 'sans-serif'],
+        sans: ['Manrope', 'system-ui', '-apple-system', 'sans-serif'],
+        display: ['Outfit', 'Manrope', 'sans-serif'],
+        heading: ['Outfit', 'Manrope', 'sans-serif'],
         outfit: ['Outfit', 'sans-serif'],
+        jakarta: ['"Plus Jakarta Sans"', 'sans-serif'],
         serif: ['"Playfair Display"', 'Georgia', 'serif'],
         cursive: ['Satisfy', 'Caveat', 'cursive'],
         script: ['Satisfy', 'Caveat', 'cursive'],
@@ -71,6 +80,8 @@ export default {
         'price-lg': ['1.5rem', { lineHeight: '1.2', fontWeight: '700' }],
       },
       boxShadow: {
+        '2xs': '0 1px 1px rgba(0,0,0,0.03)',
+        'xs': '0 1px 2px rgba(0,0,0,0.05)',
         'soft': '0 1px 3px rgba(0,0,0,0.04)',
         'card': '0 2px 8px rgba(0,0,0,0.06)',
         'card-hover': '0 4px 16px rgba(0,0,0,0.1)',

@@ -5,10 +5,15 @@ import { api } from '../lib/api/client';
 import { Button } from '../components/ui/Button';
 import { Badge } from '../components/ui/Badge';
 
+import { useAuthStore } from '../store/auth';
+
 export function SavedDesignsPage() {
+  const { userId } = useAuthStore();
+  const currentUserId = userId || 'mock-user-id';
+
   const { data: designs = [], isLoading } = useQuery({
-    queryKey: ['user-designs'],
-    queryFn: () => api.get<any[]>('/customizations/user/mock-user-id'),
+    queryKey: ['user-designs', currentUserId],
+    queryFn: () => api.get<any[]>(`/customizations/user/${currentUserId}`),
   });
 
   return (

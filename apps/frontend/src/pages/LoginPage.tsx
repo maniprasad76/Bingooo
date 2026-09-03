@@ -1,11 +1,13 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Button } from '../components/ui/Button';
 import { Input } from '../components/ui/Input';
 import { Logo } from '../components/ui/Logo';
+import { signIn } from '../lib/auth/supabase';
+import { useToast } from '../components/ui/Toast';
 
 const loginSchema = z.object({
   email: z.string().email('Please enter a valid email'),
@@ -16,6 +18,8 @@ type LoginForm = z.infer<typeof loginSchema>;
 
 export function LoginPage() {
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
+  const { toast } = useToast();
 
   const {
     register,
@@ -27,9 +31,19 @@ export function LoginPage() {
 
   const onSubmit = async (data: LoginForm) => {
     setLoading(true);
-    // TODO: call signIn(data.email, data.password)
-    console.log('Login:', data);
-    setTimeout(() => setLoading(false), 1000);
+    try {
+      await signIn(data.email, data.password);
+      toast({ title: 'Welcome back', variant: 'success' });
+      navigate('/account');
+    } catch (error) {
+      toast({
+        title: 'Unable to sign in',
+        description: error instanceof Error ? error.message : 'Please try again.',
+        variant: 'danger',
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (

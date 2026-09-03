@@ -1,11 +1,9 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Sparkles, ShoppingBag, RotateCw, Check, ArrowRight, ShieldCheck, Truck } from 'lucide-react';
+import { X, Sparkles, ShoppingBag, Check, ArrowRight, ShieldCheck, Truck } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Button } from '../ui/Button';
 import { Badge } from '../ui/Badge';
-import { GarmentMockup } from '../garment/GarmentMockup';
-import type { GarmentType } from '../garment/GarmentMockup';
 import { useCart } from '../../hooks/useCart';
 import { useToast } from '../ui/Toast';
 
@@ -18,6 +16,7 @@ export interface QuickViewProduct {
   customizationEnabled?: boolean;
   category?: { name: string; slug: string } | null;
   variants?: Array<{ id: string; color?: string; colorHex?: string; size?: string; inStock?: boolean }>;
+  images?: Array<{ url?: string; object_key?: string }>;
 }
 
 interface QuickViewModalProps {
@@ -30,7 +29,6 @@ export function QuickViewModal({ product, isOpen, onClose }: QuickViewModalProps
   const { addItem, isAdding } = useCart();
   const { toast } = useToast();
 
-  const [view, setView] = useState<'front' | 'back'>('front');
   const [selectedColorHex, setSelectedColorHex] = useState('#121318');
   const [selectedSize, setSelectedSize] = useState('L');
 
@@ -45,14 +43,16 @@ export function QuickViewModal({ product, isOpen, onClose }: QuickViewModalProps
 
   const uniqueColors = Array.from(new Map(colors.map((c) => [c.colorHex, c])).values());
 
-  const garmentType: GarmentType =
-    product.slug?.includes('hoodie')
-      ? 'hoodie'
-      : product.slug?.includes('jacket')
-      ? 'jacket'
-      : product.slug?.includes('tote')
-      ? 'tote'
-      : 'tshirt';
+  const mainImage =
+    product.images?.[0]?.url ||
+    product.images?.[0]?.object_key ||
+    (product.slug?.includes('graphic')
+      ? '/custom/tshirt-step-3-black.png'
+      : product.slug?.includes('classic')
+      ? '/custom/tshirt-step-1.png'
+      : product.slug?.includes('hoodie')
+      ? '/custom/tshirt-step-2.png'
+      : '/custom/tshirt-step-1.png');
 
   const handleAdd = () => {
     const matched = product.variants?.find(
@@ -102,37 +102,13 @@ export function QuickViewModal({ product, isOpen, onClose }: QuickViewModalProps
             <div className="grid grid-cols-1 md:grid-cols-12">
               {/* Left Column: 3D Interactive Garment Preview (7 cols) */}
               <div className="md:col-span-7 bg-paper/60 p-8 flex flex-col items-center justify-center relative border-b md:border-b-0 md:border-r border-border">
-                {/* Front / Back Flip Button */}
-                <button
-                  onClick={() => setView(view === 'front' ? 'back' : 'front')}
-                  className="absolute top-4 left-4 z-10 flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white shadow-sm border border-border text-caption font-bold text-ink hover:bg-ink hover:text-white transition-all"
-                >
-                  <RotateCw size={13} />
-                  <span>View: {view.toUpperCase()}</span>
-                </button>
-
-                {/* Garment Silhouette */}
-                <div className="w-full max-w-sm aspect-[4/5] flex items-center justify-center">
-                  <GarmentMockup
-                    type={garmentType}
-                    view={view}
-                    colorHex={selectedColorHex}
-                    className="w-full h-full"
-                  >
-                    {/* Brand Graphic / Chest Badge */}
-                    {product.customizationEnabled ? (
-                      <div className="flex flex-col items-center justify-center text-center">
-                        <img src="/logo.png" alt="Bingooo logo" className="h-6 object-contain drop-shadow" />
-                        <span className="mt-1 text-[9px] font-mono font-bold tracking-widest text-brand-red bg-white/90 px-1.5 py-0.5 rounded shadow-sm">
-                          CUSTOMIZABLE STUDIO
-                        </span>
-                      </div>
-                    ) : (
-                      <div className="flex items-center justify-center">
-                        <img src="/logo-white.png" alt="Bingooo minimal logo" className="h-5 object-contain opacity-90" />
-                      </div>
-                    )}
-                  </GarmentMockup>
+                {/* Product Image Showcase */}
+                <div className="w-full max-w-sm aspect-[4/5] flex items-center justify-center p-4">
+                  <img
+                    src={mainImage}
+                    alt={product.title}
+                    className="h-full w-full object-contain p-2 transition-transform duration-500 hover:scale-105"
+                  />
                 </div>
 
                 <div className="mt-4 flex items-center gap-4 text-caption text-muted font-mono">

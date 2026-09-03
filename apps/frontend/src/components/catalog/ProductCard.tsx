@@ -3,8 +3,7 @@ import { Link } from 'react-router-dom';
 import { Heart, Sparkles, ShoppingBag, Eye } from 'lucide-react';
 import { useWishlist, useIsInWishlist } from '../../hooks/useWishlist';
 import { useCart } from '../../hooks/useCart';
-import { GarmentMockup } from '../garment/GarmentMockup';
-import type { GarmentType } from '../garment/GarmentMockup';
+
 import { QuickViewModal } from './QuickViewModal';
 import { InteractiveTilt } from '../ui/InteractiveTilt';
 
@@ -17,7 +16,7 @@ export interface ProductCardProps {
   customizationEnabled?: boolean;
   category?: { name: string; slug: string } | null;
   variants?: Array<{ id: string; color?: string; colorHex?: string; size?: string; inStock?: boolean }>;
-  images?: Array<{ object_key: string; alt_text?: string }>;
+  images?: Array<{ url?: string; object_key?: string; alt_text?: string }>;
 }
 
 export function ProductCard({
@@ -29,6 +28,7 @@ export function ProductCard({
   customizationEnabled,
   category,
   variants = [],
+  images = [],
 }: ProductCardProps) {
   const { toggleWishlist } = useWishlist();
   const { data: wishlistData } = useIsInWishlist(id);
@@ -50,14 +50,17 @@ export function ProductCard({
     new Map(variants.filter((v) => v.colorHex).map((v) => [v.colorHex, v])).values()
   );
 
-  const garmentType: GarmentType =
-    slug?.includes('hoodie')
-      ? 'hoodie'
-      : slug?.includes('jacket')
-      ? 'jacket'
-      : slug?.includes('tote')
-      ? 'tote'
-      : 'tshirt';
+  const mainImage =
+    images?.[0]?.url ||
+    images?.[0]?.object_key ||
+    (typeof images?.[0] === 'string' ? images[0] : null) ||
+    (slug.includes('graphic')
+      ? '/custom/tshirt-step-3-black.png'
+      : slug.includes('classic')
+      ? '/custom/tshirt-step-1.png'
+      : slug.includes('hoodie')
+      ? '/custom/tshirt-step-2.png'
+      : '/custom/tshirt-step-1.png');
 
   const handleQuickAdd = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -83,31 +86,15 @@ export function ProductCard({
     <>
       <InteractiveTilt maxTilt={8} className="h-full">
         <div className="group relative flex h-full flex-col rounded-2xl bg-white border border-border/80 overflow-hidden shadow-card transition-all duration-500 hover:shadow-card-hover hover:border-ink/25">
-          {/* Garment Visual Showcase */}
-          <div className="relative aspect-[4/5] w-full bg-gradient-to-b from-paper via-paper/80 to-paper/40 flex items-center justify-center p-6 overflow-hidden">
+          {/* Product Image Showcase */}
+          <div className="relative aspect-[4/5] w-full bg-[#EDE0CC] flex items-center justify-center p-4 overflow-hidden">
             <Link to={`/product/${slug}`} className="w-full h-full flex items-center justify-center">
-              <div className="w-full max-w-[240px] transform transition-transform duration-700 ease-out group-hover:scale-105">
-                <GarmentMockup
-                  type={garmentType}
-                  view="front"
-                  colorHex={activeHex}
-                  className="w-full h-full"
-                >
-                  {/* Subtle chest logo preview */}
-                  <div className="flex flex-col items-center justify-center opacity-85">
-                    {customizationEnabled ? (
-                      <div className="border border-dashed border-[#E6321C]/60 bg-white/80 backdrop-blur-sm px-2 py-1 rounded shadow-sm flex items-center gap-1">
-                        <Sparkles size={10} className="text-[#E6321C] animate-pulse" />
-                        <span className="text-[9px] font-heading font-bold text-[#171717] uppercase tracking-wider">
-                          2D STUDIO
-                        </span>
-                      </div>
-                    ) : (
-                      <img src="/logo-white.png" alt="Bingooo logo mark" className="h-3 object-contain drop-shadow" />
-                    )}
-                  </div>
-                </GarmentMockup>
-              </div>
+              <img
+                src={mainImage}
+                alt={title}
+                className="h-full w-full object-contain p-2 transition-transform duration-700 ease-out group-hover:scale-105"
+                loading="lazy"
+              />
             </Link>
 
             {/* Badges Top-Left */}

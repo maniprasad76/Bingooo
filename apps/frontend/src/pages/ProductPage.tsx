@@ -14,6 +14,7 @@ import {
   Truck,
   ArrowRight,
   Shirt,
+  Sparkles,
 } from 'lucide-react';
 import { useProduct } from '../hooks/useProducts';
 import { useCart } from '../hooks/useCart';
@@ -108,10 +109,25 @@ export function ProductPage() {
   const currentPrice = product?.base_price || 799;
 
   const handleAddToCart = () => {
-    const variant = variants.find((v: any) => v.color === activeColor && v.size === selectedSize) || variants[0];
-    addItem(variant ? variant.id : (product?.id || 'temp'), 1);
+    const variant =
+      variants.find(
+        (v: any) =>
+          (!v.color || v.color.toLowerCase() === activeColor.toLowerCase()) &&
+          (!v.size || v.size.toUpperCase() === selectedSize.toUpperCase())
+      ) || variants[0];
+
+    if (!variant?.id) {
+      toast({
+        title: 'Please select a valid variant',
+        description: 'No inventory item found for this color and size.',
+        variant: 'danger',
+      });
+      return;
+    }
+
+    addItem(variant.id, 1);
     toast({
-      title: `${product?.title || 'Oversized Graphic Tee'} added to cart`,
+      title: `${product?.title || 'Garment'} added to cart`,
       description: `Color: ${activeColor} • Size: ${selectedSize}`,
       variant: 'success',
     });
@@ -368,6 +384,16 @@ export function ProductPage() {
 
               {/* CTAs: ADD TO CART & BUY NOW */}
               <div className="mt-6 space-y-3">
+                {product?.customization_enabled && (
+                  <Link
+                    to={`/customize/${product.slug}`}
+                    className="w-full flex items-center justify-center gap-2 py-3.5 rounded-lg border-2 border-[#171717] bg-[#171717] hover:bg-[#E6321C] hover:border-[#E6321C] text-white font-sans font-bold text-xs sm:text-sm uppercase tracking-wider transition-all shadow-sm"
+                  >
+                    <Sparkles size={16} />
+                    <span>CUSTOMIZE IN ATELIER STUDIO</span>
+                  </Link>
+                )}
+
                 <button
                   type="button"
                   onClick={handleAddToCart}

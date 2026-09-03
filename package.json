@@ -10,16 +10,23 @@
   "scripts": {
     "dev:frontend": "npm run dev -w apps/frontend",
     "dev:web": "npm run dev -w apps/frontend",
-    "dev:api": "npm run dev -w apps/api",
+    "dev:admin": "npm run dev -w apps/admin",
+    "dev:api": "npm run dev -w apps/backend",
     "build:frontend": "npm run build -w apps/frontend",
     "build:web": "npm run build -w apps/frontend",
-    "build:api": "npm run build -w apps/api",
+    "build:admin": "npm run build -w apps/admin",
+    "build:api": "npm run build -w apps/backend",
     "build": "npm run build --workspaces --if-present",
     "lint": "npm run lint --workspaces --if-present",
     "typecheck": "npm run typecheck --workspaces --if-present",
+    "typecheck:admin": "npm run typecheck -w apps/admin",
     "clean": "npm run clean --workspaces --if-present"
   },
   "engines": {
     "node": ">=20.0.0"
+  },
+  "dependencies": {
+    "@supabase/ssr": "^0.12.5",
+    "@supabase/supabase-js": "^2.109.0"
   }
 }

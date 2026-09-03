@@ -1,589 +1,418 @@
-import React, { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import {
   ArrowRight,
-  Heart,
-  ShoppingBag,
-  Star,
-  Shirt,
+  CheckCircle2,
+  ChevronLeft,
+  ChevronRight,
   PenTool,
-  Eye,
+  Shirt,
   ShieldCheck,
-  Sparkles,
+  Truck,
 } from 'lucide-react';
-import { useCartStore } from '../store/cart';
-import { useToast } from '../components/ui/Toast';
+import { motion, AnimatePresence } from 'framer-motion';
+import { ProductCard } from '../components/catalog/ProductCard';
+import { Skeleton } from '../components/ui/Skeleton';
+import { useCategories, useProducts } from '../hooks/useProducts';
+import { CustomDesignSection } from '../components/home/CustomDesignSection';
 
-// ── Product Interface (Data supplied from admin / API) ──
-interface LandingProduct {
+export interface HeroSlideItem {
   id: string;
-  slug: string;
   title: string;
-  rating: number;
-  reviewsCount: number;
-  price: number;
-  image?: string;
-  colors: Array<{ name: string; hex: string }>;
+  subtitle: string;
+  ctaText: string;
+  targetUrl: string;
+  desktopImageUrl: string;
+  mobileImageUrl?: string;
+  badge?: string;
+  eyebrow?: string;
+  priority: number;
+  isActive: boolean;
 }
 
-const FEATURED_PRODUCTS: LandingProduct[] = [
+const DEFAULT_HERO_SLIDES: HeroSlideItem[] = [
   {
-    id: 'prod-1',
-    slug: 'oversized-graphic-tee',
-    title: 'Oversized Graphic Tee',
-    rating: 4.8,
-    reviewsCount: 124,
-    price: 799,
-    colors: [
-      { name: 'Black', hex: '#171717' },
-      { name: 'Cream', hex: '#EDE0CC' },
-    ],
+    id: 'ban-1',
+    title: 'Wear What Feels Like You.',
+    subtitle: 'Streetwear silhouettes. Heavyweight 240 GSM combed cotton. Engineered for personal expression.',
+    ctaText: "Shop Men's Wear",
+    targetUrl: '/shop',
+    desktopImageUrl: '/hero-banner.png',
+    mobileImageUrl: '/hero-banner.png',
+    badge: 'DROP 01 • OVERSIZED FIT',
+    eyebrow: "Bingooo Men’s Wear",
+    priority: 1,
+    isActive: true,
   },
   {
-    id: 'prod-2',
-    slug: 'chaos-printed-tee',
-    title: 'Chaos Printed Tee',
-    rating: 4.7,
-    reviewsCount: 96,
-    price: 799,
-    colors: [
-      { name: 'Khaki', hex: '#B29A78' },
-      { name: 'Olive', hex: '#354837' },
-      { name: 'Black', hex: '#171717' },
-    ],
+    id: 'ban-2',
+    title: 'Everyday Luxury. Built to Last.',
+    subtitle: 'Minimalist cuts crafted from premium combed cotton. Tailored for effortless confidence.',
+    ctaText: 'Explore Drop 02',
+    targetUrl: '/shop',
+    desktopImageUrl: '/hero-banner-2.jpg',
+    mobileImageUrl: '/hero-banner-2.jpg',
+    badge: 'STUDIO DROP • DROP 02',
+    eyebrow: 'Architectural Edit',
+    priority: 2,
+    isActive: true,
   },
   {
-    id: 'prod-3',
-    slug: 'essential-hoodie',
-    title: 'Essential Hoodie',
-    rating: 4.9,
-    reviewsCount: 156,
-    price: 1199,
-    colors: [
-      { name: 'Charcoal', hex: '#222222' },
-      { name: 'Black', hex: '#101010' },
-    ],
+    id: 'ban-3',
+    title: 'Tailored Statement Menswear.',
+    subtitle: 'Signature back prints, relaxed drape, and confident proportions that redefine streetwear.',
+    ctaText: 'Shop The Look',
+    targetUrl: '/shop',
+    desktopImageUrl: '/hero-banner-3.jpg',
+    mobileImageUrl: '/hero-banner-3.jpg',
+    badge: 'CAMPAIGN 2026 • SIGNATURE FIT',
+    eyebrow: 'Signature Drop',
+    priority: 3,
+    isActive: true,
   },
   {
-    id: 'prod-4',
-    slug: 'baggy-fit-jeans',
-    title: 'Baggy Fit Jeans',
-    rating: 4.6,
-    reviewsCount: 87,
-    price: 1299,
-    colors: [
-      { name: 'Denim Blue', hex: '#597692' },
-      { name: 'Grey', hex: '#7B818A' },
-      { name: 'Black', hex: '#171717' },
-    ],
-  },
-];
-
-const CATEGORIES = [
-  {
-    id: 't-shirts',
-    name: 'T-SHIRTS',
-    tagline: 'Everyday essentials & statement graphics',
-    href: '/shop?category=t-shirts',
-    bgClass: 'from-[#1C1A18] to-[#121110]',
+    id: 'ban-4',
+    title: 'Natural Earth Tones & Minimalism.',
+    subtitle: 'Warm cream streetwear essentials featuring precision high-density Bingooo chest embroidery.',
+    ctaText: 'Discover Essentials',
+    targetUrl: '/shop',
+    desktopImageUrl: '/hero-banner-4.jpg',
+    mobileImageUrl: '/hero-banner-4.jpg',
+    badge: 'LIMITED EDITION • NATURAL PALETTE',
+    eyebrow: 'Earth Collection',
+    priority: 4,
+    isActive: true,
   },
   {
-    id: 'hoodies',
-    name: 'HOODIES',
-    tagline: 'Heavyweight comfort',
-    href: '/shop?category=hoodies',
-    bgClass: 'from-[#D9D1C5] to-[#C2B7A6]',
-    lightText: false,
-  },
-  {
-    id: 'jeans',
-    name: 'JEANS',
-    tagline: 'Modern fits for every mood',
-    href: '/shop?category=jeans',
-    bgClass: 'from-[#3A4856] to-[#252E38]',
-  },
-  {
-    id: 'custom',
-    name: 'CUSTOM',
-    tagline: 'Make it yours. Your design, your story.',
-    href: '/customize',
-    bgClass: 'from-[#E8DFD0] to-[#D4C8B4]',
-    lightText: false,
+    id: 'ban-5',
+    title: 'Heavyweight Crimson Collection.',
+    subtitle: 'Ultra-warm drop-shoulder hoodies with iconic distressed B artwork and brushed fleece lining.',
+    ctaText: 'Create Your Design',
+    targetUrl: '/customize',
+    desktopImageUrl: '/hero-banner-5.jpg',
+    mobileImageUrl: '/hero-banner-5.jpg',
+    badge: 'CUSTOM STUDIO • HOODIES & TEES',
+    eyebrow: 'Crimson Studio',
+    priority: 5,
+    isActive: true,
   },
 ];
 
-const UGC_ITEMS = [
-  { id: 1, tag: '@bingooo.sklm' },
-  { id: 2, tag: '@bingooo.sklm' },
-  { id: 3, tag: '@bingooo.sklm' },
-  { id: 4, tag: '@bingooo.sklm' },
-  { id: 5, tag: '@bingooo.sklm' },
-  { id: 6, tag: '@bingooo.sklm' },
+const categoryStyles = [
+  'from-[#171717] to-[#302A26] text-white',
+  'from-[#EDE0CC] to-[#D8C7AF] text-[#171717]',
+  'from-[#38434B] to-[#1F252B] text-white',
+  'from-[#FDF0EE] to-[#EDE0CC] text-[#171717]',
 ];
+
+// Spring physics for slide transitions
+const slideVariants = {
+  enter: (direction: number) => ({
+    x: direction > 0 ? '100%' : '-100%',
+    opacity: 0,
+    scale: 1.04,
+  }),
+  center: {
+    x: 0,
+    opacity: 1,
+    scale: 1,
+    transition: {
+      x: { type: 'spring', stiffness: 240, damping: 28, mass: 0.8 },
+      opacity: { duration: 0.45, ease: [0.25, 1, 0.5, 1] },
+      scale: { duration: 0.7, ease: [0.16, 1, 0.3, 1] },
+    },
+  },
+  exit: (direction: number) => ({
+    x: direction < 0 ? '100%' : '-100%',
+    opacity: 0,
+    scale: 0.96,
+    transition: {
+      x: { type: 'spring', stiffness: 240, damping: 28, mass: 0.8 },
+      opacity: { duration: 0.35, ease: [0.4, 0, 1, 1] },
+      scale: { duration: 0.5 },
+    },
+  }),
+};
+
+const getImagePositionClass = (slide: HeroSlideItem, index: number) => {
+  if (slide.id === 'ban-1' || index === 0 || slide.desktopImageUrl?.includes('hero-banner.png')) {
+    // Model in image 1 is on the right side of the canvas (~82% horizontally).
+    // Targeting 82% 18% centers the model perfectly in the middle of mobile screens!
+    return 'object-[82%_18%] sm:object-[78%_center] lg:object-[80%_center]';
+  }
+  if (slide.id === 'ban-2' || index === 1 || slide.desktopImageUrl?.includes('hero-banner-2')) {
+    return 'object-[52%_20%] sm:object-center';
+  }
+  if (slide.id === 'ban-3' || index === 2 || slide.desktopImageUrl?.includes('hero-banner-3')) {
+    return 'object-[56%_16%] sm:object-center';
+  }
+  if (slide.id === 'ban-4' || index === 3 || slide.desktopImageUrl?.includes('hero-banner-4')) {
+    return 'object-[52%_15%] sm:object-center';
+  }
+  if (slide.id === 'ban-5' || index === 4 || slide.desktopImageUrl?.includes('hero-banner-5')) {
+    return 'object-[54%_20%] sm:object-center';
+  }
+  return 'object-[center_18%] sm:object-center';
+};
 
 export function HomePage() {
-  const [wishlist, setWishlist] = useState<Record<string, boolean>>({});
-  const [selectedColors, setSelectedColors] = useState<Record<string, string>>({
-    'prod-1': '#171717',
-    'prod-2': '#B29A78',
-    'prod-3': '#222222',
-    'prod-4': '#597692',
+  const [slides, setSlides] = useState<HeroSlideItem[]>(() => {
+    try {
+      const saved = localStorage.getItem('bingooo_hero_banners_v3');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          return parsed.filter((s: HeroSlideItem) => s.isActive !== false);
+        }
+      }
+    } catch {
+      // ignore
+    }
+    return DEFAULT_HERO_SLIDES;
   });
 
-  const { openDrawer, setItemCount, itemCount } = useCartStore();
-  const { toast } = useToast();
+  const [[page, direction], setPage] = useState<[number, number]>([0, 0]);
+  const [isPaused, setIsPaused] = useState(false);
 
-  const toggleWishlist = (e: React.MouseEvent, id: string) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setWishlist((prev) => {
-      const next = !prev[id];
-      toast(next ? 'Added to wishlist' : 'Removed from wishlist', 'info');
-      return { ...prev, [id]: next };
-    });
-  };
+  // Sync banners from backend API
+  useEffect(() => {
+    fetch('/api/v1/banners')
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (Array.isArray(data) && data.length > 0) {
+          const activeOnly = data.filter((item: HeroSlideItem) => item.isActive !== false);
+          if (activeOnly.length > 0) {
+            setSlides(activeOnly);
+            localStorage.setItem('bingooo_hero_banners_v3', JSON.stringify(activeOnly));
+          }
+        }
+      })
+      .catch(() => {
+        // Fallback gracefully
+      });
+  }, []);
 
-  const handleQuickAdd = (product: LandingProduct) => {
-    setItemCount(itemCount + 1);
-    toast({
-      title: `${product.title} added to cart`,
-      description: `Color: ${
-        product.colors.find((c) => c.hex === selectedColors[product.id])?.name || 'Default'
-      } • Size: L`,
-      variant: 'success',
-    });
-    openDrawer();
-  };
+  const totalSlides = slides.length || 1;
+  const currentSlide = ((page % totalSlides) + totalSlides) % totalSlides;
+  const activeSlide = slides[currentSlide] || DEFAULT_HERO_SLIDES[0];
+
+  const paginate = useCallback(
+    (newDirection: number) => {
+      setPage(([prevPage]) => [prevPage + newDirection, newDirection]);
+    },
+    []
+  );
+
+  // Auto swipe left one by one every 4.5 seconds
+  useEffect(() => {
+    if (isPaused || totalSlides <= 1) return;
+    const interval = setInterval(() => {
+      paginate(1);
+    }, 4500);
+    return () => clearInterval(interval);
+  }, [paginate, isPaused, totalSlides]);
+
+  const featuredQuery = useProducts({ limit: 4, sort: 'newest' });
+  const categoriesQuery = useCategories();
+  const featured = featuredQuery.data?.data ?? [];
+  const categories = categoriesQuery.data ?? [];
 
   return (
-    <div className="w-full bg-[#FAF8F5] text-[#171717]">
-      {/* ─── 1. HERO SECTION ─── */}
-      <section className="relative overflow-hidden bg-[#F7EEDB] border-b border-[#DDD3C5]">
-        <div className="max-w-[1360px] mx-auto px-4 sm:px-8 py-10 sm:py-16 lg:py-20">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-8 items-center">
-            {/* Left Headline & CTAs */}
-            <div className="lg:col-span-7 flex flex-col justify-center text-left">
-              <h1 className="font-heading font-extrabold text-5xl sm:text-6xl md:text-7xl lg:text-[5.6rem] tracking-tight text-[#171717] uppercase leading-[0.92]">
-                WEAR <br />
-                YOUR WAY<span className="text-[#E6321C]">.</span>
-              </h1>
-
-              <p className="mt-5 text-[#6F6A63] text-2xl sm:text-3xl max-w-md font-script leading-relaxed">
-                Modern menswear. Custom designs. <br className="hidden sm:inline" />
-                Made for your style.
-              </p>
-
-              <div className="mt-8 flex flex-wrap items-center gap-4">
-                <Link
-                  to="/shop"
-                  className="inline-flex items-center justify-center px-8 py-3.5 rounded-[8px] bg-[#E6321C] hover:bg-[#B91F12] text-white font-sans font-bold text-xs sm:text-sm tracking-[0.08em] uppercase transition-all duration-200 shadow-sm hover:-translate-y-0.5"
-                >
-                  SHOP COLLECTION
-                </Link>
-                <Link
-                  to="/customize"
-                  className="inline-flex items-center justify-center px-8 py-3.5 rounded-[8px] border border-[#E6321C]/50 hover:border-[#E6321C] bg-transparent hover:bg-white/50 text-[#E6321C] font-sans font-bold text-xs sm:text-sm tracking-[0.08em] uppercase transition-all duration-200"
-                >
-                  CREATE YOUR DESIGN
-                </Link>
-              </div>
-            </div>
-
-            {/* Right Hero Visual Slot (Ready for Admin Upload) */}
-            <div className="lg:col-span-5 flex justify-center lg:justify-end">
-              <div className="relative w-full max-w-md sm:max-w-lg lg:max-w-none aspect-[4/3] sm:aspect-[14/10] overflow-hidden rounded-2xl bg-[#EDE0CC] border border-[#DDD3C5] shadow-sm flex items-center justify-center">
-                {/* Visual Artwork & Model Presentation Frame */}
-                <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center select-none bg-gradient-to-tr from-[#E6D9C5] to-[#F7EEDB]">
-                  <span className="text-xs font-mono font-bold tracking-[0.2em] uppercase text-[#E6321C] mb-2">
-                    BINGOOO MENS WEAR
-                  </span>
-                  <span className="font-heading text-4xl sm:text-5xl font-extrabold tracking-tight text-[#171717] uppercase">
-                    SS/26 EDITORIAL
-                  </span>
-                  <span className="mt-2 text-sm font-script text-[#6F6A63] max-w-xs">
-                    Heavyweight Combed Cotton • Bespoke Graffiti Prints
-                  </span>
-                  <div className="mt-4 px-3 py-1 rounded-full bg-white/70 border border-[#DDD3C5] text-[10px] font-bold tracking-wider uppercase text-[#171717]">
-                    Customizable in 2D Studio
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ─── 2. SHOP YOUR STYLE (Category Cards) ─── */}
-      <section className="max-w-[1360px] mx-auto px-4 sm:px-8 py-12 sm:py-16">
-        {/* Section Header */}
-        <div className="flex items-center justify-between pb-6 sm:pb-8">
-          <div className="relative">
-            <h2 className="font-heading font-bold text-2xl sm:text-3xl text-[#171717] uppercase tracking-wider">
-              SHOP YOUR STYLE
-            </h2>
-            <span className="absolute -bottom-1 left-0 w-12 h-[2.5px] bg-[#E6321C]" />
-          </div>
-
-          <Link
-            to="/shop"
-            className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-[#171717] hover:text-[#E6321C] transition-colors group"
+    <div className="overflow-hidden bg-[#FAF8F5] text-[#171717]">
+      {/* ── Ultra-Smooth Full-Screen Hero Section with Seamless Auto-Scroll ── */}
+      <section
+        className="relative w-full h-[85vh] sm:h-[90vh] lg:h-[calc(100vh-80px)] min-h-[580px] max-h-[920px] overflow-hidden border-b border-[#DDD3C5] bg-[#F0E7DF]"
+        onMouseEnter={() => setIsPaused(true)}
+        onMouseLeave={() => setIsPaused(false)}
+        aria-label="Hero Carousel Showcase"
+      >
+        <AnimatePresence initial={false} custom={direction}>
+          <motion.div
+            key={page}
+            custom={direction}
+            variants={slideVariants}
+            initial="enter"
+            animate="center"
+            exit="exit"
+            drag="x"
+            dragConstraints={{ left: 0, right: 0 }}
+            dragElastic={0.25}
+            onDragEnd={(_, { offset, velocity }) => {
+              const swipe = Math.abs(offset.x) * velocity.x;
+              if (swipe < -8000 || offset.x < -60) {
+                paginate(1);
+              } else if (swipe > 8000 || offset.x > 60) {
+                paginate(-1);
+              }
+            }}
+            className="absolute inset-0 h-full w-full cursor-grab active:cursor-grabbing select-none"
           >
-            <span>VIEW ALL</span>
-            <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
-          </Link>
-        </div>
+            {/* Tailored Ken Burns Ambient Drift & Mobile Centering */}
+            <motion.img
+              src={activeSlide.desktopImageUrl}
+              alt={activeSlide.title || 'Bingooo Hero'}
+              className={`absolute inset-0 h-full w-full object-cover ${getImagePositionClass(activeSlide, currentSlide)}`}
+              initial={{ scale: 1 }}
+              animate={{ scale: 1.04 }}
+              transition={{ duration: 6, ease: [0.25, 0.1, 0.25, 1] }}
+              loading="eager"
+              decoding="sync"
+            />
+          </motion.div>
+        </AnimatePresence>
 
-        {/* 4 Cards Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-          {CATEGORIES.map((cat) => (
-            <Link
-              key={cat.id}
-              to={cat.href}
-              className={`group relative overflow-hidden rounded-2xl border border-[#DDD3C5] bg-gradient-to-b ${cat.bgClass} p-6 sm:p-7 min-h-[220px] flex flex-col justify-end shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-1`}
-              aria-label={cat.name}
-            >
-              {/* Product Silhouette Sketch Container */}
-              <div className="absolute top-4 right-4 h-16 w-16 opacity-30 group-hover:opacity-50 transition-opacity">
-                <Shirt size={60} className="text-white" />
-              </div>
-
-              {/* Text Overlay matching design */}
-              <div className="relative z-10 text-white">
-                <h3 className="font-heading font-bold text-xl sm:text-2xl uppercase tracking-wider">
-                  {cat.name}
-                </h3>
-                <p className="mt-1 text-sm text-white/90 font-serif italic leading-snug line-clamp-2">
-                  {cat.tagline}
-                </p>
-                <div className="mt-3 inline-flex items-center text-xs font-bold text-white group-hover:translate-x-1 transition-transform">
-                  <ArrowRight size={16} />
-                </div>
-              </div>
-            </Link>
-          ))}
-        </div>
-      </section>
-
-      {/* ─── 3. CUSTOMIZATION PROCESS BANNER ("DON'T JUST WEAR IT. MAKE IT YOURS.") ─── */}
-      <section className="max-w-[1360px] mx-auto px-4 sm:px-8 py-4 sm:py-6">
-        <div className="rounded-2xl border border-[#DDD3C5] bg-[#F7EEDB] p-6 sm:p-8 lg:p-10 shadow-sm">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
-            {/* Left Copy & CTA */}
-            <div className="lg:col-span-5 flex flex-col items-start text-left">
-              <h2 className="font-heading font-bold text-2xl sm:text-3xl lg:text-4xl text-[#171717] uppercase tracking-tight leading-tight">
-                DON'T JUST WEAR IT. <br />
-                <span className="text-[#E6321C]">MAKE IT YOURS.</span>
-              </h2>
-
-              <p className="mt-3 text-base sm:text-lg text-[#6F6A63] font-script leading-relaxed max-w-sm">
-                From idea to your wardrobe. Design custom pieces that are 100% you.
-              </p>
-
+        {/* ── ONLY Custom Button Floating Cleanly Over Image ── */}
+        <div className="absolute bottom-20 sm:bottom-10 left-0 right-0 z-20 mx-auto max-w-[1360px] px-4 sm:px-8 flex justify-center sm:justify-start pointer-events-none">
+          <motion.div
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2, duration: 0.4 }}
+            className="pointer-events-auto"
+          >
+            <motion.div whileHover={{ scale: 1.05, y: -2 }} whileTap={{ scale: 0.95 }}>
               <Link
                 to="/customize"
-                className="mt-6 inline-flex items-center gap-2 px-6 py-3 rounded-[8px] bg-[#E6321C] hover:bg-[#B91F12] text-white font-sans font-bold text-xs uppercase tracking-wider transition-all shadow-sm"
+                className="inline-flex items-center gap-2.5 rounded-full bg-[#171717]/90 hover:bg-[#E6321C] text-white px-7 sm:px-8 py-3.5 sm:py-4 text-xs sm:text-sm font-bold uppercase tracking-[0.14em] shadow-2xl backdrop-blur-md border border-white/25 transition-all duration-200 group"
               >
-                <span>START CUSTOMIZING</span>
-                <ArrowRight size={14} />
+                <PenTool size={16} className="text-[#E6321C] group-hover:text-white transition-colors" />
+                <span>Custom Design</span>
+                <ArrowRight size={14} className="opacity-70 group-hover:translate-x-1 group-hover:opacity-100 transition-all" />
               </Link>
-            </div>
-
-            {/* Right 4-Step Horizontal Flow */}
-            <div className="lg:col-span-7 flex flex-wrap sm:flex-nowrap items-center justify-between gap-4 pt-4 lg:pt-0">
-              {/* Step 1: Choose */}
-              <div className="flex-1 min-w-[110px] flex flex-col items-center sm:items-start text-center sm:text-left">
-                <div className="h-10 w-10 rounded-lg flex items-center justify-center text-[#E6321C]">
-                  <Shirt size={26} className="stroke-[1.6]" />
-                </div>
-                <h4 className="mt-2 font-heading font-bold text-sm uppercase tracking-wider text-[#171717]">
-                  CHOOSE
-                </h4>
-                <p className="mt-0.5 text-xs text-[#6F6A63] font-cursive">Pick your product</p>
-              </div>
-
-              <div className="hidden sm:flex text-[#DDD3C5] shrink-0">
-                <ArrowRight size={16} />
-              </div>
-
-              {/* Step 2: Customize */}
-              <div className="flex-1 min-w-[110px] flex flex-col items-center sm:items-start text-center sm:text-left">
-                <div className="h-10 w-10 rounded-lg flex items-center justify-center text-[#E6321C]">
-                  <PenTool size={26} className="stroke-[1.6]" />
-                </div>
-                <h4 className="mt-2 font-heading font-bold text-sm uppercase tracking-wider text-[#E6321C]">
-                  CUSTOMIZE
-                </h4>
-                <p className="mt-0.5 text-xs text-[#E6321C] font-cursive">
-                  <span>Add your design,</span> text or artwork
-                </p>
-              </div>
-
-              <div className="hidden sm:flex text-[#DDD3C5] shrink-0">
-                <ArrowRight size={16} />
-              </div>
-
-              {/* Step 3: Preview */}
-              <div className="flex-1 min-w-[110px] flex flex-col items-center sm:items-start text-center sm:text-left">
-                <div className="h-10 w-10 rounded-lg flex items-center justify-center text-[#E6321C]">
-                  <Eye size={26} className="stroke-[1.6]" />
-                </div>
-                <h4 className="mt-2 font-heading font-bold text-sm uppercase tracking-wider text-[#171717]">
-                  PREVIEW
-                </h4>
-                <p className="mt-0.5 text-xs text-[#6F6A63] font-cursive">See it come to life</p>
-              </div>
-
-              <div className="hidden sm:flex text-[#DDD3C5] shrink-0">
-                <ArrowRight size={16} />
-              </div>
-
-              {/* Step 4: Order */}
-              <div className="flex-1 min-w-[110px] flex flex-col items-center sm:items-start text-center sm:text-left">
-                <div className="h-10 w-10 rounded-lg flex items-center justify-center text-[#E6321C]">
-                  <ShoppingBag size={26} className="stroke-[1.6]" />
-                </div>
-                <h4 className="mt-2 font-heading font-bold text-sm uppercase tracking-wider text-[#171717]">
-                  ORDER
-                </h4>
-                <p className="mt-0.5 text-xs text-[#6F6A63] font-cursive">Delivered to your doorstep</p>
-              </div>
-            </div>
-          </div>
+            </motion.div>
+          </motion.div>
         </div>
       </section>
 
-      {/* ─── 4. THE BINGOOO EDIT (Featured Products Grid) ─── */}
-      <section className="max-w-[1360px] mx-auto px-4 sm:px-8 py-12 sm:py-16">
-        {/* Section Header */}
-        <div className="flex items-center justify-between pb-6 sm:pb-8">
-          <div className="relative">
-            <h2 className="font-heading font-bold text-2xl sm:text-3xl text-[#171717] uppercase tracking-wider">
-              THE BINGOOO EDIT
-            </h2>
-            <span className="absolute -bottom-1 left-0 w-12 h-[2.5px] bg-[#E6321C]" />
-          </div>
-
-          <Link
-            to="/shop"
-            className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-[#171717] hover:text-[#E6321C] transition-colors group"
-          >
-            <span>VIEW ALL PRODUCTS</span>
-            <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
-          </Link>
-        </div>
-
-        {/* 4 Products Row */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-          {FEATURED_PRODUCTS.map((prod) => {
-            const isFav = !!wishlist[prod.id];
-            const activeColor = selectedColors[prod.id] || prod.colors[0].hex;
-
-            return (
-              <div
-                key={prod.id}
-                className="group flex flex-col justify-between rounded-xl bg-white border border-[#DDD3C5] p-3 sm:p-4 shadow-sm hover:shadow-md transition-shadow"
-              >
-                {/* Product Image Slot (Ready for Admin Images) & Wishlist Button */}
-                <div className="relative aspect-[4/3] sm:aspect-[14/10] overflow-hidden rounded-lg bg-[#F7EEDB]/60 flex items-center justify-center">
+      {/* ── Category Section ── */}
+      <section className="mx-auto max-w-[1360px] px-4 py-14 sm:px-8 sm:py-20">
+        <SectionHeading
+          eyebrow="Explore the edit"
+          title="Shop your style"
+          action={
+            <Link
+              to="/shop"
+              className="inline-flex items-center gap-1 text-xs font-bold uppercase tracking-wide text-[#B91F12]"
+            >
+              View all <ArrowRight size={14} />
+            </Link>
+          }
+        />
+        <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          {categoriesQuery.isLoading
+            ? Array.from({ length: 4 }, (_, index) => (
+                <Skeleton key={index} className="h-60 rounded-2xl" />
+              ))
+            : categories.slice(0, 4).map((category, index) => (
+                <motion.div
+                  key={category.id}
+                  initial={{ opacity: 0, y: 28 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: '-40px' }}
+                  transition={{ delay: index * 0.09, duration: 0.55, ease: [0.16, 1, 0.3, 1] }}
+                >
                   <Link
-                    to={`/product/${prod.slug}`}
-                    className="w-full h-full flex flex-col items-center justify-center p-4 text-center group-hover:scale-105 transition-transform duration-300"
+                    to={`/category/${category.slug}`}
+                    className={`group relative flex min-h-60 h-full flex-col justify-end overflow-hidden rounded-2xl border border-[#DDD3C5] bg-gradient-to-br p-6 shadow-card transition-all duration-300 hover:-translate-y-1.5 hover:shadow-elevated ${
+                      categoryStyles[index % categoryStyles.length]
+                    }`}
                   >
-                    <Shirt size={40} className="text-[#171717]/40 mb-1" />
-                    <span className="text-[11px] font-mono uppercase tracking-wider text-[#6F6A63]">
-                      {prod.title}
-                    </span>
-                  </Link>
-
-                  {/* NEW Badge on Top Left */}
-                  <div className="absolute top-2 left-2 z-10">
-                    <span className="px-2 py-0.5 rounded-[4px] bg-[#E6321C] text-white text-[10px] font-sans font-bold uppercase tracking-wider">
-                      NEW
-                    </span>
-                  </div>
-
-                  {/* Wishlist Heart Icon */}
-                  <button
-                    onClick={(e) => toggleWishlist(e, prod.id)}
-                    className="absolute top-2 right-2 p-1.5 rounded-full bg-white/90 hover:bg-white text-[#171717] transition-colors shadow-xs"
-                    aria-label="Toggle Wishlist"
-                  >
-                    <Heart
-                      size={16}
-                      className={isFav ? 'fill-[#E6321C] text-[#E6321C]' : 'text-[#171717]'}
+                    <Shirt
+                      className="absolute right-5 top-5 opacity-25 transition-transform duration-500 group-hover:scale-110 group-hover:rotate-6"
+                      size={64}
+                      strokeWidth={1.2}
                     />
-                  </button>
-                </div>
-
-                {/* Product Info */}
-                <div className="mt-3 flex flex-col flex-1 justify-between">
-                  <div>
-                    <Link to={`/product/${prod.slug}`}>
-                      <h3 className="font-sans font-bold text-xs sm:text-sm text-[#171717] hover:text-[#E6321C] transition-colors line-clamp-1">
-                        {prod.title}
-                      </h3>
-                    </Link>
-
-                    <div className="mt-1 flex items-center justify-between">
-                      {/* Rating */}
-                      <div className="flex items-center gap-1 text-[11px] font-semibold text-[#6F6A63]">
-                        <Star size={12} className="fill-[#E6321C] text-[#E6321C]" />
-                        <span className="text-[#171717] font-bold">{prod.rating}</span>
-                        <span>({prod.reviewsCount})</span>
-                      </div>
-
-                      {/* Price */}
-                      <span className="font-sans font-bold text-xs sm:text-sm text-[#171717]">
-                        ₹{prod.price.toLocaleString('en-IN')}
+                    <div className="relative flex h-full flex-col justify-end">
+                      <p className="text-xs font-bold uppercase tracking-[.15em] opacity-65">
+                        Bingooo collection
+                      </p>
+                      <h2 className="mt-2 text-2xl font-extrabold uppercase">
+                        {category.name}
+                      </h2>
+                      <span className="mt-4 inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wide">
+                        Shop now <ArrowRight size={15} />
                       </span>
                     </div>
-                  </div>
-
-                  {/* Swatches & Quick Add Button */}
-                  <div className="mt-4 pt-3 border-t border-[#DDD3C5]/60 flex items-center justify-between gap-2">
-                    {/* Color Dots */}
-                    <div className="flex items-center gap-1.5">
-                      {prod.colors.map((c) => (
-                        <button
-                          key={c.name}
-                          onClick={() =>
-                            setSelectedColors((prev) => ({ ...prev, [prod.id]: c.hex }))
-                          }
-                          className={`h-4 w-4 rounded-full border transition-all ${
-                            activeColor === c.hex
-                              ? 'border-[#E6321C] scale-110 ring-1 ring-[#E6321C]'
-                              : 'border-black/20 hover:scale-105'
-                          }`}
-                          style={{ backgroundColor: c.hex }}
-                          title={c.name}
-                          aria-label={c.name}
-                        />
-                      ))}
-                    </div>
-
-                    {/* Quick Add Button */}
-                    <button
-                      onClick={() => handleQuickAdd(prod)}
-                      className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-md border border-[#E6321C]/50 hover:border-[#E6321C] bg-white hover:bg-[#E6321C] text-[#E6321C] hover:text-white text-[10px] font-sans font-bold uppercase tracking-wider transition-colors shrink-0"
-                    >
-                      <ShoppingBag size={11} />
-                      <span>QUICK ADD</span>
-                    </button>
-                  </div>
-                </div>
-              </div>
-            );
-          })}
+                  </Link>
+                </motion.div>
+              ))}
         </div>
       </section>
 
-      {/* ─── 5. BRAND VALUE PROPOSITION ("STYLE ISN'T ONE-SIZE-FITS-ALL.") ─── */}
-      <section className="w-full bg-[#EDE0CC] border-y border-[#DDD3C5] py-10 sm:py-12">
-        <div className="max-w-[1360px] mx-auto px-4 sm:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
-            {/* Left Model Photo & Statement */}
-            <div className="lg:col-span-5 flex items-center gap-5">
-              <div className="h-20 w-20 sm:h-24 sm:w-24 shrink-0 overflow-hidden rounded-xl bg-[#DDD3C5] shadow-sm flex items-center justify-center">
-                <Shirt size={32} className="text-[#171717]/50" />
-              </div>
-
-              <div>
-                <h3 className="font-heading font-bold text-xl sm:text-2xl lg:text-3xl uppercase tracking-tight text-[#171717] leading-tight">
-                  STYLE ISN'T <br className="hidden sm:inline" />
-                  ONE-SIZE-FITS-ALL.
-                </h3>
-                <p className="mt-1 text-xs text-[#6F6A63] font-serif italic leading-relaxed">
-                  Bingooo brings together modern menswear and custom expression, giving you the
-                  freedom to wear something that actually feels like you.
-                </p>
-              </div>
-            </div>
-
-            {/* Right 4 Pillars */}
-            <div className="lg:col-span-7 grid grid-cols-2 sm:grid-cols-4 gap-6 pt-4 lg:pt-0">
-              <div className="flex flex-col items-start">
-                <Shirt size={22} className="text-[#E6321C] stroke-[1.6]" />
-                <h4 className="mt-2 font-heading font-bold text-xs uppercase tracking-wider text-[#171717]">
-                  BUILT FOR MEN
-                </h4>
-                <p className="mt-1 text-[11px] text-[#6F6A63] leading-tight font-sans">
-                  Fits and styles designed around modern men's wardrobes.
-                </p>
-              </div>
-
-              <div className="flex flex-col items-start">
-                <ShieldCheck size={22} className="text-[#E6321C] stroke-[1.6]" />
-                <h4 className="mt-2 font-heading font-bold text-xs uppercase tracking-wider text-[#171717]">
-                  QUALITY FIRST
-                </h4>
-                <p className="mt-1 text-[11px] text-[#6F6A63] leading-tight font-sans">
-                  Premium fabrics, comfortable and made to last.
-                </p>
-              </div>
-
-              <div className="flex flex-col items-start">
-                <PenTool size={22} className="text-[#E6321C] stroke-[1.6]" />
-                <h4 className="mt-2 font-heading font-bold text-xs uppercase tracking-wider text-[#171717]">
-                  CUSTOM YOUR WAY
-                </h4>
-                <p className="mt-1 text-[11px] text-[#6F6A63] leading-tight font-sans">
-                  Turn your ideas into wearable designs in just a few clicks.
-                </p>
-              </div>
-
-              <div className="flex flex-col items-start">
-                <Sparkles size={22} className="text-[#E6321C] stroke-[1.6]" />
-                <h4 className="mt-2 font-heading font-bold text-xs uppercase tracking-wider text-[#171717]">
-                  MADE TO STAND OUT
-                </h4>
-                <p className="mt-1 text-[11px] text-[#6F6A63] leading-tight font-sans">
-                  Original graphics and contemporary styles that set you apart.
-                </p>
-              </div>
-            </div>
+      {/* ── Featured Products ── */}
+      <section className="border-y border-[#DDD3C5] bg-white">
+        <div className="mx-auto max-w-[1360px] px-4 py-14 sm:px-8 sm:py-20">
+          <SectionHeading
+            eyebrow="The Bingooo edit"
+            title="New arrivals"
+            action={
+              <Link
+                to="/shop"
+                className="inline-flex items-center gap-1 text-xs font-bold uppercase tracking-wide text-[#B91F12]"
+              >
+                View catalog <ArrowRight size={14} />
+              </Link>
+            }
+          />
+          <div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {featuredQuery.isLoading
+              ? Array.from({ length: 4 }, (_, index) => (
+                  <Skeleton key={index} className="aspect-[4/5] rounded-2xl" />
+                ))
+              : featured.map((product: any, index: number) => (
+                  <motion.div
+                    key={product.id}
+                    initial={{ opacity: 0, y: 24 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true, margin: '-30px' }}
+                    transition={{ delay: index * 0.08, duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+                  >
+                    <ProductCard
+                      id={product.id}
+                      title={product.title}
+                      slug={product.slug}
+                      basePrice={product.base_price}
+                      compareAtPrice={product.compare_at_price}
+                      customizationEnabled={product.customization_enabled}
+                      category={product.category}
+                      variants={product.variants}
+                      images={product.images}
+                    />
+                  </motion.div>
+                ))}
           </div>
-        </div>
-      </section>
-
-      {/* ─── 6. #BINGOOO COMMUNITY UGC LOOKBOOK ─── */}
-      <section className="max-w-[1360px] mx-auto px-4 sm:px-8 py-12 sm:py-16">
-        {/* Section Header */}
-        <div className="flex items-end justify-between pb-6">
-          <div>
-            <h2 className="font-heading font-bold text-2xl sm:text-3xl text-[#171717] uppercase tracking-wider">
-              #BINGOOO
-            </h2>
-            <p className="mt-0.5 text-[11px] font-sans font-bold tracking-[0.14em] uppercase text-[#6F6A63]">
-              SHOW US HOW YOU WEAR YOURS
+          {!featuredQuery.isLoading && featured.length === 0 ? (
+            <p className="mt-8 rounded-xl border border-[#DDD3C5] bg-[#FDF9F4] p-6 text-center text-sm text-[#6F6A63]">
+              Products created in the admin catalog will appear here automatically.
             </p>
-          </div>
-
-          <a
-            href="https://instagram.com/bingooo.sklm"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-[#171717] hover:text-[#E6321C] transition-colors group font-sans"
-          >
-            <span>FOLLOW @BINGOOO.SKLM</span>
-            <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
-          </a>
-        </div>
-
-        {/* 6 Images Grid (Admin-Ready Slots) */}
-        <div className="grid grid-cols-3 sm:grid-cols-6 gap-2.5 sm:gap-3">
-          {UGC_ITEMS.map((item) => (
-            <div
-              key={item.id}
-              className="group relative aspect-[4/3] sm:aspect-square overflow-hidden rounded-lg bg-[#EDE0CC] border border-[#DDD3C5] shadow-xs flex items-center justify-center p-2 text-center"
-            >
-              <span className="text-[10px] font-mono font-bold text-[#6F6A63] group-hover:text-[#E6321C] transition-colors">
-                {item.tag}
-              </span>
-              <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors" />
-            </div>
-          ))}
+          ) : null}
         </div>
       </section>
+
+      <CustomDesignSection />
+    </div>
+  );
+}
+
+function SectionHeading({
+  eyebrow,
+  title,
+  action,
+}: {
+  eyebrow: string;
+  title: string;
+  action: React.ReactNode;
+}) {
+  return (
+    <div className="flex items-end justify-between gap-4">
+      <div>
+        <p className="text-xs font-bold uppercase tracking-[.15em] text-[#E6321C]">
+          {eyebrow}
+        </p>
+        <h2 className="mt-2 text-3xl font-extrabold uppercase sm:text-4xl">
+          {title}
+        </h2>
+      </div>
+      {action}
     </div>
   );
 }

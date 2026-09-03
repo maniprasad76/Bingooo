@@ -5,8 +5,10 @@ import type { ProductQueryParams } from '../../hooks/useProducts';
 interface FilterSidebarProps {
   filters: ProductQueryParams;
   onChange: (newFilters: ProductQueryParams) => void;
+  categories?: Array<{ name: string; slug?: string }>;
   availableSizes?: string[];
   availableColors?: Array<{ name: string; hex: string }>;
+  priceRange?: { min: number; max: number };
 }
 
 const DEFAULT_CATEGORIES = [
@@ -31,8 +33,10 @@ const DEFAULT_COLORS = [
 export function FilterSidebar({
   filters,
   onChange,
+  categories = DEFAULT_CATEGORIES,
   availableSizes = ['S', 'M', 'L', 'XL', 'XXL'],
   availableColors = DEFAULT_COLORS,
+  priceRange,
 }: FilterSidebarProps) {
   const [sizeOpen, setSizeOpen] = useState(true);
   const [colorOpen, setColorOpen] = useState(true);
@@ -67,7 +71,7 @@ export function FilterSidebar({
           CATEGORIES
         </h3>
         <ul className="space-y-1">
-          {DEFAULT_CATEGORIES.map((cat) => {
+          {categories.map((cat) => {
             const isActive = filters.categorySlug === cat.slug;
             return (
               <li key={cat.name}>
@@ -177,15 +181,15 @@ export function FilterSidebar({
           {priceOpen && (
             <div className="space-y-3 pt-1">
               <div className="flex justify-between text-xs font-sans font-bold text-[#171717]">
-                <span>₹299</span>
-                <span>₹{filters.maxPrice || 1999}</span>
+                <span>₹{priceRange?.min ?? 299}</span>
+                <span>₹{filters.maxPrice || priceRange?.max || 1999}</span>
               </div>
               <input
                 type="range"
-                min="299"
-                max="1999"
+                min={priceRange?.min ?? 299}
+                max={priceRange?.max ?? 1999}
                 step="50"
-                value={filters.maxPrice || 1999}
+                value={filters.maxPrice || priceRange?.max || 1999}
                 onChange={(e) => onChange({ ...filters, maxPrice: Number(e.target.value), page: 1 })}
                 className="w-full accent-[#E6321C] cursor-pointer"
               />

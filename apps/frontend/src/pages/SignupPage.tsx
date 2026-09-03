@@ -1,11 +1,13 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Button } from '../components/ui/Button';
 import { Input } from '../components/ui/Input';
 import { Logo } from '../components/ui/Logo';
+import { signUp } from '../lib/auth/supabase';
+import { useToast } from '../components/ui/Toast';
 
 const signupSchema = z.object({
   fullName: z.string().min(2, 'Name must be at least 2 characters'),
@@ -17,6 +19,8 @@ type SignupForm = z.infer<typeof signupSchema>;
 
 export function SignupPage() {
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
+  const { toast } = useToast();
 
   const {
     register,
@@ -28,9 +32,23 @@ export function SignupPage() {
 
   const onSubmit = async (data: SignupForm) => {
     setLoading(true);
-    // TODO: call signUp(data.email, data.password, data.fullName)
-    console.log('Signup:', data);
-    setTimeout(() => setLoading(false), 1000);
+    try {
+      await signUp(data.email, data.password, data.fullName);
+      toast({
+        title: 'Account created',
+        description: 'Check your inbox if email confirmation is enabled.',
+        variant: 'success',
+      });
+      navigate('/account');
+    } catch (error) {
+      toast({
+        title: 'Unable to create account',
+        description: error instanceof Error ? error.message : 'Please try again.',
+        variant: 'danger',
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (

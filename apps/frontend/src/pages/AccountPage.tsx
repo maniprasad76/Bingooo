@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
+import { api } from '../lib/api/client';
 import {
   Home,
   Package,
@@ -21,7 +23,6 @@ import {
   Headphones,
 } from 'lucide-react';
 import { useAuthStore } from '../store/auth';
-import { useCart } from '../hooks/useCart';
 import { useToast } from '../components/ui/Toast';
 
 const SIDEBAR_NAV = [
@@ -38,62 +39,28 @@ const SIDEBAR_NAV = [
   { id: 'reviews', label: 'My Reviews', icon: Star },
 ];
 
-const RECENT_ORDERS = [
-  {
-    id: 'ord-1',
-    orderNumber: '#BG12456',
-    title: 'Oversized Chaos Tee',
-    variant: 'Black • L • Qty: 1',
-    price: 799,
-    date: '02 May, 2024',
-    status: 'Delivered',
-    statusColor: 'green',
-    slug: 'chaos-printed-tee',
-    image: '',
-  },
-  {
-    id: 'ord-2',
-    orderNumber: '#BG12410',
-    title: 'Essential Hoodie',
-    variant: 'Greige • M • Qty: 1',
-    price: 1199,
-    date: '28 Apr, 2024',
-    status: 'Delivered',
-    statusColor: 'green',
-    slug: 'essential-hoodie',
-    image: '',
-  },
-  {
-    id: 'ord-3',
-    orderNumber: '#BG12378',
-    title: 'Baggy Fit Jeans',
-    variant: 'Blue • 32 • Qty: 1',
-    price: 1299,
-    date: '20 Apr, 2024',
-    status: 'Shipped',
-    statusColor: 'amber',
-    slug: 'baggy-fit-jeans',
-    image: '',
-  },
-];
-
 export function AccountPage() {
   const { logout } = useAuthStore();
-  const { addItem } = useCart();
   const { toast } = useToast();
   const navigate = useNavigate();
 
   const [activeTab, setActiveTab] = useState('dashboard');
   const [newsletterEmail, setNewsletterEmail] = useState('');
 
-  const handleBuyAgain = (order: (typeof RECENT_ORDERS)[0]) => {
-    addItem(order.id, 1);
-    toast({
-      title: `${order.title} added to bag!`,
-      description: 'You can proceed to checkout from the cart.',
-      variant: 'success',
-    });
-  };
+  const { data: userOrders = [], isLoading: isOrdersLoading } = useQuery({
+    queryKey: ['user-orders'],
+    queryFn: () => api.get<any[]>('/orders'),
+  });
+
+  const { data: wishlist = [] } = useQuery({
+    queryKey: ['wishlist'],
+    queryFn: () => api.get<any[]>('/wishlist'),
+  });
+
+  const { data: addresses = [] } = useQuery({
+    queryKey: ['addresses'],
+    queryFn: () => api.get<any[]>('/users/addresses'),
+  });
 
   const handleLogout = () => {
     logout();
@@ -216,7 +183,7 @@ export function AccountPage() {
                 <div>
                   <ShoppingBag size={18} className="text-[#6F6A63] mx-auto sm:mx-0 mb-1" />
                   <span className="text-[11px] font-sans text-[#6F6A63] block">Total Orders</span>
-                  <span className="font-heading font-black text-2xl text-[#E6321C] block">12</span>
+                  <span className="font-heading font-black text-2xl text-[#E6321C] block">{userOrders.length}</span>
                   <Link
                     to="/account/orders"
                     className="text-[11px] text-[#E6321C] font-sans hover:underline block mt-0.5"
@@ -229,7 +196,7 @@ export function AccountPage() {
                 <div>
                   <Heart size={18} className="text-[#6F6A63] mx-auto sm:mx-0 mb-1" />
                   <span className="text-[11px] font-sans text-[#6F6A63] block">Wishlist Items</span>
-                  <span className="font-heading font-black text-2xl text-[#E6321C] block">8</span>
+                  <span className="font-heading font-black text-2xl text-[#E6321C] block">{wishlist.length}</span>
                   <Link
                     to="/account/wishlist"
                     className="text-[11px] text-[#E6321C] font-sans hover:underline block mt-0.5"
@@ -242,7 +209,7 @@ export function AccountPage() {
                 <div>
                   <MapPin size={18} className="text-[#6F6A63] mx-auto sm:mx-0 mb-1" />
                   <span className="text-[11px] font-sans text-[#6F6A63] block">Addresses</span>
-                  <span className="font-heading font-black text-2xl text-[#E6321C] block">2</span>
+                  <span className="font-heading font-black text-2xl text-[#E6321C] block">{addresses.length}</span>
                   <Link
                     to="/account/addresses"
                     className="text-[11px] text-[#E6321C] font-sans hover:underline block mt-0.5"
@@ -270,59 +237,81 @@ export function AccountPage() {
 
               {/* Order Rows */}
               <div className="divide-y divide-[#DDD3C5]/60">
-                {RECENT_ORDERS.map((ord) => (
-                  <div
-                    key={ord.id}
-                    className="py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4"
-                  >
-                    {/* Left: Thumbnail & Details */}
-                    <div className="flex items-center gap-3.5">
-                      <div className="h-16 w-16 rounded-xl bg-[#F7EEDB]/60 border border-[#DDD3C5] flex items-center justify-center shrink-0">
-                        <Shirt size={28} className="text-[#171717]/40" />
-                      </div>
-                      <div>
-                        <h4 className="font-sans font-bold text-sm text-[#171717]">{ord.title}</h4>
-                        <p className="text-xs text-[#6F6A63] font-sans mt-0.5">{ord.variant}</p>
-                        <p className="font-sans font-bold text-sm text-[#171717] mt-1">₹{ord.price}</p>
-                        <span className="text-[11px] text-[#6F6A63] font-sans block mt-0.5">
-                          Order ID: {ord.orderNumber}
-                        </span>
-                      </div>
-                    </div>
-
-                    {/* Right: Date, Status, Link & Action Button */}
-                    <div className="flex sm:flex-col items-end justify-between sm:justify-center gap-2">
-                      <div className="text-right">
-                        <span className="text-xs text-[#6F6A63] font-sans block">{ord.date}</span>
-                        <span
-                          className={`inline-block mt-1 px-2.5 py-0.5 rounded-full text-[10px] font-sans font-bold ${
-                            ord.statusColor === 'green'
-                              ? 'bg-[#E8F5E9] text-[#2E7D32] border border-[#C8E6C9]'
-                              : 'bg-[#FFF8E1] text-[#F57F17] border border-[#FFE082]'
-                          }`}
-                        >
-                          {ord.status}
-                        </span>
-                      </div>
-
-                      <div className="flex items-center gap-3">
-                        <Link
-                          to={`/account/orders/${ord.orderNumber.replace('#', '')}`}
-                          className="text-xs font-sans font-semibold text-[#E6321C] hover:underline"
-                        >
-                          View Details →
-                        </Link>
-                        <button
-                          type="button"
-                          onClick={() => handleBuyAgain(ord)}
-                          className="px-4 py-1.5 rounded-lg border border-[#DDD3C5] hover:border-[#E6321C] text-[#E6321C] hover:bg-[#FDF0EE] text-xs font-sans font-bold uppercase tracking-wider transition-colors shadow-2xs"
-                        >
-                          BUY AGAIN
-                        </button>
-                      </div>
-                    </div>
+                {isOrdersLoading ? (
+                  <div className="py-8 text-center text-xs text-muted">Loading recent orders...</div>
+                ) : userOrders.length === 0 ? (
+                  <div className="py-8 text-center">
+                    <p className="text-xs text-[#6F6A63] font-sans">You haven't placed any orders yet.</p>
+                    <Link
+                      to="/shop"
+                      className="mt-3 inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-[#E6321C] text-white text-xs font-bold uppercase tracking-wider hover:bg-[#B91F12] transition-colors"
+                    >
+                      <ShoppingBag size={13} />
+                      <span>Explore Catalog</span>
+                    </Link>
                   </div>
-                ))}
+                ) : (
+                  userOrders.slice(0, 3).map((ord: any) => {
+                    const firstItem = ord.items?.[0];
+                    const itemCount = ord.items?.length || 0;
+                    return (
+                      <div
+                        key={ord.id}
+                        className="py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4"
+                      >
+                        {/* Left: Thumbnail & Details */}
+                        <div className="flex items-center gap-3.5">
+                          <div className="h-16 w-16 rounded-xl bg-[#F7EEDB]/60 border border-[#DDD3C5] flex items-center justify-center shrink-0">
+                            <Shirt size={28} className="text-[#171717]/40" />
+                          </div>
+                          <div>
+                            <h4 className="font-sans font-bold text-sm text-[#171717]">
+                              {firstItem?.title_snapshot || 'Bingooo Garment'}
+                              {itemCount > 1 ? ` + ${itemCount - 1} more` : ''}
+                            </h4>
+                            <p className="text-xs text-[#6F6A63] font-sans mt-0.5">
+                              {firstItem?.variant_snapshot_json?.size ? `Size ${firstItem.variant_snapshot_json.size} • ` : ''}
+                              Qty: {firstItem?.quantity || 1}
+                            </p>
+                            <p className="font-sans font-bold text-sm text-[#171717] mt-1">₹{ord.total}</p>
+                            <span className="text-[11px] text-[#6F6A63] font-sans block mt-0.5 font-mono">
+                              Order: {ord.order_number}
+                            </span>
+                          </div>
+                        </div>
+
+                        {/* Right: Date, Status, Link */}
+                        <div className="flex sm:flex-col items-end justify-between sm:justify-center gap-2">
+                          <div className="text-right">
+                            <span className="text-xs text-[#6F6A63] font-sans block">
+                              {new Date(ord.created_at).toLocaleDateString('en-IN')}
+                            </span>
+                            <span
+                              className={`inline-block mt-1 px-2.5 py-0.5 rounded-full text-[10px] font-sans font-bold uppercase ${
+                                ord.status === 'delivered'
+                                  ? 'bg-success/10 text-success border border-success/20'
+                                  : ord.status === 'shipped'
+                                  ? 'bg-info/10 text-info border border-info/20'
+                                  : 'bg-warning/10 text-warning border border-warning/20'
+                              }`}
+                            >
+                              {ord.status.replace('_', ' ')}
+                            </span>
+                          </div>
+
+                          <div className="flex items-center gap-3">
+                            <Link
+                              to={`/account/orders/${ord.order_number}`}
+                              className="text-xs font-sans font-semibold text-[#E6321C] hover:underline"
+                            >
+                              View Details →
+                            </Link>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })
+                )}
               </div>
             </div>
 

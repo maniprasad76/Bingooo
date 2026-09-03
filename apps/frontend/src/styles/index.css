@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Outfit:wght@500;600;700;800;900&family=Playfair+Display:ital,wght@0,600;0,700;1,400;1,600;1,700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Satisfy&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,400;1,600&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -25,15 +25,15 @@
   --color-accent-gold: #B7791F;
   --color-accent-lime: #238636;
   
-  --font-sans: 'Plus Jakarta Sans', 'Inter', system-ui, -apple-system, sans-serif;
-  --font-display: 'Outfit', 'Plus Jakarta Sans', sans-serif;
-  --font-heading: 'Outfit', 'Plus Jakarta Sans', sans-serif;
-  --font-outfit: 'Outfit', sans-serif;
+  --font-sans: 'Manrope', system-ui, -apple-system, sans-serif;
+  --font-display: 'Manrope', system-ui, -apple-system, sans-serif;
+  --font-heading: 'Manrope', system-ui, -apple-system, sans-serif;
+  --font-outfit: 'Manrope', system-ui, -apple-system, sans-serif;
   --font-serif: 'Playfair Display', Georgia, serif;
-  --font-cursive: 'Satisfy', 'Caveat', cursive;
-  --font-script: 'Satisfy', 'Caveat', cursive;
-  --font-caveat: 'Caveat', cursive;
-  --font-mono: 'Plus Jakarta Sans', system-ui, sans-serif;
+  --font-cursive: 'Playfair Display', Georgia, serif;
+  --font-script: 'Playfair Display', Georgia, serif;
+  --font-caveat: 'Playfair Display', Georgia, serif;
+  --font-mono: 'Manrope', system-ui, sans-serif;
 }
 
 /* ─── Base Styles ─── */
@@ -255,5 +255,35 @@
   .texture-distressed {
     opacity: 0.88;
     mix-blend-mode: overlay;
+  }
+
+  /* Core Design System Utilities */
+  .text-ink {
+    color: var(--color-ink, #171717);
+  }
+
+  .bg-ink {
+    background-color: var(--color-ink, #171717);
+  }
+
+  .border-ink {
+    border-color: var(--color-ink, #171717);
+  }
+
+  .text-paper {
+    color: var(--color-paper, #F7EEDB);
+  }
+
+  .bg-paper {
+    background-color: var(--color-paper, #F7EEDB);
+  }
+
+  .border-paper {
+    border-color: var(--color-paper, #F7EEDB);
+  }
+
+  .input-admin {
+    @apply w-full rounded-lg border border-border bg-white px-3 py-2.5 text-sm font-medium outline-none transition-colors placeholder:text-muted/60 focus:border-brand-red focus:ring-2 focus:ring-brand-red/10;
+    color: var(--color-ink, #171717);
   }
 }

@@ -19,8 +19,15 @@ export class ResponseInterceptor implements NestInterceptor {
 
     return next.handle().pipe(
       map((data) => {
-        // If the controller already returned the wrapped shape, pass through
+        // If the controller already returned the wrapped shape, ensure top-level and data are present
         if (data && typeof data === 'object' && 'success' in data) {
+          if (!('data' in data)) {
+            return {
+              ...data,
+              data,
+              requestId,
+            };
+          }
           return data;
         }
 
@@ -36,6 +43,7 @@ export class ResponseInterceptor implements NestInterceptor {
 
         return {
           success: true,
+          ...(data && typeof data === 'object' && !Array.isArray(data) ? data : {}),
           data: data ?? null,
           requestId,
         };

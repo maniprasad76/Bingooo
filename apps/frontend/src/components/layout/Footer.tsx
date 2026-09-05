@@ -152,6 +152,27 @@ export function Footer() {
           ))}
         </div>
 
+        {/* ─── Massive Bingooo Brand Typography Statement ─── */}
+        <div className="pt-14 sm:pt-20 pb-8 sm:pb-12 border-b border-white/10 overflow-hidden select-none">
+          <div className="relative flex flex-col items-center justify-center text-center">
+            <Link
+              to="/"
+              onClick={scrollToTop}
+              aria-label="Bingooo Home"
+              className="w-full font-heading font-black text-[clamp(3.8rem,16.5vw,13.5rem)] leading-[0.82] tracking-tighter uppercase text-white/10 hover:text-white/25 transition-colors duration-300 select-none block text-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#E6321C] rounded-xl"
+            >
+              BINGOOO<span className="text-[#E6321C]/80">.</span>
+            </Link>
+            <div className="mt-4 sm:mt-6 flex flex-wrap items-center justify-center gap-3 sm:gap-6 text-[10px] sm:text-xs font-mono uppercase tracking-[0.25em] text-[#DDD3C5]/50">
+              <span>Wear What Feels Like You</span>
+              <span className="text-white/20" aria-hidden="true">&bull;</span>
+              <span>240–280 GSM Heavyweight</span>
+              <span className="text-white/20" aria-hidden="true">&bull;</span>
+              <span>Srikakulam Atelier</span>
+            </div>
+          </div>
+        </div>
+
         {/* ─── Bottom Section: Clean Copyright & Top Link ─── */}
         <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-[#DDD3C5]/60">
           <div className="flex flex-wrap items-center justify-center sm:justify-start gap-x-4 gap-y-2">

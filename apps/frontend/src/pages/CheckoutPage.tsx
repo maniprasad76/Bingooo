@@ -145,57 +145,89 @@ export function CheckoutPage() {
           orderId: order.id,
         });
 
-        const isLiveRazorpayKey = rzpOrder.keyId && !rzpOrder.keyId.includes('placeholder');
-        const scriptLoaded = (window as any).Razorpay;
-
-        if (isLiveRazorpayKey && scriptLoaded) {
-          // Launch real Razorpay modal
-          const rzp = new (window as any).Razorpay({
-            key: rzpOrder.keyId,
-            amount: rzpOrder.amount,
-            currency: rzpOrder.currency || 'INR',
-            name: 'Bingooo Luxury Streetwear',
-            description: `Order #${order.order_number}`,
-            order_id: rzpOrder.razorpayOrderId,
-            prefill: {
-              name: addressData.name,
-              contact: addressData.phone,
-              email: user?.email || 'customer@bingooo.in',
-            },
-            theme: { color: '#E6321C' },
-            handler: async (response: any) => {
-              try {
-                await api.post('/payments/razorpay/verify', {
-                  orderId: order.id,
-                  razorpayOrderId: response.razorpay_order_id,
-                  razorpayPaymentId: response.razorpay_payment_id,
-                  razorpaySignature: response.razorpay_signature,
-                });
-                clearCart();
-                toast({ title: 'Payment Confirmed!', description: `Order ${order.order_number} placed`, variant: 'success' });
-                navigate('/payment/success', { state: { order } });
-              } catch (verifyErr: any) {
-                toast({ title: 'Verification failed', description: verifyErr.message, variant: 'danger' });
-              }
-            },
-            modal: {
-              ondismiss: () => {
-                toast({ title: 'Payment cancelled', description: 'Your order remains pending payment.', variant: 'default' });
-                setIsProcessing(false);
-              },
-            },
-          });
-          rzp.open();
-          return;
-        } else {
-          // Seamless sandbox/development verification
-          await api.post<any>('/payments/razorpay/verify', {
-            orderId: order.id,
-            razorpayOrderId: rzpOrder.razorpayOrderId,
-            razorpayPaymentId: `pay_${Date.now()}_verified`,
-            razorpaySignature: 'mock_valid_signature',
-          });
+        // Ensure Razorpay script is loaded
+        if (!(window as any).Razorpay) {
+          const loaded = await loadRazorpayScript();
+          if (!loaded) {
+            throw new Error('Razorpay SDK failed to load. Please check your internet connection.');
+          }
         }
+
+        const razorpayKey =
+          rzpOrder.keyId || import.meta.env.VITE_RAZORPAY_KEY_ID || 'rzp_test_TYDFxO8bZagWG6';
+        const razorpayOrderId = rzpOrder.order_id || rzpOrder.razorpayOrderId;
+
+        // Launch Razorpay Standard Modal
+        const rzp = new (window as any).Razorpay({
+          key: razorpayKey,
+          amount: rzpOrder.amount,
+          currency: rzpOrder.currency || 'INR',
+          name: 'Bingooo Luxury Streetwear',
+          description: `Order #${order.order_number}`,
+          order_id: razorpayOrderId,
+          prefill: {
+            name: addressData.name,
+            contact: addressData.phone,
+            email: user?.email || 'customer@bingooo.in',
+          },
+          theme: { color: '#E6321C' },
+          handler: async (response: any) => {
+            try {
+              setIsProcessing(true);
+              await api.post('/payments/razorpay/verify', {
+                orderId: order.id,
+                order_id: response.razorpay_order_id,
+                payment_id: response.razorpay_payment_id,
+                razorpay_signature: response.razorpay_signature,
+                razorpayOrderId: response.razorpay_order_id,
+                razorpayPaymentId: response.razorpay_payment_id,
+                razorpaySignature: response.razorpay_signature,
+              });
+              clearCart();
+              toast({
+                title: 'Payment Confirmed!',
+                description: `Order #${order.order_number} successfully placed.`,
+                variant: 'success',
+              });
+              navigate('/payment/success', { state: { order } });
+            } catch (verifyErr: any) {
+              toast({
+                title: 'Payment verification failed',
+                description: verifyErr.message || 'Signature check failed. Contact support if debited.',
+                variant: 'danger',
+              });
+            } finally {
+              setIsProcessing(false);
+            }
+          },
+          modal: {
+            ondismiss: () => {
+              toast({
+                title: 'Payment Cancelled',
+                description: 'You closed the payment window. Your order remains pending.',
+                variant: 'default',
+              });
+              setIsProcessing(false);
+            },
+          },
+        });
+
+        // Handle payment failure event
+        rzp.on('payment.failed', (failResponse: any) => {
+          const desc =
+            failResponse?.error?.description ||
+            failResponse?.error?.reason ||
+            'Payment could not be processed. Please try another method.';
+          toast({
+            title: 'Payment Failed',
+            description: desc,
+            variant: 'danger',
+          });
+          setIsProcessing(false);
+        });
+
+        rzp.open();
+        return;
       }
 
       // 3. Clear cart state & navigate

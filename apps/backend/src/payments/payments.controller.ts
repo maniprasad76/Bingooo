@@ -1,6 +1,6 @@
 import { Controller, Get, Post, Body, Param, Query, Headers } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiHeader } from '@nestjs/swagger';
-import { PaymentsService, RazorpayOrderDto, VerifyPaymentDto } from './payments.service';
+import { PaymentsService, CreateOrderDto, RazorpayOrderDto, VerifyPaymentDto } from './payments.service';
 
 @ApiTags('Payments')
 @Controller('payments')
@@ -17,6 +17,18 @@ export class PaymentsController {
   @ApiOperation({ summary: 'Process refund for payment transaction' })
   refund(@Param('id') id: string, @Body() body: { amount?: number; reason?: string }) {
     return this.paymentsService.refund(id, body);
+  }
+
+  @Post('create-order')
+  @ApiOperation({ summary: 'Create Razorpay order (Step 1)' })
+  createOrder(@Body() body: CreateOrderDto) {
+    return this.paymentsService.createRazorpayOrder(body);
+  }
+
+  @Post('verify-payment')
+  @ApiOperation({ summary: 'Verify Razorpay payment signature (Step 3)' })
+  verifyPaymentSignature(@Body() body: VerifyPaymentDto) {
+    return this.paymentsService.verifyPayment(body);
   }
 
   @Post('razorpay/order')

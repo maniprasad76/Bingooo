@@ -1,106 +1,270 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+  UnauthorizedException,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { v4 as uuidv4 } from 'uuid';
 import * as crypto from 'crypto';
+import Razorpay from 'razorpay';
+import { IsString, IsOptional, IsNumber, IsObject } from 'class-validator';
 import { db } from '../common/database/store';
 import { OrdersService } from '../orders/orders.service';
 
-export interface RazorpayOrderDto {
-  orderId: string;
+export class CreateOrderDto {
+  @IsOptional()
+  @IsNumber()
+  amount?: number; // amount in paise
+
+  @IsOptional()
+  @IsString()
+  currency?: string;
+
+  @IsOptional()
+  @IsString()
+  receipt?: string;
+
+  @IsOptional()
+  @IsString()
+  orderId?: string;
+
+  @IsOptional()
+  @IsObject()
+  notes?: Record<string, any>;
 }
 
-export interface VerifyPaymentDto {
-  orderId: string;
-  razorpayOrderId: string;
-  razorpayPaymentId: string;
-  razorpaySignature: string;
+export class RazorpayOrderDto extends CreateOrderDto {}
+
+export class VerifyPaymentDto {
+  @IsOptional()
+  @IsString()
+  order_id?: string;
+
+  @IsOptional()
+  @IsString()
+  payment_id?: string;
+
+  @IsOptional()
+  @IsString()
+  razorpay_signature?: string;
+
+  @IsOptional()
+  @IsString()
+  orderId?: string;
+
+  @IsOptional()
+  @IsString()
+  razorpay_order_id?: string;
+
+  @IsOptional()
+  @IsString()
+  razorpay_payment_id?: string;
+
+  @IsOptional()
+  @IsString()
+  razorpayOrderId?: string;
+
+  @IsOptional()
+  @IsString()
+  razorpayPaymentId?: string;
+
+  @IsOptional()
+  @IsString()
+  razorpaySignature?: string;
 }
 
 @Injectable()
 export class PaymentsService {
   constructor(private readonly ordersService: OrdersService) {}
 
-  /** Create Razorpay order */
-  createRazorpayOrder(dto: RazorpayOrderDto) {
-    const order = db.orders.find((o) => o.id === dto.orderId);
-    if (!order) throw new NotFoundException({ code: 'ORDER_NOT_FOUND', message: 'Order not found' });
+  private getRazorpayClient(): Razorpay {
+    const keyId = process.env.RAZORPAY_KEY_ID;
+    const keySecret = process.env.RAZORPAY_KEY_SECRET;
+    if (!keyId || !keySecret) {
+      throw new InternalServerErrorException({
+        code: 'RAZORPAY_NOT_CONFIGURED',
+        message: 'Razorpay credentials (RAZORPAY_KEY_ID or RAZORPAY_KEY_SECRET) not configured',
+      });
+    }
+    return new Razorpay({
+      key_id: keyId,
+      key_secret: keySecret,
+    });
+  }
 
-    const payableAmount = order.payment_method === 'partial_cod' ? (order.cod_deposit || order.total) : order.total;
-    const amountInPaise = Math.round(payableAmount * 100);
-    const mockRazorpayOrderId = `order_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
+  /**
+   * Create Razorpay order
+   * Minimum amount: 100 paise
+   */
+  async createRazorpayOrder(dto: CreateOrderDto) {
+    let amountInPaise: number;
+    let currency = (dto.currency || 'INR').toUpperCase();
+    let receipt = dto.receipt;
+    let order: any = null;
+    let notes: Record<string, any> = dto.notes || {};
 
-    const payment = {
-      id: uuidv4(),
-      order_id: order.id,
-      provider: 'razorpay',
-      provider_order_id: mockRazorpayOrderId,
-      provider_payment_id: null,
-      status: 'pending',
-      amount: payableAmount,
-      currency: 'INR',
-      raw_event_id: null,
-      idempotency_key: uuidv4(),
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
-    };
+    if (dto.orderId) {
+      order = db.orders.find((o) => o.id === dto.orderId);
+      if (!order) {
+        throw new NotFoundException({ code: 'ORDER_NOT_FOUND', message: 'Order not found' });
+      }
+      const payableAmount =
+        order.payment_method === 'partial_cod' ? (order.cod_deposit || order.total) : order.total;
+      amountInPaise = dto.amount !== undefined ? Math.round(dto.amount) : Math.round(payableAmount * 100);
+      receipt = receipt || order.order_number;
+      notes = { orderId: order.id, orderNumber: order.order_number, ...notes };
+    } else if (dto.amount !== undefined) {
+      amountInPaise = Math.round(dto.amount);
+      receipt = receipt || `rcpt_${Date.now()}`;
+    } else {
+      throw new BadRequestException({
+        code: 'INVALID_REQUEST',
+        message: 'Either amount (in paise) or orderId must be provided',
+      });
+    }
 
-    db.payments.push(payment);
+    // Validate minimum amount of 100 paise
+    if (amountInPaise < 100) {
+      throw new BadRequestException({
+        code: 'INVALID_AMOUNT',
+        message: 'Amount must be at least 100 paise (₹1.00)',
+      });
+    }
+
+    const razorpay = this.getRazorpayClient();
+
+    let rzpOrder: any;
+    try {
+      rzpOrder = await razorpay.orders.create({
+        amount: amountInPaise,
+        currency,
+        receipt,
+        notes,
+      });
+    } catch (err: any) {
+      const statusCode = err?.statusCode || err?.status || err?.error?.statusCode;
+      const desc = err?.error?.description || err?.message || 'Razorpay order creation failed';
+      if (statusCode === 401 || (err?.error?.code === 'BAD_REQUEST_ERROR' && desc.toLowerCase().includes('auth'))) {
+        throw new UnauthorizedException({
+          code: 'RAZORPAY_AUTH_FAILED',
+          message: desc,
+        });
+      }
+      throw new InternalServerErrorException({
+        code: 'RAZORPAY_API_ERROR',
+        message: desc,
+      });
+    }
+
+    if (order) {
+      const payment = {
+        id: uuidv4(),
+        order_id: order.id,
+        provider: 'razorpay',
+        provider_order_id: rzpOrder.id,
+        provider_payment_id: null,
+        status: 'pending',
+        amount: amountInPaise / 100,
+        currency: rzpOrder.currency,
+        raw_event_id: null,
+        idempotency_key: uuidv4(),
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      };
+      db.payments.push(payment);
+    }
 
     return {
-      razorpayOrderId: mockRazorpayOrderId,
-      amount: amountInPaise,
-      currency: 'INR',
-      orderNumber: order.order_number,
-      keyId: process.env.RAZORPAY_KEY_ID || 'rzp_test_placeholder_key',
+      order_id: rzpOrder.id,
+      amount: rzpOrder.amount,
+      currency: rzpOrder.currency,
+      razorpayOrderId: rzpOrder.id,
+      orderNumber: order?.order_number,
+      keyId: process.env.RAZORPAY_KEY_ID,
     };
   }
 
-  /** Verify Razorpay signature and update order status */
+  /**
+   * Verify Razorpay signature and update order status
+   * Algorithm: HMAC-SHA256(order_id + "|" + payment_id, KEY_SECRET)
+   */
   verifyPayment(dto: VerifyPaymentDto) {
-    const payment = db.payments.find((p) => p.order_id === dto.orderId && p.provider_order_id === dto.razorpayOrderId);
-    if (!payment) throw new NotFoundException({ code: 'PAYMENT_NOT_FOUND', message: 'Payment record not found' });
+    const orderId = dto.order_id || dto.razorpayOrderId || dto.razorpay_order_id;
+    const paymentId = dto.payment_id || dto.razorpayPaymentId || dto.razorpay_payment_id;
+    const signature = dto.razorpay_signature || dto.razorpaySignature;
 
-    const razorpaySecret = process.env.RAZORPAY_KEY_SECRET;
-    let isValid = true;
-
-    // Verify cryptographic signature if secret configured
-    if (razorpaySecret) {
-      const generatedSignature = crypto
-        .createHmac('sha256', razorpaySecret)
-        .update(`${dto.razorpayOrderId}|${dto.razorpayPaymentId}`)
-        .digest('hex');
-
-      isValid = generatedSignature === dto.razorpaySignature;
+    // Missing fields: return 400
+    if (!orderId || !paymentId || !signature) {
+      throw new BadRequestException({
+        code: 'MISSING_FIELDS',
+        message: 'Missing required fields: order_id, payment_id, and razorpay_signature are required',
+      });
     }
 
-    if (!isValid) {
-      payment.status = 'failed';
+    const keySecret = process.env.RAZORPAY_KEY_SECRET;
+    if (!keySecret) {
+      throw new InternalServerErrorException({
+        code: 'RAZORPAY_SECRET_MISSING',
+        message: 'Razorpay key secret is not configured on server',
+      });
+    }
+
+    // Calculate HMAC-SHA256
+    const expectedSignature = crypto
+      .createHmac('sha256', keySecret)
+      .update(`${orderId}|${paymentId}`)
+      .digest('hex');
+
+    const signaturesMatch =
+      expectedSignature.length === signature.length &&
+      crypto.timingSafeEqual(Buffer.from(expectedSignature, 'utf-8'), Buffer.from(signature, 'utf-8'));
+
+    // Find associated payment in store
+    const payment = db.payments.find(
+      (p) =>
+        p.provider_order_id === orderId ||
+        (dto.orderId && p.order_id === dto.orderId),
+    );
+
+    if (!signaturesMatch) {
+      if (payment) {
+        payment.status = 'failed';
+        payment.updated_at = new Date().toISOString();
+      }
+      throw new BadRequestException({
+        code: 'INVALID_SIGNATURE',
+        message: 'Razorpay payment signature mismatch. Verification failed.',
+      });
+    }
+
+    if (payment) {
+      payment.status = 'captured';
+      payment.provider_payment_id = paymentId;
       payment.updated_at = new Date().toISOString();
-      throw new BadRequestException({ code: 'INVALID_SIGNATURE', message: 'Razorpay signature verification failed' });
-    }
 
-    payment.status = 'captured';
-    payment.provider_payment_id = dto.razorpayPaymentId;
-    payment.updated_at = new Date().toISOString();
-
-    const order = db.orders.find((o) => o.id === dto.orderId);
-    if (order) {
-      order.payment_status = 'captured';
-      order.status = 'processing';
-      order.updated_at = new Date().toISOString();
+      const order = db.orders.find((o) => o.id === payment.order_id);
+      if (order) {
+        order.payment_status = 'captured';
+        order.status = 'processing';
+        order.updated_at = new Date().toISOString();
+      }
     }
 
     return {
+      success: true,
       verified: true,
-      orderNumber: order?.order_number,
-      paymentId: payment.id,
-      status: payment.status,
+      order_id: orderId,
+      payment_id: paymentId,
+      orderNumber: payment?.order_number,
+      paymentId: payment?.id,
+      status: 'captured',
     };
   }
 
   /** Webhook listener for async Razorpay events */
   handleWebhook(event: any, signature?: string) {
     const eventId = event?.id || uuidv4();
-    // Check if event already processed for idempotency
     const existing = db.payments.find((p) => p.raw_event_id === eventId);
     if (existing) {
       return { received: true, idempotent: true };

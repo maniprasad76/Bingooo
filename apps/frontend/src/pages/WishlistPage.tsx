@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
   Heart,
   ShoppingBag,
@@ -142,15 +143,16 @@ export function WishlistPage() {
               Your favorite styles, saved for you.
             </p>
           </div>
-
-          <button
+          <motion.button
             type="button"
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.96 }}
             onClick={handleMoveAllToCart}
             className="self-start sm:self-auto inline-flex items-center gap-2 px-4 py-2.5 rounded-lg border border-[#DDD3C5] bg-white hover:border-[#E6321C] text-[#171717] hover:text-[#E6321C] text-xs font-sans font-bold uppercase tracking-wider transition-colors shadow-xs"
           >
             <ShoppingBag size={14} className="text-[#E6321C]" />
             <span>MOVE ALL TO CART</span>
-          </button>
+          </motion.button>
         </div>
 
         {/* ─── 4 Wishlist Cards Grid / Empty State ─── */}
@@ -176,97 +178,109 @@ export function WishlistPage() {
             </div>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-            {items.map((item) => (
-              <div
-                key={item.id}
-                className="group flex flex-col justify-between rounded-xl bg-white border border-[#DDD3C5] p-3 sm:p-4 shadow-sm hover:shadow-md transition-all text-left"
-              >
-                {/* Image Container with Red Heart Button */}
-                <div className="relative aspect-[3/4] sm:aspect-[4/5] rounded-lg bg-[#F7EEDB]/60 border border-[#DDD3C5]/60 overflow-hidden flex items-center justify-center">
-                  <Link
-                    to={`/product/${item.slug}`}
-                    className="w-full h-full flex flex-col items-center justify-center p-4 text-center group-hover:scale-105 transition-transform duration-300"
-                  >
-                    {item.image ? (
-                      <img src={item.image} alt={item.title} className="w-full h-full object-cover" />
-                    ) : (
-                      <Shirt size={44} className="text-[#171717]/40 mb-1" />
-                    )}
-                    <span className="text-[10px] font-mono uppercase tracking-wider text-[#6F6A63]">
-                      {item.title}
-                    </span>
-                  </Link>
-
-                  {/* Filled Red Heart in White Circle Top-Right */}
-                  <button
-                    type="button"
-                    onClick={() => handleRemove(item.id)}
-                    className="absolute top-2.5 right-2.5 p-1.5 rounded-full bg-white shadow-xs text-[#E6321C] hover:scale-110 transition-transform"
-                    aria-label="Remove from wishlist"
-                  >
-                    <Heart size={16} className="fill-[#E6321C] text-[#E6321C]" />
-                  </button>
-                </div>
-
-                {/* Product Meta */}
-                <div className="mt-3 flex flex-col flex-1 justify-between">
-                  <div>
-                    <div className="flex items-start justify-between gap-2">
-                      <Link to={`/product/${item.slug}`}>
-                        <h3 className="font-sans font-bold text-xs sm:text-sm text-[#171717] hover:text-[#E6321C] transition-colors line-clamp-1">
-                          {item.title}
-                        </h3>
-                      </Link>
-                      <span className="font-sans font-extrabold text-sm text-[#171717] shrink-0">
-                        ₹{item.price}
+          <motion.div layout className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-6">
+            <AnimatePresence>
+              {items.map((item) => (
+                <motion.div
+                  key={item.id}
+                  layout
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.9, transition: { duration: 0.2 } }}
+                  className="group flex flex-col justify-between rounded-xl bg-white border border-[#DDD3C5] p-2.5 sm:p-4 shadow-sm hover:shadow-md transition-all text-left"
+                >
+                  {/* Image Container with Red Heart Button */}
+                  <div className="relative aspect-[3/4] sm:aspect-[4/5] rounded-lg bg-[#F7EEDB]/60 border border-[#DDD3C5]/60 overflow-hidden flex items-center justify-center">
+                    <Link
+                      to={`/product/${item.slug}`}
+                      className="w-full h-full flex flex-col items-center justify-center p-4 text-center group-hover:scale-105 transition-transform duration-300"
+                    >
+                      {item.image ? (
+                        <img src={item.image} alt={item.title} className="w-full h-full object-cover" />
+                      ) : (
+                        <Shirt size={44} className="text-[#171717]/40 mb-1" />
+                      )}
+                      <span className="text-[10px] font-mono uppercase tracking-wider text-[#6F6A63]">
+                        {item.title}
                       </span>
-                    </div>
+                    </Link>
 
-                    {/* Rating */}
-                    <div className="mt-1 flex items-center gap-1 text-[11px] font-semibold text-[#6F6A63]">
-                      <Star size={12} className="fill-[#E6321C] text-[#E6321C]" />
-                      <span className="text-[#171717] font-bold">{item.rating}</span>
-                      <span>({item.reviewsCount})</span>
-                    </div>
-
-                    {/* Color & Size */}
-                    <div className="mt-2 text-[11px] text-[#6F6A63] font-sans space-y-0.5">
-                      <div className="flex items-center gap-1.5">
-                        <span>Color: {item.color}</span>
-                        <span
-                          className="h-2.5 w-2.5 rounded-full border border-black/20"
-                          style={{ backgroundColor: item.colorHex }}
-                        />
-                      </div>
-                      <div>Size: {item.size}</div>
-                    </div>
-                  </div>
-
-                  {/* Actions: ADD TO CART & REMOVE */}
-                  <div className="mt-4 pt-3 border-t border-[#DDD3C5]/60 space-y-2">
-                    <button
+                    {/* Filled Red Heart in White Circle Top-Right */}
+                    <motion.button
                       type="button"
-                      onClick={() => handleAddToCart(item)}
-                      className="w-full flex items-center justify-center gap-1.5 py-2.5 rounded-lg bg-[#E6321C] hover:bg-[#B91F12] text-white font-sans font-bold text-xs uppercase tracking-wider transition-colors shadow-sm"
-                    >
-                      <ShoppingBag size={13} />
-                      <span>ADD TO CART</span>
-                    </button>
-
-                    <button
-                      type="button"
+                      whileHover={{ scale: 1.15 }}
+                      whileTap={{ scale: 0.85 }}
                       onClick={() => handleRemove(item.id)}
-                      className="w-full flex items-center justify-center gap-1.5 py-2 rounded-lg border border-[#DDD3C5] hover:border-[#171717] bg-white text-[#6F6A63] hover:text-[#171717] font-sans font-bold text-xs uppercase tracking-wider transition-colors"
+                      className="absolute top-2.5 right-2.5 p-1.5 rounded-full bg-white shadow-xs text-[#E6321C] transition-transform"
+                      aria-label="Remove from wishlist"
                     >
-                      <Trash2 size={13} />
-                      <span>REMOVE</span>
-                    </button>
+                      <Heart size={16} className="fill-[#E6321C] text-[#E6321C]" />
+                    </motion.button>
                   </div>
-                </div>
-              </div>
-            ))}
-          </div>
+
+                  {/* Product Meta */}
+                  <div className="mt-3 flex flex-col flex-1 justify-between">
+                    <div>
+                      <div className="flex items-start justify-between gap-2">
+                        <Link to={`/product/${item.slug}`}>
+                          <h3 className="font-sans font-bold text-xs sm:text-sm text-[#171717] hover:text-[#E6321C] transition-colors line-clamp-1">
+                            {item.title}
+                          </h3>
+                        </Link>
+                        <span className="font-sans font-extrabold text-sm text-[#171717] shrink-0">
+                          ₹{item.price}
+                        </span>
+                      </div>
+
+                      {/* Rating */}
+                      <div className="mt-1 flex items-center gap-1 text-[11px] font-semibold text-[#6F6A63]">
+                        <Star size={12} className="fill-[#E6321C] text-[#E6321C]" />
+                        <span className="text-[#171717] font-bold">{item.rating}</span>
+                        <span>({item.reviewsCount})</span>
+                      </div>
+
+                      {/* Color & Size */}
+                      <div className="mt-2 text-[11px] text-[#6F6A63] font-sans space-y-0.5">
+                        <div className="flex items-center gap-1.5">
+                          <span>Color: {item.color}</span>
+                          <span
+                            className="h-2.5 w-2.5 rounded-full border border-black/20"
+                            style={{ backgroundColor: item.colorHex }}
+                          />
+                        </div>
+                        <div>Size: {item.size}</div>
+                      </div>
+                    </div>
+
+                    {/* Actions: ADD TO CART & REMOVE */}
+                    <div className="mt-4 pt-3 border-t border-[#DDD3C5]/60 space-y-2">
+                      <motion.button
+                        type="button"
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.96 }}
+                        onClick={() => handleAddToCart(item)}
+                        className="w-full flex items-center justify-center gap-1.5 py-2.5 rounded-lg bg-[#E6321C] hover:bg-[#B91F12] text-white font-sans font-bold text-xs uppercase tracking-wider transition-colors shadow-sm"
+                      >
+                        <ShoppingBag size={13} />
+                        <span>ADD TO CART</span>
+                      </motion.button>
+
+                      <motion.button
+                        type="button"
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.96 }}
+                        onClick={() => handleRemove(item.id)}
+                        className="w-full flex items-center justify-center gap-1.5 py-2 rounded-lg border border-[#DDD3C5] hover:border-[#171717] bg-white text-[#6F6A63] hover:text-[#171717] font-sans font-bold text-xs uppercase tracking-wider transition-colors"
+                      >
+                        <Trash2 size={13} />
+                        <span>REMOVE</span>
+                      </motion.button>
+                    </div>
+                  </div>
+                </motion.div>
+              ))}
+            </AnimatePresence>
+          </motion.div>
         )}
 
         {/* ─── Middle Callout Banner (Exact Image 1) ─── */}

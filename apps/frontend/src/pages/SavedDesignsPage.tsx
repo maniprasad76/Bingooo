@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
+import { motion, useReducedMotion } from 'framer-motion';
 import { Sparkles, Palette, ArrowRight } from 'lucide-react';
 import { api } from '../lib/api/client';
 import { Button } from '../components/ui/Button';
@@ -8,6 +9,7 @@ import { Badge } from '../components/ui/Badge';
 import { useAuthStore } from '../store/auth';
 
 export function SavedDesignsPage() {
+  const shouldReduceMotion = useReducedMotion();
   const { userId } = useAuthStore();
   const currentUserId = userId || 'mock-user-id';
 
@@ -47,8 +49,15 @@ export function SavedDesignsPage() {
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {designs.map((design: any) => (
-            <div key={design.id} className="rounded-xl border border-border bg-white p-5 shadow-sm space-y-4">
+          {designs.map((design: any, idx: number) => (
+            <motion.div
+              key={design.id}
+              initial={shouldReduceMotion ? false : { opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: idx * 0.07, type: 'spring', stiffness: 350, damping: 25 }}
+              whileHover={shouldReduceMotion ? undefined : { y: -4, boxShadow: '0 12px 30px -8px rgba(0, 0, 0, 0.08)' }}
+              className="rounded-xl border border-border bg-white p-5 shadow-sm space-y-4 transition-colors"
+            >
               <div className="aspect-[4/5] rounded-lg bg-paper border border-border flex items-center justify-center relative overflow-hidden">
                 <div className="text-center p-4">
                   <Sparkles size={28} className="text-accent mx-auto mb-2" />
@@ -76,7 +85,7 @@ export function SavedDesignsPage() {
                   Open in Customizer <ArrowRight size={14} />
                 </Button>
               </Link>
-            </div>
+            </motion.div>
           ))}
         </div>
       )}

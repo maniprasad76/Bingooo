@@ -1,4 +1,5 @@
 import { useLocation, Link, Navigate } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import { CheckCircle2, Package, ArrowRight } from 'lucide-react';
 import { Button } from '../components/ui/Button';
 import { Logo } from '../components/ui/Logo';
@@ -19,9 +20,14 @@ export function OrderSuccessPage() {
         <Logo variant="red" size="lg" withLink />
       </div>
       <div className="rounded-2xl border border-border bg-white p-8 sm:p-12 shadow-sm text-center">
-        <div className="flex h-20 w-20 items-center justify-center rounded-full bg-success/10 text-success mx-auto mb-6">
+        <motion.div
+          initial={{ scale: 0, rotate: -20 }}
+          animate={{ scale: [0, 1.25, 1], rotate: 0 }}
+          transition={{ type: 'spring', stiffness: 400, damping: 20 }}
+          className="flex h-20 w-20 items-center justify-center rounded-full bg-success/10 text-success mx-auto mb-6"
+        >
           <CheckCircle2 size={44} />
-        </div>
+        </motion.div>
 
         <span className="text-caption font-bold text-accent uppercase tracking-widest">
           Payment Confirmed
@@ -32,7 +38,12 @@ export function OrderSuccessPage() {
         </p>
 
         {/* Order Meta Card */}
-        <div className="mt-8 rounded-xl bg-paper border border-border p-6 text-left space-y-4">
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.15, duration: 0.4 }}
+          className="mt-8 rounded-xl bg-paper border border-border p-6 text-left space-y-4"
+        >
           <div className="flex flex-wrap items-center justify-between gap-2 pb-4 border-b border-border">
             <div>
               <span className="text-caption text-muted block">Order Number</span>
@@ -60,10 +71,15 @@ export function OrderSuccessPage() {
               </p>
             </div>
           </div>
-        </div>
+        </motion.div>
 
         {/* Actions */}
-        <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3, duration: 0.4 }}
+          className="mt-8 flex flex-wrap items-center justify-center gap-4"
+        >
           <Link to="/account/orders">
             <Button variant="secondary" size="lg">
               <Package size={18} />
@@ -76,7 +92,7 @@ export function OrderSuccessPage() {
               <ArrowRight size={18} />
             </Button>
           </Link>
-        </div>
+        </motion.div>
       </div>
     </div>
   );

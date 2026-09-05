@@ -1,5 +1,6 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { Minus, Plus, Trash2, ArrowRight, ShoppingBag, ShieldCheck } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Drawer } from '../ui/Drawer';
 import { Button } from '../ui/Button';
 import { Logo } from '../ui/Logo';
@@ -41,11 +42,13 @@ export function CartDrawer() {
             <span className="text-muted">{Math.round(progressToFree)}%</span>
           </div>
           <div className="mt-2.5 h-1.5 w-full overflow-hidden rounded-full bg-border">
-            <div
-              className={`h-full transition-all duration-500 rounded-full ${
+            <motion.div
+              initial={false}
+              animate={{ width: `${progressToFree}%` }}
+              transition={{ type: 'spring', stiffness: 220, damping: 26 }}
+              className={`h-full rounded-full ${
                 subtotal >= freeShippingThreshold ? 'bg-success' : 'bg-brand-red'
               }`}
-              style={{ width: `${progressToFree}%` }}
             />
           </div>
         </div>
@@ -79,106 +82,126 @@ export function CartDrawer() {
               </Button>
             </div>
           ) : (
-            cart.items.map((item: any) => (
-              <div key={item.id} className="flex gap-4 py-4 first:pt-0 last:pb-0">
-                {/* Thumbnail / Realistic Garment preview */}
-                <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-xl bg-[#EDE0CC] border border-border flex items-center justify-center p-1">
-                  <img
-                    src={
-                      item.customization?.previewUrl ||
-                      item.product?.images?.[0]?.url ||
-                      item.product?.images?.[0]?.object_key ||
-                      (item.product?.slug?.includes('graphic')
-                        ? '/custom/tshirt-step-3-black.png'
-                        : item.product?.slug?.includes('classic')
-                        ? '/custom/tshirt-step-1.png'
-                        : item.product?.slug?.includes('hoodie')
-                        ? '/custom/tshirt-step-2.png'
-                        : '/custom/tshirt-step-1.png')
-                    }
-                    alt={item.product?.title || 'Garment item'}
-                    className="h-full w-full object-contain p-1"
-                  />
+            <AnimatePresence initial={false}>
+              {cart.items.map((item: any) => (
+                <motion.div
+                  key={item.id}
+                  layout
+                  initial={{ opacity: 0, height: 0, scale: 0.96 }}
+                  animate={{ opacity: 1, height: 'auto', scale: 1 }}
+                  exit={{ opacity: 0, height: 0, scale: 0.94, transition: { duration: 0.22 } }}
+                  className="overflow-hidden"
+                >
+                  <div className="flex gap-4 py-4 first:pt-0 last:pb-0">
+                    {/* Thumbnail / Realistic Garment preview */}
+                    <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-xl bg-[#EDE0CC] border border-border flex items-center justify-center p-1">
+                      <img
+                        src={
+                          item.customization?.previewUrl ||
+                          item.product?.images?.[0]?.url ||
+                          item.product?.images?.[0]?.object_key ||
+                          (item.product?.slug?.includes('graphic')
+                            ? '/custom/tshirt-step-3-black.png'
+                            : item.product?.slug?.includes('classic')
+                            ? '/custom/tshirt-step-1.png'
+                            : item.product?.slug?.includes('hoodie')
+                            ? '/custom/tshirt-step-2.png'
+                            : '/custom/tshirt-step-1.png')
+                        }
+                        alt={item.product?.title || 'Garment item'}
+                        className="h-full w-full object-contain p-1"
+                      />
 
-                  {item.customization && (
-                    <span className="absolute bottom-1 right-1 px-1 py-0.5 rounded bg-brand-red text-white text-[8px] font-mono font-bold uppercase">
-                      STUDIO
-                    </span>
-                  )}
-                </div>
-
-                {/* Info */}
-                <div className="flex flex-1 flex-col justify-between">
-                  <div>
-                    <div className="flex items-start justify-between gap-2">
-                      <h4 className="text-body font-bold text-ink font-display line-clamp-1">
-                        {item.product?.title || 'Bingooo Custom Garment'}
-                      </h4>
-                      <button
-                        onClick={() => removeItem(item.id)}
-                        className="text-muted hover:text-danger transition-colors p-1 rounded-lg hover:bg-paper"
-                        aria-label="Remove item"
-                      >
-                        <Trash2 size={15} />
-                      </button>
-                    </div>
-
-                    <div className="mt-1.5 flex flex-wrap gap-1.5 text-caption font-mono text-muted">
-                      {item.variant?.size && (
-                        <span className="rounded-md bg-paper px-2 py-0.5 text-[10px] font-bold text-ink border border-border">
-                          SZ {item.variant.size}
-                        </span>
-                      )}
-                      {item.variant?.color && (
-                        <span className="rounded-md bg-paper px-2 py-0.5 text-[10px] font-bold text-ink border border-border">
-                          {item.variant.color}
-                        </span>
-                      )}
                       {item.customization && (
-                        <span className="rounded-md bg-brand-red/10 text-brand-red px-2 py-0.5 text-[10px] font-bold border border-brand-red/30">
-                          Custom Print
+                        <span className="absolute bottom-1 right-1 px-1 py-0.5 rounded bg-brand-red text-white text-[8px] font-mono font-bold uppercase">
+                          STUDIO
                         </span>
                       )}
                     </div>
-                  </div>
 
-                  <div className="mt-3 flex items-center justify-between">
-                    {/* Quantity counter */}
-                    <div className="flex items-center rounded-lg border border-border bg-paper">
-                      <button
-                        type="button"
-                        onClick={() => {
-                          if (item.quantity > 1) {
-                            updateQuantity(item.id, item.quantity - 1);
-                          } else {
-                            removeItem(item.id);
-                          }
-                        }}
-                        className="flex h-7 w-7 items-center justify-center text-ink hover:bg-white rounded-l-lg transition-colors"
-                        aria-label="Decrease quantity"
-                      >
-                        <Minus size={12} />
-                      </button>
-                      <span className="w-8 text-center text-xs font-mono font-bold text-ink">
-                        {item.quantity}
-                      </span>
-                      <button
-                        type="button"
-                        onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                        className="flex h-7 w-7 items-center justify-center text-ink hover:bg-white rounded-r-lg transition-colors"
-                        aria-label="Increase quantity"
-                      >
-                        <Plus size={12} />
-                      </button>
+                    {/* Info */}
+                    <div className="flex flex-1 flex-col justify-between">
+                      <div>
+                        <div className="flex items-start justify-between gap-2">
+                          <h4 className="text-body font-bold text-ink font-display line-clamp-1">
+                            {item.product?.title || 'Bingooo Custom Garment'}
+                          </h4>
+                          <motion.button
+                            whileHover={{ scale: 1.15 }}
+                            whileTap={{ scale: 0.88 }}
+                            onClick={() => removeItem(item.id)}
+                            className="text-muted hover:text-danger transition-colors p-1 rounded-lg hover:bg-paper"
+                            aria-label="Remove item"
+                          >
+                            <Trash2 size={15} />
+                          </motion.button>
+                        </div>
+
+                        <div className="mt-1.5 flex flex-wrap gap-1.5 text-caption font-mono text-muted">
+                          {item.variant?.size && (
+                            <span className="rounded-md bg-paper px-2 py-0.5 text-[10px] font-bold text-ink border border-border">
+                              SZ {item.variant.size}
+                            </span>
+                          )}
+                          {item.variant?.color && (
+                            <span className="rounded-md bg-paper px-2 py-0.5 text-[10px] font-bold text-ink border border-border">
+                              {item.variant.color}
+                            </span>
+                          )}
+                          {item.customization && (
+                            <span className="rounded-md bg-brand-red/10 text-brand-red px-2 py-0.5 text-[10px] font-bold border border-brand-red/30">
+                              Custom Print
+                            </span>
+                          )}
+                        </div>
+                      </div>
+
+                      <div className="mt-3 flex items-center justify-between">
+                        {/* Quantity counter */}
+                        <div className="flex items-center rounded-lg border border-border bg-paper">
+                          <motion.button
+                            whileTap={{ scale: 0.85 }}
+                            type="button"
+                            onClick={() => {
+                              if (item.quantity > 1) {
+                                updateQuantity(item.id, item.quantity - 1);
+                              } else {
+                                removeItem(item.id);
+                              }
+                            }}
+                            className="flex h-7 w-7 items-center justify-center text-ink hover:bg-white rounded-l-lg transition-colors"
+                            aria-label="Decrease quantity"
+                          >
+                            <Minus size={12} />
+                          </motion.button>
+                          <motion.span
+                            key={item.quantity}
+                            initial={{ scale: 0.8, opacity: 0 }}
+                            animate={{ scale: 1, opacity: 1 }}
+                            className="w-8 text-center text-xs font-mono font-bold text-ink"
+                          >
+                            {item.quantity}
+                          </motion.span>
+                          <motion.button
+                            whileTap={{ scale: 0.85 }}
+                            type="button"
+                            onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                            className="flex h-7 w-7 items-center justify-center text-ink hover:bg-white rounded-r-lg transition-colors"
+                            aria-label="Increase quantity"
+                          >
+                            <Plus size={12} />
+                          </motion.button>
+                        </div>
+
+                        <span className="text-body font-bold text-ink font-mono">
+                          ₹{item.total}
+                        </span>
+                      </div>
                     </div>
-
-                    <span className="text-body font-bold text-ink font-mono">
-                      ₹{item.total}
-                    </span>
                   </div>
-                </div>
-              </div>
-            ))
+                </motion.div>
+              ))}
+            </AnimatePresence>
           )}
         </div>
 

@@ -64,4 +64,20 @@ export class CouponsService {
     db.coupons.push(coupon);
     return coupon;
   }
+
+  toggleActive(id: string) {
+    const coupon = db.coupons.find((c) => c.id === id);
+    if (!coupon) throw new NotFoundException({ code: 'COUPON_NOT_FOUND', message: 'Coupon not found' });
+    coupon.is_active = !coupon.is_active;
+    coupon.updated_at = new Date().toISOString();
+    return coupon;
+  }
+
+  delete(id: string) {
+    const index = db.coupons.findIndex((c) => c.id === id);
+    if (index === -1) throw new NotFoundException({ code: 'COUPON_NOT_FOUND', message: 'Coupon not found' });
+    db.coupons.splice(index, 1);
+    return { success: true, id };
+  }
 }
+

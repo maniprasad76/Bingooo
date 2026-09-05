@@ -29,4 +29,44 @@ export class MediaService {
       expiresIn: 3600,
     };
   }
+
+  /** Media asset management for admin panel */
+  listAssets(category?: string, search?: string) {
+    const { db } = require('../common/database/store');
+    let items = [...(db.media_assets || [])];
+    if (category && category !== 'all') {
+      items = items.filter((a) => a.category === category);
+    }
+    if (search) {
+      const q = search.toLowerCase();
+      items = items.filter(
+        (a) =>
+          a.name.toLowerCase().includes(q) ||
+          a.category.toLowerCase().includes(q),
+      );
+    }
+    return items;
+  }
+
+  createAsset(data: { name: string; category?: string; url: string; sizeBytes?: number; dimensions?: string }) {
+    const { db } = require('../common/database/store');
+    const asset = {
+      id: `asset-${Date.now()}`,
+      name: data.name,
+      category: data.category || 'products',
+      url: data.url,
+      sizeBytes: data.sizeBytes || 500000,
+      dimensions: data.dimensions || '1200x1200',
+      uploaded_at: new Date().toISOString(),
+    };
+    db.media_assets.unshift(asset);
+    return asset;
+  }
+
+  deleteAsset(id: string) {
+    const { db } = require('../common/database/store');
+    db.media_assets = (db.media_assets || []).filter((a: any) => a.id !== id);
+    return { success: true, id };
+  }
 }
+

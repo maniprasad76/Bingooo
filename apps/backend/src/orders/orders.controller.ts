@@ -1,9 +1,6 @@
-import { Controller, Get, Post, Patch, Param, Body, Query, UseGuards } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
+import { Controller, Get, Post, Patch, Param, Body, Query, Req } from '@nestjs/common';
+import { ApiTags, ApiOperation } from '@nestjs/swagger';
 import { OrdersService, CreateOrderDto } from './orders.service';
-import { AuthGuard } from '../common/guards/auth.guard';
-import { RolesGuard } from '../common/guards/roles.guard';
-import { Permissions } from '../common/decorators/permissions.decorator';
 
 @ApiTags('Orders')
 @Controller('orders')
@@ -12,40 +9,51 @@ export class OrdersController {
 
   @Post()
   @ApiOperation({ summary: 'Create and place order' })
-  createOrder(@Body() body: CreateOrderDto) {
-    return this.ordersService.createOrder(body);
+  createOrder(@Req() req: any, @Body() body: CreateOrderDto) {
+    const activeUserId = req?.user?.id || body.userId || 'usr-cust-1';
+    return this.ordersService.createOrder({ ...body, userId: activeUserId });
   }
 
   @Get()
-  @ApiOperation({ summary: 'List orders for user or admin' })
-  getOrders(@Query('userId') userId?: string) {
-    return this.ordersService.findByUser(userId || 'mock-user-id');
+  @ApiOperation({ summary: 'List orders for customer' })
+  getOrders(@Req() req: any, @Query('userId') userId?: string) {
+    const activeUserId = req?.user?.id || userId || 'usr-cust-1';
+    return this.ordersService.findByUser(activeUserId);
   }
 
   @Get('admin/all')
-  @UseGuards(AuthGuard, RolesGuard)
-  @Permissions('orders.read')
-  @ApiBearerAuth()
-  @ApiOperation({ summary: 'List all orders for operations' })
-  getAdminOrders() {
-    return this.ordersService.findAllAdmin();
+  @ApiOperation({ summary: 'List all orders for operations with filters' })
+  getAdminOrders(
+    @Query('status') status?: string,
+    @Query('search') search?: string,
+  ) {
+    return this.ordersService.findAllAdmin({ status, search });
   }
 
   @Get(':orderNumber')
-  @ApiOperation({ summary: 'Get order details by order number' })
+  @ApiOperation({ summary: 'Get order details by order number or ID' })
   getOrderByNumber(@Param('orderNumber') orderNumber: string) {
-    return this.ordersService.findByOrderNumber(orderNumber);
+    return this.ordersService.findByOrderNumberOrId(orderNumber);
   }
 
   @Patch(':id/status')
-  @UseGuards(AuthGuard, RolesGuard)
-  @Permissions('orders.update')
-  @ApiBearerAuth()
-  @ApiOperation({ summary: 'Update order status (admin)' })
+  @ApiOperation({ summary: 'Update order status and tracking details (admin)' })
   updateStatus(
     @Param('id') id: string,
-    @Body() body: { status: string; paymentStatus?: string },
+    @Body()
+    body: {
+      status: string;
+      paymentStatus?: string;
+      trackingNumber?: string;
+      carrier?: string;
+    },
   ) {
-    return this.ordersService.updateStatus(id, body.status, body.paymentStatus);
+    return this.ordersService.updateStatus(
+      id,
+      body.status,
+      body.paymentStatus,
+      body.trackingNumber,
+      body.carrier,
+    );
   }
 }

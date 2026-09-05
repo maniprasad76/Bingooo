@@ -1,11 +1,13 @@
 import { useQuery } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
+import { motion, useReducedMotion } from 'framer-motion';
 import { Package, ArrowRight } from 'lucide-react';
 import { api } from '../lib/api/client';
 import { Badge } from '../components/ui/Badge';
 import { Button } from '../components/ui/Button';
 
 export function OrdersPage() {
+  const shouldReduceMotion = useReducedMotion();
   const { data: orders = [], isLoading } = useQuery({
     queryKey: ['user-orders'],
     queryFn: () => api.get<any[]>('/orders'),
@@ -51,8 +53,15 @@ export function OrdersPage() {
         </div>
       ) : (
         <div className="space-y-4">
-          {orders.map((order: any) => (
-            <div key={order.id} className="rounded-xl border border-border bg-white p-6 shadow-sm space-y-4">
+          {orders.map((order: any, idx: number) => (
+            <motion.div
+              key={order.id}
+              initial={shouldReduceMotion ? false : { opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: idx * 0.06, type: 'spring', stiffness: 350, damping: 25 }}
+              whileHover={shouldReduceMotion ? undefined : { y: -2, boxShadow: '0 8px 24px -6px rgba(0, 0, 0, 0.08)' }}
+              className="rounded-xl border border-border bg-white p-6 shadow-sm space-y-4 transition-colors"
+            >
               <div className="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-border">
                 <div>
                   <span className="text-caption text-muted block">Order ID</span>
@@ -81,12 +90,12 @@ export function OrdersPage() {
                 <span>Placed on {new Date(order.created_at).toLocaleDateString()}</span>
                 <Link
                   to={`/account/orders/${order.order_number}`}
-                  className="flex items-center gap-1 font-semibold text-accent hover:text-accent-dark"
+                  className="flex items-center gap-1 font-semibold text-accent hover:text-accent-dark transition-colors"
                 >
                   View Details & Tracking <ArrowRight size={14} />
                 </Link>
               </div>
-            </div>
+            </motion.div>
           ))}
         </div>
       )}

@@ -22,87 +22,50 @@ import { StatusBadge } from '../components/ui/StatusBadge';
 export function CustomerDetailPage() {
   const { id } = useParams<{ id: string }>();
 
-  const { data: customer, isLoading } = useQuery({
+  const { data: rawCustomer, isLoading } = useQuery({
     queryKey: ['admin', 'customer', id],
-    queryFn: async () => {
-      try {
-        const users = await api.get<any[]>('/users');
-        const found = users?.find((u) => u.id === id);
-        if (found) return found;
-      } catch {
-        // Fallback for resilient preview
-      }
-
-      return {
-        id: id || 'cus-1',
-        email: 'akash.verma@example.com',
-        full_name: 'Akash Verma',
-        phone: '+91 98765 43210',
-        created_at: new Date(Date.now() - 86400000 * 45).toISOString(),
-        order_count: 3,
-        total_spent: 4797,
-        status: 'active',
-        addresses: [
-          {
-            id: 'addr-1',
-            name: 'Akash Verma',
-            phone: '+91 98765 43210',
-            street: '404 Green Valley, 12th Main, Indiranagar',
-            city: 'Bengaluru',
-            state: 'Karnataka',
-            pincode: '560038',
-            is_default: true,
-          },
-          {
-            id: 'addr-2',
-            name: 'Akash Verma (Work)',
-            phone: '+91 98765 43210',
-            street: 'Level 5, WeWork Prestige Tech Park',
-            city: 'Bengaluru',
-            state: 'Karnataka',
-            pincode: '560103',
-            is_default: false,
-          },
-        ],
-        recentOrders: [
-          {
-            id: 'ord-1029',
-            order_number: 'BING-89421',
-            created_at: new Date(Date.now() - 86400000 * 2).toISOString(),
-            total: 2498,
-            status: 'processing',
-            item_count: 2,
-          },
-          {
-            id: 'ord-1015',
-            order_number: 'BING-77124',
-            created_at: new Date(Date.now() - 86400000 * 18).toISOString(),
-            total: 1199,
-            status: 'delivered',
-            item_count: 1,
-          },
-          {
-            id: 'ord-998',
-            order_number: 'BING-65401',
-            created_at: new Date(Date.now() - 86400000 * 40).toISOString(),
-            total: 1100,
-            status: 'delivered',
-            item_count: 1,
-          },
-        ],
-        customDesigns: [
-          {
-            id: 'des-1',
-            title: 'Neo-Tokyo Custom Backprint Tee',
-            created_at: new Date(Date.now() - 86400000 * 3).toISOString(),
-            status: 'approved',
-          },
-        ],
-      };
-    },
+    queryFn: () => api.get<any>(`/users/${id}`),
+    enabled: !!id,
   });
 
-  if (isLoading) {
+  const customer = rawCustomer
+    ? {
+        id: rawCustomer.id,
+        email: rawCustomer.email,
+        full_name: rawCustomer.full_name || rawCustomer.name || 'Customer',
+        phone: rawCustomer.phone,
+        created_at: rawCustomer.created_at,
+        order_count: rawCustomer.orderCount || rawCustomer.orders?.length || 0,
+        total_spent: rawCustomer.totalSpent || 0,
+        status: rawCustomer.status || 'active',
+        addresses: (rawCustomer.addresses || []).map((a: any) => ({
+          id: a.id,
+          name: a.name,
+          phone: a.phone,
+          street: a.line1 + (a.line2 ? `, ${a.line2}` : ''),
+          city: a.city,
+          state: a.state,
+          pincode: a.postal_code,
+          is_default: a.is_default,
+        })),
+        recentOrders: (rawCustomer.orders || []).map((o: any) => ({
+          id: o.id,
+          order_number: o.order_number,
+          created_at: o.created_at,
+          total: o.total,
+          status: o.status,
+          item_count: o.items?.length || 1,
+        })),
+        customDesigns: (rawCustomer.customizations || []).map((c: any) => ({
+          id: c.id,
+          title: c.product_title || 'Custom Garment',
+          created_at: c.created_at,
+          status: c.status,
+        })),
+      }
+    : null;
+
+  if (isLoading || !customer) {
     return (
       <div className="flex min-h-[400px] items-center justify-center gap-3 text-muted">
         <LoaderCircle size={22} className="animate-spin text-brand-red" />
@@ -110,6 +73,7 @@ export function CustomerDetailPage() {
       </div>
     );
   }
+
 
   return (
     <div className="space-y-6">

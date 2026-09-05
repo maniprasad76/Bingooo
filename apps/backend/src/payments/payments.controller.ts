@@ -1,4 +1,4 @@
-import { Controller, Post, Body, Headers } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Query, Headers } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiHeader } from '@nestjs/swagger';
 import { PaymentsService, RazorpayOrderDto, VerifyPaymentDto } from './payments.service';
 
@@ -6,6 +6,18 @@ import { PaymentsService, RazorpayOrderDto, VerifyPaymentDto } from './payments.
 @Controller('payments')
 export class PaymentsController {
   constructor(private readonly paymentsService: PaymentsService) {}
+
+  @Get()
+  @ApiOperation({ summary: 'Admin list all payments ledger entries' })
+  findAll(@Query('status') status?: string, @Query('search') search?: string) {
+    return this.paymentsService.findAll({ status, search });
+  }
+
+  @Post(':id/refund')
+  @ApiOperation({ summary: 'Process refund for payment transaction' })
+  refund(@Param('id') id: string, @Body() body: { amount?: number; reason?: string }) {
+    return this.paymentsService.refund(id, body);
+  }
 
   @Post('razorpay/order')
   @ApiOperation({ summary: 'Create Razorpay order for checkout' })

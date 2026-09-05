@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { motion, useReducedMotion } from 'framer-motion';
 import {
   Phone,
   Mail,
@@ -14,6 +15,7 @@ import {
 import { useToast } from '../components/ui/Toast';
 
 export function ContactPage() {
+  const shouldReduceMotion = useReducedMotion();
   const { toast } = useToast();
   const [submitting, setSubmitting] = useState(false);
   const [formData, setFormData] = useState({
@@ -76,7 +78,11 @@ export function ContactPage() {
             {/* 4 Contact Cards */}
             <div className="space-y-4 pt-4">
               {/* Phone Card */}
-              <div className="flex items-start gap-4 p-4 rounded-xl border border-[#DDD3C5] bg-white shadow-xs">
+              <motion.div
+                whileHover={shouldReduceMotion ? undefined : { y: -3, boxShadow: '0 8px 24px -6px rgba(0, 0, 0, 0.08)' }}
+                transition={{ type: 'spring', stiffness: 400, damping: 25 }}
+                className="flex items-start gap-4 p-4 rounded-xl border border-[#DDD3C5] bg-white shadow-xs transition-colors hover:border-[#E6321C]/40"
+              >
                 <div className="h-11 w-11 rounded-full bg-[#FDF0EE] text-[#E6321C] flex items-center justify-center shrink-0">
                   <Phone size={20} className="stroke-[1.8]" />
                 </div>
@@ -94,10 +100,14 @@ export function ContactPage() {
                     Mon – Sat, 10:00 AM – 8:00 PM
                   </p>
                 </div>
-              </div>
+              </motion.div>
 
               {/* Email Card */}
-              <div className="flex items-start gap-4 p-4 rounded-xl border border-[#DDD3C5] bg-white shadow-xs">
+              <motion.div
+                whileHover={shouldReduceMotion ? undefined : { y: -3, boxShadow: '0 8px 24px -6px rgba(0, 0, 0, 0.08)' }}
+                transition={{ type: 'spring', stiffness: 400, damping: 25 }}
+                className="flex items-start gap-4 p-4 rounded-xl border border-[#DDD3C5] bg-white shadow-xs transition-colors hover:border-[#E6321C]/40"
+              >
                 <div className="h-11 w-11 rounded-full bg-[#FDF0EE] text-[#E6321C] flex items-center justify-center shrink-0">
                   <Mail size={20} className="stroke-[1.8]" />
                 </div>
@@ -115,10 +125,14 @@ export function ContactPage() {
                     We reply within 24 hours
                   </p>
                 </div>
-              </div>
+              </motion.div>
 
               {/* Store Address Card */}
-              <div className="flex items-start gap-4 p-4 rounded-xl border border-[#DDD3C5] bg-white shadow-xs">
+              <motion.div
+                whileHover={shouldReduceMotion ? undefined : { y: -3, boxShadow: '0 8px 24px -6px rgba(0, 0, 0, 0.08)' }}
+                transition={{ type: 'spring', stiffness: 400, damping: 25 }}
+                className="flex items-start gap-4 p-4 rounded-xl border border-[#DDD3C5] bg-white shadow-xs transition-colors hover:border-[#E6321C]/40"
+              >
                 <div className="h-11 w-11 rounded-full bg-[#FDF0EE] text-[#E6321C] flex items-center justify-center shrink-0">
                   <MapPin size={20} className="stroke-[1.8]" />
                 </div>
@@ -134,10 +148,14 @@ export function ContactPage() {
                     Andhra Pradesh – 532001, India
                   </p>
                 </div>
-              </div>
+              </motion.div>
 
               {/* WhatsApp Card */}
-              <div className="flex items-start gap-4 p-4 rounded-xl border border-[#DDD3C5] bg-white shadow-xs">
+              <motion.div
+                whileHover={shouldReduceMotion ? undefined : { y: -3, boxShadow: '0 8px 24px -6px rgba(0, 0, 0, 0.08)' }}
+                transition={{ type: 'spring', stiffness: 400, damping: 25 }}
+                className="flex items-start gap-4 p-4 rounded-xl border border-[#DDD3C5] bg-white shadow-xs transition-colors hover:border-[#E6321C]/40"
+              >
                 <div className="h-11 w-11 rounded-full bg-[#FDF0EE] text-[#E6321C] flex items-center justify-center shrink-0">
                   <Phone size={20} className="stroke-[1.8]" />
                 </div>
@@ -157,7 +175,7 @@ export function ContactPage() {
                     Chat with us on WhatsApp
                   </p>
                 </div>
-              </div>
+              </motion.div>
             </div>
           </div>
 
@@ -224,14 +242,16 @@ export function ContactPage() {
                   />
                 </div>
 
-                <button
+                <motion.button
                   type="submit"
                   disabled={submitting}
-                  className="w-full flex items-center justify-center gap-2 py-4 rounded-xl bg-[#E6321C] hover:bg-[#B91F12] text-white font-sans font-bold text-xs uppercase tracking-wider transition-all shadow-sm"
+                  whileTap={{ scale: 0.98 }}
+                  whileHover={{ scale: 1.01 }}
+                  className="w-full flex items-center justify-center gap-2 py-4 rounded-xl bg-[#E6321C] hover:bg-[#B91F12] text-white font-sans font-bold text-xs uppercase tracking-wider transition-colors shadow-sm"
                 >
                   <Send size={15} />
                   <span>{submitting ? 'SENDING...' : 'SEND MESSAGE'}</span>
-                </button>
+                </motion.button>
               </form>
             </div>
           </div>
@@ -239,7 +259,10 @@ export function ContactPage() {
 
         {/* ─── 4 Support Pillars (Exact Image 3) ─── */}
         <div className="rounded-2xl border border-[#DDD3C5] bg-white p-6 sm:p-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 text-left shadow-xs">
-          <div className="flex items-start gap-3.5">
+          <motion.div
+            whileHover={shouldReduceMotion ? undefined : { y: -2 }}
+            className="flex items-start gap-3.5 transition-transform"
+          >
             <Headphones size={26} className="text-[#E6321C] shrink-0 stroke-[1.8] mt-0.5" />
             <div>
               <h4 className="font-heading font-bold text-xs uppercase tracking-wider text-[#171717]">
@@ -249,9 +272,12 @@ export function ContactPage() {
                 We're here to help you anytime.
               </p>
             </div>
-          </div>
+          </motion.div>
 
-          <div className="flex items-start gap-3.5">
+          <motion.div
+            whileHover={shouldReduceMotion ? undefined : { y: -2 }}
+            className="flex items-start gap-3.5 transition-transform"
+          >
             <ShieldCheck size={26} className="text-[#E6321C] shrink-0 stroke-[1.8] mt-0.5" />
             <div>
               <h4 className="font-heading font-bold text-xs uppercase tracking-wider text-[#171717]">
@@ -261,9 +287,12 @@ export function ContactPage() {
                 Your satisfaction is our priority.
               </p>
             </div>
-          </div>
+          </motion.div>
 
-          <div className="flex items-start gap-3.5">
+          <motion.div
+            whileHover={shouldReduceMotion ? undefined : { y: -2 }}
+            className="flex items-start gap-3.5 transition-transform"
+          >
             <Truck size={26} className="text-[#E6321C] shrink-0 stroke-[1.8] mt-0.5" />
             <div>
               <h4 className="font-heading font-bold text-xs uppercase tracking-wider text-[#171717]">
@@ -273,9 +302,12 @@ export function ContactPage() {
                 We respond to all queries quickly.
               </p>
             </div>
-          </div>
+          </motion.div>
 
-          <div className="flex items-start gap-3.5">
+          <motion.div
+            whileHover={shouldReduceMotion ? undefined : { y: -2 }}
+            className="flex items-start gap-3.5 transition-transform"
+          >
             <Heart size={26} className="text-[#E6321C] shrink-0 stroke-[1.8] mt-0.5" />
             <div>
               <h4 className="font-heading font-bold text-xs uppercase tracking-wider text-[#171717]">
@@ -285,7 +317,7 @@ export function ContactPage() {
                 Customer happiness drives everything we do.
               </p>
             </div>
-          </div>
+          </motion.div>
         </div>
 
         {/* ─── VISIT OUR STORE SECTION (Exact Image 3) ─── */}
@@ -317,15 +349,17 @@ export function ContactPage() {
             </div>
 
             <div className="pt-3">
-              <a
+              <motion.a
                 href="https://maps.google.com/?q=Bypass+Junction+Srikakulam+Andhra+Pradesh"
                 target="_blank"
                 rel="noopener noreferrer"
+                whileHover={{ scale: 1.02, x: 2 }}
+                whileTap={{ scale: 0.98 }}
                 className="inline-flex items-center gap-2 px-6 py-3 rounded-lg border border-[#E6321C] text-[#E6321C] hover:bg-[#FDF0EE] font-sans font-bold text-xs uppercase tracking-wider transition-colors"
               >
                 <span>GET DIRECTIONS</span>
                 <ArrowRight size={14} />
-              </a>
+              </motion.a>
             </div>
           </div>
 
@@ -341,13 +375,17 @@ export function ContactPage() {
               </div>
 
               {/* Map Marker Pin */}
-              <div className="relative z-10 flex flex-col items-center animate-bounce">
+              <motion.div
+                animate={shouldReduceMotion ? undefined : { y: [0, -8, 0] }}
+                transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
+                className="relative z-10 flex flex-col items-center cursor-pointer"
+              >
                 <div className="px-3 py-1.5 rounded-lg bg-[#E6321C] text-white font-heading font-bold text-xs uppercase tracking-wider shadow-md flex items-center gap-1.5">
                   <MapPin size={14} className="fill-white" />
                   <span>Bingooo Mens Wear</span>
                 </div>
                 <div className="w-2.5 h-2.5 bg-[#E6321C] rotate-45 -mt-1 shadow-sm" />
-              </div>
+              </motion.div>
 
               {/* Map Landmark Labels */}
               <div className="absolute top-4 left-6 text-[10px] font-sans text-[#6F6A63] bg-white/70 px-2 py-0.5 rounded border border-[#DDD3C5]">
@@ -385,12 +423,14 @@ export function ContactPage() {
               onChange={(e) => setNewsletterEmail(e.target.value)}
               className="flex-1 sm:w-72 h-12 rounded-xl border border-[#DDD3C5] bg-white px-4 text-xs font-sans text-[#171717] placeholder:text-[#6F6A63] focus:border-[#E6321C] focus:outline-none shadow-xs"
             />
-            <button
+            <motion.button
               type="submit"
+              whileTap={{ scale: 0.97 }}
+              whileHover={{ scale: 1.02 }}
               className="h-12 px-6 rounded-xl bg-[#E6321C] hover:bg-[#B91F12] text-white font-sans font-bold text-xs uppercase tracking-wider transition-colors shadow-sm shrink-0"
             >
               SUBSCRIBE
-            </button>
+            </motion.button>
           </form>
         </div>
       </div>

@@ -127,4 +127,79 @@ export class PaymentsService {
 
     return { received: true };
   }
+
+  /** Admin: List all payments with filtering */
+  findAll(query?: { status?: string; search?: string }) {
+    let items = [...db.payments];
+
+    if (query?.status && query.status !== 'all') {
+      items = items.filter((p) => p.status === query.status);
+    }
+
+    if (query?.search) {
+      const q = query.search.toLowerCase();
+      items = items.filter(
+        (p) =>
+          p.order_number?.toLowerCase().includes(q) ||
+          p.customer_name?.toLowerCase().includes(q) ||
+          p.customer_email?.toLowerCase().includes(q) ||
+          p.provider_payment_id?.toLowerCase().includes(q) ||
+          p.method?.toLowerCase().includes(q),
+      );
+    }
+
+    return items.map((p) => {
+      const order = db.orders.find((o) => o.id === p.order_id);
+      return {
+        id: p.id,
+        orderId: p.order_id,
+        orderNumber: p.order_number || order?.order_number || 'BING-0000',
+        customerName: p.customer_name || order?.shipping_address?.name || 'Customer',
+        customerEmail: p.customer_email || 'customer@bingooo.in',
+        amount: p.amount,
+        currency: p.currency || 'INR',
+        method: p.method || (p.provider === 'razorpay' ? 'Razorpay Gateway' : 'Cash on Delivery'),
+        status: p.status === 'captured' ? 'paid' : p.status,
+        razorpayPaymentId: p.provider_payment_id || null,
+        created_at: p.created_at,
+      };
+    });
+  }
+
+  /** Admin: Process refund */
+  refund(id: string, dto?: { amount?: number; reason?: string }) {
+    const payment = db.payments.find((p) => p.id === id);
+    if (!payment) {
+      throw new NotFoundException({ code: 'PAYMENT_NOT_FOUND', message: 'Payment record not found.' });
+    }
+
+    payment.status = 'refunded';
+    payment.updated_at = new Date().toISOString();
+
+    const order = db.orders.find((o) => o.id === payment.order_id);
+    if (order) {
+      order.status = 'refunded';
+      order.payment_status = 'refunded';
+      order.updated_at = new Date().toISOString();
+    }
+
+    // Log audit trail
+    db.audit_logs.unshift({
+      id: `log-${Date.now()}`,
+      admin_email: 'admin@bingooo.in',
+      action: 'payment.refund_issued',
+      resource: 'payments',
+      resource_id: payment.id,
+      details: `Refund of ₹${dto?.amount || payment.amount} issued. Reason: ${dto?.reason || 'Customer request'}`,
+      ip_address: '103.24.12.89',
+      created_at: new Date().toISOString(),
+    });
+
+    return {
+      success: true,
+      message: 'Refund issued successfully.',
+      paymentId: payment.id,
+      status: payment.status,
+    };
+  }
 }

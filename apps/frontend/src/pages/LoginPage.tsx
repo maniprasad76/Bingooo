@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { motion, useReducedMotion } from 'framer-motion';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -17,6 +18,7 @@ const loginSchema = z.object({
 type LoginForm = z.infer<typeof loginSchema>;
 
 export function LoginPage() {
+  const shouldReduceMotion = useReducedMotion();
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -47,10 +49,17 @@ export function LoginPage() {
   };
 
   return (
-    <div className="flex min-h-[70vh] items-center justify-center px-4">
-      <div className="w-full max-w-sm">
+    <div className="flex min-h-[70vh] items-center justify-center px-4 py-12">
+      <motion.div
+        initial={shouldReduceMotion ? false : { opacity: 0, y: 16 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ type: 'spring', stiffness: 350, damping: 30 }}
+        className="w-full max-w-sm p-6 sm:p-8 bg-white rounded-2xl border border-[#DDD3C5] shadow-xs"
+      >
         <div className="text-center mb-8 flex flex-col items-center">
-          <Logo variant="red" size="lg" withLink className="mb-4" />
+          <motion.div whileHover={{ scale: 1.05 }} transition={{ type: 'spring', stiffness: 400 }}>
+            <Logo variant="red" size="lg" withLink className="mb-4" />
+          </motion.div>
           <h1 className="text-display-lg text-ink">Welcome Back</h1>
           <p className="mt-2 text-body text-muted">Sign in to your Bingooo account</p>
         </div>
@@ -81,7 +90,7 @@ export function LoginPage() {
             Sign Up
           </Link>
         </p>
-      </div>
+      </motion.div>
     </div>
   );
 }

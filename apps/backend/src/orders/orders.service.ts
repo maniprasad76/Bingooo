@@ -22,7 +22,7 @@ export class OrdersService {
     const order = {
       id: orderId,
       order_number: orderNumber,
-      user_id: dto.userId || 'mock-user-id',
+      user_id: dto.userId || 'usr-cust-1',
       status: dto.paymentMethod === 'cod' ? 'processing' : 'pending_payment',
       payment_status: dto.paymentMethod === 'cod' ? 'pending' : 'pending',
       payment_method: dto.paymentMethod,
@@ -32,11 +32,14 @@ export class OrdersService {
       tax: calculation.tax,
       total: calculation.total,
       currency: 'INR',
+      shipping_address: dto.shippingAddress,
       address_snapshot_json: dto.shippingAddress,
       cod_deposit: calculation.codDeposit || null,
       cod_remaining: calculation.codRemaining || null,
       coupon_code: dto.couponCode || null,
       notes: dto.notes || null,
+      tracking_number: null,
+      carrier: null,
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
     };
@@ -85,12 +88,25 @@ export class OrdersService {
         db.coupon_redemptions.push({
           id: uuidv4(),
           coupon_id: coupon.id,
-          user_id: dto.userId || 'mock-user-id',
+          user_id: dto.userId || 'usr-cust-1',
           order_id: orderId,
           created_at: new Date().toISOString(),
         });
       }
     }
+
+    // Push notification for admin
+    db.notifications.unshift({
+      id: `notif-${Date.now()}`,
+      category: 'order',
+      severity: 'info',
+      title: `New Order Placed (#${order.order_number})`,
+      description: `Order for ₹${order.total} placed via ${order.payment_method.toUpperCase()}`,
+      link_href: '/orders',
+      link_text: 'View Order →',
+      is_read: false,
+      created_at: new Date().toISOString(),
+    });
 
     // Clear cart items
     db.cart_items = db.cart_items.filter((i) => i.cart_id !== dto.cartId);
@@ -99,37 +115,91 @@ export class OrdersService {
   }
 
   findByUser(userId: string) {
-    const userOrders = db.orders.filter((o) => o.user_id === userId);
-    return userOrders.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()).map((o) => this.enrichOrder(o));
+    const userOrders = db.orders.filter((o) => o.user_id === userId || userId === 'all');
+    return userOrders
+      .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+      .map((o) => this.enrichOrder(o));
   }
 
-  findByOrderNumber(orderNumber: string) {
-    const order = db.orders.find((o) => o.order_number === orderNumber);
-    if (!order) throw new NotFoundException({ code: 'ORDER_NOT_FOUND', message: `Order "${orderNumber}" not found` });
+  findByOrderNumberOrId(identifier: string) {
+    const order = db.orders.find(
+      (o) => o.order_number === identifier || o.id === identifier,
+    );
+    if (!order) throw new NotFoundException({ code: 'ORDER_NOT_FOUND', message: `Order "${identifier}" not found` });
     return this.enrichOrder(order);
   }
 
-  findAllAdmin() {
-    return db.orders.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()).map((o) => this.enrichOrder(o));
+  findAllAdmin(query?: { status?: string; search?: string }) {
+    let items = [...db.orders];
+    if (query?.status && query.status !== 'all') {
+      items = items.filter((o) => o.status === query.status);
+    }
+    if (query?.search) {
+      const q = query.search.toLowerCase();
+      items = items.filter(
+        (o) =>
+          o.order_number.toLowerCase().includes(q) ||
+          o.shipping_address?.name?.toLowerCase().includes(q) ||
+          o.shipping_address?.phone?.includes(q) ||
+          o.tracking_number?.toLowerCase().includes(q),
+      );
+    }
+
+    return items
+      .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+      .map((o) => this.enrichOrder(o));
   }
 
-  updateStatus(orderId: string, status: string, paymentStatus?: string) {
-    const order = db.orders.find((o) => o.id === orderId);
+  updateStatus(
+    orderId: string,
+    status: string,
+    paymentStatus?: string,
+    trackingNumber?: string,
+    carrier?: string,
+  ) {
+    const order = db.orders.find((o) => o.id === orderId || o.order_number === orderId);
     if (!order) throw new NotFoundException({ code: 'ORDER_NOT_FOUND', message: 'Order not found' });
     order.status = status;
     if (paymentStatus) order.payment_status = paymentStatus;
+    if (trackingNumber) order.tracking_number = trackingNumber;
+    if (carrier) order.carrier = carrier;
     order.updated_at = new Date().toISOString();
+
+    // Log audit
+    db.audit_logs.unshift({
+      id: `log-${Date.now()}`,
+      admin_email: 'admin@bingooo.in',
+      action: 'order.status_update',
+      resource: 'orders',
+      resource_id: order.order_number,
+      details: `Status updated to ${status}.${trackingNumber ? ` Carrier: ${carrier || 'BlueDart'} AWB: ${trackingNumber}` : ''}`,
+      ip_address: '103.24.12.89',
+      created_at: new Date().toISOString(),
+    });
+
     return this.enrichOrder(order);
   }
 
   private enrichOrder(order: any) {
-    const items = db.order_items.filter((i) => i.order_id === order.id).map((i) => {
-      const customization = i.customization_id ? db.customizations.find((c) => c.id === i.customization_id) : null;
-      return {
-        ...i,
-        customization: customization ? { id: customization.id, previewKey: customization.preview_key, status: customization.status } : null,
-      };
-    });
+    const items = db.order_items
+      .filter((i) => i.order_id === order.id)
+      .map((i) => {
+        const customization = i.customization_id
+          ? db.customizations.find((c) => c.id === i.customization_id)
+          : null;
+        return {
+          ...i,
+          customization: customization
+            ? {
+                id: customization.id,
+                previewKey: customization.preview_url || customization.preview_key,
+                status: customization.status,
+                designJson: customization.design_json,
+                printSpec: customization.print_spec,
+              }
+            : null,
+        };
+      });
     const payments = db.payments.filter((p) => p.order_id === order.id);
     const shipments = db.shipments.filter((s) => s.order_id === order.id);
 

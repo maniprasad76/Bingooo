@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import {
   Star,
   Search,
@@ -9,12 +9,15 @@ import {
   ThumbsUp,
   Image as ImageIcon,
   UserCheck,
+  LoaderCircle,
+  AlertCircle,
 } from 'lucide-react';
 import { formatDate } from '../lib/utils';
 import { StatusBadge } from '../components/ui/StatusBadge';
 import { useToast } from '../components/ui/Toast';
+import { api } from '../lib/api/client';
 
-interface ReviewItem {
+export interface ReviewItem {
   id: string;
   customerName: string;
   productTitle: string;
@@ -27,73 +30,51 @@ interface ReviewItem {
   imageUrl?: string;
 }
 
-const mockReviews: ReviewItem[] = [
-  {
-    id: 'rev-1',
-    customerName: 'Aman Deep',
-    productTitle: 'Heavyweight Boxy Tee - Washed Black',
-    rating: 5,
-    title: 'Incredible heavyweight drape and fit',
-    body: 'The 240 GSM weight is real. Thick ribbed collar does not bacon after wash. Very high quality streetwear silhouette.',
-    status: 'approved',
-    verifiedBuyer: true,
-    created_at: new Date(Date.now() - 86400000 * 3).toISOString(),
-    imageUrl: 'https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=500',
-  },
-  {
-    id: 'rev-2',
-    customerName: 'Varun Joshi',
-    productTitle: 'Oversized Minimal Hoodie - Bone White',
-    rating: 4,
-    title: 'Custom DTG print came out very crisp',
-    body: 'Designed my own artwork in the Bingooo Studio. Colors on fabric matched my monitor very closely. Soft fleece lining.',
-    status: 'approved',
-    verifiedBuyer: true,
-    created_at: new Date(Date.now() - 86400000 * 5).toISOString(),
-  },
-  {
-    id: 'rev-3',
-    customerName: 'Pooja Sethi',
-    productTitle: 'Signature Relaxed Sweatshirt',
-    rating: 2,
-    title: 'Sizing runs much larger than standard',
-    body: 'Bought size M for my boyfriend but it fits like an XL. Mention sizing notes more prominently on the product page.',
-    status: 'pending',
-    verifiedBuyer: true,
-    created_at: new Date(Date.now() - 3600000 * 14).toISOString(),
-  },
-];
-
 export function ReviewsPage() {
   const { toast } = useToast();
+  const queryClient = useQueryClient();
 
-  const [reviews, setReviews] = useState<ReviewItem[]>(mockReviews);
   const [statusTab, setStatusTab] = useState('all');
   const [search, setSearch] = useState('');
 
-  const updateStatus = (id: string, newStatus: ReviewItem['status']) => {
-    setReviews((prev) =>
-      prev.map((r) => (r.id === id ? { ...r, status: newStatus } : r))
-    );
-    toast({
-      title: 'Review moderation updated',
-      description: `Review is now ${newStatus}.`,
-      variant: 'success',
-    });
-  };
+  const { data: reviews = [], isLoading } = useQuery({
+    queryKey: ['admin', 'reviews', statusTab, search],
+    queryFn: () => api.get<ReviewItem[]>('/reviews/admin/all', { status: statusTab, search }),
+  });
 
-  const handleDelete = (id: string) => {
-    setReviews((prev) => prev.filter((r) => r.id !== id));
-    toast({ title: 'Review removed from store', variant: 'success' });
-  };
+  const updateStatusMutation = useMutation({
+    mutationFn: ({ id, newStatus }: { id: string; newStatus: ReviewItem['status'] }) =>
+      api.patch(`/reviews/${id}/status`, { status: newStatus }),
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: ['admin', 'reviews'] });
+      toast({
+        title: 'Review moderation updated',
+        description: `Review is now ${variables.newStatus}.`,
+        variant: 'success',
+      });
+    },
+    onError: (err: any) => {
+      toast({
+        title: 'Update failed',
+        description: err.message || 'Could not update review status.',
+        variant: 'danger',
+      });
+    },
+  });
 
-  const filtered = reviews.filter((r) => {
-    const matchesStatus = statusTab === 'all' || r.status === statusTab;
-    const matchesSearch =
-      r.customerName.toLowerCase().includes(search.toLowerCase()) ||
-      r.productTitle.toLowerCase().includes(search.toLowerCase()) ||
-      r.title.toLowerCase().includes(search.toLowerCase());
-    return matchesStatus && matchesSearch;
+  const deleteMutation = useMutation({
+    mutationFn: (id: string) => api.delete(`/reviews/${id}`),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin', 'reviews'] });
+      toast({ title: 'Review removed from store', variant: 'success' });
+    },
+    onError: (err: any) => {
+      toast({
+        title: 'Delete failed',
+        description: err.message || 'Could not delete review.',
+        variant: 'danger',
+      });
+    },
   });
 
   return (
@@ -102,131 +83,162 @@ export function ReviewsPage() {
       <div className="flex flex-wrap items-center justify-between gap-4 card-admin p-6">
         <div>
           <span className="inline-flex items-center gap-1.5 rounded-full bg-[#FDF0EE] px-3 py-1 text-xs font-bold uppercase text-brand-red">
-            <Star size={14} /> Shopper Feedback
+            <Star size={14} /> Social Proof & Sentiment
           </span>
           <h2 className="mt-2 text-xl font-black text-ink sm:text-2xl">
-            Customer Reviews & Ratings Moderation
+            Customer Reviews & Product Ratings
           </h2>
           <p className="text-xs text-muted">
-            Inspect customer testimonials, star ratings, and garment photo uploads before publishing to product pages.
+            Moderate verified customer garment reviews, photographic submissions, and manage public visibility.
           </p>
         </div>
 
-        <div className="relative min-w-0 flex-1 sm:min-w-[260px] sm:max-w-xs">
-          <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted" />
+        <div className="flex items-center gap-2">
+          <span className="rounded-xl border border-border bg-white px-3 py-1.5 text-xs font-bold text-ink shadow-xs">
+            {reviews.length} Reviews in Database
+          </span>
+        </div>
+      </div>
+
+      {/* Filter Tabs & Search */}
+      <div className="flex flex-wrap items-center justify-between gap-3 card-admin p-4">
+        <div className="flex flex-wrap items-center gap-2">
+          {[
+            { id: 'all', label: 'All Reviews' },
+            { id: 'pending', label: 'Pending Moderation' },
+            { id: 'approved', label: 'Approved & Live' },
+            { id: 'rejected', label: 'Rejected' },
+          ].map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => setStatusTab(tab.id)}
+              className={`rounded-xl px-3 py-1.5 text-xs font-bold transition-all ${
+                statusTab === tab.id
+                  ? 'bg-brand-red text-white shadow-xs'
+                  : 'bg-[#FAF8F5] text-muted hover:text-ink'
+              }`}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </div>
+
+        <div className="relative min-w-[240px]">
+          <Search size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted" />
           <input
+            type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search by customer or product..."
-            className="input-admin pl-10 text-xs"
+            placeholder="Search by customer, garment, or feedback content..."
+            className="w-full rounded-xl border border-border bg-[#FAF8F5] pl-9 pr-4 py-1.5 text-xs text-ink placeholder:text-muted focus:border-brand-red focus:outline-none"
           />
         </div>
       </div>
 
-      {/* Tabs */}
-      <div className="flex flex-wrap items-center gap-2 border-b border-border pb-3">
-        {[
-          { key: 'all', label: 'All Reviews' },
-          { key: 'pending', label: 'Pending Moderation' },
-          { key: 'approved', label: 'Approved (Live on Store)' },
-          { key: 'rejected', label: 'Rejected' },
-        ].map((tab) => (
-          <button
-            key={tab.key}
-            onClick={() => setStatusTab(tab.key)}
-            className={`rounded-xl px-3.5 py-1.5 text-xs font-bold transition-all ${
-              statusTab === tab.key
-                ? 'bg-brand-red text-white shadow-sm'
-                : 'bg-white text-muted border border-border hover:border-brand-red hover:text-ink'
-            }`}
-          >
-            {tab.label}
-          </button>
-        ))}
-      </div>
-
       {/* Reviews List */}
-      <div className="space-y-4">
-        {filtered.map((rev) => (
-          <div key={rev.id} className="card-admin p-6 space-y-4">
-            <div className="flex flex-wrap items-start justify-between gap-4 border-b border-border pb-3">
-              <div>
-                <div className="flex items-center gap-2.5">
-                  <span className="font-bold text-ink text-sm">{rev.customerName}</span>
-                  {rev.verifiedBuyer && (
-                    <span className="inline-flex items-center gap-1 rounded-md bg-success/15 px-2 py-0.5 text-[10px] font-bold text-success">
-                      <UserCheck size={12} /> Verified Buyer
-                    </span>
+      {isLoading ? (
+        <div className="flex min-h-[300px] items-center justify-center gap-3 text-muted">
+          <LoaderCircle size={22} className="animate-spin text-brand-red" />
+          <span className="text-xs font-bold uppercase tracking-wider">Syncing customer feedback...</span>
+        </div>
+      ) : reviews.length === 0 ? (
+        <div className="card-admin flex flex-col items-center justify-center p-12 text-center text-muted">
+          <AlertCircle size={32} className="text-border mb-2" />
+          <p className="text-sm font-bold text-ink">No reviews found</p>
+          <p className="text-xs text-muted">No reviews match the active criteria.</p>
+        </div>
+      ) : (
+        <div className="space-y-4">
+          {reviews.map((rev) => (
+            <div key={rev.id} className="card-admin p-6 space-y-4 hover:border-brand-red/30 transition-colors">
+              <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border pb-4">
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span className="font-bold text-ink text-sm">{rev.customerName}</span>
+                    {rev.verifiedBuyer && (
+                      <span className="inline-flex items-center gap-1 rounded bg-[#EAF7EE] px-2 py-0.5 text-[10px] font-bold text-success">
+                        <UserCheck size={11} /> Verified Order
+                      </span>
+                    )}
+                    <StatusBadge status={rev.status} />
+                  </div>
+                  <p className="text-xs text-brand-red font-bold mt-0.5">{rev.productTitle}</p>
+                </div>
+
+                <div className="flex items-center gap-4 text-xs">
+                  <div className="flex items-center gap-1 text-amber-500">
+                    {Array.from({ length: 5 }).map((_, i) => (
+                      <Star
+                        key={i}
+                        size={14}
+                        className={i < rev.rating ? 'fill-amber-400 text-amber-400' : 'text-border'}
+                      />
+                    ))}
+                    <span className="ml-1 font-bold text-ink">{rev.rating}.0</span>
+                  </div>
+                  <span className="text-muted">{formatDate(rev.created_at)}</span>
+                </div>
+              </div>
+
+              {/* Review content */}
+              <div className="space-y-2 text-xs">
+                {rev.title && <h4 className="font-bold text-ink text-sm">{rev.title}</h4>}
+                <p className="text-ink leading-relaxed font-sans">{rev.body}</p>
+
+                {rev.imageUrl && (
+                  <div className="pt-2">
+                    <div className="relative inline-block overflow-hidden rounded-xl border border-border">
+                      <img
+                        src={rev.imageUrl}
+                        alt="Customer look"
+                        className="h-24 w-24 object-cover hover:scale-105 transition-transform"
+                      />
+                      <span className="absolute bottom-1 right-1 rounded bg-black/60 px-1 py-0.5 text-[9px] text-white">
+                        <ImageIcon size={10} className="inline mr-0.5" /> Customer photo
+                      </span>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Action Toolbar */}
+              <div className="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-border">
+                <span className="text-[11px] text-muted">
+                  Review ID: <strong className="font-mono text-ink">{rev.id}</strong>
+                </span>
+
+                <div className="flex items-center gap-2">
+                  {rev.status !== 'approved' && (
+                    <button
+                      onClick={() => updateStatusMutation.mutate({ id: rev.id, newStatus: 'approved' })}
+                      className="inline-flex items-center gap-1 rounded-xl bg-success px-3 py-1.5 text-xs font-bold text-white hover:bg-success/90 transition-colors"
+                    >
+                      <CheckCircle size={13} /> Approve & Publish
+                    </button>
                   )}
-                  <StatusBadge status={rev.status} />
-                </div>
-                <p className="text-xs text-muted mt-0.5">
-                  Reviewed <strong>{rev.productTitle}</strong> on {formatDate(rev.created_at)}
-                </p>
-              </div>
 
-              {/* Moderation Controls */}
-              <div className="flex items-center gap-2">
-                {rev.status !== 'approved' && (
+                  {rev.status !== 'rejected' && (
+                    <button
+                      onClick={() => updateStatusMutation.mutate({ id: rev.id, newStatus: 'rejected' })}
+                      className="inline-flex items-center gap-1 rounded-xl border border-border bg-white px-3 py-1.5 text-xs font-bold text-muted hover:text-ink transition-colors"
+                    >
+                      <XCircle size={13} /> Reject
+                    </button>
+                  )}
+
                   <button
-                    onClick={() => updateStatus(rev.id, 'approved')}
-                    className="btn-primary text-xs"
+                    onClick={() => deleteMutation.mutate(rev.id)}
+                    className="inline-flex items-center gap-1 rounded-xl border border-border bg-white p-2 text-xs text-muted hover:text-brand-red transition-colors"
+                    title="Delete permanently"
                   >
-                    <CheckCircle size={14} /> Approve
+                    <Trash2 size={13} />
                   </button>
-                )}
-                {rev.status !== 'rejected' && (
-                  <button
-                    onClick={() => updateStatus(rev.id, 'rejected')}
-                    className="btn-secondary text-xs"
-                  >
-                    <XCircle size={14} /> Reject
-                  </button>
-                )}
-                <button
-                  onClick={() => handleDelete(rev.id)}
-                  className="p-2 text-muted hover:text-danger rounded-lg border border-border"
-                  title="Delete Review"
-                >
-                  <Trash2 size={15} />
-                </button>
+                </div>
               </div>
             </div>
-
-            {/* Stars & Review Content */}
-            <div className="space-y-2">
-              <div className="flex items-center gap-1">
-                {[1, 2, 3, 4, 5].map((star) => (
-                  <Star
-                    key={star}
-                    size={16}
-                    className={
-                      star <= rev.rating
-                        ? 'fill-[#E6321C] text-[#E6321C]'
-                        : 'text-border fill-border/30'
-                    }
-                  />
-                ))}
-                <span className="text-xs font-bold text-ink ml-1.5">{rev.rating}.0 / 5</span>
-              </div>
-
-              <h4 className="font-bold text-ink text-sm">{rev.title}</h4>
-              <p className="text-xs text-muted leading-relaxed">{rev.body}</p>
-
-              {rev.imageUrl && (
-                <div className="pt-2">
-                  <span className="text-[11px] font-semibold text-muted block mb-1">Attached Customer Photo:</span>
-                  <img
-                    src={rev.imageUrl}
-                    alt="Customer garment"
-                    className="h-20 w-20 rounded-xl border border-border object-cover"
-                  />
-                </div>
-              )}
-            </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

@@ -1,245 +1,186 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { ArrowUp, ArrowRight, Check } from 'lucide-react';
 import { Logo } from '../ui/Logo';
 
-// ─── Clean Minimal Social Icons ───
-function InstagramIcon({ className }: { className?: string }) {
-  return (
-    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-      <rect width="20" height="20" x="2" y="2" rx="5" ry="5" />
-      <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
-      <line x1="17.5" x2="17.51" y1="6.5" y2="6.5" />
-    </svg>
-  );
+interface FooterColumn {
+  title: string;
+  links: { label: string; to: string }[];
 }
 
-function WhatsAppIcon({ className }: { className?: string }) {
-  return (
-    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M3 21l1.65-3.8a9 9 0 1 1 3.4 2.9L3 21" />
-      <path d="M9 10a.5.5 0 0 0 1 0V9a.5.5 0 0 0-1 0v1a5 5 0 0 0 5 5h1a.5.5 0 0 0 0-1h-1a.5.5 0 0 0 0 1" />
-    </svg>
-  );
-}
-
-function XTwitterIcon({ className }: { className?: string }) {
-  return (
-    <svg className={className} viewBox="0 0 24 24" fill="currentColor">
-      <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
-    </svg>
-  );
-}
-
-function YouTubeIcon({ className }: { className?: string }) {
-  return (
-    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33A2.78 2.78 0 0 0 3.4 19c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.25 29 29 0 0 0-.46-5.33z" />
-      <polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02" fill="currentColor" />
-    </svg>
-  );
-}
+const FOOTER_COLUMNS: FooterColumn[] = [
+  {
+    title: 'Shop',
+    links: [
+      { label: 'Oversized Tees', to: '/shop?category=t-shirts' },
+      { label: 'Heavyweight Hoodies', to: '/shop?category=hoodies' },
+      { label: 'Denim and Pants', to: '/shop?category=jeans' },
+      { label: 'Casual Shirts', to: '/shop?category=shirts' },
+      { label: 'New Arrivals', to: '/shop?sort=newest' },
+      { label: 'All Garments', to: '/shop' },
+    ],
+  },
+  {
+    title: 'Custom Studio',
+    links: [
+      { label: '3D Design Lab', to: '/customize' },
+      { label: 'DTF Printing', to: '/customize' },
+      { label: 'Bulk Orders', to: '/contact' },
+      { label: 'Fabric Specifications', to: '/policies/size-guide' },
+      { label: 'Artwork Guidelines', to: '/about' },
+    ],
+  },
+  {
+    title: 'Customer Care',
+    links: [
+      { label: 'Track Order', to: '/account/orders' },
+      { label: 'Shipping Policy', to: '/shipping-policy' },
+      { label: 'Returns and Exchange', to: '/returns-refunds' },
+      { label: 'Size and Fit Guide', to: '/policies/size-guide' },
+      { label: 'Contact Support', to: '/contact' },
+      { label: 'FAQ', to: '/faq' },
+    ],
+  },
+  {
+    title: 'Company',
+    links: [
+      { label: 'About Bingooo', to: '/about' },
+      { label: 'Terms of Service', to: '/terms' },
+      { label: 'Privacy Policy', to: '/privacy-policy' },
+      { label: 'My Account', to: '/account' },
+    ],
+  },
+];
 
 export function Footer() {
+  const [email, setEmail] = useState('');
+  const [isSubscribed, setIsSubscribed] = useState(false);
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email.trim() || !email.includes('@')) return;
+    setIsSubscribed(true);
+  };
+
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   return (
-    <footer className="w-full bg-[#F7EEDB] pt-8 pb-12 sm:pb-16 px-4 sm:px-8 font-sans">
-      {/* ─── Floating Beige Luxury Card Container ─── */}
-      <div className="max-w-[1360px] mx-auto bg-[#EDE0CC] border border-[#DDD3C5] rounded-2xl pt-12 sm:pt-16 lg:pt-20 px-6 sm:px-12 lg:px-16 overflow-hidden shadow-sm relative">
+    <footer
+      role="contentinfo"
+      aria-label="Bingooo Footer"
+      className="w-full bg-[#121212] text-[#DDD3C5] font-sans border-t border-white/10"
+    >
+      <div className="max-w-[1360px] mx-auto px-6 sm:px-10 lg:px-12 py-16 sm:py-20">
         
-        {/* ─── Top Section: Brand Story & Navigation Columns ─── */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 pb-12 sm:pb-14">
-          {/* Left: Red Bingooo Logo & Description */}
-          <div className="lg:col-span-5 space-y-4 text-left">
-            <Link to="/" aria-label="Bingooo Home" className="inline-block group">
-              <Logo variant="red" size="lg" className="transition-transform duration-200 group-hover:scale-105" />
+        {/* ─── Top Section: Logo & Clean Drop Subscription ─── */}
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-8 pb-14 border-b border-white/10">
+          <div className="space-y-3 max-w-md">
+            <Link
+              to="/"
+              aria-label="Bingooo Home"
+              className="inline-block focus-visible:ring-2 focus-visible:ring-[#E6321C] focus-visible:outline-none rounded"
+            >
+              <Logo variant="white" size="lg" />
             </Link>
-            <p className="text-sm sm:text-base text-[#6F6A63] font-sans leading-relaxed max-w-sm">
-              Wear what feels like you. Premium heavyweight cotton, custom atelier prints, and modern menswear silhouettes crafted in Srikakulam.
+            <p className="text-sm text-[#DDD3C5]/70 leading-relaxed">
+              Contemporary Indian menswear crafted with 240 to 280 GSM heavyweight cotton. Wear what feels like you.
             </p>
           </div>
 
-          {/* Right: Columns */}
-          <div className="lg:col-span-7 grid grid-cols-2 sm:grid-cols-4 gap-8 text-left">
-            {/* Column 1: Shop */}
-            <div className="space-y-3.5">
-              <h4 className="font-heading font-extrabold text-xs uppercase tracking-[0.14em] text-[#171717]">
-                Shop
-              </h4>
-              <ul className="space-y-2.5 text-xs sm:text-sm font-sans text-[#6F6A63]">
-                <li>
-                  <Link to="/shop?category=t-shirts" className="hover:text-[#E6321C] transition-colors">
-                    T-Shirts
-                  </Link>
-                </li>
-                <li>
-                  <Link to="/shop?category=hoodies" className="hover:text-[#E6321C] transition-colors">
-                    Hoodies
-                  </Link>
-                </li>
-                <li>
-                  <Link to="/shop?category=jeans" className="hover:text-[#E6321C] transition-colors">
-                    Jeans
-                  </Link>
-                </li>
-                <li>
-                  <Link to="/shop?sort=newest" className="hover:text-[#E6321C] transition-colors inline-flex items-center gap-1.5">
-                    <span>New Arrivals</span>
-                    <span className="px-1.5 py-0.2 rounded bg-[#E6321C] text-white text-[9px] font-bold font-mono">NEW</span>
-                  </Link>
-                </li>
-                <li>
-                  <Link to="/customize" className="hover:text-[#E6321C] transition-colors inline-flex items-center gap-1.5">
-                    <span>Custom Atelier</span>
-                  </Link>
-                </li>
-              </ul>
-            </div>
-
-            {/* Column 2: Customer Care */}
-            <div className="space-y-3.5">
-              <h4 className="font-heading font-extrabold text-xs uppercase tracking-[0.14em] text-[#171717]">
-                Care
-              </h4>
-              <ul className="space-y-2.5 text-xs sm:text-sm font-sans text-[#6F6A63]">
-                <li>
-                  <Link to="/account/orders" className="hover:text-[#E6321C] transition-colors">
-                    Track Order
-                  </Link>
-                </li>
-                <li>
-                  <Link to="/shipping-policy" className="hover:text-[#E6321C] transition-colors">
-                    Shipping
-                  </Link>
-                </li>
-                <li>
-                  <Link to="/returns-refunds" className="hover:text-[#E6321C] transition-colors">
-                    Returns
-                  </Link>
-                </li>
-                <li>
-                  <Link to="/policies/size-guide" className="hover:text-[#E6321C] transition-colors">
-                    Size Guide
-                  </Link>
-                </li>
-                <li>
-                  <Link to="/contact" className="hover:text-[#E6321C] transition-colors">
-                    Contact Us
-                  </Link>
-                </li>
-                <li>
-                  <Link to="/faq" className="hover:text-[#E6321C] transition-colors">
-                    FAQs
-                  </Link>
-                </li>
-              </ul>
-            </div>
-
-            {/* Column 3: Company / Legal */}
-            <div className="space-y-3.5">
-              <h4 className="font-heading font-extrabold text-xs uppercase tracking-[0.14em] text-[#171717]">
-                Company
-              </h4>
-              <ul className="space-y-2.5 text-xs sm:text-sm font-sans text-[#6F6A63]">
-                <li>
-                  <Link to="/about" className="hover:text-[#E6321C] transition-colors">
-                    About Us
-                  </Link>
-                </li>
-                <li>
-                  <Link to="/about#story" className="hover:text-[#E6321C] transition-colors">
-                    Our Story
-                  </Link>
-                </li>
-                <li>
-                  <Link to="/account" className="hover:text-[#E6321C] transition-colors">
-                    My Account
-                  </Link>
-                </li>
-                <li>
-                  <Link to="/privacy-policy" className="hover:text-[#E6321C] transition-colors">
-                    Privacy Policy
-                  </Link>
-                </li>
-                <li>
-                  <Link to="/terms" className="hover:text-[#E6321C] transition-colors">
-                    Terms
-                  </Link>
-                </li>
-              </ul>
-            </div>
-
-            {/* Column 4: Social */}
-            <div className="space-y-3.5">
-              <h4 className="font-heading font-extrabold text-xs uppercase tracking-[0.14em] text-[#171717]">
-                Social
-              </h4>
-              <ul className="space-y-2.5 text-xs sm:text-sm font-sans text-[#6F6A63]">
-                <li>
-                  <a
-                    href="https://instagram.com/bingooo.sklm"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="hover:text-[#E6321C] transition-colors inline-flex items-center gap-2 group"
-                  >
-                    <InstagramIcon className="w-4 h-4 text-[#171717] group-hover:text-[#E6321C] transition-colors" />
-                    <span>Instagram</span>
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="https://wa.me/917981787317"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="hover:text-[#25D366] transition-colors inline-flex items-center gap-2 group"
-                  >
-                    <WhatsAppIcon className="w-4 h-4 text-[#171717] group-hover:text-[#25D366] transition-colors" />
-                    <span>WhatsApp</span>
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="https://twitter.com"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="hover:text-[#171717] transition-colors inline-flex items-center gap-2 group"
-                  >
-                    <XTwitterIcon className="w-4 h-4 text-[#171717] group-hover:text-[#E6321C] transition-colors" />
-                    <span>Twitter</span>
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="https://youtube.com"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="hover:text-[#FF0000] transition-colors inline-flex items-center gap-2 group"
-                  >
-                    <YouTubeIcon className="w-4 h-4 text-[#171717] group-hover:text-[#FF0000] transition-colors" />
-                    <span>YouTube</span>
-                  </a>
-                </li>
-              </ul>
-            </div>
+          {/* Simple Drop Newsletter Form */}
+          <div className="w-full lg:max-w-md">
+            {isSubscribed ? (
+              <div
+                aria-live="polite"
+                className="flex items-center gap-3 p-3.5 rounded-lg bg-white/5 border border-white/10 text-xs text-white"
+              >
+                <Check className="w-4 h-4 text-[#238636] shrink-0" aria-hidden="true" />
+                <span>You are subscribed. Use code <strong className="font-mono text-[#E6321C]">BINGOOO10</strong> for 10% off.</span>
+              </div>
+            ) : (
+              <form onSubmit={handleSubmit} className="flex gap-2">
+                <label htmlFor="simple-footer-email" className="sr-only">
+                  Email for drop updates
+                </label>
+                <input
+                  id="simple-footer-email"
+                  name="email"
+                  type="email"
+                  autoComplete="email"
+                  spellCheck={false}
+                  required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="Enter your email for drop alerts…"
+                  className="flex-1 px-4 py-2.5 rounded-lg bg-white/5 border border-white/15 text-white placeholder-[#DDD3C5]/40 text-sm focus-visible:ring-2 focus-visible:ring-[#E6321C] focus-visible:outline-none transition-colors"
+                />
+                <button
+                  type="submit"
+                  aria-label="Subscribe"
+                  className="px-5 py-2.5 rounded-lg bg-[#E6321C] hover:bg-[#B91F12] text-white font-medium text-xs uppercase tracking-wider font-heading transition-colors shrink-0 flex items-center gap-1.5 focus-visible:ring-2 focus-visible:ring-white focus-visible:outline-none"
+                >
+                  <span>Join</span>
+                  <ArrowRight className="w-3.5 h-3.5" aria-hidden="true" />
+                </button>
+              </form>
+            )}
           </div>
         </div>
 
-        {/* ─── Middle Divider & Copyright ─── */}
-        <div className="pt-8 pb-6 sm:pb-8 border-t border-[#DDD3C5] flex flex-col sm:flex-row items-center justify-between gap-4 text-xs font-sans text-[#6F6A63]">
-          <p className="text-center sm:text-left">
-            &copy; {new Date().getFullYear()} <strong className="text-[#171717]">Bingooo Men&apos;s Wear</strong>. All rights reserved.
-          </p>
-          <div className="flex items-center gap-4 text-center sm:text-right">
-            <span>Srikakulam, AP, India</span>
-            <span>&bull;</span>
-            <span className="text-[#171717] font-semibold">Wear What Feels Like You</span>
-          </div>
+        {/* ─── Middle Section: 4 Spacious, Non-Wrapping Nav Columns ─── */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-8 sm:gap-10 py-14 border-b border-white/10">
+          {FOOTER_COLUMNS.map((col) => (
+            <div key={col.title} className="space-y-4">
+              <h3 className="text-xs font-bold uppercase tracking-wider text-white font-heading">
+                {col.title}
+              </h3>
+              <ul className="space-y-3" role="list">
+                {col.links.map((link) => (
+                  <li key={link.label}>
+                    <Link
+                      to={link.to}
+                      className="text-sm text-[#DDD3C5]/70 hover:text-white transition-colors duration-150 block truncate focus-visible:ring-2 focus-visible:ring-[#E6321C] focus-visible:outline-none rounded"
+                    >
+                      {link.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
         </div>
 
-        {/* ─── Bottom Signature: ORIGINAL BINGOOO RED PNG LOGO IMAGE (PROPERLY VISIBLE) ─── */}
-        <div className="pt-6 sm:pt-8 pb-8 sm:pb-12 px-4 sm:px-8 flex items-center justify-center border-t border-[#DDD3C5]/60 bg-[#EDE0CC]">
-          <img
-            src="/logo.png"
-            alt="Bingooo Men's Wear"
-            className="w-full max-w-[520px] sm:max-w-[680px] md:max-w-[800px] lg:max-w-[880px] h-auto object-contain select-none transition-transform duration-300 hover:scale-[1.01]"
-          />
+        {/* ─── Bottom Section: Clean Copyright & Top Link ─── */}
+        <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-[#DDD3C5]/60">
+          <div className="flex flex-wrap items-center justify-center sm:justify-start gap-x-4 gap-y-2">
+            <p>&copy; {new Date().getFullYear()} Bingooo Men&apos;s Wear. All rights reserved.</p>
+            <span className="hidden sm:inline text-white/20" aria-hidden="true">•</span>
+            <span>Srikakulam, Andhra Pradesh</span>
+            <span className="hidden sm:inline text-white/20" aria-hidden="true">•</span>
+            <p>
+              Developed by{' '}
+              <a
+                href="https://instagram.com/___mani___76"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-medium text-white hover:text-[#E6321C] transition-colors focus-visible:ring-2 focus-visible:ring-[#E6321C] focus-visible:outline-none rounded"
+              >
+                ___mani___76
+              </a>
+            </p>
+          </div>
+
+          <button
+            type="button"
+            onClick={scrollToTop}
+            aria-label="Back to top"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/5 hover:bg-white/10 text-white transition-colors text-xs font-medium focus-visible:ring-2 focus-visible:ring-[#E6321C] focus-visible:outline-none"
+          >
+            <span>Back to top</span>
+            <ArrowUp className="w-3.5 h-3.5" aria-hidden="true" />
+          </button>
         </div>
 
       </div>

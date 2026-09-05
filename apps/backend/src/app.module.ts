@@ -19,6 +19,7 @@ import { ShippingModule } from './shipping/shipping.module';
 import { CouponsModule } from './coupons/coupons.module';
 import { ReviewsModule } from './reviews/reviews.module';
 import { NotificationsModule } from './notifications/notifications.module';
+import { ReturnsModule } from './returns/returns.module';
 import { AdminModule } from './admin/admin.module';
 import { AuditModule } from './audit/audit.module';
 import { BannersModule } from './banners/banners.module';
@@ -51,6 +52,7 @@ import { BannersModule } from './banners/banners.module';
     OrdersModule,
     ShippingModule,
     CouponsModule,
+    ReturnsModule,
 
     // ── Customization ──
     CustomizationsModule,

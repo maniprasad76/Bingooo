@@ -139,6 +139,23 @@ export function OrderDetailPage() {
     },
   });
 
+  const updateTrackingMutation = useMutation({
+    mutationFn: () =>
+      api.patch(`/orders/${order?.id || id}/status`, {
+        status: order?.status || 'shipped',
+        carrier,
+        trackingNumber: trackingNumber || order?.tracking_number,
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin', 'order', id] });
+      queryClient.invalidateQueries({ queryKey: ['admin', 'orders'] });
+      toast({ title: 'Tracking updated & customer notified via SMS', variant: 'success' });
+    },
+    onError: (err: Error) => {
+      toast({ title: 'Tracking update failed', description: err.message, variant: 'danger' });
+    },
+  });
+
   if (isLoading) {
     return (
       <div className="flex min-h-[400px] items-center justify-center gap-3 text-muted">
@@ -347,10 +364,11 @@ export function OrderDetailPage() {
               </div>
             </div>
             <button
-              onClick={() => toast({ title: 'Tracking updated & customer notified via SMS', variant: 'success' })}
+              onClick={() => updateTrackingMutation.mutate()}
+              disabled={updateTrackingMutation.isPending}
               className="btn-secondary text-xs"
             >
-              <Send size={14} /> Update Tracking & Notify Customer
+              <Send size={14} /> {updateTrackingMutation.isPending ? 'Updating...' : 'Update Tracking & Notify Customer'}
             </button>
           </div>
         </div>

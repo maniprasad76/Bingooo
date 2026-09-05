@@ -1,5 +1,6 @@
 import { useParams, Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
+import { motion, useReducedMotion } from 'framer-motion';
 import { Package, Truck, CheckCircle2, ArrowLeft, Clock } from 'lucide-react';
 import { api } from '../lib/api/client';
 import { Badge } from '../components/ui/Badge';
@@ -7,6 +8,7 @@ import { Button } from '../components/ui/Button';
 import { Logo } from '../components/ui/Logo';
 
 export function OrderDetailPage() {
+  const shouldReduceMotion = useReducedMotion();
   const { orderNumber } = useParams<{ orderNumber: string }>();
 
   const { data: order, isLoading, isError } = useQuery({
@@ -36,7 +38,7 @@ export function OrderDetailPage() {
   return (
     <div className="container-page py-8 sm:py-12 space-y-8">
       <div className="flex items-center justify-between">
-        <Link to="/account/orders" className="inline-flex items-center gap-1.5 text-caption font-semibold text-muted hover:text-ink">
+        <Link to="/account/orders" className="inline-flex items-center gap-1.5 text-caption font-semibold text-muted hover:text-ink transition-colors">
           <ArrowLeft size={16} /> Back to All Orders
         </Link>
         <Logo variant="red" size="sm" withLink />
@@ -67,15 +69,18 @@ export function OrderDetailPage() {
           ].map((step, idx) => {
             const Icon = step.icon;
             return (
-              <div
+              <motion.div
                 key={idx}
-                className={`flex items-center gap-3 p-3 rounded-lg border ${
+                initial={shouldReduceMotion ? false : { opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: idx * 0.08 }}
+                className={`flex items-center gap-3 p-3 rounded-lg border transition-all ${
                   step.done ? 'bg-success/5 border-success/30 text-success' : 'bg-paper border-border text-muted'
                 }`}
               >
                 <Icon size={20} />
                 <span className="text-caption font-bold text-ink">{step.label}</span>
-              </div>
+              </motion.div>
             );
           })}
         </div>

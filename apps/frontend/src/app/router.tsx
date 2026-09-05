@@ -19,6 +19,13 @@ import { AdminDashboardPage } from '../pages/AdminDashboardPage';
 import { PoliciesPage } from '../pages/PoliciesPage';
 import { ContactPage } from '../pages/ContactPage';
 import { AboutPage } from '../pages/AboutPage';
+import { FaqPage } from '../pages/FaqPage';
+import { PrivacyPolicyPage } from '../pages/PrivacyPolicyPage';
+import { TermsPage } from '../pages/TermsPage';
+import { ShippingPolicyPage } from '../pages/ShippingPolicyPage';
+import { ReturnsRefundsPage } from '../pages/ReturnsRefundsPage';
+import { CancellationPolicyPage } from '../pages/CancellationPolicyPage';
+import { SizeGuidePage } from '../pages/SizeGuidePage';
 import { NotFoundPage } from '../pages/NotFoundPage';
 
 export const router = createBrowserRouter([
@@ -48,6 +55,19 @@ export const router = createBrowserRouter([
       { path: 'login', element: <LoginPage /> },
       { path: 'signup', element: <SignupPage /> },
       { path: 'contact', element: <ContactPage /> },
+      { path: 'faq', element: <FaqPage /> },
+      { path: 'privacy-policy', element: <PrivacyPolicyPage /> },
+      { path: 'privacy', element: <PrivacyPolicyPage /> },
+      { path: 'terms', element: <TermsPage /> },
+      { path: 'terms-and-conditions', element: <TermsPage /> },
+      { path: 'shipping-policy', element: <ShippingPolicyPage /> },
+      { path: 'shipping', element: <ShippingPolicyPage /> },
+      { path: 'returns-refunds', element: <ReturnsRefundsPage /> },
+      { path: 'return-policy', element: <ReturnsRefundsPage /> },
+      { path: 'returns', element: <ReturnsRefundsPage /> },
+      { path: 'cancellation-policy', element: <CancellationPolicyPage /> },
+      { path: 'size-guide', element: <SizeGuidePage /> },
+      { path: 'policies', element: <PoliciesPage /> },
       { path: 'policies/:slug', element: <PoliciesPage /> },
       { path: 'admin', element: <AdminDashboardPage /> },
       { path: 'admin/*', element: <AdminDashboardPage /> },

@@ -2,13 +2,8 @@ import { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import {
   ArrowRight,
-  CheckCircle2,
-  ChevronLeft,
-  ChevronRight,
   PenTool,
   Shirt,
-  ShieldCheck,
-  Truck,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ProductCard } from '../components/catalog/ProductCard';
@@ -261,8 +256,26 @@ export function HomePage() {
           </motion.div>
         </AnimatePresence>
 
+        {/* ── Slide Indicator Dots (Visible on mobile and desktop) ── */}
+        {totalSlides > 1 && (
+          <div className="absolute bottom-6 sm:bottom-8 left-0 right-0 z-20 flex justify-center items-center gap-2 pointer-events-auto">
+            {slides.map((_, i) => (
+              <button
+                key={i}
+                onClick={() => setPage([i, i > currentSlide ? 1 : -1])}
+                aria-label={`Go to slide ${i + 1}`}
+                className={`transition-all duration-300 rounded-full ${
+                  i === currentSlide
+                    ? 'w-6 h-2 bg-[#E6321C]'
+                    : 'w-2 h-2 bg-white/60 hover:bg-white'
+                }`}
+              />
+            ))}
+          </div>
+        )}
+
         {/* ── ONLY Custom Button Floating Cleanly Over Image ── */}
-        <div className="absolute bottom-20 sm:bottom-10 left-0 right-0 z-20 mx-auto max-w-[1360px] px-4 sm:px-8 flex justify-center sm:justify-start pointer-events-none">
+        <div className="absolute bottom-16 sm:bottom-10 left-0 right-0 z-20 mx-auto max-w-[1360px] px-4 sm:px-8 flex justify-center sm:justify-start pointer-events-none">
           <motion.div
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
@@ -272,9 +285,9 @@ export function HomePage() {
             <motion.div whileHover={{ scale: 1.05, y: -2 }} whileTap={{ scale: 0.95 }}>
               <Link
                 to="/customize"
-                className="inline-flex items-center gap-2.5 rounded-full bg-[#171717]/90 hover:bg-[#E6321C] text-white px-7 sm:px-8 py-3.5 sm:py-4 text-xs sm:text-sm font-bold uppercase tracking-[0.14em] shadow-2xl backdrop-blur-md border border-white/25 transition-all duration-200 group"
+                className="inline-flex items-center gap-2.5 rounded-full bg-[#171717]/90 hover:bg-[#E6321C] text-white px-6 sm:px-8 py-3 sm:py-4 text-xs sm:text-sm font-bold uppercase tracking-[0.14em] shadow-2xl backdrop-blur-md border border-white/25 transition-all duration-200 group"
               >
-                <PenTool size={16} className="text-[#E6321C] group-hover:text-white transition-colors" />
+                <PenTool size={15} className="text-[#E6321C] group-hover:text-white transition-colors" />
                 <span>Custom Design</span>
                 <ArrowRight size={14} className="opacity-70 group-hover:translate-x-1 group-hover:opacity-100 transition-all" />
               </Link>
@@ -284,7 +297,7 @@ export function HomePage() {
       </section>
 
       {/* ── Category Section ── */}
-      <section className="mx-auto max-w-[1360px] px-4 py-14 sm:px-8 sm:py-20">
+      <section className="mx-auto max-w-[1360px] px-3.5 py-10 sm:px-8 sm:py-20">
         <SectionHeading
           eyebrow="Explore the edit"
           title="Shop your style"
@@ -297,10 +310,10 @@ export function HomePage() {
             </Link>
           }
         />
-        <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="mt-6 sm:mt-8 grid grid-cols-2 gap-2.5 sm:gap-4 lg:grid-cols-4">
           {categoriesQuery.isLoading
             ? Array.from({ length: 4 }, (_, index) => (
-                <Skeleton key={index} className="h-60 rounded-2xl" />
+                <Skeleton key={index} className="h-44 sm:h-60 rounded-xl sm:rounded-2xl" />
               ))
             : categories.slice(0, 4).map((category, index) => (
                 <motion.div
@@ -312,24 +325,23 @@ export function HomePage() {
                 >
                   <Link
                     to={`/category/${category.slug}`}
-                    className={`group relative flex min-h-60 h-full flex-col justify-end overflow-hidden rounded-2xl border border-[#DDD3C5] bg-gradient-to-br p-6 shadow-card transition-all duration-300 hover:-translate-y-1.5 hover:shadow-elevated ${
+                    className={`group relative flex min-h-[160px] sm:min-h-60 h-full flex-col justify-end overflow-hidden rounded-xl sm:rounded-2xl border border-[#DDD3C5] bg-gradient-to-br p-4 sm:p-6 shadow-card transition-all duration-300 hover:-translate-y-1.5 hover:shadow-elevated ${
                       categoryStyles[index % categoryStyles.length]
                     }`}
                   >
                     <Shirt
-                      className="absolute right-5 top-5 opacity-25 transition-transform duration-500 group-hover:scale-110 group-hover:rotate-6"
-                      size={64}
+                      className="absolute right-3 top-3 sm:right-5 sm:top-5 opacity-20 sm:opacity-25 transition-transform duration-500 group-hover:scale-110 group-hover:rotate-6 w-10 h-10 sm:w-16 sm:h-16"
                       strokeWidth={1.2}
                     />
                     <div className="relative flex h-full flex-col justify-end">
-                      <p className="text-xs font-bold uppercase tracking-[.15em] opacity-65">
+                      <p className="text-[9px] sm:text-xs font-bold uppercase tracking-[.15em] opacity-65">
                         Bingooo collection
                       </p>
-                      <h2 className="mt-2 text-2xl font-extrabold uppercase">
+                      <h2 className="mt-1 sm:mt-2 text-base sm:text-2xl font-extrabold uppercase line-clamp-1">
                         {category.name}
                       </h2>
-                      <span className="mt-4 inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wide">
-                        Shop now <ArrowRight size={15} />
+                      <span className="mt-2 sm:mt-4 inline-flex items-center gap-1.5 sm:gap-2 text-[10px] sm:text-xs font-bold uppercase tracking-wide">
+                        Shop now <ArrowRight size={13} className="sm:w-[15px] sm:h-[15px]" />
                       </span>
                     </div>
                   </Link>
@@ -340,7 +352,7 @@ export function HomePage() {
 
       {/* ── Featured Products ── */}
       <section className="border-y border-[#DDD3C5] bg-white">
-        <div className="mx-auto max-w-[1360px] px-4 py-14 sm:px-8 sm:py-20">
+        <div className="mx-auto max-w-[1360px] px-3.5 py-10 sm:px-8 sm:py-20">
           <SectionHeading
             eyebrow="The Bingooo edit"
             title="New arrivals"
@@ -353,10 +365,10 @@ export function HomePage() {
               </Link>
             }
           />
-          <div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="mt-6 sm:mt-8 grid grid-cols-2 gap-2.5 sm:gap-4 lg:grid-cols-4">
             {featuredQuery.isLoading
               ? Array.from({ length: 4 }, (_, index) => (
-                  <Skeleton key={index} className="aspect-[4/5] rounded-2xl" />
+                  <Skeleton key={index} className="aspect-[4/5] rounded-xl sm:rounded-2xl" />
                 ))
               : featured.map((product: any, index: number) => (
                   <motion.div
@@ -403,12 +415,12 @@ function SectionHeading({
   action: React.ReactNode;
 }) {
   return (
-    <div className="flex items-end justify-between gap-4">
+    <div className="flex items-end justify-between gap-3 sm:gap-4">
       <div>
-        <p className="text-xs font-bold uppercase tracking-[.15em] text-[#E6321C]">
+        <p className="text-[10px] sm:text-xs font-bold uppercase tracking-[.15em] text-[#E6321C]">
           {eyebrow}
         </p>
-        <h2 className="mt-2 text-3xl font-extrabold uppercase sm:text-4xl">
+        <h2 className="mt-1 sm:mt-2 text-2xl sm:text-4xl font-extrabold uppercase">
           {title}
         </h2>
       </div>

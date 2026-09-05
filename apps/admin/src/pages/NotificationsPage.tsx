@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
 import {
   Bell,
@@ -10,11 +11,14 @@ import {
   Trash2,
   ExternalLink,
   Info,
+  LoaderCircle,
+  AlertCircle,
 } from 'lucide-react';
 import { formatDate } from '../lib/utils';
 import { useToast } from '../components/ui/Toast';
+import { api } from '../lib/api/client';
 
-interface NotificationAlert {
+export interface NotificationAlert {
   id: string;
   category: 'order' | 'custom' | 'stock' | 'payment';
   severity: 'info' | 'warning' | 'critical';
@@ -26,73 +30,46 @@ interface NotificationAlert {
   created_at: string;
 }
 
-const initialNotifications: NotificationAlert[] = [
-  {
-    id: 'notif-1',
-    category: 'stock',
-    severity: 'critical',
-    title: 'Low Stock Alert: Heavyweight Boxy Tee (L, Black)',
-    description: 'Only 3 units remain in physical warehouse stock. Low threshold is 5 units.',
-    linkHref: '/inventory',
-    linkText: 'Adjust Stock in Inventory →',
-    isRead: false,
-    created_at: new Date(Date.now() - 3600000 * 1).toISOString(),
-  },
-  {
-    id: 'notif-2',
-    category: 'custom',
-    severity: 'warning',
-    title: 'New Custom Studio Print Submission (#BING-CUST-9102)',
-    description: 'Customer uploaded 300 DPI backprint artwork awaiting DTG production approval.',
-    linkHref: '/custom-orders',
-    linkText: 'Review in Custom Queue →',
-    isRead: false,
-    created_at: new Date(Date.now() - 3600000 * 3).toISOString(),
-  },
-  {
-    id: 'notif-3',
-    category: 'order',
-    severity: 'info',
-    title: 'New High-Value Order Placed (#BING-89421)',
-    description: 'Order total of ₹2,498 confirmed via Razorpay UPI.',
-    linkHref: '/orders',
-    linkText: 'View Order →',
-    isRead: false,
-    created_at: new Date(Date.now() - 3600000 * 5).toISOString(),
-  },
-  {
-    id: 'notif-4',
-    category: 'payment',
-    severity: 'warning',
-    title: 'Payment Verification Check',
-    description: 'Razorpay webhook signature verified for Order #BING-89419.',
-    linkHref: '/payments',
-    linkText: 'Inspect Payment Ledger →',
-    isRead: true,
-    created_at: new Date(Date.now() - 86400000 * 1).toISOString(),
-  },
-];
-
 export function NotificationsPage() {
   const { toast } = useToast();
-  const [notifications, setNotifications] = useState<NotificationAlert[]>(initialNotifications);
+  const queryClient = useQueryClient();
+
   const [filter, setFilter] = useState<'all' | 'unread' | 'critical'>('all');
 
-  const markAllAsRead = () => {
-    setNotifications((prev) => prev.map((n) => ({ ...n, isRead: true })));
-    toast({ title: 'All notifications marked as read', variant: 'success' });
-  };
+  const { data: notifications = [], isLoading } = useQuery({
+    queryKey: ['admin', 'notifications'],
+    queryFn: () => api.get<NotificationAlert[]>('/notifications'),
+  });
 
-  const toggleRead = (id: string) => {
-    setNotifications((prev) =>
-      prev.map((n) => (n.id === id ? { ...n, isRead: !n.isRead } : n))
-    );
-  };
+  const markAllAsReadMutation = useMutation({
+    mutationFn: () => api.patch('/notifications/read-all'),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin', 'notifications'] });
+      toast({ title: 'All notifications marked as read', variant: 'success' });
+    },
+    onError: (err: any) => {
+      toast({ title: 'Operation failed', description: err.message, variant: 'danger' });
+    },
+  });
 
-  const deleteNotif = (id: string) => {
-    setNotifications((prev) => prev.filter((n) => n.id !== id));
-    toast({ title: 'Notification dismissed', variant: 'success' });
-  };
+  const toggleReadMutation = useMutation({
+    mutationFn: ({ id, isRead }: { id: string; isRead: boolean }) =>
+      api.patch(`/notifications/${id}/read`, { isRead }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin', 'notifications'] });
+    },
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: (id: string) => api.delete(`/notifications/${id}`),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin', 'notifications'] });
+      toast({ title: 'Notification dismissed', variant: 'success' });
+    },
+    onError: (err: any) => {
+      toast({ title: 'Dismissal failed', description: err.message, variant: 'danger' });
+    },
+  });
 
   const filtered = notifications.filter((n) => {
     if (filter === 'unread') return !n.isRead;
@@ -100,26 +77,20 @@ export function NotificationsPage() {
     return true;
   });
 
-  const getSeverityBadge = (severity: NotificationAlert['severity']) => {
-    switch (severity) {
-      case 'critical':
-        return (
-          <span className="inline-flex items-center gap-1 rounded-md bg-danger/15 px-2 py-0.5 text-[10px] font-bold uppercase text-danger">
-            <AlertTriangle size={11} /> Critical
-          </span>
-        );
-      case 'warning':
-        return (
-          <span className="inline-flex items-center gap-1 rounded-md bg-warning/15 px-2 py-0.5 text-[10px] font-bold uppercase text-warning">
-            Warning
-          </span>
-        );
+  const unreadCount = notifications.filter((n) => !n.isRead).length;
+
+  const getCategoryIcon = (category: NotificationAlert['category']) => {
+    switch (category) {
+      case 'stock':
+        return <AlertTriangle size={16} className="text-amber-500" />;
+      case 'custom':
+        return <Sparkles size={16} className="text-brand-red" />;
+      case 'order':
+        return <ShoppingBag size={16} className="text-ink" />;
+      case 'payment':
+        return <CreditCard size={16} className="text-success" />;
       default:
-        return (
-          <span className="inline-flex items-center gap-1 rounded-md bg-brand-red/15 px-2 py-0.5 text-[10px] font-bold uppercase text-brand-red">
-            Info
-          </span>
-        );
+        return <Info size={16} className="text-muted" />;
     }
   };
 
@@ -129,110 +100,128 @@ export function NotificationsPage() {
       <div className="flex flex-wrap items-center justify-between gap-4 card-admin p-6">
         <div>
           <span className="inline-flex items-center gap-1.5 rounded-full bg-[#FDF0EE] px-3 py-1 text-xs font-bold uppercase text-brand-red">
-            <Bell size={14} /> Operations Alerts
+            <Bell size={14} /> Operations Dispatch
           </span>
           <h2 className="mt-2 text-xl font-black text-ink sm:text-2xl">
-            Operations Notification Center
+            Store Alerts & Production Notifications
           </h2>
           <p className="text-xs text-muted">
-            Live telemetry alerts for low stock triggers, customer studio artwork queues, and fulfillment checkpoints.
+            Real-time telemetry regarding warehouse inventory depletion, new orders, and print approvals.
           </p>
         </div>
 
-        <button onClick={markAllAsRead} className="btn-secondary text-xs">
-          <CheckCircle2 size={14} /> Mark All as Read
-        </button>
+        <div className="flex items-center gap-2">
+          {unreadCount > 0 && (
+            <button
+              onClick={() => markAllAsReadMutation.mutate()}
+              disabled={markAllAsReadMutation.isPending}
+              className="inline-flex items-center gap-1.5 rounded-xl border border-border bg-white px-3 py-1.5 text-xs font-bold text-ink hover:border-brand-red hover:text-brand-red transition-colors shadow-xs"
+            >
+              <CheckCircle2 size={13} /> Mark All as Read ({unreadCount})
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Filter Tabs */}
-      <div className="flex items-center gap-2 border-b border-border pb-3">
-        {[
-          { key: 'all', label: `All (${notifications.length})` },
-          { key: 'unread', label: `Unread (${notifications.filter((n) => !n.isRead).length})` },
-          { key: 'critical', label: 'Critical Only' },
-        ].map((tab) => (
-          <button
-            key={tab.key}
-            onClick={() => setFilter(tab.key as any)}
-            className={`rounded-xl px-3.5 py-1.5 text-xs font-bold transition-all ${
-              filter === tab.key
-                ? 'bg-brand-red text-white shadow-sm'
-                : 'bg-white text-muted border border-border hover:border-brand-red hover:text-ink'
-            }`}
-          >
-            {tab.label}
-          </button>
-        ))}
+      <div className="flex flex-wrap items-center justify-between gap-3 card-admin p-4">
+        <div className="flex items-center gap-2">
+          {[
+            { id: 'all', label: `All Alerts (${notifications.length})` },
+            { id: 'unread', label: `Unread (${unreadCount})` },
+            { id: 'critical', label: 'Critical Only' },
+          ].map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => setFilter(tab.id as any)}
+              className={`rounded-xl px-3 py-1.5 text-xs font-bold transition-all ${
+                filter === tab.id
+                  ? 'bg-brand-red text-white shadow-xs'
+                  : 'bg-[#FAF8F5] text-muted hover:text-ink'
+              }`}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </div>
       </div>
 
       {/* Notifications List */}
-      <div className="space-y-3">
-        {filtered.map((notif) => (
-          <div
-            key={notif.id}
-            className={`rounded-2xl border p-5 transition-all ${
-              notif.isRead
-                ? 'border-border bg-white'
-                : 'border-brand-red/30 bg-[#FDF9F4] shadow-sm'
-            }`}
-          >
-            <div className="flex flex-wrap items-start justify-between gap-3">
-              <div className="flex items-start gap-3">
-                <div
-                  className={`mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl ${
-                    notif.severity === 'critical'
-                      ? 'bg-danger/10 text-danger'
-                      :                    notif.severity === 'warning'
-                      ? 'bg-warning/10 text-warning'
-                      : 'bg-brand-red/10 text-brand-red'
-                  }`}
-                >
-                  {notif.category === 'stock' && <AlertTriangle size={18} />}
-                  {notif.category === 'custom' && <Sparkles size={18} />}
-                  {notif.category === 'order' && <ShoppingBag size={18} />}
-                  {notif.category === 'payment' && <CreditCard size={18} />}
-                </div>
-
-                <div className="space-y-1">
-                  <div className="flex items-center gap-2">
-                    <h3 className="font-bold text-ink text-sm">{notif.title}</h3>
-                    {getSeverityBadge(notif.severity)}
-                    {!notif.isRead && (
-                      <span className="h-2 w-2 rounded-full bg-brand-red" />
-                    )}
-                  </div>
-                  <p className="text-xs text-muted leading-relaxed">{notif.description}</p>
-                  {notif.linkHref && (
-                    <Link
-                      to={notif.linkHref}
-                      className="inline-block pt-1 text-xs font-bold text-brand-red hover:underline"
-                    >
-                      {notif.linkText}
-                    </Link>
-                  )}
-                </div>
-              </div>
-
-              <div className="flex items-center gap-2 self-start text-xs text-muted">
-                <span>{formatDate(notif.created_at)}</span>
-                <button
-                  onClick={() => toggleRead(notif.id)}
-                  className="p-1 text-muted hover:text-ink rounded"
-                  title={notif.isRead ? 'Mark as unread' : 'Mark as read'}
-                >
-                  <CheckCircle2 size={16} className={notif.isRead ? 'text-success' : 'text-muted'} />
-                </button>
-                <button
-                  onClick={() => deleteNotif(notif.id)}
-                  className="p-1 text-muted hover:text-danger rounded"
-                  title="Dismiss notification"
-                >
-                  <Trash2 size={16} />
-                </button>
-              </div>
-            </div>
+      <div className="card-admin overflow-hidden">
+        {isLoading ? (
+          <div className="flex min-h-[300px] items-center justify-center gap-3 text-muted">
+            <LoaderCircle size={22} className="animate-spin text-brand-red" />
+            <span className="text-xs font-bold uppercase tracking-wider">Syncing alert dispatch...</span>
           </div>
-        ))}
+        ) : filtered.length === 0 ? (
+          <div className="flex flex-col items-center justify-center p-12 text-center text-muted">
+            <CheckCircle2 size={32} className="text-success mb-2" />
+            <p className="text-sm font-bold text-ink">All caught up!</p>
+            <p className="text-xs text-muted">No unhandled operational notifications at this time.</p>
+          </div>
+        ) : (
+          <div className="divide-y divide-border">
+            {filtered.map((notif) => (
+              <div
+                key={notif.id}
+                className={`flex flex-wrap items-start justify-between gap-4 p-5 transition-colors ${
+                  notif.isRead ? 'bg-white' : 'bg-[#FAF8F5]'
+                }`}
+              >
+                <div className="flex items-start gap-3.5">
+                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-white border border-border shadow-xs mt-0.5">
+                    {getCategoryIcon(notif.category)}
+                  </div>
+
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-2">
+                      <h4 className={`text-xs ${notif.isRead ? 'font-bold text-ink' : 'font-black text-ink'}`}>
+                        {notif.title}
+                      </h4>
+                      {!notif.isRead && (
+                        <span className="h-2 w-2 rounded-full bg-brand-red" />
+                      )}
+                    </div>
+
+                    <p className="text-xs text-muted leading-relaxed max-w-xl">
+                      {notif.description}
+                    </p>
+
+                    <div className="flex items-center gap-3 pt-1 text-[11px]">
+                      <span className="text-muted">{formatDate(notif.created_at)}</span>
+                      {notif.linkHref && (
+                        <Link
+                          to={notif.linkHref}
+                          className="font-bold text-brand-red hover:underline inline-flex items-center gap-1"
+                        >
+                          {notif.linkText || 'Inspect Details →'}
+                        </Link>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() =>
+                      toggleReadMutation.mutate({ id: notif.id, isRead: !notif.isRead })
+                    }
+                    className="rounded-lg border border-border bg-white px-2.5 py-1 text-[11px] font-bold text-muted hover:text-ink transition-colors"
+                  >
+                    {notif.isRead ? 'Mark Unread' : 'Mark Read'}
+                  </button>
+                  <button
+                    onClick={() => deleteMutation.mutate(notif.id)}
+                    className="rounded-lg border border-border bg-white p-1 text-muted hover:text-brand-red transition-colors"
+                    title="Dismiss"
+                  >
+                    <Trash2 size={13} />
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );

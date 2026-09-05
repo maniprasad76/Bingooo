@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import {
   Settings,
   Store,
@@ -12,11 +13,14 @@ import {
   Globe,
   Sliders,
   Sparkles,
+  LoaderCircle,
 } from 'lucide-react';
 import { useToast } from '../components/ui/Toast';
+import { api } from '../lib/api/client';
 
 export function SettingsPage() {
   const { toast } = useToast();
+  const queryClient = useQueryClient();
   const [activeTab, setActiveTab] = useState<
     'store' | 'commerce' | 'shipping' | 'cod' | 'payments' | 'notifications' | 'storage' | 'seo'
   >('store');
@@ -60,12 +64,54 @@ export function SettingsPage() {
   const [seoDescription, setSeoDescription] = useState('Premium 240 GSM boxy streetwear t-shirts, fleece hoodies, and live custom design studio. Wear what feels like you.');
   const [ogImageUrl, setOgImageUrl] = useState('https://images.unsplash.com/photo-1490481651871-ab68de25d43d?w=1200');
 
+  const { data: serverSettings, isLoading } = useQuery({
+    queryKey: ['admin', 'settings'],
+    queryFn: () => api.get<Record<string, any>>('/admin/settings'),
+  });
+
+  useEffect(() => {
+    if (serverSettings) {
+      if (serverSettings.store_name) setStoreName(serverSettings.store_name);
+      if (serverSettings.store_email) setSupportEmail(serverSettings.store_email);
+      if (serverSettings.store_phone) setSupportPhone(serverSettings.store_phone);
+      if (serverSettings.free_shipping_threshold) setFreeShippingThreshold(String(serverSettings.free_shipping_threshold));
+      if (serverSettings.shipping_fee_default) setStandardShippingFee(String(serverSettings.shipping_fee_default));
+      if (serverSettings.tax_rate_percentage) setGstRate(String(serverSettings.tax_rate_percentage));
+      if (serverSettings.cod_enabled !== undefined) setCodEnabled(Boolean(serverSettings.cod_enabled));
+      if (serverSettings.currency) setCurrency(serverSettings.currency);
+    }
+  }, [serverSettings]);
+
+  const saveMutation = useMutation({
+    mutationFn: (data: Record<string, any>) => api.put('/admin/settings', data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin', 'settings'] });
+      toast({
+        title: 'Store settings synchronized',
+        description: 'Parameters saved to backend database and updated across storefront.',
+        variant: 'success',
+      });
+    },
+    onError: (err: any) => {
+      toast({
+        title: 'Save failed',
+        description: err.message || 'Could not update settings.',
+        variant: 'danger',
+      });
+    },
+  });
+
   const handleSave = (e: React.FormEvent) => {
     e.preventDefault();
-    toast({
-      title: 'Store settings updated',
-      description: 'Parameters synced across API server and storefront checkout.',
-      variant: 'success',
+    saveMutation.mutate({
+      store_name: storeName,
+      store_email: supportEmail,
+      store_phone: supportPhone,
+      free_shipping_threshold: Number(freeShippingThreshold) || 999,
+      shipping_fee_default: Number(standardShippingFee) || 99,
+      tax_rate_percentage: Number(gstRate) || 5,
+      cod_enabled: codEnabled,
+      currency: currency,
     });
   };
 

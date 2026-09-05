@@ -16,10 +16,10 @@ export interface DrawerProps {
 }
 
 const sizeClasses = {
-  sm: 'max-w-sm',
-  md: 'max-w-md',
-  lg: 'max-w-lg',
-  full: 'max-w-full',
+  sm: 'w-full sm:max-w-sm',
+  md: 'w-full sm:max-w-md',
+  lg: 'w-full sm:max-w-lg',
+  full: 'w-full max-w-full',
 };
 
 export function Drawer({

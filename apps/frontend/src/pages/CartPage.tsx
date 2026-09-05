@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
   ShoppingBag,
   Trash2,
@@ -125,9 +126,11 @@ export function CartPage() {
                 <span className="text-[#6F6A63]">₹{subtotal} / ₹{freeThreshold}</span>
               </div>
               <div className="h-2 w-full rounded-full bg-[#EDE0CC] overflow-hidden">
-                <div
-                  className="h-full bg-[#E6321C] transition-all duration-300 rounded-full"
-                  style={{ width: `${progressPct}%` }}
+                <motion.div
+                  className="h-full bg-[#E6321C] rounded-full"
+                  initial={false}
+                  animate={{ width: `${progressPct}%` }}
+                  transition={{ type: 'spring', stiffness: 220, damping: 26 }}
                 />
               </div>
             </div>
@@ -178,119 +181,215 @@ export function CartPage() {
 
               {/* Items Rows */}
               <div className="divide-y divide-[#DDD3C5]/70">
-                {items.map((item: any) => {
-                  const productTitle = item.product?.title || 'Bingooo Garment';
-                  const productSlug = item.product?.slug || '';
-                  const variantColor = item.variant?.color || 'Black';
-                  const variantColorHex = item.variant?.colorHex || '#171717';
-                  const variantSize = item.variant?.size || 'Standard';
-                  const imageUrl = item.product?.images?.[0]?.url;
+                <AnimatePresence initial={false}>
+                  {items.map((item: any) => {
+                    const productTitle = item.product?.title || 'Bingooo Garment';
+                    const productSlug = item.product?.slug || '';
+                    const variantColor = item.variant?.color || 'Black';
+                    const variantColorHex = item.variant?.colorHex || '#171717';
+                    const variantSize = item.variant?.size || 'Standard';
+                    const imageUrl = item.product?.images?.[0]?.url;
 
-                  return (
-                    <div key={item.id} className="py-5 sm:py-6 grid grid-cols-1 sm:grid-cols-12 gap-4 items-center">
-                      {/* Product Details (6 cols) */}
-                      <div className="sm:col-span-6 flex gap-4 items-center text-left">
-                        {/* Square Image Slot */}
-                        <div className="h-20 w-20 sm:h-24 sm:w-24 rounded-xl bg-[#EDE0CC] border border-[#DDD3C5] overflow-hidden shrink-0 flex items-center justify-center relative">
-                          {imageUrl ? (
-                            <img src={imageUrl} alt={productTitle} className="w-full h-full object-cover" />
-                          ) : (
-                            <Shirt size={32} className="text-[#171717]/40" />
-                          )}
-                          {item.customization && (
-                            <span className="absolute bottom-1 right-1 rounded bg-[#E6321C] px-1 py-0.5 text-[8px] font-bold uppercase text-white font-mono">
-                              CUSTOM
-                            </span>
-                          )}
-                        </div>
-
-                        <div>
-                          {productSlug ? (
-                            <Link to={`/product/${productSlug}`}>
-                              <h3 className="font-heading font-bold text-sm sm:text-base text-[#171717] hover:text-[#E6321C] transition-colors line-clamp-1">
-                                {productTitle}
-                              </h3>
-                            </Link>
-                          ) : (
-                            <h3 className="font-heading font-bold text-sm sm:text-base text-[#171717] line-clamp-1">
-                              {productTitle}
-                            </h3>
-                          )}
-
-                          <div className="mt-1 text-xs text-[#6F6A63] font-sans space-y-0.5">
-                            <div className="flex items-center gap-1.5">
-                              <span>Color: {variantColor}</span>
-                              <span
-                                className="h-2.5 w-2.5 rounded-full border border-black/20"
-                                style={{ backgroundColor: variantColorHex }}
-                              />
-                            </div>
-                            <div>Size: {variantSize}</div>
+                    return (
+                      <motion.div
+                        key={item.id}
+                        layout
+                        initial={{ opacity: 0, height: 0, scale: 0.97 }}
+                        animate={{ opacity: 1, height: 'auto', scale: 1 }}
+                        exit={{ opacity: 0, height: 0, scale: 0.95, transition: { duration: 0.22 } }}
+                        className="overflow-hidden"
+                      >
+                        <div className="py-4 sm:py-6">
+                      {/* Mobile Card Layout (sm:hidden) */}
+                      <div className="sm:hidden flex flex-col gap-3">
+                        <div className="flex items-start gap-3">
+                          {/* Image */}
+                          <div className="h-20 w-20 rounded-xl bg-[#EDE0CC] border border-[#DDD3C5] overflow-hidden shrink-0 flex items-center justify-center relative">
+                            {imageUrl ? (
+                              <img src={imageUrl} alt={productTitle} className="w-full h-full object-cover" />
+                            ) : (
+                              <Shirt size={28} className="text-[#171717]/40" />
+                            )}
+                            {item.customization && (
+                              <span className="absolute bottom-1 right-1 rounded bg-[#E6321C] px-1 py-0.2 text-[7px] font-bold uppercase text-white font-mono">
+                                CUSTOM
+                              </span>
+                            )}
                           </div>
 
-                          {item.customization && (
-                            <div className="mt-1.5 inline-flex items-center gap-1 rounded bg-[#FDF0EE] px-2 py-0.5 text-[10px] font-bold text-[#B91F12] border border-[#E6321C]/20">
-                              <Sparkles size={11} />
-                              <span>Custom Print Attached</span>
+                          {/* Info & Remove */}
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-start justify-between gap-2">
+                              {productSlug ? (
+                                <Link to={`/product/${productSlug}`}>
+                                  <h3 className="font-heading font-bold text-sm text-[#171717] hover:text-[#E6321C] transition-colors line-clamp-1">
+                                    {productTitle}
+                                  </h3>
+                                </Link>
+                              ) : (
+                                <h3 className="font-heading font-bold text-sm text-[#171717] line-clamp-1">
+                                  {productTitle}
+                                </h3>
+                              )}
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  removeItem(item.id);
+                                  toast({ title: 'Item removed from bag', variant: 'default' });
+                                }}
+                                className="text-[#6F6A63] hover:text-[#E6321C] p-1 -mr-1"
+                                aria-label="Remove item"
+                              >
+                                <Trash2 size={15} />
+                              </button>
                             </div>
-                          )}
 
-                          {/* Action Links */}
-                          <div className="mt-3 flex items-center gap-4 text-xs font-sans text-[#6F6A63]">
+                            <div className="mt-1 text-xs text-[#6F6A63] font-sans flex items-center gap-3">
+                              <span className="inline-flex items-center gap-1">
+                                {variantColor}
+                                <span
+                                  className="h-2.5 w-2.5 rounded-full border border-black/20"
+                                  style={{ backgroundColor: variantColorHex }}
+                                />
+                              </span>
+                              <span>Size: {variantSize}</span>
+                            </div>
+
+                            <div className="mt-1 text-xs font-sans font-bold text-[#171717]">
+                              ₹{item.unitPrice}
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Bottom Row: Stepper and Item Total */}
+                        <div className="flex items-center justify-between pt-1 border-t border-[#DDD3C5]/40">
+                          <div className="flex items-center rounded-lg border border-[#DDD3C5] bg-white px-1 py-0.5 shadow-2xs">
                             <button
                               type="button"
-                              onClick={() => {
-                                removeItem(item.id);
-                                toast({ title: 'Item removed from bag', variant: 'default' });
-                              }}
-                              className="inline-flex items-center gap-1 hover:text-[#E6321C] transition-colors"
+                              onClick={() => handleQtyChange(item.id, item.quantity, -1)}
+                              className="h-8 w-8 flex items-center justify-center text-[#6F6A63] hover:text-[#171717]"
+                              aria-label="Decrease quantity"
                             >
-                              <Trash2 size={13} />
-                              <span>Remove</span>
+                              <Minus size={13} />
+                            </button>
+                            <span className="w-8 text-center text-xs font-sans font-bold text-[#171717]">
+                              {item.quantity}
+                            </span>
+                            <button
+                              type="button"
+                              onClick={() => handleQtyChange(item.id, item.quantity, 1)}
+                              className="h-8 w-8 flex items-center justify-center text-[#6F6A63] hover:text-[#171717]"
+                              aria-label="Increase quantity"
+                            >
+                              <Plus size={13} />
+                            </button>
+                          </div>
+                          <div className="font-heading font-black text-base text-[#E6321C]">
+                            ₹{item.total}
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Desktop Table Row (hidden sm:grid) */}
+                      <div className="hidden sm:grid sm:grid-cols-12 gap-4 items-center">
+                        <div className="sm:col-span-6 flex gap-4 items-center text-left">
+                          <div className="h-24 w-24 rounded-xl bg-[#EDE0CC] border border-[#DDD3C5] overflow-hidden shrink-0 flex items-center justify-center relative">
+                            {imageUrl ? (
+                              <img src={imageUrl} alt={productTitle} className="w-full h-full object-cover" />
+                            ) : (
+                              <Shirt size={32} className="text-[#171717]/40" />
+                            )}
+                            {item.customization && (
+                              <span className="absolute bottom-1 right-1 rounded bg-[#E6321C] px-1 py-0.5 text-[8px] font-bold uppercase text-white font-mono">
+                                CUSTOM
+                              </span>
+                            )}
+                          </div>
+
+                          <div>
+                            {productSlug ? (
+                              <Link to={`/product/${productSlug}`}>
+                                <h3 className="font-heading font-bold text-base text-[#171717] hover:text-[#E6321C] transition-colors line-clamp-1">
+                                  {productTitle}
+                                </h3>
+                              </Link>
+                            ) : (
+                              <h3 className="font-heading font-bold text-base text-[#171717] line-clamp-1">
+                                {productTitle}
+                              </h3>
+                            )}
+
+                            <div className="mt-1 text-xs text-[#6F6A63] font-sans space-y-0.5">
+                              <div className="flex items-center gap-1.5">
+                                <span>Color: {variantColor}</span>
+                                <span
+                                  className="h-2.5 w-2.5 rounded-full border border-black/20"
+                                  style={{ backgroundColor: variantColorHex }}
+                                />
+                              </div>
+                              <div>Size: {variantSize}</div>
+                            </div>
+
+                            {item.customization && (
+                              <div className="mt-1.5 inline-flex items-center gap-1 rounded bg-[#FDF0EE] px-2 py-0.5 text-[10px] font-bold text-[#B91F12] border border-[#E6321C]/20">
+                                <Sparkles size={11} />
+                                <span>Custom Print Attached</span>
+                              </div>
+                            )}
+
+                            <div className="mt-3 flex items-center gap-4 text-xs font-sans text-[#6F6A63]">
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  removeItem(item.id);
+                                  toast({ title: 'Item removed from bag', variant: 'default' });
+                                }}
+                                className="inline-flex items-center gap-1 hover:text-[#E6321C] transition-colors"
+                              >
+                                <Trash2 size={13} />
+                                <span>Remove</span>
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="sm:col-span-2 text-center text-sm font-sans font-bold text-[#171717]">
+                          ₹{item.unitPrice}
+                        </div>
+
+                        <div className="sm:col-span-2 flex items-center justify-center">
+                          <div className="flex items-center rounded-lg border border-[#DDD3C5] bg-white px-1 py-0.5">
+                            <button
+                              type="button"
+                              onClick={() => handleQtyChange(item.id, item.quantity, -1)}
+                              className="h-7 w-7 flex items-center justify-center text-[#6F6A63] hover:text-[#171717]"
+                              aria-label="Decrease quantity"
+                            >
+                              <Minus size={12} />
+                            </button>
+                            <span className="w-7 text-center text-xs font-sans font-bold text-[#171717]">
+                              {item.quantity}
+                            </span>
+                            <button
+                              type="button"
+                              onClick={() => handleQtyChange(item.id, item.quantity, 1)}
+                              className="h-7 w-7 flex items-center justify-center text-[#6F6A63] hover:text-[#171717]"
+                              aria-label="Increase quantity"
+                            >
+                              <Plus size={12} />
                             </button>
                           </div>
                         </div>
-                      </div>
 
-                      {/* Unit Price (2 cols) */}
-                      <div className="sm:col-span-2 text-left sm:text-center text-xs sm:text-sm font-sans font-bold text-[#171717]">
-                        <span className="sm:hidden text-[#6F6A63] font-normal mr-2">Price:</span>
-                        ₹{item.unitPrice}
-                      </div>
-
-                      {/* Quantity Picker (2 cols) */}
-                      <div className="sm:col-span-2 flex items-center sm:justify-center">
-                        <div className="flex items-center rounded-lg border border-[#DDD3C5] bg-white px-1 py-0.5">
-                          <button
-                            type="button"
-                            onClick={() => handleQtyChange(item.id, item.quantity, -1)}
-                            className="h-7 w-7 flex items-center justify-center text-[#6F6A63] hover:text-[#171717]"
-                            aria-label="Decrease quantity"
-                          >
-                            <Minus size={12} />
-                          </button>
-                          <span className="w-7 text-center text-xs font-sans font-bold text-[#171717]">
-                            {item.quantity}
-                          </span>
-                          <button
-                            type="button"
-                            onClick={() => handleQtyChange(item.id, item.quantity, 1)}
-                            className="h-7 w-7 flex items-center justify-center text-[#6F6A63] hover:text-[#171717]"
-                            aria-label="Increase quantity"
-                          >
-                            <Plus size={12} />
-                          </button>
+                        <div className="sm:col-span-2 text-right font-heading font-black text-base text-[#E6321C]">
+                          ₹{item.total}
                         </div>
                       </div>
-
-                      {/* Line Total (2 cols) */}
-                      <div className="sm:col-span-2 text-left sm:text-right font-heading font-black text-sm sm:text-base text-[#E6321C]">
-                        <span className="sm:hidden text-[#6F6A63] font-normal text-xs mr-2">Total:</span>
-                        ₹{item.total}
-                      </div>
                     </div>
-                  );
-                })}
+                  </motion.div>
+                );
+              })}
+              </AnimatePresence>
               </div>
 
               {/* Continue Shopping Button */}
@@ -361,25 +460,29 @@ export function CartPage() {
                     onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
                     className="flex-1 rounded-lg border border-[#DDD3C5] bg-white px-3 py-2 text-xs font-sans text-[#171717] uppercase placeholder:text-[#6F6A63] focus:border-[#E6321C] focus:outline-none"
                   />
-                  <button
+                  <motion.button
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.96 }}
                     type="submit"
                     disabled={validatingCoupon}
                     className="px-4 py-2 rounded-lg border border-[#E6321C] text-[#E6321C] hover:bg-[#FDF0EE] font-sans font-bold text-xs uppercase tracking-wider transition-colors disabled:opacity-50"
                   >
                     {validatingCoupon ? 'Checking...' : 'APPLY'}
-                  </button>
+                  </motion.button>
                 </form>
 
                 {/* Action Buttons: PROCEED TO CHECKOUT */}
                 <div className="space-y-2.5 pt-2">
-                  <button
+                  <motion.button
+                    whileHover={{ scale: 1.015 }}
+                    whileTap={{ scale: 0.975 }}
                     type="button"
                     onClick={handleProceedToCheckout}
                     className="w-full flex items-center justify-center gap-2 py-3.5 rounded-lg bg-[#E6321C] hover:bg-[#B91F12] text-white font-sans font-bold text-xs uppercase tracking-wider transition-all shadow-sm"
                   >
                     <ShoppingBag size={15} />
                     <span>PROCEED TO CHECKOUT</span>
-                  </button>
+                  </motion.button>
                 </div>
 
                 {/* Security & Guarantee Trust Signals */}

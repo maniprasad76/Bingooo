@@ -1,5 +1,6 @@
 import { Award, PenTool, Heart, Calendar, Shirt, Star, Eye, ShoppingBag, ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
 
 export function AboutPage() {
   return (
@@ -8,7 +9,13 @@ export function AboutPage() {
       <section className="max-w-[1360px] mx-auto px-4 sm:px-8 py-10 sm:py-16">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
           {/* Left Column */}
-          <div className="lg:col-span-6 flex flex-col justify-center text-left">
+          <motion.div
+            initial={{ opacity: 0, y: 24 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+            className="lg:col-span-6 flex flex-col justify-center text-left"
+          >
             <div className="relative inline-block self-start">
               <h1 className="font-heading font-extrabold text-4xl sm:text-5xl lg:text-6xl text-[#171717] uppercase tracking-tight">
                 ABOUT US
@@ -68,10 +75,16 @@ export function AboutPage() {
                 </p>
               </div>
             </div>
-          </div>
+          </motion.div>
 
           {/* Right Column: Hero Visual Container (Ready for Admin Upload) */}
-          <div className="lg:col-span-6 flex justify-center lg:justify-end">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.96 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}
+            className="lg:col-span-6 flex justify-center lg:justify-end"
+          >
             <div className="relative w-full aspect-[4/3] sm:aspect-[14/11] overflow-hidden rounded-2xl bg-[#EDE0CC] border border-[#DDD3C5] shadow-sm flex items-center justify-center">
               <div className="absolute inset-0 flex flex-col items-center justify-center p-8 text-center select-none bg-gradient-to-tr from-[#E6D9C5] to-[#F7EEDB]">
                 <span className="text-xs font-mono font-bold tracking-[0.2em] uppercase text-[#E6321C] mb-2">
@@ -88,7 +101,7 @@ export function AboutPage() {
                 </div>
               </div>
             </div>
-          </div>
+          </motion.div>
         </div>
       </section>
 
@@ -96,7 +109,13 @@ export function AboutPage() {
       <section className="max-w-[1360px] mx-auto px-4 sm:px-8 py-10 sm:py-14 border-t border-[#DDD3C5]/60">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
           {/* Left Column: Story & Stats */}
-          <div className="lg:col-span-6 flex flex-col justify-center text-left">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5 }}
+            className="lg:col-span-6 flex flex-col justify-center text-left"
+          >
             <div className="relative inline-block self-start mb-5">
               <h2 className="font-heading font-bold text-2xl sm:text-3xl text-[#171717] uppercase tracking-wider">
                 OUR JOURNEY
@@ -146,10 +165,16 @@ export function AboutPage() {
                 </span>
               </div>
             </div>
-          </div>
+          </motion.div>
 
           {/* Right Column: Workshop / Studio Frame */}
-          <div className="lg:col-span-6 flex justify-center lg:justify-end">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.96 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, delay: 0.15 }}
+            className="lg:col-span-6 flex justify-center lg:justify-end"
+          >
             <div className="relative w-full aspect-[16/10] overflow-hidden rounded-2xl bg-[#EDE0CC] border border-[#DDD3C5] shadow-sm flex items-center justify-center">
               <div className="absolute inset-0 flex flex-col items-center justify-center p-8 text-center select-none bg-gradient-to-tr from-[#E6D9C5] to-[#F7EEDB]">
                 <span className="font-heading text-3xl sm:text-4xl font-extrabold tracking-tight text-[#E6321C] uppercase">
@@ -163,7 +188,7 @@ export function AboutPage() {
                 </div>
               </div>
             </div>
-          </div>
+          </motion.div>
         </div>
       </section>
 
@@ -180,57 +205,32 @@ export function AboutPage() {
 
         {/* 4 Process Steps connected by dashed line */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 relative">
-          {/* Step 1 */}
-          <div className="flex flex-col items-center text-center">
-            <div className="h-16 w-16 rounded-full bg-[#FDF0EE] text-[#E6321C] flex items-center justify-center mb-4 shadow-xs">
-              <Shirt size={28} className="stroke-[1.8]" />
-            </div>
-            <h3 className="font-heading font-bold text-base uppercase tracking-wider text-[#171717]">
-              1. CHOOSE
-            </h3>
-            <p className="mt-1.5 text-xs text-[#6F6A63] font-cursive max-w-[200px] leading-relaxed">
-              Pick your favorite product from our collection.
-            </p>
-          </div>
-
-          {/* Step 2 */}
-          <div className="flex flex-col items-center text-center">
-            <div className="h-16 w-16 rounded-full bg-[#FDF0EE] text-[#E6321C] flex items-center justify-center mb-4 shadow-xs">
-              <PenTool size={26} className="stroke-[1.8]" />
-            </div>
-            <h3 className="font-heading font-bold text-base uppercase tracking-wider text-[#171717]">
-              2. CUSTOMIZE
-            </h3>
-            <p className="mt-1.5 text-xs text-[#6F6A63] font-cursive max-w-[200px] leading-relaxed">
-              Add your designs, text, or logos.
-            </p>
-          </div>
-
-          {/* Step 3 */}
-          <div className="flex flex-col items-center text-center">
-            <div className="h-16 w-16 rounded-full bg-[#FDF0EE] text-[#E6321C] flex items-center justify-center mb-4 shadow-xs">
-              <Eye size={26} className="stroke-[1.8]" />
-            </div>
-            <h3 className="font-heading font-bold text-base uppercase tracking-wider text-[#171717]">
-              3. PREVIEW
-            </h3>
-            <p className="mt-1.5 text-xs text-[#6F6A63] font-cursive max-w-[200px] leading-relaxed">
-              See your design live in our 2D studio.
-            </p>
-          </div>
-
-          {/* Step 4 */}
-          <div className="flex flex-col items-center text-center">
-            <div className="h-16 w-16 rounded-full bg-[#FDF0EE] text-[#E6321C] flex items-center justify-center mb-4 shadow-xs">
-              <ShoppingBag size={26} className="stroke-[1.8]" />
-            </div>
-            <h3 className="font-heading font-bold text-base uppercase tracking-wider text-[#171717]">
-              4. WE DELIVER
-            </h3>
-            <p className="mt-1.5 text-xs text-[#6F6A63] font-cursive max-w-[200px] leading-relaxed">
-              We print with care and deliver to your doorstep.
-            </p>
-          </div>
+          {[
+            { step: '1. CHOOSE', desc: 'Pick your favorite product from our collection.', icon: Shirt },
+            { step: '2. CUSTOMIZE', desc: 'Add your designs, text, or logos.', icon: PenTool },
+            { step: '3. PREVIEW', desc: 'See your design live in our 2D studio.', icon: Eye },
+            { step: '4. WE DELIVER', desc: 'We print with care and deliver to your doorstep.', icon: ShoppingBag },
+          ].map((item, i) => {
+            const Icon = item.icon;
+            return (
+              <motion.div
+                key={i}
+                whileHover={{ y: -5 }}
+                transition={{ type: 'spring', stiffness: 350, damping: 22 }}
+                className="flex flex-col items-center text-center p-4 rounded-xl hover:bg-white/60 transition-colors"
+              >
+                <div className="h-16 w-16 rounded-full bg-[#FDF0EE] text-[#E6321C] flex items-center justify-center mb-4 shadow-xs">
+                  <Icon size={26} className="stroke-[1.8]" />
+                </div>
+                <h3 className="font-heading font-bold text-base uppercase tracking-wider text-[#171717]">
+                  {item.step}
+                </h3>
+                <p className="mt-1.5 text-xs text-[#6F6A63] font-sans max-w-[200px] leading-relaxed">
+                  {item.desc}
+                </p>
+              </motion.div>
+            );
+          })}
         </div>
       </section>
 
@@ -253,10 +253,15 @@ export function AboutPage() {
             { id: 3, label: 'CHAOS PRINT', sub: 'Streetwear Graphic' },
             { id: 4, label: 'EMBROIDERY', sub: 'Precision Stitch' },
             { id: 5, label: 'OVERSIZED', sub: 'Signature Fit' },
-          ].map((item) => (
-            <div
+          ].map((item, i) => (
+            <motion.div
               key={item.id}
-              className="group relative aspect-[3/4] sm:aspect-[4/5] overflow-hidden rounded-xl bg-[#EDE0CC] border border-[#DDD3C5] shadow-xs flex flex-col justify-end p-4 text-left transition-all hover:shadow-md"
+              initial={{ opacity: 0, y: 16 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: i * 0.08, duration: 0.4 }}
+              whileHover={{ scale: 1.02 }}
+              className="group relative aspect-[3/4] sm:aspect-[4/5] last:col-span-2 sm:last:col-span-1 overflow-hidden rounded-xl bg-[#EDE0CC] border border-[#DDD3C5] shadow-xs flex flex-col justify-end p-4 text-left transition-all hover:shadow-md cursor-pointer"
             >
               <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/25 to-transparent z-10" />
               <div className="relative z-20 text-white">
@@ -267,7 +272,7 @@ export function AboutPage() {
                   {item.sub}
                 </p>
               </div>
-            </div>
+            </motion.div>
           ))}
         </div>
 

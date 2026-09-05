@@ -19,4 +19,23 @@ export class MediaController {
   mockUpload() {
     return { success: true, message: 'File uploaded successfully' };
   }
+
+  @Get('assets')
+  @ApiOperation({ summary: 'List media assets library' })
+  listAssets(@Query('category') category?: string, @Query('search') search?: string) {
+    return this.mediaService.listAssets(category, search);
+  }
+
+  @Post('assets')
+  @ApiOperation({ summary: 'Register uploaded media asset' })
+  createAsset(@Body() body: { name: string; category?: string; url: string; sizeBytes?: number; dimensions?: string }) {
+    return this.mediaService.createAsset(body);
+  }
+
+  @Post('assets/:id/delete')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Delete media asset' })
+  deleteAsset(@Query('id') id: string) {
+    return this.mediaService.deleteAsset(id);
+  }
 }

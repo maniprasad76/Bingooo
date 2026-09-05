@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import { MapPin, Plus, Trash2, CheckCircle2 } from 'lucide-react';
 import { api } from '../lib/api/client';
 import { Button } from '../components/ui/Button';
@@ -7,6 +8,7 @@ import { Input } from '../components/ui/Input';
 import { useToast } from '../components/ui/Toast';
 
 export function AddressesPage() {
+  const shouldReduceMotion = useReducedMotion();
   const queryClient = useQueryClient();
   const { toast } = useToast();
   const [showAddForm, setShowAddForm] = useState(false);
@@ -58,29 +60,38 @@ export function AddressesPage() {
         </Button>
       </div>
 
-      {showAddForm && (
-        <form onSubmit={handleAddSubmit} className="rounded-xl border border-border bg-white p-6 shadow-sm space-y-4 max-w-xl">
-          <h3 className="text-heading font-bold text-ink">New Delivery Address</h3>
-          <div className="grid grid-cols-2 gap-4">
-            <Input label="Name" name="name" required defaultValue="John Doe" />
-            <Input label="Phone" name="phone" required defaultValue="9876543210" />
-          </div>
-          <Input label="Address Line 1" name="line1" required defaultValue="100ft Road, Indiranagar" />
-          <div className="grid grid-cols-3 gap-4">
-            <Input label="City" name="city" required defaultValue="Bengaluru" />
-            <Input label="State" name="state" required defaultValue="Karnataka" />
-            <Input label="PIN Code" name="postalCode" required defaultValue="560038" />
-          </div>
-          <div className="flex gap-2 justify-end pt-2">
-            <Button type="button" variant="outline" onClick={() => setShowAddForm(false)}>
-              Cancel
-            </Button>
-            <Button type="submit" variant="primary" loading={addAddressMutation.isPending}>
-              Save Address
-            </Button>
-          </div>
-        </form>
-      )}
+      <AnimatePresence>
+        {showAddForm && (
+          <motion.form
+            initial={shouldReduceMotion ? false : { opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={shouldReduceMotion ? undefined : { opacity: 0, height: 0 }}
+            transition={{ duration: 0.25 }}
+            onSubmit={handleAddSubmit}
+            className="overflow-hidden rounded-xl border border-border bg-white p-6 shadow-sm space-y-4 max-w-xl"
+          >
+            <h3 className="text-heading font-bold text-ink">New Delivery Address</h3>
+            <div className="grid grid-cols-2 gap-4">
+              <Input label="Name" name="name" required defaultValue="John Doe" />
+              <Input label="Phone" name="phone" required defaultValue="9876543210" />
+            </div>
+            <Input label="Address Line 1" name="line1" required defaultValue="100ft Road, Indiranagar" />
+            <div className="grid grid-cols-3 gap-4">
+              <Input label="City" name="city" required defaultValue="Bengaluru" />
+              <Input label="State" name="state" required defaultValue="Karnataka" />
+              <Input label="PIN Code" name="postalCode" required defaultValue="560038" />
+            </div>
+            <div className="flex gap-2 justify-end pt-2">
+              <Button type="button" variant="outline" onClick={() => setShowAddForm(false)}>
+                Cancel
+              </Button>
+              <Button type="submit" variant="primary" loading={addAddressMutation.isPending}>
+                Save Address
+              </Button>
+            </div>
+          </motion.form>
+        )}
+      </AnimatePresence>
 
       {isLoading ? (
         <div className="py-16 text-center text-muted">Loading addresses...</div>
@@ -92,33 +103,46 @@ export function AddressesPage() {
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {addresses.map((addr: any) => (
-            <div key={addr.id} className="rounded-xl border border-border bg-white p-6 shadow-sm flex justify-between items-start">
-              <div>
-                <div className="flex items-center gap-2 mb-2">
-                  <span className="text-body font-bold text-ink">{addr.name}</span>
-                  {addr.is_default && (
-                    <span className="flex items-center gap-1 text-[11px] font-bold text-success bg-success/10 px-2 py-0.5 rounded">
-                      <CheckCircle2 size={12} /> Default
-                    </span>
-                  )}
-                </div>
-                <p className="text-caption text-muted leading-relaxed">
-                  {addr.line1}<br />
-                  {addr.city}, {addr.state} - {addr.postal_code}<br />
-                  Phone: {addr.phone}
-                </p>
-              </div>
-
-              <button
-                onClick={() => deleteAddressMutation.mutate(addr.id)}
-                className="text-muted hover:text-danger p-2"
-                aria-label="Delete address"
+          <AnimatePresence>
+            {addresses.map((addr: any) => (
+              <motion.div
+                key={addr.id}
+                layout
+                initial={shouldReduceMotion ? false : { opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={shouldReduceMotion ? undefined : { opacity: 0, scale: 0.9 }}
+                transition={{ type: 'spring', stiffness: 350, damping: 25 }}
+                whileHover={shouldReduceMotion ? undefined : { y: -2, boxShadow: '0 8px 24px -6px rgba(0, 0, 0, 0.08)' }}
+                className="rounded-xl border border-border bg-white p-6 shadow-sm flex justify-between items-start transition-colors"
               >
-                <Trash2 size={16} />
-              </button>
-            </div>
-          ))}
+                <div>
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className="text-body font-bold text-ink">{addr.name}</span>
+                    {addr.is_default && (
+                      <span className="flex items-center gap-1 text-[11px] font-bold text-success bg-success/10 px-2 py-0.5 rounded">
+                        <CheckCircle2 size={12} /> Default
+                      </span>
+                    )}
+                  </div>
+                  <p className="text-caption text-muted leading-relaxed">
+                    {addr.line1}<br />
+                    {addr.city}, {addr.state} - {addr.postal_code}<br />
+                    Phone: {addr.phone}
+                  </p>
+                </div>
+
+                <motion.button
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.9 }}
+                  onClick={() => deleteAddressMutation.mutate(addr.id)}
+                  className="text-muted hover:text-danger p-2 transition-colors"
+                  aria-label="Delete address"
+                >
+                  <Trash2 size={16} />
+                </motion.button>
+              </motion.div>
+            ))}
+          </AnimatePresence>
         </div>
       )}
     </div>

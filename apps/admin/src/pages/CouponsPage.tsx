@@ -29,26 +29,7 @@ export function CouponsPage() {
 
   const { data: coupons = [], isLoading, isError } = useQuery<CouponItem[]>({
     queryKey: ['admin', 'coupons'],
-    queryFn: () => api.get<CouponItem[]>('/coupons').catch(() => [
-      {
-        id: '1',
-        code: 'BINGOOO10',
-        type: 'percentage',
-        value: 10,
-        min_order_amount: 500,
-        is_active: true,
-        created_at: new Date().toISOString(),
-      },
-      {
-        id: '2',
-        code: 'STREETWEAR20',
-        type: 'percentage',
-        value: 20,
-        min_order_amount: 1999,
-        is_active: true,
-        created_at: new Date().toISOString(),
-      },
-    ]),
+    queryFn: () => api.get<CouponItem[]>('/coupons'),
   });
 
   const createMutation = useMutation({

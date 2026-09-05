@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import {
   RotateCcw,
   Search,
@@ -11,84 +11,58 @@ import {
   Calendar,
   User,
   ArrowRight,
+  LoaderCircle,
 } from 'lucide-react';
 import { formatCurrency, formatDate } from '../lib/utils';
 import { StatusBadge } from '../components/ui/StatusBadge';
 import { useToast } from '../components/ui/Toast';
+import { api } from '../lib/api/client';
 
-interface ReturnRequest {
+export interface ReturnRequest {
   id: string;
-  orderNumber: string;
-  customerName: string;
-  customerPhone: string;
-  garmentTitle: string;
+  order_number: string;
+  customer_name: string;
+  customer_phone: string;
+  garment_title: string;
   size: string;
   reason: 'size_fit' | 'print_defect' | 'wrong_item' | 'fabric_feel';
   comments: string;
-  refundAmount: number;
+  refund_amount: number;
   status: 'requested' | 'reviewing' | 'pickup_scheduled' | 'inspected' | 'refunded' | 'rejected';
   created_at: string;
 }
 
-const mockReturns: ReturnRequest[] = [
-  {
-    id: 'ret-101',
-    orderNumber: 'BING-89410',
-    customerName: 'Kunal Singhania',
-    customerPhone: '+91 98111 22334',
-    garmentTitle: 'Heavyweight Drop-Shoulder Tee',
-    size: 'XL',
-    reason: 'size_fit',
-    comments: 'Need size L instead. The oversized boxy cut is larger than expected.',
-    refundAmount: 1199,
-    status: 'requested',
-    created_at: new Date(Date.now() - 3600000 * 12).toISOString(),
-  },
-  {
-    id: 'ret-102',
-    orderNumber: 'BING-89395',
-    customerName: 'Megha Nair',
-    customerPhone: '+91 99200 44556',
-    garmentTitle: 'Oversized Minimal Hoodie - Bone White',
-    size: 'M',
-    reason: 'print_defect',
-    comments: 'Custom studio backprint has a slight smudge on the bottom left corner.',
-    refundAmount: 1899,
-    status: 'pickup_scheduled',
-    created_at: new Date(Date.now() - 86400000 * 2).toISOString(),
-  },
-  {
-    id: 'ret-103',
-    orderNumber: 'BING-89350',
-    customerName: 'Dhruv Chawla',
-    customerPhone: '+91 97110 33445',
-    garmentTitle: 'Signature Relaxed Sweatshirt',
-    size: 'L',
-    reason: 'wrong_item',
-    comments: 'Received Charcoal instead of Olive Green color variant.',
-    refundAmount: 1499,
-    status: 'inspected',
-    created_at: new Date(Date.now() - 86400000 * 5).toISOString(),
-  },
-];
-
 export function ReturnsPage() {
   const { toast } = useToast();
+  const queryClient = useQueryClient();
 
-  const [returns, setReturns] = useState<ReturnRequest[]>(mockReturns);
   const [statusTab, setStatusTab] = useState('all');
   const [search, setSearch] = useState('');
 
-  const updateStatus = (id: string, newStatus: ReturnRequest['status']) => {
-    setReturns((prev) =>
-      prev.map((r) => (r.id === id ? { ...r, status: newStatus } : r))
-    );
-    toast({
-      title: 'Return lifecycle updated',
-      description: `Return request moved to ${newStatus.replace('_', ' ')}.`,
-      variant: 'success',
-    });
-  };
+  const { data: returns = [], isLoading } = useQuery({
+    queryKey: ['admin', 'returns', statusTab, search],
+    queryFn: () => api.get<ReturnRequest[]>('/returns', { status: statusTab, search }),
+  });
+
+  const updateStatusMutation = useMutation({
+    mutationFn: ({ id, newStatus }: { id: string; newStatus: ReturnRequest['status'] }) =>
+      api.patch(`/returns/${id}/status`, { status: newStatus }),
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: ['admin', 'returns'] });
+      toast({
+        title: 'Return lifecycle updated',
+        description: `Return request moved to ${variables.newStatus.replace('_', ' ')}.`,
+        variant: 'success',
+      });
+    },
+    onError: (err: any) => {
+      toast({
+        title: 'Update failed',
+        description: err.message || 'Could not update status.',
+        variant: 'danger',
+      });
+    },
+  });
 
   const getReasonLabel = (reason: ReturnRequest['reason']) => {
     switch (reason) {
@@ -101,18 +75,9 @@ export function ReturnsPage() {
       case 'fabric_feel':
         return 'Fabric / Quality Expectation';
       default:
-        return 'General Return';
+        return reason;
     }
   };
-
-  const filtered = returns.filter((r) => {
-    const matchesStatus = statusTab === 'all' || r.status === statusTab;
-    const matchesSearch =
-      r.orderNumber.toLowerCase().includes(search.toLowerCase()) ||
-      r.customerName.toLowerCase().includes(search.toLowerCase()) ||
-      r.garmentTitle.toLowerCase().includes(search.toLowerCase());
-    return matchesStatus && matchesSearch;
-  });
 
   return (
     <div className="space-y-6">
@@ -123,136 +88,163 @@ export function ReturnsPage() {
             <RotateCcw size={14} /> Reverse Logistics
           </span>
           <h2 className="mt-2 text-xl font-black text-ink sm:text-2xl">
-            Returns, Exchanges & Inspection Pipeline
+            Returns, Exchanges & Quality Inspections
           </h2>
           <p className="text-xs text-muted">
-            Track reverse courier pickups, physical garment quality checks, and customer refunds.
+            Manage customer exchange tickets, courier reverse pickups, garment inspection outcomes, and refund settlements.
           </p>
         </div>
 
-        <div className="relative min-w-0 flex-1 sm:min-w-[260px] sm:max-w-xs">
-          <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted" />
+        <div className="flex items-center gap-2">
+          <span className="rounded-xl border border-border bg-white px-3 py-1.5 text-xs font-bold text-ink shadow-xs">
+            {returns.length} Return Tickets Active
+          </span>
+        </div>
+      </div>
+
+      {/* Tabs & Search */}
+      <div className="flex flex-wrap items-center justify-between gap-3 card-admin p-4">
+        <div className="flex flex-wrap items-center gap-2">
+          {[
+            { id: 'all', label: 'All Requests' },
+            { id: 'requested', label: 'Requested' },
+            { id: 'pickup_scheduled', label: 'Pickup Active' },
+            { id: 'inspected', label: 'Under Inspection' },
+            { id: 'refunded', label: 'Resolved / Refunded' },
+          ].map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => setStatusTab(tab.id)}
+              className={`rounded-xl px-3 py-1.5 text-xs font-bold transition-all ${
+                statusTab === tab.id
+                  ? 'bg-brand-red text-white shadow-xs'
+                  : 'bg-[#FAF8F5] text-muted hover:text-ink'
+              }`}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </div>
+
+        <div className="relative min-w-[240px]">
+          <Search size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted" />
           <input
+            type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search by Order # or customer..."
-            className="input-admin pl-10 text-xs"
+            placeholder="Search by Order #, Customer, or Garment..."
+            className="w-full rounded-xl border border-border bg-[#FAF8F5] pl-9 pr-4 py-1.5 text-xs text-ink placeholder:text-muted focus:border-brand-red focus:outline-none"
           />
         </div>
       </div>
 
-      {/* Tabs */}
-      <div className="flex flex-wrap items-center gap-2 border-b border-border pb-3">
-        {[
-          { key: 'all', label: 'All Requests' },
-          { key: 'requested', label: 'New Requests' },
-          { key: 'pickup_scheduled', label: 'Pickup Scheduled' },
-          { key: 'inspected', label: 'Inspected in Warehouse' },
-          { key: 'refunded', label: 'Refunded / Closed' },
-        ].map((tab) => (
-          <button
-            key={tab.key}
-            onClick={() => setStatusTab(tab.key)}
-            className={`rounded-xl px-3.5 py-1.5 text-xs font-bold transition-all ${
-              statusTab === tab.key
-                ? 'bg-brand-red text-white shadow-sm'
-                : 'bg-white text-muted border border-border hover:border-brand-red hover:text-ink'
-            }`}
-          >
-            {tab.label}
-          </button>
-        ))}
-      </div>
-
-      {/* Cards List */}
-      <div className="space-y-4">
-        {filtered.map((ret) => (
-          <div key={ret.id} className="card-admin p-6 space-y-4">
-            <div className="flex flex-wrap items-center justify-between gap-4 border-b border-border pb-3">
-              <div>
-                <div className="flex items-center gap-2.5">
-                  <span className="font-bold text-ink text-base">Return #{ret.id}</span>
-                  <span className="text-xs text-muted">for Order #{ret.orderNumber}</span>
+      {/* Returns List */}
+      {isLoading ? (
+        <div className="flex min-h-[300px] items-center justify-center gap-3 text-muted">
+          <LoaderCircle size={22} className="animate-spin text-brand-red" />
+          <span className="text-xs font-bold uppercase tracking-wider">Loading returns pipeline...</span>
+        </div>
+      ) : returns.length === 0 ? (
+        <div className="card-admin flex flex-col items-center justify-center p-12 text-center text-muted">
+          <AlertCircle size={32} className="text-border mb-2" />
+          <p className="text-sm font-bold text-ink">No return tickets found</p>
+          <p className="text-xs text-muted">No tickets matched the current filter criteria.</p>
+        </div>
+      ) : (
+        <div className="space-y-4">
+          {returns.map((ret) => (
+            <div key={ret.id} className="card-admin p-6 space-y-4 hover:border-brand-red/40 transition-colors">
+              <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border pb-4">
+                <div className="flex items-center gap-3">
+                  <span className="font-mono text-sm font-black text-ink">{ret.order_number}</span>
                   <StatusBadge status={ret.status} />
+                  <span className="rounded-md bg-[#EDE0CC] px-2 py-0.5 text-[10px] font-bold text-ink">
+                    {getReasonLabel(ret.reason)}
+                  </span>
                 </div>
-                <p className="text-xs text-muted mt-0.5">
-                  Requested by <strong>{ret.customerName}</strong> ({ret.customerPhone}) on {formatDate(ret.created_at)}
-                </p>
+
+                <div className="flex items-center gap-4 text-xs">
+                  <span className="text-muted">{formatDate(ret.created_at)}</span>
+                  <span className="font-black text-ink text-sm">{formatCurrency(ret.refund_amount)}</span>
+                </div>
               </div>
 
-              <div className="flex items-center gap-2">
-                <select
-                  value={ret.status}
-                  onChange={(e) => updateStatus(ret.id, e.target.value as any)}
-                  className="input-admin w-auto text-xs font-bold"
-                >
-                  <option value="requested">New Request</option>
-                  <option value="reviewing">Under Review</option>
-                  <option value="pickup_scheduled">Pickup Scheduled (Delhivery)</option>
-                  <option value="inspected">Warehouse Inspected (Passed)</option>
-                  <option value="refunded">Refund Issued</option>
-                  <option value="rejected">Rejected</option>
-                </select>
+              {/* Grid content */}
+              <div className="grid gap-4 sm:grid-cols-3 text-xs">
+                <div>
+                  <span className="text-muted block text-[10px] uppercase font-bold">Customer Contact</span>
+                  <div className="font-bold text-ink mt-0.5">{ret.customer_name}</div>
+                  <div className="text-muted">{ret.customer_phone || 'Phone on file'}</div>
+                </div>
+
+                <div>
+                  <span className="text-muted block text-[10px] uppercase font-bold">Item & Size</span>
+                  <div className="font-bold text-ink mt-0.5">{ret.garment_title}</div>
+                  <div className="text-muted">Size: {ret.size}</div>
+                </div>
+
+                <div>
+                  <span className="text-muted block text-[10px] uppercase font-bold">Customer Explanation</span>
+                  <p className="text-ink italic mt-0.5 leading-relaxed bg-[#FAF8F5] p-2 rounded-lg border border-border">
+                    "{ret.comments}"
+                  </p>
+                </div>
+              </div>
+
+              {/* Action Toolbar */}
+              <div className="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-border">
+                <div className="flex items-center gap-1.5 text-xs text-muted">
+                  <span>Current stage:</span>
+                  <strong className="text-ink capitalize">{ret.status.replace('_', ' ')}</strong>
+                </div>
+
+                <div className="flex flex-wrap items-center gap-2">
+                  {ret.status === 'requested' && (
+                    <>
+                      <button
+                        onClick={() => updateStatusMutation.mutate({ id: ret.id, newStatus: 'pickup_scheduled' })}
+                        className="inline-flex items-center gap-1.5 rounded-xl bg-brand-red px-3 py-1.5 text-xs font-bold text-white hover:bg-brand-red/90"
+                      >
+                        <Truck size={13} /> Dispatch Courier Pickup
+                      </button>
+                      <button
+                        onClick={() => updateStatusMutation.mutate({ id: ret.id, newStatus: 'rejected' })}
+                        className="inline-flex items-center gap-1.5 rounded-xl border border-border bg-white px-3 py-1.5 text-xs font-bold text-muted hover:text-ink"
+                      >
+                        <XCircle size={13} /> Reject Ticket
+                      </button>
+                    </>
+                  )}
+
+                  {ret.status === 'pickup_scheduled' && (
+                    <button
+                      onClick={() => updateStatusMutation.mutate({ id: ret.id, newStatus: 'inspected' })}
+                      className="inline-flex items-center gap-1.5 rounded-xl bg-[#171717] px-3 py-1.5 text-xs font-bold text-white hover:bg-[#333]"
+                    >
+                      <PackageCheck size={13} /> Mark Received & Inspected
+                    </button>
+                  )}
+
+                  {ret.status === 'inspected' && (
+                    <button
+                      onClick={() => updateStatusMutation.mutate({ id: ret.id, newStatus: 'refunded' })}
+                      className="inline-flex items-center gap-1.5 rounded-xl bg-success px-3 py-1.5 text-xs font-bold text-white hover:bg-success/90"
+                    >
+                      <CheckCircle2 size={13} /> Settle Refund ({formatCurrency(ret.refund_amount)})
+                    </button>
+                  )}
+
+                  {ret.status === 'refunded' && (
+                    <span className="inline-flex items-center gap-1 text-xs font-bold text-success">
+                      <CheckCircle2 size={14} /> Refund Settled via Gateway
+                    </span>
+                  )}
+                </div>
               </div>
             </div>
-
-            {/* Garment & Reason */}
-            <div className="grid gap-4 sm:grid-cols-3 text-xs">
-              <div className="rounded-xl border border-border bg-[#F7EEDB]/30 p-3 space-y-1">
-                <span className="text-muted block text-[11px] uppercase font-semibold">Garment</span>
-                <p className="font-bold text-ink">{ret.garmentTitle}</p>
-                <p className="text-muted">Size: <strong>{ret.size}</strong></p>
-              </div>
-
-              <div className="rounded-xl border border-border bg-[#F7EEDB]/30 p-3 space-y-1">
-                <span className="text-muted block text-[11px] uppercase font-semibold">Return Reason</span>
-                <p className="font-bold text-brand-red">{getReasonLabel(ret.reason)}</p>
-                <p className="text-muted truncate">{ret.comments}</p>
-              </div>
-
-              <div className="rounded-xl border border-border bg-[#F7EEDB]/30 p-3 space-y-1">
-                <span className="text-muted block text-[11px] uppercase font-semibold">Refund Value</span>
-                <p className="font-bold text-ink text-sm">{formatCurrency(ret.refundAmount)}</p>
-                <p className="text-muted">Reverse via Razorpay UPI</p>
-              </div>
-            </div>
-
-            {/* Action Bar */}
-            <div className="flex flex-wrap items-center justify-between gap-3 pt-2 text-xs">
-              <span className="text-muted">
-                Comments: <em className="text-ink">"{ret.comments}"</em>
-              </span>
-
-              <div className="flex items-center gap-2">
-                {ret.status === 'requested' && (
-                  <button
-                    onClick={() => updateStatus(ret.id, 'pickup_scheduled')}
-                    className="btn-secondary text-xs"
-                  >
-                    <Truck size={14} /> Schedule Courier Pickup
-                  </button>
-                )}
-                {ret.status === 'pickup_scheduled' && (
-                  <button
-                    onClick={() => updateStatus(ret.id, 'inspected')}
-                    className="btn-secondary text-xs"
-                  >
-                    <PackageCheck size={14} /> Mark Warehouse Inspected
-                  </button>
-                )}
-                {ret.status === 'inspected' && (
-                  <button
-                    onClick={() => updateStatus(ret.id, 'refunded')}
-                    className="btn-primary text-xs"
-                  >
-                    <CheckCircle2 size={14} /> Approve & Issue Refund
-                  </button>
-                )}
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

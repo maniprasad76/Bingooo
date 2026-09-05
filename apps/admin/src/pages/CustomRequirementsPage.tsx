@@ -101,25 +101,35 @@ export function CustomRequirementsPage() {
   const [noteInput, setNoteInput] = useState('');
   const [isEstimateModalOpen, setIsEstimateModalOpen] = useState(false);
 
-  const { data: requirements = mockRequirements } = useQuery<CustomRequirement[]>({
-    queryKey: ['admin', 'custom-requirements'],
-    queryFn: async () => {
-      try {
-        const res = await api.get<CustomRequirement[]>('/customizations/requirements');
-        if (res && res.length > 0) return res;
-      } catch {
-        // Return mock fallback
-      }
-      return mockRequirements;
+  const { data: requirements = [] } = useQuery<CustomRequirement[]>({
+    queryKey: ['admin', 'custom-requirements', statusTab, search],
+    queryFn: () => api.get<CustomRequirement[]>('/customizations/requirements', { status: statusTab, search }),
+  });
+
+  const updateMutation = useMutation({
+    mutationFn: ({ id, data }: { id: string; data: any }) =>
+      api.patch(`/customizations/requirements/${id}`, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin', 'custom-requirements'] });
+    },
+    onError: (err: any) => {
+      toast({ title: 'Update failed', description: err.message, variant: 'danger' });
     },
   });
 
   const updateStatus = (id: string, newStatus: CustomRequirement['status']) => {
-    toast({
-      title: 'Status updated',
-      description: `Requirement moved to ${newStatus.replace('_', ' ')}.`,
-      variant: 'success',
-    });
+    updateMutation.mutate(
+      { id, data: { status: newStatus } },
+      {
+        onSuccess: () => {
+          toast({
+            title: 'Status updated',
+            description: `Requirement moved to ${newStatus.replace('_', ' ')}.`,
+            variant: 'success',
+          });
+        },
+      },
+    );
   };
 
   const handleOpenEstimate = (req: CustomRequirement) => {
@@ -131,12 +141,27 @@ export function CustomRequirementsPage() {
 
   const handleSaveEstimate = (e: React.FormEvent) => {
     e.preventDefault();
-    toast({
-      title: 'Quote generated & internal notes updated',
-      description: `Quote of ${formatCurrency(Number(estimateInput))} saved for ${selectedReq?.customerName}.`,
-      variant: 'success',
-    });
-    setIsEstimateModalOpen(false);
+    if (!selectedReq) return;
+    updateMutation.mutate(
+      {
+        id: selectedReq.id,
+        data: {
+          estimatedBudget: Number(estimateInput) || 0,
+          internalNotes: noteInput,
+          status: selectedReq.status === 'new' ? 'reviewing' : selectedReq.status,
+        },
+      },
+      {
+        onSuccess: () => {
+          toast({
+            title: 'Quote generated & internal notes updated',
+            description: `Quote of ${formatCurrency(Number(estimateInput))} saved for ${selectedReq?.customerName}.`,
+            variant: 'success',
+          });
+          setIsEstimateModalOpen(false);
+        },
+      },
+    );
   };
 
   const filtered = requirements.filter((r) => {

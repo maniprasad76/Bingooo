@@ -82,8 +82,33 @@ export function UploadsPage() {
 
   const [categoryFilter, setCategoryFilter] = useState('all');
   const [search, setSearch] = useState('');
-  const [assets, setAssets] = useState<MediaAsset[]>(mockAssets);
-  const [isUploading, setIsUploading] = useState(false);
+
+  const { data: assets = [], isLoading } = useQuery<MediaAsset[]>({
+    queryKey: ['admin', 'media-assets', categoryFilter, search],
+    queryFn: () => api.get<MediaAsset[]>('/media/assets', { category: categoryFilter, search }),
+  });
+
+  const uploadMutation = useMutation({
+    mutationFn: (data: Partial<MediaAsset>) => api.post('/media/assets', data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin', 'media-assets'] });
+      toast({ title: 'New media asset stored in R2 bucket', variant: 'success' });
+    },
+    onError: (err: any) => {
+      toast({ title: 'Upload failed', description: err.message, variant: 'danger' });
+    },
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: (id: string) => api.post(`/media/assets/${id}/delete`, {}),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin', 'media-assets'] });
+      toast({ title: 'Asset deleted from Cloudflare R2', variant: 'success' });
+    },
+    onError: (err: any) => {
+      toast({ title: 'Delete failed', description: err.message, variant: 'danger' });
+    },
+  });
 
   const handleCopyUrl = (url: string) => {
     navigator.clipboard.writeText(url);
@@ -91,37 +116,25 @@ export function UploadsPage() {
   };
 
   const handleDelete = (id: string) => {
-    setAssets((prev) => prev.filter((a) => a.id !== id));
-    toast({ title: 'Asset deleted from Cloudflare R2', variant: 'success' });
+    deleteMutation.mutate(id);
   };
 
   const handleMockUpload = () => {
-    setIsUploading(true);
-    setTimeout(() => {
-      const newAsset: MediaAsset = {
-        id: `asset-${Date.now()}`,
-        name: `garment-asset-${Date.now().toString().slice(-4)}.jpg`,
-        category: (categoryFilter === 'all' ? 'products' : categoryFilter) as any,
-        url: 'https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?w=800&auto=format&fit=crop',
-        sizeBytes: 980000,
-        dimensions: '1600x2000',
-        uploaded_at: new Date().toISOString(),
-      };
-      setAssets((prev) => [newAsset, ...prev]);
-      setIsUploading(false);
-      toast({ title: 'New media asset stored in R2 bucket', variant: 'success' });
-    }, 800);
+    uploadMutation.mutate({
+      name: `garment-asset-${Date.now().toString().slice(-4)}.jpg`,
+      category: (categoryFilter === 'all' ? 'products' : categoryFilter) as any,
+      url: 'https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?w=800&auto=format&fit=crop',
+      sizeBytes: 980000,
+      dimensions: '1600x2000',
+    });
   };
 
   const formatFileSize = (bytes: number) => {
     return `${(bytes / (1024 * 1024)).toFixed(2)} MB`;
   };
 
-  const filtered = assets.filter((a) => {
-    const matchesCat = categoryFilter === 'all' || a.category === categoryFilter;
-    const matchesSearch = a.name.toLowerCase().includes(search.toLowerCase());
-    return matchesCat && matchesSearch;
-  });
+  const isUploading = uploadMutation.isPending;
+  const filtered = assets;
 
   return (
     <div className="space-y-6">

@@ -58,10 +58,10 @@ export function CustomDesignSection() {
             </p>
 
             {/* CTA Buttons */}
-            <div className="flex flex-wrap items-center gap-3.5 pt-2">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 pt-2">
               <Link
                 to="/customize"
-                className="inline-flex h-12 items-center gap-2.5 rounded-xl bg-[#B91F12] hover:bg-[#E6321C] px-7 text-xs sm:text-sm font-bold uppercase tracking-wider text-white shadow-md shadow-[#B91F12]/25 transition-all duration-200 hover:-translate-y-0.5 active:translate-y-0"
+                className="inline-flex h-12 w-full sm:w-auto items-center justify-center gap-2.5 rounded-xl bg-[#B91F12] hover:bg-[#E6321C] px-7 text-xs sm:text-sm font-bold uppercase tracking-wider text-white shadow-md shadow-[#B91F12]/25 transition-all duration-200 hover:-translate-y-0.5 active:translate-y-0"
               >
                 <Sparkles size={16} />
                 <span>START DESIGNING</span>
@@ -69,7 +69,7 @@ export function CustomDesignSection() {
 
               <Link
                 to="/customize"
-                className="inline-flex h-12 items-center gap-2.5 rounded-xl border border-[#DDD3C5] bg-white/70 hover:bg-white px-6 text-xs sm:text-sm font-bold uppercase tracking-wider text-[#171717] transition-all duration-200 hover:border-[#E6321C] hover:-translate-y-0.5"
+                className="inline-flex h-12 w-full sm:w-auto items-center justify-center gap-2.5 rounded-xl border border-[#DDD3C5] bg-white/70 hover:bg-white px-6 text-xs sm:text-sm font-bold uppercase tracking-wider text-[#171717] transition-all duration-200 hover:border-[#E6321C] hover:-translate-y-0.5"
               >
                 <div className="h-6 w-6 rounded-full border border-[#B91F12] flex items-center justify-center text-[#B91F12]">
                   <Play size={10} className="fill-[#B91F12] translate-x-0.5" />
@@ -79,28 +79,28 @@ export function CustomDesignSection() {
             </div>
 
             {/* 3 Quality Pillars */}
-            <div className="grid grid-cols-3 gap-3 pt-6 border-t border-[#DDD3C5]/70 text-left">
-              <div className="flex items-start gap-2.5">
-                <ShieldCheck size={20} className="text-[#171717] shrink-0 mt-0.5" strokeWidth={1.7} />
+            <div className="grid grid-cols-3 gap-2 sm:gap-3 pt-6 border-t border-[#DDD3C5]/70 text-left">
+              <div className="flex items-start gap-1.5 sm:gap-2.5">
+                <ShieldCheck size={18} className="text-[#171717] shrink-0 mt-0.5 sm:w-5 sm:h-5" strokeWidth={1.7} />
                 <div>
-                  <div className="text-xs font-bold text-[#171717] leading-tight">Premium Quality</div>
-                  <div className="text-[11px] text-[#6F6A63] font-sans mt-0.5">Materials</div>
+                  <div className="text-[11px] sm:text-xs font-bold text-[#171717] leading-tight">Premium Quality</div>
+                  <div className="text-[10px] sm:text-[11px] text-[#6F6A63] font-sans mt-0.5">Materials</div>
                 </div>
               </div>
 
-              <div className="flex items-start gap-2.5">
-                <PenTool size={20} className="text-[#171717] shrink-0 mt-0.5" strokeWidth={1.7} />
+              <div className="flex items-start gap-1.5 sm:gap-2.5">
+                <PenTool size={18} className="text-[#171717] shrink-0 mt-0.5 sm:w-5 sm:h-5" strokeWidth={1.7} />
                 <div>
-                  <div className="text-xs font-bold text-[#171717] leading-tight">High Quality</div>
-                  <div className="text-[11px] text-[#6F6A63] font-sans mt-0.5">Printing</div>
+                  <div className="text-[11px] sm:text-xs font-bold text-[#171717] leading-tight">High Quality</div>
+                  <div className="text-[10px] sm:text-[11px] text-[#6F6A63] font-sans mt-0.5">Printing</div>
                 </div>
               </div>
 
-              <div className="flex items-start gap-2.5">
-                <Truck size={20} className="text-[#171717] shrink-0 mt-0.5" strokeWidth={1.7} />
+              <div className="flex items-start gap-1.5 sm:gap-2.5">
+                <Truck size={18} className="text-[#171717] shrink-0 mt-0.5 sm:w-5 sm:h-5" strokeWidth={1.7} />
                 <div>
-                  <div className="text-xs font-bold text-[#171717] leading-tight">Fast Delivery</div>
-                  <div className="text-[11px] text-[#6F6A63] font-sans mt-0.5">3-7 Days</div>
+                  <div className="text-[11px] sm:text-xs font-bold text-[#171717] leading-tight">Fast Delivery</div>
+                  <div className="text-[10px] sm:text-[11px] text-[#6F6A63] font-sans mt-0.5">3-7 Days</div>
                 </div>
               </div>
             </div>

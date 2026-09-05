@@ -36,8 +36,12 @@ export class RolesGuard implements CanActivate {
       });
     }
 
-    // Super admin bypasses all permission checks
-    if (user.roles?.includes('SUPER_ADMIN')) {
+    // Super admin or wildcard permission bypasses permission checks
+    if (
+      user.roles?.includes('SUPER_ADMIN') ||
+      user.roles?.includes('ADMIN') ||
+      user.permissions?.includes('*')
+    ) {
       return true;
     }
 

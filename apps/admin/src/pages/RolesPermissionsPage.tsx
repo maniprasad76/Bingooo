@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import {
   ShieldCheck,
   Plus,
@@ -10,11 +11,14 @@ import {
   CreditCard,
   Settings,
   Users,
+  Trash2,
+  LoaderCircle,
 } from 'lucide-react';
 import { Modal } from '../components/ui/Modal';
 import { useToast } from '../components/ui/Toast';
+import { api } from '../lib/api/client';
 
-interface RoleDefinition {
+export interface RoleDefinition {
   id: string;
   name: string;
   description: string;
@@ -23,120 +27,119 @@ interface RoleDefinition {
   permissions: string[];
 }
 
-const allPermissionKeys = [
-  { key: 'products.read', label: 'View Products & Catalog', group: 'Products' },
-  { key: 'products.create', label: 'Create New Garments', group: 'Products' },
-  { key: 'products.update', label: 'Update Pricing & Specs', group: 'Products' },
-  { key: 'products.delete', label: 'Archive / Delete Garments', group: 'Products' },
-  { key: 'orders.read', label: 'View Customer Orders', group: 'Orders' },
-  { key: 'orders.update', label: 'Update Fulfillment & Status', group: 'Orders' },
-  { key: 'customizations.review', label: 'Review Custom Artwork', group: 'Custom Studio' },
-  { key: 'payments.read', label: 'View Payment Ledgers', group: 'Finance' },
-  { key: 'refunds.manage', label: 'Issue & Authorize Refunds', group: 'Finance' },
-  { key: 'users.manage', label: 'Manage Staff Members', group: 'Team' },
-  { key: 'roles.manage', label: 'Modify Permissions Matrix', group: 'Team' },
-  { key: 'settings.manage', label: 'Configure Store Parameters', group: 'Settings' },
-];
-
-const initialRoles: RoleDefinition[] = [
-  {
-    id: 'role-super-admin',
-    name: 'Super Admin',
-    description: 'Unrestricted root administrator access across all systems, database stores, and financial settlements.',
-    userCount: 1,
-    isSystem: true,
-    permissions: allPermissionKeys.map((p) => p.key),
-  },
-  {
-    id: 'role-admin',
-    name: 'Admin',
-    description: 'Comprehensive store management excluding master server environment configurations.',
-    userCount: 2,
-    isSystem: true,
-    permissions: [
-      'products.read',
-      'products.create',
-      'products.update',
-      'orders.read',
-      'orders.update',
-      'customizations.review',
-      'payments.read',
-      'refunds.manage',
-      'users.manage',
-      'settings.manage',
-    ],
-  },
-  {
-    id: 'role-product-mgr',
-    name: 'Product Manager',
-    description: 'Full ownership of catalog taxonomy, garment fabric specifications, inventory and pricing.',
-    userCount: 3,
-    isSystem: false,
-    permissions: ['products.read', 'products.create', 'products.update', 'products.delete'],
-  },
-  {
-    id: 'role-order-mgr',
-    name: 'Order Manager',
-    description: 'Manage warehouse fulfillment, courier dispatch, custom print moderation, and returns inspection.',
-    userCount: 4,
-    isSystem: false,
-    permissions: ['orders.read', 'orders.update', 'customizations.review', 'payments.read'],
-  },
-  {
-    id: 'role-support',
-    name: 'Customer Support',
-    description: 'Inspect order delivery progress, customer contact dossiers, and review moderation.',
-    userCount: 5,
-    isSystem: false,
-    permissions: ['orders.read', 'products.read'],
-  },
-];
+export interface PermissionKey {
+  key: string;
+  label: string;
+  group: string;
+}
 
 export function RolesPermissionsPage() {
   const { toast } = useToast();
+  const queryClient = useQueryClient();
 
-  const [roles, setRoles] = useState<RoleDefinition[]>(initialRoles);
-  const [selectedRole, setSelectedRole] = useState<RoleDefinition>(initialRoles[0]);
+  const [selectedRoleId, setSelectedRoleId] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-
-  // New role form
   const [newRoleName, setNewRoleName] = useState('');
   const [newRoleDesc, setNewRoleDesc] = useState('');
-  const [selectedPerms, setSelectedPerms] = useState<string[]>(['products.read', 'orders.read']);
+
+  const { data: roles = [], isLoading: isRolesLoading } = useQuery({
+    queryKey: ['admin', 'roles'],
+    queryFn: () => api.get<RoleDefinition[]>('/roles'),
+  });
+
+  const { data: allPermissionKeys = [] } = useQuery({
+    queryKey: ['admin', 'permissions'],
+    queryFn: () => api.get<PermissionKey[]>('/roles/permissions'),
+  });
+
+  const selectedRole =
+    roles.find((r) => r.id === selectedRoleId) || roles[0] || null;
+
+  const updateRoleMutation = useMutation({
+    mutationFn: ({ id, permissions }: { id: string; permissions: string[] }) =>
+      api.put(`/roles/${id}`, { permissions }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin', 'roles'] });
+      toast({
+        title: 'Permissions matrix synchronized',
+        description: 'Updated capability grants for this role.',
+        variant: 'success',
+      });
+    },
+    onError: (err: any) => {
+      toast({
+        title: 'Update failed',
+        description: err.message || 'Could not update role permissions.',
+        variant: 'danger',
+      });
+    },
+  });
+
+  const createRoleMutation = useMutation({
+    mutationFn: (data: { name: string; description: string; permissions: string[] }) =>
+      api.post('/roles', data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin', 'roles'] });
+      toast({
+        title: 'New role established',
+        description: `Custom role ${newRoleName} created.`,
+        variant: 'success',
+      });
+      setNewRoleName('');
+      setNewRoleDesc('');
+      setIsModalOpen(false);
+    },
+    onError: (err: any) => {
+      toast({
+        title: 'Creation failed',
+        description: err.message || 'Could not create role.',
+        variant: 'danger',
+      });
+    },
+  });
+
+  const deleteRoleMutation = useMutation({
+    mutationFn: (id: string) => api.delete(`/roles/${id}`),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin', 'roles'] });
+      toast({ title: 'Role deleted', variant: 'success' });
+    },
+    onError: (err: any) => {
+      toast({
+        title: 'Delete failed',
+        description: err.message || 'Could not delete role.',
+        variant: 'danger',
+      });
+    },
+  });
+
+  const handleTogglePermission = (key: string) => {
+    if (!selectedRole || selectedRole.isSystem) {
+      if (selectedRole?.name === 'Super Admin') {
+        toast({
+          title: 'Unrestricted Role',
+          description: 'Super Admin permissions cannot be restricted.',
+          variant: 'default',
+        });
+      }
+      return;
+    }
+
+    const current = selectedRole.permissions || [];
+    const updated = current.includes(key)
+      ? current.filter((k) => k !== key)
+      : [...current, key];
+
+    updateRoleMutation.mutate({ id: selectedRole.id, permissions: updated });
+  };
 
   const handleCreateRole = (e: React.FormEvent) => {
     e.preventDefault();
-    const newRole: RoleDefinition = {
-      id: `role-${Date.now()}`,
+    createRoleMutation.mutate({
       name: newRoleName,
       description: newRoleDesc,
-      userCount: 0,
-      isSystem: false,
-      permissions: selectedPerms,
-    };
-    setRoles((prev) => [...prev, newRole]);
-    setSelectedRole(newRole);
-    toast({ title: 'New operational role configured', variant: 'success' });
-    setIsModalOpen(false);
-    setNewRoleName('');
-    setNewRoleDesc('');
-  };
-
-  const togglePermission = (key: string) => {
-    if (selectedRole.isSystem && selectedRole.id === 'role-super-admin') {
-      toast({ title: 'Super Admin permissions are locked to full access', variant: 'danger' });
-      return;
-    }
-    const current = selectedRole.permissions;
-    const updated = current.includes(key)
-      ? current.filter((p) => p !== key)
-      : [...current, key];
-
-    setRoles((prev) =>
-      prev.map((r) => (r.id === selectedRole.id ? { ...r, permissions: updated } : r))
-    );
-    setSelectedRole((prev) => ({ ...prev, permissions: updated }));
-    toast({ title: 'Role permissions updated', variant: 'success' });
+      permissions: ['products.read', 'orders.read'],
+    });
   };
 
   return (
@@ -145,165 +148,196 @@ export function RolesPermissionsPage() {
       <div className="flex flex-wrap items-center justify-between gap-4 card-admin p-6">
         <div>
           <span className="inline-flex items-center gap-1.5 rounded-full bg-[#FDF0EE] px-3 py-1 text-xs font-bold uppercase text-brand-red">
-            <ShieldCheck size={14} /> Security & RBAC
+            <ShieldCheck size={14} /> Security Matrix
           </span>
           <h2 className="mt-2 text-xl font-black text-ink sm:text-2xl">
-            Roles & Granular Access Permissions
+            Roles & Granular Permissions
           </h2>
           <p className="text-xs text-muted">
-            Configure backend-enforced API authorizations, role scopes, and operations staff privileges.
+            Configure role-based access control (RBAC), enforce least-privilege policies, and guard operational endpoints.
           </p>
         </div>
 
-        <button onClick={() => setIsModalOpen(true)} className="btn-primary">
-          <Plus size={16} /> New Role
+        <button
+          onClick={() => setIsModalOpen(true)}
+          className="inline-flex items-center gap-2 rounded-xl bg-brand-red px-4 py-2 text-xs font-bold text-white hover:bg-brand-red/90 shadow-xs"
+        >
+          <Plus size={14} /> Add Custom Role
         </button>
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-3">
-        {/* Roles List (1 col) */}
-        <div className="space-y-3">
-          <p className="text-xs font-bold uppercase tracking-wider text-muted px-1">
-            Configured Roles ({roles.length})
-          </p>
-          {roles.map((role) => (
-            <button
-              key={role.id}
-              onClick={() => setSelectedRole(role)}
-              className={`w-full text-left rounded-2xl p-4 border transition-all ${
-                selectedRole.id === role.id
-                  ? 'border-brand-red bg-white shadow-md'
-                  : 'border-border bg-white/60 hover:bg-white hover:border-brand-red/30'
-              }`}
-            >
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  {role.id === 'role-super-admin' ? (
-                    <Crown size={16} className="text-brand-red" />
-                  ) : (
-                    <ShieldCheck size={16} className="text-muted" />
-                  )}
-                  <h3 className="font-bold text-ink text-sm">{role.name}</h3>
-                </div>
-                <span className="rounded-full bg-[#F7EEDB] px-2 py-0.5 text-[10px] font-bold text-ink">
-                  {role.userCount} users
-                </span>
-              </div>
-              <p className="text-xs text-muted mt-1.5 line-clamp-2">{role.description}</p>
-              <div className="mt-3 text-[11px] font-mono text-muted">
-                {role.permissions.length} active permissions
-              </div>
-            </button>
-          ))}
+      {isRolesLoading ? (
+        <div className="flex min-h-[300px] items-center justify-center gap-3 text-muted">
+          <LoaderCircle size={22} className="animate-spin text-brand-red" />
+          <span className="text-xs font-bold uppercase tracking-wider">Syncing RBAC matrix...</span>
         </div>
+      ) : (
+        <div className="grid gap-6 lg:grid-cols-12">
+          {/* Roles Selector (4 cols) */}
+          <div className="space-y-3 lg:col-span-4">
+            <h3 className="font-bold text-ink text-sm px-1">Defined Store Roles</h3>
 
-        {/* Permissions Matrix for Selected Role (2 cols) */}
-        <div className="lg:col-span-2 card-admin p-6 space-y-6">
-          <div className="flex items-center justify-between border-b border-border pb-4">
-            <div>
-              <div className="flex items-center gap-2.5">
-                <h3 className="font-black text-ink text-lg">{selectedRole.name}</h3>
-                {selectedRole.isSystem && (
-                  <span className="rounded-md bg-ink px-2 py-0.5 text-[10px] font-bold uppercase text-white">
-                    System Protected
-                  </span>
-                )}
-              </div>
-              <p className="text-xs text-muted mt-1">{selectedRole.description}</p>
+            <div className="space-y-2">
+              {roles.map((role) => {
+                const isSelected = selectedRole?.id === role.id;
+                return (
+                  <div
+                    key={role.id}
+                    onClick={() => setSelectedRoleId(role.id)}
+                    className={`card-admin p-4 cursor-pointer transition-all ${
+                      isSelected
+                        ? 'border-brand-red ring-1 ring-brand-red bg-[#FAF8F5]'
+                        : 'hover:border-brand-red/40 bg-white'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        {role.name === 'Super Admin' ? (
+                          <Crown size={15} className="text-brand-red" />
+                        ) : (
+                          <ShieldCheck size={15} className="text-muted" />
+                        )}
+                        <h4 className="font-bold text-ink text-xs">{role.name}</h4>
+                      </div>
+
+                      <div className="flex items-center gap-1.5">
+                        <span className="rounded-md bg-[#EDE0CC] px-2 py-0.5 text-[10px] font-bold text-ink">
+                          {role.userCount} {role.userCount === 1 ? 'user' : 'users'}
+                        </span>
+                        {!role.isSystem && (
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              deleteRoleMutation.mutate(role.id);
+                            }}
+                            className="p-1 text-muted hover:text-brand-red"
+                            title="Delete custom role"
+                          >
+                            <Trash2 size={12} />
+                          </button>
+                        )}
+                      </div>
+                    </div>
+
+                    <p className="mt-2 text-[11px] text-muted line-clamp-2 leading-relaxed">
+                      {role.description}
+                    </p>
+                  </div>
+                );
+              })}
             </div>
           </div>
 
-          {/* Permissions Checklist Grouped by Resource */}
-          <div className="space-y-6">
-            {['Products', 'Orders', 'Custom Studio', 'Finance', 'Team', 'Settings'].map(
-              (group) => {
-                const groupPerms = allPermissionKeys.filter((p) => p.group === group);
-                return (
-                  <div key={group} className="space-y-2.5">
-                    <h4 className="text-xs font-bold uppercase tracking-wider text-muted">
-                      {group} Privileges
-                    </h4>
-                    <div className="grid gap-2 sm:grid-cols-2">
-                      {groupPerms.map((p) => {
-                        const isChecked = selectedRole.permissions.includes(p.key);
-                        return (
-                          <label
-                            key={p.key}
-                            className={`flex items-center gap-3 rounded-xl border p-3 cursor-pointer transition-all ${
-                              isChecked
-                                ? 'border-brand-red/30 bg-[#FDF0EE]/30 text-ink'
-                                : 'border-border bg-white text-muted hover:border-border/80'
-                            }`}
-                          >
-                            <input
-                              type="checkbox"
-                              checked={isChecked}
-                              onChange={() => togglePermission(p.key)}
-                              disabled={selectedRole.id === 'role-super-admin'}
-                              className="h-4 w-4 accent-brand-red"
-                            />
-                            <div>
-                              <p className="text-xs font-bold">{p.label}</p>
-                              <p className="text-[10px] font-mono text-muted">{p.key}</p>
-                            </div>
-                          </label>
-                        );
-                      })}
-                    </div>
+          {/* Permissions Matrix (8 cols) */}
+          {selectedRole && (
+            <div className="lg:col-span-8 card-admin p-6 space-y-6">
+              <div className="flex flex-wrap items-center justify-between gap-4 border-b border-border pb-4">
+                <div>
+                  <div className="flex items-center gap-2">
+                    <h3 className="font-bold text-ink text-lg">{selectedRole.name}</h3>
+                    {selectedRole.isSystem && (
+                      <span className="rounded bg-paper px-2 py-0.5 text-[10px] font-bold text-muted border border-border">
+                        System Default
+                      </span>
+                    )}
                   </div>
-                );
-              }
-            )}
-          </div>
-        </div>
-      </div>
+                  <p className="text-xs text-muted mt-0.5">{selectedRole.description}</p>
+                </div>
 
-      {/* Modal */}
+                <div className="text-right">
+                  <span className="text-xs font-bold text-brand-red">
+                    {selectedRole.permissions?.length || 0} Permissions Granted
+                  </span>
+                </div>
+              </div>
+
+              {/* Permission Groups */}
+              <div className="grid gap-4 sm:grid-cols-2">
+                {allPermissionKeys.map((perm) => {
+                  const isChecked = (selectedRole.permissions || []).includes(perm.key);
+                  const isSuper = selectedRole.name === 'Super Admin';
+
+                  return (
+                    <div
+                      key={perm.key}
+                      onClick={() => handleTogglePermission(perm.key)}
+                      className={`flex items-start gap-3 rounded-xl border p-3.5 transition-all select-none ${
+                        isChecked
+                          ? 'border-brand-red/30 bg-[#FDF0EE]/40'
+                          : 'border-border bg-white hover:border-brand-red/20'
+                      } ${isSuper ? 'cursor-not-allowed opacity-90' : 'cursor-pointer'}`}
+                    >
+                      <div
+                        className={`flex h-4 w-4 shrink-0 items-center justify-center rounded-md border mt-0.5 ${
+                          isChecked
+                            ? 'border-brand-red bg-brand-red text-white'
+                            : 'border-border bg-white'
+                        }`}
+                      >
+                        {isChecked && <Check size={11} strokeWidth={3} />}
+                      </div>
+
+                      <div className="space-y-0.5">
+                        <div className="flex items-center gap-2">
+                          <span className="font-bold text-ink text-xs">{perm.label}</span>
+                          <span className="text-[10px] font-mono text-muted">({perm.group})</span>
+                        </div>
+                        <span className="font-mono text-[10px] text-muted block">{perm.key}</span>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Add Role Modal */}
       <Modal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        title="Create Custom Operational Role"
-        description="Define a new role and establish authorized capability boundaries."
-        maxWidth="md"
+        title="Establish Custom Role"
       >
-        <form onSubmit={handleCreateRole} className="space-y-4">
+        <form onSubmit={handleCreateRole} className="space-y-4 text-xs">
           <div>
-            <label className="block text-xs font-bold text-muted">
-              Role Title *
-              <input
-                required
-                value={newRoleName}
-                onChange={(e) => setNewRoleName(e.target.value)}
-                placeholder="Logistics Specialist"
-                className="input-admin mt-1"
-              />
-            </label>
+            <label className="block font-bold text-ink mb-1.5">Role Designation</label>
+            <input
+              required
+              type="text"
+              value={newRoleName}
+              onChange={(e) => setNewRoleName(e.target.value)}
+              placeholder="e.g. Senior Merchandiser"
+              className="w-full rounded-xl border border-border bg-[#FAF8F5] px-3 py-2 text-ink focus:border-brand-red focus:outline-none"
+            />
           </div>
 
           <div>
-            <label className="block text-xs font-bold text-muted">
-              Role Purpose Description *
-              <textarea
-                rows={3}
-                required
-                value={newRoleDesc}
-                onChange={(e) => setNewRoleDesc(e.target.value)}
-                placeholder="Handles shipping label printing and reverse returns inspection."
-                className="input-admin mt-1"
-              />
-            </label>
+            <label className="block font-bold text-ink mb-1.5">Role Description & Responsibilities</label>
+            <textarea
+              required
+              rows={3}
+              value={newRoleDesc}
+              onChange={(e) => setNewRoleDesc(e.target.value)}
+              placeholder="Describe scope of authority..."
+              className="w-full rounded-xl border border-border bg-[#FAF8F5] px-3 py-2 text-ink focus:border-brand-red focus:outline-none"
+            />
           </div>
 
-          <div className="flex items-center justify-end gap-3 border-t border-border pt-4">
+          <div className="flex items-center justify-end gap-2 pt-4">
             <button
               type="button"
               onClick={() => setIsModalOpen(false)}
-              className="btn-secondary"
+              className="rounded-xl border border-border px-4 py-2 font-bold text-muted hover:text-ink"
             >
               Cancel
             </button>
-            <button type="submit" className="btn-primary">
-              <Check size={16} /> Save Role
+            <button
+              type="submit"
+              disabled={createRoleMutation.isPending}
+              className="rounded-xl bg-brand-red px-4 py-2 font-bold text-white hover:bg-brand-red/90 disabled:opacity-50"
+            >
+              {createRoleMutation.isPending ? 'Establishing...' : 'Create Role'}
             </button>
           </div>
         </form>

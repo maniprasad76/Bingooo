@@ -1,14 +1,17 @@
-import { forwardRef, type ButtonHTMLAttributes } from 'react';
+import { forwardRef, type ReactNode } from 'react';
+import { motion, type HTMLMotionProps } from 'framer-motion';
 import { cn } from '../../lib/utils';
 
 export type ButtonVariant = 'primary' | 'secondary' | 'outline' | 'ghost' | 'danger';
 export type ButtonSize = 'sm' | 'md' | 'lg';
 
-interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+interface ButtonProps extends Omit<HTMLMotionProps<'button'>, 'children'> {
   variant?: ButtonVariant;
   size?: ButtonSize;
   loading?: boolean;
   fullWidth?: boolean;
+  animateInteraction?: boolean;
+  children?: ReactNode;
 }
 
 const variantStyles: Record<ButtonVariant, string> = {
@@ -31,13 +34,39 @@ const sizeStyles: Record<ButtonSize, string> = {
 };
 
 const Button = forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, variant = 'primary', size = 'md', loading, fullWidth, disabled, children, ...props }, ref) => {
+  (
+    {
+      className,
+      variant = 'primary',
+      size = 'md',
+      loading,
+      fullWidth,
+      disabled,
+      animateInteraction = true,
+      whileHover,
+      whileTap,
+      children,
+      ...props
+    },
+    ref,
+  ) => {
     return (
-      <button
+      <motion.button
         ref={ref}
+        whileHover={
+          disabled || loading || !animateInteraction
+            ? undefined
+            : (whileHover ?? { scale: 1.015 })
+        }
+        whileTap={
+          disabled || loading || !animateInteraction
+            ? undefined
+            : (whileTap ?? { scale: 0.975 })
+        }
+        transition={{ type: 'spring', stiffness: 450, damping: 25 }}
         className={cn(
           'inline-flex items-center justify-center font-sans font-bold uppercase tracking-[0.06em]',
-          'transition-all duration-200',
+          'transition-colors duration-200',
           'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#E6321C]',
           'disabled:opacity-50 disabled:pointer-events-none',
           variantStyles[variant],
@@ -65,7 +94,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
           </svg>
         )}
         {children}
-      </button>
+      </motion.button>
     );
   },
 );

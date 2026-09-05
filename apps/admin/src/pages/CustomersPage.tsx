@@ -20,36 +20,7 @@ export function CustomersPage() {
 
   const { data: customers = [], isLoading, isError } = useQuery<CustomerRecord[]>({
     queryKey: ['admin', 'customers'],
-    queryFn: () =>
-      api.get<CustomerRecord[]>('/users').catch(() => [
-        {
-          id: '1',
-          email: 'akash.verma@example.com',
-          full_name: 'Akash Verma',
-          phone: '+91 98765 43210',
-          order_count: 3,
-          total_spent: 4297,
-          created_at: new Date(Date.now() - 86400000 * 20).toISOString(),
-        },
-        {
-          id: '2',
-          email: 'rohit.sharma@example.com',
-          full_name: 'Rohit Sharma',
-          phone: '+91 91234 56789',
-          order_count: 1,
-          total_spent: 1499,
-          created_at: new Date(Date.now() - 86400000 * 5).toISOString(),
-        },
-        {
-          id: '3',
-          email: 'devika.pillai@outlook.com',
-          full_name: 'Devika Pillai',
-          phone: '+91 99887 76655',
-          order_count: 2,
-          total_spent: 2698,
-          created_at: new Date(Date.now() - 86400000 * 12).toISOString(),
-        },
-      ]),
+    queryFn: () => api.get<CustomerRecord[]>('/users'),
   });
 
   const filtered = customers.filter(

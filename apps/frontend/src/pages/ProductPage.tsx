@@ -139,12 +139,14 @@ export function ProductPage() {
   // Extract images uploaded through admin panel or fallbacks
   const productImages = useMemo(() => {
     if (product?.images && product.images.length > 0) {
-      return product.images.map((img: any) => img.url || img.object_key);
+      return product.images.map((img: any) =>
+        typeof img === 'string' ? img : img.url || img.object_key
+      );
     }
-    return [];
+    return ['/hero-banner.png'];
   }, [product]);
 
-  const currentPrice = product?.base_price || 799;
+  const currentPrice = product?.base_price ?? product?.basePrice ?? 699;
 
   const handleAddToCart = () => {
     const variant =

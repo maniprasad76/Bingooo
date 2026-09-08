@@ -143,9 +143,9 @@ export function ShopPage() {
                       id={product.id}
                       title={product.title}
                       slug={product.slug}
-                      basePrice={product.base_price}
-                      compareAtPrice={product.compare_at_price}
-                      customizationEnabled={product.customization_enabled}
+                      basePrice={product.base_price ?? product.basePrice ?? 699}
+                      compareAtPrice={product.compare_at_price ?? product.compareAtPrice}
+                      customizationEnabled={product.customization_enabled ?? product.customizationEnabled}
                       category={product.category}
                       variants={product.variants}
                       images={product.images}

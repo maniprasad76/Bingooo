@@ -5,16 +5,29 @@ import { usePWA } from '../../hooks/usePWA';
 
 export function PWAInstallPrompt() {
   const { isInstallable, promptInstall } = usePWA();
-  const [dismissed, setDismissed] = useState(false);
+  const [dismissed, setDismissed] = useState(() => {
+    try {
+      return sessionStorage.getItem('bingooo_pwa_dismissed') === 'true';
+    } catch {
+      return false;
+    }
+  });
 
   if (!isInstallable || dismissed) {
     return null;
   }
 
+  const handleDismiss = () => {
+    setDismissed(true);
+    try {
+      sessionStorage.setItem('bingooo_pwa_dismissed', 'true');
+    } catch {}
+  };
+
   const handleInstall = async () => {
     const success = await promptInstall();
     if (!success) {
-      setDismissed(true);
+      handleDismiss();
     }
   };
 
@@ -55,7 +68,7 @@ export function PWAInstallPrompt() {
           </button>
           <button
             type="button"
-            onClick={() => setDismissed(true)}
+            onClick={handleDismiss}
             className="p-1 rounded-lg text-white/50 hover:text-white transition-colors"
             aria-label="Dismiss app install prompt"
           >

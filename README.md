@@ -2,6 +2,10 @@
 
 > **"Wear what feels like you."** — *Create. Customize. Wear.*
 
+### 🌐 Live Deployments
+- **🛍️ Customer Storefront (Frontend):** [https://bingooo-frontend.vercel.app](https://bingooo-frontend.vercel.app)
+- **🎛️ Admin Operations Center:** [https://bingooo-admin-three.vercel.app](https://bingooo-admin-three.vercel.app)
+
 [![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=flat&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![React](https://img.shields.io/badge/React-20232A?style=flat&logo=react&logoColor=61DAFB)](https://reactjs.org/)
 [![Vite](https://img.shields.io/badge/Vite-646CFF?style=flat&logo=vite&logoColor=white)](https://vitejs.dev/)

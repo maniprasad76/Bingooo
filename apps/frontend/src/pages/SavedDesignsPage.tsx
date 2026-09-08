@@ -7,6 +7,7 @@ import { Button } from '../components/ui/Button';
 import { Badge } from '../components/ui/Badge';
 
 import { useAuthStore } from '../store/auth';
+import { SEO } from '../components/common/SEO';
 
 export function SavedDesignsPage() {
   const shouldReduceMotion = useReducedMotion();
@@ -20,6 +21,10 @@ export function SavedDesignsPage() {
 
   return (
     <div className="container-page py-8 sm:py-12 space-y-6">
+      <SEO
+        title="My Custom Designs"
+        description="View and re-order your personalized 240 GSM tees and hoodies from the Bingooo Atelier Studio."
+      />
       <div className="flex items-center justify-between pb-6 border-b border-border">
         <div>
           <h1 className="text-display-lg font-bold text-ink">My Custom Designs</h1>

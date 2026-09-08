@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { motion, useReducedMotion } from 'framer-motion';
 import { RotateCcw, ShieldCheck, CheckCircle2, AlertCircle } from 'lucide-react';
+import { SEO } from '../components/common/SEO';
 
 const RETURN_STEPS = [
   {
@@ -25,6 +26,10 @@ export function ReturnsRefundsPage() {
 
   return (
     <div className="w-full bg-[#FAF8F5] text-[#171717] min-h-screen py-10 sm:py-16 font-sans">
+      <SEO
+        title="Returns & Refunds Policy"
+        description="Learn about Bingooo's hassle-free 7-day exchange and return policy, doorstep courier pickups, and refund process."
+      />
       <div className="max-w-[1000px] mx-auto px-4 sm:px-8 space-y-12">
         
         {/* ─── Breadcrumb & Header ─── */}
@@ -43,6 +48,10 @@ export function ReturnsRefundsPage() {
 
           <p className="text-sm sm:text-base text-[#6F6A63] leading-relaxed max-w-xl">
             We stand behind our heavyweight menswear. Enjoy our 7-day doorstep size exchange policy across India.
+          </p>
+
+          <p className="text-xs sm:text-sm text-[#6F6A63] font-mono">
+            Last Updated: September 2026 • Bingooo Customer Care
           </p>
         </div>
 

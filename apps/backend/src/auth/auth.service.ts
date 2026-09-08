@@ -7,30 +7,29 @@ import {
 } from '@nestjs/common';
 import { v4 as uuidv4 } from 'uuid';
 import { db } from '../common/database/store';
-import { hashPassword, verifyPassword, generateToken } from '../common/utils/crypto.util';
+import {
+  hashPassword,
+  verifyPassword,
+  generateToken,
+  revokeToken,
+} from '../common/utils/crypto.util';
+import {
+  SignupDto,
+  LoginDto,
+  UpdateProfileDto,
+  ChangePasswordDto,
+  ForgotPasswordDto,
+  ResetPasswordDto,
+} from './dto/auth.dto';
 
-export interface SignupDto {
-  email: string;
-  password: string;
-  fullName: string;
-  phone?: string;
-}
-
-export interface LoginDto {
-  email: string;
-  password: string;
-}
-
-export interface UpdateProfileDto {
-  fullName?: string;
-  phone?: string;
-  avatarKey?: string;
-}
-
-export interface ChangePasswordDto {
-  currentPassword: string;
-  newPassword: string;
-}
+export {
+  SignupDto,
+  LoginDto,
+  UpdateProfileDto,
+  ChangePasswordDto,
+  ForgotPasswordDto,
+  ResetPasswordDto,
+};
 
 function sanitizeUser(user: any) {
   const { password_hash, ...rest } = user;
@@ -39,6 +38,7 @@ function sanitizeUser(user: any) {
 
 @Injectable()
 export class AuthService {
+
   async signup(dto: SignupDto) {
     const existing = db.users.find((u) => u.email.toLowerCase() === dto.email.toLowerCase());
     if (existing) {
@@ -82,7 +82,7 @@ export class AuthService {
       updated_at: new Date().toISOString(),
     });
 
-    const token = generateToken({
+    const tokenData = generateToken({
       userId: newUser.id,
       email: newUser.email,
       role: newUser.role,
@@ -90,7 +90,9 @@ export class AuthService {
 
     return {
       user: sanitizeUser(newUser),
-      token,
+      token: tokenData.token,
+      jti: tokenData.jti,
+      expiresIn: tokenData.expiresIn,
     };
   }
 
@@ -111,7 +113,7 @@ export class AuthService {
       });
     }
 
-    const token = generateToken({
+    const tokenData = generateToken({
       userId: user.id,
       email: user.email,
       role: user.role,
@@ -119,9 +121,19 @@ export class AuthService {
 
     return {
       user: sanitizeUser(user),
-      token,
+      token: tokenData.token,
+      jti: tokenData.jti,
+      expiresIn: tokenData.expiresIn,
     };
   }
+
+  async revokeUserSession(tokenOrJti?: string) {
+    if (tokenOrJti) {
+      revokeToken(tokenOrJti);
+    }
+    return { success: true, message: 'Session successfully revoked and logged out.' };
+  }
+
 
   async getMe(userId: string) {
     const user = db.users.find((u) => u.id === userId);

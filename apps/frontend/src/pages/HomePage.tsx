@@ -1,15 +1,14 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
-import {
-  ArrowRight,
-  PenTool,
-  Shirt,
-} from 'lucide-react';
+import { ArrowRight, PenTool } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ProductCard } from '../components/catalog/ProductCard';
-import { Skeleton } from '../components/ui/Skeleton';
-import { useCategories, useProducts } from '../hooks/useProducts';
-import { CustomDesignSection } from '../components/home/CustomDesignSection';
+import { SEO } from '../components/common/SEO';
+import { ShopByCategory } from '../components/home/ShopByCategory';
+import { HowItWorksBanner } from '../components/home/HowItWorksBanner';
+import { NewArrivals } from '../components/home/NewArrivals';
+import { WhyBingooo } from '../components/home/WhyBingooo';
+import { LovedByCommunity } from '../components/home/LovedByCommunity';
+import { ReadyToExpressBanner } from '../components/home/ReadyToExpressBanner';
 
 export interface HeroSlideItem {
   id: string;
@@ -93,12 +92,6 @@ const DEFAULT_HERO_SLIDES: HeroSlideItem[] = [
   },
 ];
 
-const categoryStyles = [
-  'from-[#171717] to-[#302A26] text-white',
-  'from-[#EDE0CC] to-[#D8C7AF] text-[#171717]',
-  'from-[#38434B] to-[#1F252B] text-white',
-  'from-[#FDF0EE] to-[#EDE0CC] text-[#171717]',
-];
 
 // Spring physics for slide transitions
 const slideVariants = {
@@ -207,13 +200,14 @@ export function HomePage() {
     return () => clearInterval(interval);
   }, [paginate, isPaused, totalSlides]);
 
-  const featuredQuery = useProducts({ limit: 4, sort: 'newest' });
-  const categoriesQuery = useCategories();
-  const featured = featuredQuery.data?.data ?? [];
-  const categories = categoriesQuery.data ?? [];
 
   return (
     <div className="overflow-hidden bg-[#FAF8F5] text-[#171717]">
+      <SEO
+        title="Premium Heavyweight Men's Wear & Custom Fashion"
+        description="Discover luxury streetwear crafted from 240–280 GSM combed cotton. Shop oversized graphic tees, drop-shoulder hoodies, or customize your own bespoke garments."
+        keywords="heavyweight t-shirts, 240 gsm customizer, streetwear India, oversized tees, luxury menswear"
+      />
       {/* ── Ultra-Smooth Full-Screen Hero Section with Seamless Auto-Scroll ── */}
       <section
         className="relative w-full h-[85vh] sm:h-[90vh] lg:h-[calc(100vh-80px)] min-h-[580px] max-h-[920px] overflow-hidden border-b border-[#DDD3C5] bg-[#F0E7DF]"
@@ -296,135 +290,25 @@ export function HomePage() {
         </div>
       </section>
 
-      {/* ── Category Section ── */}
-      <section className="mx-auto max-w-[1360px] px-3.5 py-10 sm:px-8 sm:py-20">
-        <SectionHeading
-          eyebrow="Explore the edit"
-          title="Shop your style"
-          action={
-            <Link
-              to="/shop"
-              className="inline-flex items-center gap-1 text-xs font-bold uppercase tracking-wide text-[#B91F12]"
-            >
-              View all <ArrowRight size={14} />
-            </Link>
-          }
-        />
-        <div className="mt-6 sm:mt-8 grid grid-cols-2 gap-2.5 sm:gap-4 lg:grid-cols-4">
-          {categoriesQuery.isLoading
-            ? Array.from({ length: 4 }, (_, index) => (
-                <Skeleton key={index} className="h-44 sm:h-60 rounded-xl sm:rounded-2xl" />
-              ))
-            : categories.slice(0, 4).map((category, index) => (
-                <motion.div
-                  key={category.id}
-                  initial={{ opacity: 0, y: 28 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true, margin: '-40px' }}
-                  transition={{ delay: index * 0.09, duration: 0.55, ease: [0.16, 1, 0.3, 1] }}
-                >
-                  <Link
-                    to={`/category/${category.slug}`}
-                    className={`group relative flex min-h-[160px] sm:min-h-60 h-full flex-col justify-end overflow-hidden rounded-xl sm:rounded-2xl border border-[#DDD3C5] bg-gradient-to-br p-4 sm:p-6 shadow-card transition-all duration-300 hover:-translate-y-1.5 hover:shadow-elevated ${
-                      categoryStyles[index % categoryStyles.length]
-                    }`}
-                  >
-                    <Shirt
-                      className="absolute right-3 top-3 sm:right-5 sm:top-5 opacity-20 sm:opacity-25 transition-transform duration-500 group-hover:scale-110 group-hover:rotate-6 w-10 h-10 sm:w-16 sm:h-16"
-                      strokeWidth={1.2}
-                    />
-                    <div className="relative flex h-full flex-col justify-end">
-                      <p className="text-[9px] sm:text-xs font-bold uppercase tracking-[.15em] opacity-65">
-                        Bingooo collection
-                      </p>
-                      <h2 className="mt-1 sm:mt-2 text-base sm:text-2xl font-extrabold uppercase line-clamp-1">
-                        {category.name}
-                      </h2>
-                      <span className="mt-2 sm:mt-4 inline-flex items-center gap-1.5 sm:gap-2 text-[10px] sm:text-xs font-bold uppercase tracking-wide">
-                        Shop now <ArrowRight size={13} className="sm:w-[15px] sm:h-[15px]" />
-                      </span>
-                    </div>
-                  </Link>
-                </motion.div>
-              ))}
-        </div>
-      </section>
+      {/* ── 1. Shop By Category ── */}
+      <ShopByCategory />
 
-      {/* ── Featured Products ── */}
-      <section className="border-y border-[#DDD3C5] bg-white">
-        <div className="mx-auto max-w-[1360px] px-3.5 py-10 sm:px-8 sm:py-20">
-          <SectionHeading
-            eyebrow="The Bingooo edit"
-            title="New arrivals"
-            action={
-              <Link
-                to="/shop"
-                className="inline-flex items-center gap-1 text-xs font-bold uppercase tracking-wide text-[#B91F12]"
-              >
-                View catalog <ArrowRight size={14} />
-              </Link>
-            }
-          />
-          <div className="mt-6 sm:mt-8 grid grid-cols-2 gap-2.5 sm:gap-4 lg:grid-cols-4">
-            {featuredQuery.isLoading
-              ? Array.from({ length: 4 }, (_, index) => (
-                  <Skeleton key={index} className="aspect-[4/5] rounded-xl sm:rounded-2xl" />
-                ))
-              : featured.map((product: any, index: number) => (
-                  <motion.div
-                    key={product.id}
-                    initial={{ opacity: 0, y: 24 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true, margin: '-30px' }}
-                    transition={{ delay: index * 0.08, duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-                  >
-                    <ProductCard
-                      id={product.id}
-                      title={product.title}
-                      slug={product.slug}
-                      basePrice={product.base_price}
-                      compareAtPrice={product.compare_at_price}
-                      customizationEnabled={product.customization_enabled}
-                      category={product.category}
-                      variants={product.variants}
-                      images={product.images}
-                    />
-                  </motion.div>
-                ))}
-          </div>
-          {!featuredQuery.isLoading && featured.length === 0 ? (
-            <p className="mt-8 rounded-xl border border-[#DDD3C5] bg-[#FDF9F4] p-6 text-center text-sm text-[#6F6A63]">
-              Products created in the admin catalog will appear here automatically.
-            </p>
-          ) : null}
-        </div>
-      </section>
+      {/* ── 2. Create. Customize. Wear. (Workflow Banner) ── */}
+      <HowItWorksBanner />
 
-      <CustomDesignSection />
+      {/* ── 3. New Arrivals Carousel ── */}
+      <NewArrivals />
+
+      {/* ── 4. Why Bingooo? (5 Value Propositions) ── */}
+      <WhyBingooo />
+
+      {/* ── 5. Loved By Our Community (Reviews Showcase) ── */}
+      <LovedByCommunity />
+
+      {/* ── 6. Ready to Express Your Style (Red CTA Banner) ── */}
+      <ReadyToExpressBanner />
     </div>
   );
 }
 
-function SectionHeading({
-  eyebrow,
-  title,
-  action,
-}: {
-  eyebrow: string;
-  title: string;
-  action: React.ReactNode;
-}) {
-  return (
-    <div className="flex items-end justify-between gap-3 sm:gap-4">
-      <div>
-        <p className="text-[10px] sm:text-xs font-bold uppercase tracking-[.15em] text-[#E6321C]">
-          {eyebrow}
-        </p>
-        <h2 className="mt-1 sm:mt-2 text-2xl sm:text-4xl font-extrabold uppercase">
-          {title}
-        </h2>
-      </div>
-      {action}
-    </div>
-  );
-}
+

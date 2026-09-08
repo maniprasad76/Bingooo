@@ -1,12 +1,17 @@
 import { Link } from 'react-router-dom';
 import { motion, useReducedMotion } from 'framer-motion';
 import { Clock, RotateCcw, AlertTriangle } from 'lucide-react';
+import { SEO } from '../components/common/SEO';
 
 export function CancellationPolicyPage() {
   const shouldReduceMotion = useReducedMotion();
 
   return (
     <div className="w-full bg-[#FAF8F5] text-[#171717] min-h-screen py-10 sm:py-16 font-sans">
+      <SEO
+        title="Cancellation Policy"
+        description="Understand Bingooo's pre-dispatch order cancellation window, custom order terms, and refund timelines."
+      />
       <div className="max-w-[1000px] mx-auto px-4 sm:px-8 space-y-12">
         
         {/* ─── Breadcrumbs & Header ─── */}
@@ -78,7 +83,7 @@ export function CancellationPolicyPage() {
               1. How to Cancel Your Order
             </h2>
             <p className="text-[#6F6A63]">
-              To cancel an order, log in to your Bingooo account, navigate to <Link to="/account/orders" className="text-[#E6321C] underline font-medium">My Orders</Link>, select the respective order, and tap &quot;Cancel Order&quot;. If you checked out as a guest, you can message our WhatsApp Concierge at +91 79817 87317 or email support@bingooo.in with your order number.
+              To cancel an order, log in to your Bingooo account, navigate to <Link to="/account/orders" className="text-[#E6321C] underline font-medium">My Orders</Link>, select the respective order, and tap &quot;Cancel Order&quot;. If you checked out as a guest, you can message our WhatsApp / Call Concierge at <a href="tel:+917981787317" className="text-[#E6321C] underline hover:text-[#B91F12]">+91 79817 87317</a> or email <a href="mailto:support@bingooo.in" className="text-[#E6321C] underline hover:text-[#B91F12]">support@bingooo.in</a> with your order number.
             </p>
           </section>
 

@@ -2,12 +2,15 @@ import { useRef } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
 import {
   RotateCcw,
+  RotateCw,
   ZoomIn,
   ZoomOut,
   Sparkles,
   X,
   Move,
   Scan,
+  Plus,
+  Minus,
 } from 'lucide-react';
 
 export interface ArtworkLayer {
@@ -99,6 +102,38 @@ export function GarmentCanvas({
   };
 
   const garmentImageSrc = getGarmentImage();
+
+  // Multi-touch pinch-to-scale gesture handling for mobile touch screens
+  const touchStartDistRef = useRef<number | null>(null);
+  const touchStartScaleRef = useRef<number>(1);
+
+  const handleCanvasTouchStart = (e: React.TouchEvent) => {
+    if (e.touches.length === 2 && selectedLayer === 'artwork' && artwork) {
+      const dist = Math.hypot(
+        e.touches[0].clientX - e.touches[1].clientX,
+        e.touches[0].clientY - e.touches[1].clientY
+      );
+      touchStartDistRef.current = dist;
+      touchStartScaleRef.current = artwork.scale || 1;
+    }
+  };
+
+  const handleCanvasTouchMove = (e: React.TouchEvent) => {
+    if (e.touches.length === 2 && touchStartDistRef.current && selectedLayer === 'artwork' && artwork) {
+      e.stopPropagation();
+      const currentDist = Math.hypot(
+        e.touches[0].clientX - e.touches[1].clientX,
+        e.touches[0].clientY - e.touches[1].clientY
+      );
+      const ratio = currentDist / touchStartDistRef.current;
+      const newScale = Math.max(0.3, Math.min(2.5, Number((touchStartScaleRef.current * ratio).toFixed(2))));
+      onUpdateArtwork({ scale: newScale });
+    }
+  };
+
+  const handleCanvasTouchEnd = () => {
+    touchStartDistRef.current = null;
+  };
 
   return (
     <div className="relative w-full rounded-3xl border border-[#DDD3C5] bg-[#FAF8F5] p-4 sm:p-7 flex flex-col items-center justify-between select-none shadow-sm overflow-hidden">
@@ -215,8 +250,12 @@ export function GarmentCanvas({
           {/* Note: rotateY(180deg) is applied to back view container so user graphic/text is never flipped backwards */}
           <div
             ref={printAreaRef}
+            onTouchStart={handleCanvasTouchStart}
+            onTouchMove={handleCanvasTouchMove}
+            onTouchEnd={handleCanvasTouchEnd}
+            onTouchCancel={handleCanvasTouchEnd}
             style={{ transform: view === 'back' ? 'rotateY(180deg)' : undefined }}
-            className={`relative z-20 w-[210px] sm:w-[240px] h-[250px] sm:h-[280px] -translate-y-2 flex flex-col items-center justify-center transition-all ${
+            className={`relative z-20 w-[210px] sm:w-[240px] h-[250px] sm:h-[280px] -translate-y-2 flex flex-col items-center justify-center transition-all touch-none ${
               showSafeZone
                 ? 'border border-dashed border-[#171717]/35 rounded-2xl bg-black/[0.01]'
                 : 'border border-transparent'
@@ -282,18 +321,57 @@ export function GarmentCanvas({
                     : 'hover:ring-1 hover:ring-black/40 rounded-xl'
                 }`}
               >
-                {/* Active Selection Toolbar */}
+                {/* Active Selection Toolbar with Mobile & Desktop Controls */}
                 {selectedLayer === 'artwork' && (
-                  <div className="absolute -top-7 left-1/2 -translate-x-1/2 flex items-center gap-1.5 bg-[#171717] text-white px-2.5 py-0.5 rounded-full text-[9px] font-mono shadow-md z-30 whitespace-nowrap pointer-events-auto">
-                    <Move size={9} className="text-[#E6321C]" />
-                    <span>Drag</span>
+                  <div className="absolute -top-8 left-1/2 -translate-x-1/2 flex items-center gap-1 bg-[#171717] text-white px-2 py-0.5 rounded-full text-[9px] font-mono shadow-md z-30 whitespace-nowrap pointer-events-auto border border-white/10">
+                    <span className="flex items-center gap-0.5 text-white/80 pr-1 border-r border-white/20">
+                      <Move size={9} className="text-[#E6321C]" />
+                      <span className="hidden sm:inline">Drag</span>
+                    </span>
+
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onUpdateArtwork({ scale: Math.max(0.3, Number(((artwork.scale || 1) - 0.1).toFixed(2))) });
+                      }}
+                      className="p-1 hover:text-[#E6321C] transition-colors"
+                      title="Scale down"
+                    >
+                      <Minus size={10} />
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onUpdateArtwork({ scale: Math.min(2.5, Number(((artwork.scale || 1) + 0.1).toFixed(2))) });
+                      }}
+                      className="p-1 hover:text-[#E6321C] transition-colors"
+                      title="Scale up"
+                    >
+                      <Plus size={10} />
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onUpdateArtwork({ rotation: ((artwork.rotation || 0) + 45) % 360 });
+                      }}
+                      className="p-1 hover:text-[#E6321C] transition-colors border-l border-white/20 pl-1"
+                      title="Rotate 45°"
+                    >
+                      <RotateCw size={10} />
+                    </button>
+
                     <button
                       type="button"
                       onClick={(e) => {
                         e.stopPropagation();
                         onRemoveArtwork();
                       }}
-                      className="ml-1 text-white/70 hover:text-white"
+                      className="ml-0.5 p-1 text-white/70 hover:text-[#E6321C] transition-colors"
                       title="Remove artwork"
                     >
                       <X size={11} />
@@ -338,18 +416,45 @@ export function GarmentCanvas({
                     : 'hover:ring-1 hover:ring-black/30 rounded-lg'
                 }`}
               >
-                {/* Active Selection Toolbar */}
+                {/* Active Selection Toolbar with Mobile & Desktop Controls */}
                 {selectedLayer === 'text' && (
-                  <div className="absolute -top-7 left-1/2 -translate-x-1/2 flex items-center gap-1.5 bg-[#171717] text-white px-2.5 py-0.5 rounded-full text-[9px] font-mono shadow-md z-30 whitespace-nowrap pointer-events-auto">
-                    <Move size={9} className="text-[#E6321C]" />
-                    <span>Drag</span>
+                  <div className="absolute -top-8 left-1/2 -translate-x-1/2 flex items-center gap-1 bg-[#171717] text-white px-2 py-0.5 rounded-full text-[9px] font-mono shadow-md z-30 whitespace-nowrap pointer-events-auto border border-white/10">
+                    <span className="flex items-center gap-0.5 text-white/80 pr-1 border-r border-white/20">
+                      <Move size={9} className="text-[#E6321C]" />
+                      <span className="hidden sm:inline">Drag</span>
+                    </span>
+
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onUpdateTypography({ size: Math.max(12, typography.size - 2) });
+                      }}
+                      className="p-1 hover:text-[#E6321C] transition-colors"
+                      title="Smaller text"
+                    >
+                      <Minus size={10} />
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onUpdateTypography({ size: Math.min(72, typography.size + 2) });
+                      }}
+                      className="p-1 hover:text-[#E6321C] transition-colors"
+                      title="Larger text"
+                    >
+                      <Plus size={10} />
+                    </button>
+
                     <button
                       type="button"
                       onClick={(e) => {
                         e.stopPropagation();
                         onRemoveTypography();
                       }}
-                      className="ml-1 text-white/70 hover:text-white"
+                      className="ml-0.5 p-1 text-white/70 hover:text-[#E6321C] transition-colors border-l border-white/20 pl-1"
                       title="Remove text"
                     >
                       <X size={11} />

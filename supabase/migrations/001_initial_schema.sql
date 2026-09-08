@@ -44,7 +44,7 @@ CREATE TABLE profiles (
 
 -- ── Roles & Permissions ────────────────────────────────────────
 CREATE TABLE roles (
-  id   UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id   UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   code TEXT NOT NULL UNIQUE,
   name TEXT NOT NULL
 );
@@ -56,7 +56,7 @@ CREATE TABLE user_roles (
 );
 
 CREATE TABLE permissions (
-  id   UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id   UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   code TEXT NOT NULL UNIQUE,
   name TEXT NOT NULL
 );
@@ -69,7 +69,7 @@ CREATE TABLE role_permissions (
 
 -- ── Categories ─────────────────────────────────────────────────
 CREATE TABLE categories (
-  id         UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id         UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   name       TEXT NOT NULL,
   slug       TEXT NOT NULL UNIQUE,
   parent_id  UUID REFERENCES categories(id) ON DELETE SET NULL,
@@ -84,7 +84,7 @@ CREATE INDEX idx_categories_parent ON categories(parent_id);
 
 -- ── Collections ────────────────────────────────────────────────
 CREATE TABLE collections (
-  id          UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   name        TEXT NOT NULL,
   slug        TEXT NOT NULL UNIQUE,
   description TEXT,
@@ -98,7 +98,7 @@ CREATE INDEX idx_collections_slug ON collections(slug);
 
 -- ── Products ───────────────────────────────────────────────────
 CREATE TABLE products (
-  id                     UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id                     UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   category_id            UUID REFERENCES categories(id) ON DELETE SET NULL,
   title                  TEXT NOT NULL,
   slug                   TEXT NOT NULL UNIQUE,
@@ -126,7 +126,7 @@ CREATE TABLE product_collections (
 
 -- ── Product Images ─────────────────────────────────────────────
 CREATE TABLE product_images (
-  id         UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id         UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   product_id UUID NOT NULL REFERENCES products(id) ON DELETE CASCADE,
   object_key TEXT NOT NULL,
   alt_text   TEXT,
@@ -138,7 +138,7 @@ CREATE INDEX idx_product_images_product ON product_images(product_id);
 
 -- ── Product Variants ───────────────────────────────────────────
 CREATE TABLE product_variants (
-  id                UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id                UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   product_id        UUID NOT NULL REFERENCES products(id) ON DELETE CASCADE,
   sku               TEXT NOT NULL UNIQUE,
   size              TEXT,
@@ -158,7 +158,7 @@ CREATE INDEX idx_variants_sku ON product_variants(sku);
 
 -- ── Inventory Movements ────────────────────────────────────────
 CREATE TABLE inventory_movements (
-  id             UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id             UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   variant_id     UUID NOT NULL REFERENCES product_variants(id) ON DELETE CASCADE,
   type           inventory_movement_type NOT NULL,
   quantity       INT NOT NULL,
@@ -172,7 +172,7 @@ CREATE INDEX idx_inventory_variant ON inventory_movements(variant_id);
 
 -- ── Addresses ──────────────────────────────────────────────────
 CREATE TABLE addresses (
-  id          UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id     UUID NOT NULL REFERENCES profiles(id) ON DELETE CASCADE,
   name        TEXT NOT NULL,
   phone       TEXT NOT NULL,
@@ -191,7 +191,7 @@ CREATE INDEX idx_addresses_user ON addresses(user_id);
 
 -- ── Carts ──────────────────────────────────────────────────────
 CREATE TABLE carts (
-  id         UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id         UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id    UUID REFERENCES profiles(id) ON DELETE SET NULL,
   session_id TEXT,
   status     cart_status NOT NULL DEFAULT 'active',
@@ -204,7 +204,7 @@ CREATE INDEX idx_carts_session ON carts(session_id);
 
 -- ── Cart Items ─────────────────────────────────────────────────
 CREATE TABLE cart_items (
-  id               UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id               UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   cart_id          UUID NOT NULL REFERENCES carts(id) ON DELETE CASCADE,
   variant_id       UUID NOT NULL REFERENCES product_variants(id) ON DELETE CASCADE,
   quantity         INT NOT NULL DEFAULT 1 CHECK (quantity > 0),
@@ -216,7 +216,7 @@ CREATE INDEX idx_cart_items_cart ON cart_items(cart_id);
 
 -- ── Wishlists ──────────────────────────────────────────────────
 CREATE TABLE wishlists (
-  id         UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id         UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id    UUID NOT NULL REFERENCES profiles(id) ON DELETE CASCADE,
   product_id UUID NOT NULL REFERENCES products(id) ON DELETE CASCADE,
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
@@ -227,7 +227,7 @@ CREATE INDEX idx_wishlists_user ON wishlists(user_id);
 
 -- ── Customizations ─────────────────────────────────────────────
 CREATE TABLE customizations (
-  id             UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id             UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id        UUID NOT NULL REFERENCES profiles(id) ON DELETE CASCADE,
   product_id     UUID NOT NULL REFERENCES products(id) ON DELETE CASCADE,
   status         customization_status NOT NULL DEFAULT 'uploaded',
@@ -243,7 +243,7 @@ CREATE INDEX idx_customizations_status ON customizations(status);
 
 -- ── Customization Assets ───────────────────────────────────────
 CREATE TABLE customization_assets (
-  id               UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id               UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   customization_id UUID NOT NULL REFERENCES customizations(id) ON DELETE CASCADE,
   object_key       TEXT NOT NULL,
   asset_type       asset_type NOT NULL,
@@ -255,7 +255,7 @@ CREATE INDEX idx_cust_assets_customization ON customization_assets(customization
 
 -- ── Orders ─────────────────────────────────────────────────────
 CREATE TABLE orders (
-  id                    UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id                    UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   order_number          TEXT NOT NULL UNIQUE,
   user_id               UUID NOT NULL REFERENCES profiles(id) ON DELETE RESTRICT,
   status                order_status NOT NULL DEFAULT 'pending_payment',
@@ -283,7 +283,7 @@ CREATE INDEX idx_orders_payment_status ON orders(payment_status);
 
 -- ── Order Items ────────────────────────────────────────────────
 CREATE TABLE order_items (
-  id                  UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id                  UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   order_id            UUID NOT NULL REFERENCES orders(id) ON DELETE CASCADE,
   product_id          UUID NOT NULL REFERENCES products(id) ON DELETE RESTRICT,
   variant_id          UUID NOT NULL REFERENCES product_variants(id) ON DELETE RESTRICT,
@@ -301,7 +301,7 @@ CREATE INDEX idx_order_items_order ON order_items(order_id);
 
 -- ── Payments ───────────────────────────────────────────────────
 CREATE TABLE payments (
-  id                  UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id                  UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   order_id            UUID NOT NULL REFERENCES orders(id) ON DELETE CASCADE,
   provider            TEXT NOT NULL DEFAULT 'razorpay',
   provider_order_id   TEXT,
@@ -321,7 +321,7 @@ CREATE INDEX idx_payments_idempotency ON payments(idempotency_key);
 
 -- ── Refunds ────────────────────────────────────────────────────
 CREATE TABLE refunds (
-  id                 UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id                 UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   payment_id         UUID NOT NULL REFERENCES payments(id) ON DELETE CASCADE,
   provider_refund_id TEXT,
   amount             NUMERIC(12, 2) NOT NULL CHECK (amount > 0),
@@ -335,7 +335,7 @@ CREATE INDEX idx_refunds_payment ON refunds(payment_id);
 
 -- ── Coupons ────────────────────────────────────────────────────
 CREATE TABLE coupons (
-  id              UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   code            TEXT NOT NULL UNIQUE,
   type            coupon_type NOT NULL,
   value           NUMERIC(12, 2) NOT NULL CHECK (value > 0),
@@ -354,7 +354,7 @@ CREATE INDEX idx_coupons_code ON coupons(code);
 
 -- ── Coupon Redemptions ─────────────────────────────────────────
 CREATE TABLE coupon_redemptions (
-  id        UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id        UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   coupon_id UUID NOT NULL REFERENCES coupons(id) ON DELETE CASCADE,
   user_id   UUID NOT NULL REFERENCES profiles(id) ON DELETE CASCADE,
   order_id  UUID NOT NULL REFERENCES orders(id) ON DELETE CASCADE,
@@ -366,7 +366,7 @@ CREATE INDEX idx_redemptions_user ON coupon_redemptions(user_id);
 
 -- ── Reviews ────────────────────────────────────────────────────
 CREATE TABLE reviews (
-  id         UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id         UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   product_id UUID NOT NULL REFERENCES products(id) ON DELETE CASCADE,
   user_id    UUID NOT NULL REFERENCES profiles(id) ON DELETE CASCADE,
   rating     INT NOT NULL CHECK (rating >= 1 AND rating <= 5),
@@ -382,7 +382,7 @@ CREATE INDEX idx_reviews_user ON reviews(user_id);
 
 -- ── Shipments ──────────────────────────────────────────────────
 CREATE TABLE shipments (
-  id              UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   order_id        UUID NOT NULL REFERENCES orders(id) ON DELETE CASCADE,
   carrier         TEXT,
   tracking_number TEXT,
@@ -397,7 +397,7 @@ CREATE INDEX idx_shipments_order ON shipments(order_id);
 
 -- ── Notifications ──────────────────────────────────────────────
 CREATE TABLE notifications (
-  id           UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id           UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id      UUID NOT NULL REFERENCES profiles(id) ON DELETE CASCADE,
   type         TEXT NOT NULL,
   channel      notification_channel NOT NULL DEFAULT 'email',
@@ -410,7 +410,7 @@ CREATE INDEX idx_notifications_user ON notifications(user_id);
 
 -- ── Audit Logs ─────────────────────────────────────────────────
 CREATE TABLE audit_logs (
-  id            UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id            UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   actor_user_id UUID REFERENCES profiles(id) ON DELETE SET NULL,
   action        TEXT NOT NULL,
   entity_type   TEXT NOT NULL,

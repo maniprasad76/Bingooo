@@ -1,12 +1,17 @@
 import { Link } from 'react-router-dom';
 import { motion, useReducedMotion } from 'framer-motion';
 import { Shield, Lock, Eye, FileText, Bell } from 'lucide-react';
+import { SEO } from '../components/common/SEO';
 
 export function PrivacyPolicyPage() {
   const shouldReduceMotion = useReducedMotion();
 
   return (
     <div className="w-full bg-[#FAF8F5] text-[#171717] min-h-screen py-10 sm:py-16 font-sans">
+      <SEO
+        title="Privacy Policy"
+        description="Learn how Bingooo protects your personal information, secures payment transactions, and safeguards custom design studio uploads."
+      />
       <div className="max-w-[1000px] mx-auto px-4 sm:px-8 space-y-12">
         
         {/* ─── Breadcrumbs & Header ─── */}
@@ -24,7 +29,7 @@ export function PrivacyPolicyPage() {
           </h1>
 
           <p className="text-xs sm:text-sm text-[#6F6A63] font-mono">
-            Last Updated: January 2026 • Bingooo Men&apos;s Wear (Srikakulam, Andhra Pradesh, India)
+            Last Updated: September 2026 • Bingooo Men&apos;s Wear (Srikakulam, Andhra Pradesh, India)
           </p>
         </div>
 
@@ -146,7 +151,9 @@ export function PrivacyPolicyPage() {
             <div className="p-4 rounded-xl bg-[#FAF8F5] border border-[#DDD3C5] space-y-1 text-xs">
               <p className="font-bold text-[#171717]">Bingooo Atelier Grievance Officer</p>
               <p className="text-[#6F6A63]">Srikakulam, Andhra Pradesh, India - 532001</p>
-              <p className="text-[#6F6A63]">Email: support@bingooo.in • WhatsApp: +91 79817 87317</p>
+              <p className="text-[#6F6A63]">
+                Email: <a href="mailto:support@bingooo.in" className="text-[#E6321C] underline hover:text-[#B91F12]">support@bingooo.in</a> • Call / WhatsApp: <a href="tel:+917981787317" className="text-[#E6321C] underline hover:text-[#B91F12]">+91 79817 87317</a>
+              </p>
             </div>
           </section>
 

@@ -1,0 +1,55 @@
+{
+  "name": "Bingooo Atelier — Premium Menswear & Custom Tailoring",
+  "short_name": "Bingooo",
+  "description": "Custom-milled 240 GSM heavy combed cotton streetwear & bespoke custom atelier.",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#F7EEDB",
+  "theme_color": "#111111",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    },
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    }
+  ],
+  "categories": ["shopping", "fashion", "lifestyle"],
+  "shortcuts": [
+    {
+      "name": "Customize 240 GSM Garment",
+      "short_name": "Customize",
+      "url": "/customize",
+      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Shop Streetwear Collection",
+      "short_name": "Shop",
+      "url": "/shop",
+      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "My Orders & Tracking",
+      "short_name": "Orders",
+      "url": "/account/orders",
+      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
+    }
+  ]
+}

@@ -7,6 +7,8 @@ import { Skeleton } from '../components/ui/Skeleton';
 import { FilterSidebar } from '../components/catalog/FilterSidebar';
 import { ProductCard } from '../components/catalog/ProductCard';
 import { useCategories, useProductFilters, useProducts, type ProductQueryParams } from '../hooks/useProducts';
+import { SEO } from '../components/common/SEO';
+import { EmptyState } from '../components/common/EmptyState';
 
 function formatTitle(value?: string) {
   return value ? value.replaceAll('-', ' ').replace(/\b\w/g, (letter) => letter.toUpperCase()) : 'Shop all';
@@ -75,6 +77,10 @@ export function ShopPage() {
   />;
 
   return <div className="min-h-screen bg-[#FAF8F5] text-[#171717]">
+    <SEO
+      title={filters.search ? `Search: ${filters.search}` : filters.categorySlug ? `${formatTitle(filters.categorySlug)}` : 'Shop All Menswear'}
+      description={filters.categorySlug ? `Explore premium ${formatTitle(filters.categorySlug).toLowerCase()} at Bingooo. Heavyweight fabrics, custom streetwear cuts, and durable comfort.` : 'Browse the full collection of Bingooo luxury menswear. Heavyweight 240 GSM tees, oversized fits, hoodies, and signature drops.'}
+    />
     <div className="mx-auto max-w-[1360px] px-4 py-8 sm:px-8 sm:py-10">
       <div className="flex flex-col justify-between gap-5 border-b border-[#DDD3C5] pb-6 sm:flex-row sm:items-end">
         <div>
@@ -101,7 +107,21 @@ export function ShopPage() {
         <section className="lg:col-span-9">
           {productsQuery.isLoading ? <div className="grid grid-cols-2 gap-2.5 sm:gap-4 sm:grid-cols-3 xl:grid-cols-3">{Array.from({ length: 6 }, (_, index) => <Skeleton key={index} className="aspect-[4/5] rounded-xl sm:rounded-2xl" />)}</div> : null}
           {productsQuery.isError ? <div className="rounded-2xl border border-danger/20 bg-danger/5 p-8 text-center"><h2 className="text-xl font-bold text-ink">We couldn’t load the catalog</h2><p className="mt-2 text-sm text-muted">Check that the Bingooo API is running, then try again.</p><button onClick={() => productsQuery.refetch()} className="mt-5 rounded-lg bg-brand-red px-4 py-2 text-xs font-bold uppercase tracking-wide text-white">Try again</button></div> : null}
-          {!productsQuery.isLoading && !productsQuery.isError && products.length === 0 ? <div className="rounded-2xl border border-[#DDD3C5] bg-white p-10 text-center"><h2 className="text-xl font-bold text-ink">Nothing matches these filters</h2><p className="mt-2 text-sm text-muted">Clear a filter or explore the full Bingooo collection.</p><button onClick={() => handleFilterChange({ sort: 'newest', page: 1, limit: 12 })} className="mt-5 rounded-lg border border-[#E6321C] px-4 py-2 text-xs font-bold uppercase tracking-wide text-[#E6321C]">Clear filters</button></div> : null}
+          {!productsQuery.isLoading && !productsQuery.isError && products.length === 0 ? (
+            <div className="rounded-2xl border border-[#DDD3C5] bg-white p-6 sm:p-10 text-center shadow-xs">
+              <EmptyState
+                icon="search"
+                title="NO GARMENTS MATCH THIS FILTER"
+                subtitle="ZERO MATCHES"
+                description="Try clearing some filter criteria, searching for a different keyword, or explore our full collection of heavyweight oversized streetwear."
+                actionText="RESET ALL FILTERS"
+                actionTo="/shop"
+                secondaryActionText="CUSTOM DESIGN LAB"
+                secondaryActionTo="/customize"
+                showSuggestions={true}
+              />
+            </div>
+          ) : null}
           {!productsQuery.isLoading && products.length > 0 ? (
             <>
               <motion.div

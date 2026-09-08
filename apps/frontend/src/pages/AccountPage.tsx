@@ -23,6 +23,7 @@ import {
 } from 'lucide-react';
 import { useAuthStore } from '../store/auth';
 import { useToast } from '../components/ui/Toast';
+import { SEO } from '../components/common/SEO';
 
 const SIDEBAR_NAV = [
   { id: 'dashboard', label: 'Account Dashboard', icon: Home },
@@ -199,6 +200,10 @@ export function AccountPage() {
 
   return (
     <div className="w-full bg-[#FAF8F5] text-[#171717] min-h-screen">
+      <SEO
+        title="My Account"
+        description="Manage your Bingooo profile, view your order history, track deliveries, edit shipping addresses, and review saved designs."
+      />
       <div className="max-w-[1360px] mx-auto px-4 sm:px-8 py-6 sm:py-8 space-y-8">
         {/* ─── Breadcrumbs ─── */}
         <nav className="flex items-center gap-2 text-xs font-sans text-[#6F6A63]">

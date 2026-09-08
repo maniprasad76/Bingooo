@@ -13,3 +13,17 @@ export { Skeleton, ProductCardSkeleton, TextSkeleton } from './Skeleton';
 export { Drawer } from './Drawer';
 
 export { ToastProvider, useToast } from './Toast';
+
+export {
+  WhatsAppIcon,
+  InstagramIcon,
+  EmailIcon,
+  YouTubeIcon,
+  XTwitterIcon,
+  BINGOOO_PHONE_DISPLAY,
+  BINGOOO_PHONE_RAW,
+  BINGOOO_EMAIL_SUPPORT,
+  BINGOOO_EMAIL_HELLO,
+  BINGOOO_INSTAGRAM_URL,
+  getWhatsAppUrl,
+} from './SocialIcons';

@@ -4,15 +4,17 @@ import {
   Search,
   ChevronDown,
   HelpCircle,
-  Phone,
   Mail,
   Truck,
   Scissors,
   RotateCcw,
   CreditCard,
   Sparkles,
+  Phone,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { SEO } from '../components/common/SEO';
+import { WhatsAppIcon, getWhatsAppUrl } from '../components/ui/SocialIcons';
 
 interface FaqItem {
   id: string;
@@ -161,6 +163,10 @@ export function FaqPage() {
 
   return (
     <div className="w-full bg-[#FAF8F5] text-[#171717] min-h-screen py-10 sm:py-16">
+      <SEO
+        title="Frequently Asked Questions (FAQ)"
+        description="Find answers to common questions about orders, shipping times, 240 GSM fabric care, 3D Customizer Studio, and easy returns at Bingooo."
+      />
       <div className="max-w-[1100px] mx-auto px-4 sm:px-8 space-y-12">
         
         {/* ─── Breadcrumb & Hero Header ─── */}
@@ -282,54 +288,80 @@ export function FaqPage() {
         </div>
 
         {/* ─── Still Have Questions? Help Desk Cards ─── */}
-        <div className="pt-8 border-t border-[#DDD3C5] max-w-3xl mx-auto">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div className="pt-8 border-t border-[#DDD3C5] max-w-4xl mx-auto">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             
+            {/* Direct Phone Call Card */}
             <motion.a
-              href="https://wa.me/917981787317"
+              href="tel:+917981787317"
+              whileHover={{ y: -3, boxShadow: '0 8px 24px -6px rgba(0, 0, 0, 0.08)' }}
+              className="p-5 rounded-2xl bg-[#EDE0CC]/70 hover:bg-[#EDE0CC] border border-[#DDD3C5] transition-colors flex flex-col justify-between group shadow-2xs text-left"
+            >
+              <div>
+                <div className="w-10 h-10 rounded-xl bg-[#E6321C] text-white flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform mb-3">
+                  <Phone className="w-5 h-5" aria-hidden="true" />
+                </div>
+                <h3 className="text-sm font-bold font-heading text-[#171717] group-hover:text-[#E6321C] transition-colors">
+                  Atelier Phone Desk
+                </h3>
+                <p className="text-xs text-[#6F6A63] leading-relaxed mt-1">
+                  Speak directly with our tailor desk in Srikakulam. Mon–Sat, 10 AM–8 PM.
+                </p>
+              </div>
+              <span className="text-xs font-bold text-[#E6321C] underline inline-block pt-3">
+                Call +91 79817 87317 &rarr;
+              </span>
+            </motion.a>
+
+            {/* WhatsApp Concierge Card */}
+            <motion.a
+              href={getWhatsAppUrl('Hi Bingooo, I have a question regarding orders, sizing, or custom prints.')}
               target="_blank"
               rel="noopener noreferrer"
               whileHover={{ y: -3, boxShadow: '0 8px 24px -6px rgba(0, 0, 0, 0.08)' }}
-              className="p-6 rounded-2xl bg-[#EDE0CC]/70 hover:bg-[#EDE0CC] border border-[#DDD3C5] transition-colors flex items-start gap-4 group shadow-2xs"
+              className="p-5 rounded-2xl bg-[#EDE0CC]/70 hover:bg-[#EDE0CC] border border-[#DDD3C5] transition-colors flex flex-col justify-between group shadow-2xs text-left"
             >
-              <div className="w-10 h-10 rounded-xl bg-[#25D366] text-white flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
-                <Phone className="w-5 h-5" aria-hidden="true" />
-              </div>
-              <div className="space-y-1">
+              <div>
+                <div className="w-10 h-10 rounded-xl bg-[#25D366] text-white flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform mb-3">
+                  <WhatsAppIcon className="w-5 h-5" />
+                </div>
                 <h3 className="text-sm font-bold font-heading text-[#171717] group-hover:text-[#E6321C] transition-colors">
                   WhatsApp Concierge
                 </h3>
-                <p className="text-xs text-[#6F6A63] leading-relaxed">
-                  Chat directly with our styling and orders team. Instant replies Mon-Sat, 9AM-8PM.
+                <p className="text-xs text-[#6F6A63] leading-relaxed mt-1">
+                  Chat directly with our styling and orders team for instant drop inquiries.
                 </p>
-                <span className="text-xs font-semibold text-[#171717] underline inline-block pt-1">
-                  +91 79817 87317 &rarr;
-                </span>
               </div>
+              <span className="text-xs font-bold text-[#25D366] underline inline-block pt-3">
+                WhatsApp +91 79817 87317 &rarr;
+              </span>
             </motion.a>
 
-            <motion.div whileHover={{ y: -3, boxShadow: '0 8px 24px -6px rgba(0, 0, 0, 0.08)' }}>
+            {/* Contact Form Card */}
+            <motion.div
+              whileHover={{ y: -3, boxShadow: '0 8px 24px -6px rgba(0, 0, 0, 0.08)' }}
+              className="h-full"
+            >
               <Link
                 to="/contact"
-                className="p-6 rounded-2xl bg-[#EDE0CC]/70 hover:bg-[#EDE0CC] border border-[#DDD3C5] transition-colors flex items-start gap-4 group shadow-2xs h-full"
+                className="p-5 rounded-2xl bg-[#EDE0CC]/70 hover:bg-[#EDE0CC] border border-[#DDD3C5] transition-colors flex flex-col justify-between group shadow-2xs h-full text-left"
               >
-                <div className="w-10 h-10 rounded-xl bg-[#171717] text-white flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
-                  <Mail className="w-5 h-5" aria-hidden="true" />
-                </div>
-                <div className="space-y-1">
+                <div>
+                  <div className="w-10 h-10 rounded-xl bg-[#171717] text-white flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform mb-3">
+                    <Mail className="w-5 h-5" aria-hidden="true" />
+                  </div>
                   <h3 className="text-sm font-bold font-heading text-[#171717] group-hover:text-[#E6321C] transition-colors">
                     Submit a Ticket
                   </h3>
-                  <p className="text-xs text-[#6F6A63] leading-relaxed">
-                    Have a specific inquiry regarding custom designs, sizing, or bulk orders? Send us an inquiry.
+                  <p className="text-xs text-[#6F6A63] leading-relaxed mt-1">
+                    Have a detailed inquiry on custom designs, sizing, or bulk bespoke orders?
                   </p>
-                  <span className="text-xs font-semibold text-[#171717] underline inline-block pt-1">
-                    Open Contact Form &rarr;
-                  </span>
                 </div>
+                <span className="text-xs font-bold text-[#171717] underline inline-block pt-3">
+                  Open Contact Form &rarr;
+                </span>
               </Link>
             </motion.div>
-
           </div>
         </div>
 

@@ -26,6 +26,7 @@ import { ShippingPolicyPage } from '../pages/ShippingPolicyPage';
 import { ReturnsRefundsPage } from '../pages/ReturnsRefundsPage';
 import { CancellationPolicyPage } from '../pages/CancellationPolicyPage';
 import { SizeGuidePage } from '../pages/SizeGuidePage';
+import { EmptyStatePage } from '../pages/EmptyStatePage';
 import { NotFoundPage } from '../pages/NotFoundPage';
 
 export const router = createBrowserRouter([
@@ -43,6 +44,8 @@ export const router = createBrowserRouter([
       { path: 'customize/:productSlug', element: <CustomizerPage /> },
       { path: 'cart', element: <CartPage /> },
       { path: 'checkout', element: <CheckoutPage /> },
+      { path: 'order-success', element: <OrderSuccessPage /> },
+      { path: 'order-success/:orderNumber', element: <OrderSuccessPage /> },
       { path: 'payment/success', element: <OrderSuccessPage /> },
       { path: 'payment/failure', element: <OrderSuccessPage /> },
       { path: 'search', element: <ShopPage /> },
@@ -69,6 +72,8 @@ export const router = createBrowserRouter([
       { path: 'size-guide', element: <SizeGuidePage /> },
       { path: 'policies', element: <PoliciesPage /> },
       { path: 'policies/:slug', element: <PoliciesPage /> },
+      { path: 'empty', element: <EmptyStatePage /> },
+      { path: 'empty-state', element: <EmptyStatePage /> },
       { path: 'admin', element: <AdminDashboardPage /> },
       { path: 'admin/*', element: <AdminDashboardPage /> },
       { path: '*', element: <NotFoundPage /> },

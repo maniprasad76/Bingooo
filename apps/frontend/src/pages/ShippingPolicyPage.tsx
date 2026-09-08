@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { motion, useReducedMotion } from 'framer-motion';
 import { Truck, Clock, ShieldCheck } from 'lucide-react';
+import { SEO } from '../components/common/SEO';
 
 const SHIPPING_TIERS = [
   {
@@ -28,6 +29,10 @@ export function ShippingPolicyPage() {
 
   return (
     <div className="w-full bg-[#FAF8F5] text-[#171717] min-h-screen py-10 sm:py-16 font-sans">
+      <SEO
+        title="Shipping & Delivery Policy"
+        description="Review Bingooo's pan-India delivery timelines, courier tracking details, dispatch schedules, and free shipping on orders above ₹999."
+      />
       <div className="max-w-[1000px] mx-auto px-4 sm:px-8 space-y-12">
         
         {/* ─── Header ─── */}
@@ -46,6 +51,10 @@ export function ShippingPolicyPage() {
 
           <p className="text-sm sm:text-base text-[#6F6A63] leading-relaxed max-w-xl">
             Everything you need to know about our atelier production, dispatch schedules, transit times, and all-India courier partners.
+          </p>
+
+          <p className="text-xs sm:text-sm text-[#6F6A63] font-mono">
+            Last Updated: September 2026 • Bingooo Logistics & Fulfillment
           </p>
         </div>
 
@@ -102,7 +111,7 @@ export function ShippingPolicyPage() {
             </p>
           </div>
 
-          <div className="overflow-x-auto">
+          <div className="overflow-x-auto no-scrollbar">
             <table className="w-full text-left border-collapse text-xs sm:text-sm">
               <thead>
                 <tr className="border-b border-[#DDD3C5] text-[11px] uppercase font-mono font-bold text-[#6F6A63]">
@@ -161,7 +170,7 @@ export function ShippingPolicyPage() {
               4. Packaging Inspection upon Arrival
             </h3>
             <p className="text-[#6F6A63]">
-              All Bingooo garments are shipped in tamper-evident sealed packaging. If the outer courier flyer appears damaged, torn, or previously opened, please refuse to accept the parcel from the delivery agent and notify our support desk immediately at support@bingooo.in or via WhatsApp at +91 79817 87317.
+              All Bingooo garments are shipped in tamper-evident sealed packaging. If the outer courier flyer appears damaged, torn, or previously opened, please refuse to accept the parcel from the delivery agent and notify our support desk immediately at <a href="mailto:support@bingooo.in" className="text-[#E6321C] underline hover:text-[#B91F12]">support@bingooo.in</a> or via Call / WhatsApp at <a href="tel:+917981787317" className="text-[#E6321C] underline hover:text-[#B91F12]">+91 79817 87317</a>.
             </p>
           </section>
 

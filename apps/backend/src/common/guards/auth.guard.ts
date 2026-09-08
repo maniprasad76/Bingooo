@@ -3,49 +3,63 @@ import {
   CanActivate,
   ExecutionContext,
   UnauthorizedException,
-  ServiceUnavailableException,
 } from '@nestjs/common';
 import { Request } from 'express';
 import { createClient } from '@supabase/supabase-js';
-import { verifyToken } from '../utils/crypto.util';
+import { verifyToken, isTokenRevoked } from '../utils/crypto.util';
 import { db } from '../database/store';
 
 /**
  * Validates authentication tokens and resolves caller's RBAC grants.
  * Supports:
- * 1. Backend-issued JWT tokens
- * 2. Explicit local development admin token (bingooo-dev-admin)
- * 3. Supabase Auth tokens when service role key is present
+ * 1. Backend-issued JWT tokens (via Bearer header or HTTP-only cookie)
+ * 2. Supabase Auth tokens when service role key is present
+ * 3. Local development admin token (only in non-production with explicit flag)
  */
 @Injectable()
 export class AuthGuard implements CanActivate {
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest<Request>();
-    const authorization = request.headers.authorization;
+    let token: string | undefined;
 
-    if (!authorization || !authorization.startsWith('Bearer ')) {
-      throw new UnauthorizedException({
-        code: 'AUTH_REQUIRED',
-        message: 'Authentication required',
-      });
+    // Extract from Authorization header
+    const authorization = request.headers.authorization;
+    if (authorization && authorization.startsWith('Bearer ')) {
+      token = authorization.slice(7).trim();
     }
 
-    const token = authorization.slice(7).trim();
+    // Fallback: extract from HTTP-only cookie
+    if (!token && (request as any).cookies?.access_token) {
+      token = (request as any).cookies.access_token;
+    }
 
     if (!token) {
       throw new UnauthorizedException({
         code: 'AUTH_REQUIRED',
-        message: 'Invalid token',
+        message: 'Authentication required. Please provide a valid session token.',
       });
     }
 
-    // 1. Dev admin token
-    if (token === 'bingooo-dev-admin') {
+    // Check if token has been revoked / logged out
+    if (isTokenRevoked(token)) {
+      throw new UnauthorizedException({
+        code: 'SESSION_REVOKED',
+        message: 'Your session has ended or was logged out. Please log in again.',
+      });
+    }
+
+    // 1. Strict Dev admin token: only permitted in non-production when ENABLE_DEV_AUTH=true
+    if (
+      token === 'bingooo-dev-admin' &&
+      process.env.NODE_ENV !== 'production' &&
+      process.env.ENABLE_DEV_AUTH === 'true'
+    ) {
       (request as any).user = {
         id: 'usr-admin-1',
         email: 'admin@bingooo.in',
         roles: ['SUPER_ADMIN', 'ADMIN'],
         permissions: ['*'],
+        token,
       };
       return true;
     }
@@ -62,6 +76,8 @@ export class AuthGuard implements CanActivate {
         email: user ? user.email : tokenPayload.email,
         roles: [roleCode.toUpperCase()],
         permissions: roleObj?.permissions || (roleCode === 'SUPER_ADMIN' ? ['*'] : ['orders.own', 'profile.own']),
+        token,
+        jti: tokenPayload.jti,
       };
       return true;
     }
@@ -81,18 +97,20 @@ export class AuthGuard implements CanActivate {
             email: authData.user.email,
             roles: ['CUSTOMER'],
             permissions: ['orders.own', 'profile.own'],
+            token,
           };
           return true;
         }
       } catch {
-        // Continue to unauthorized exception
+        // Fall through to unauthorized exception
       }
     }
 
     throw new UnauthorizedException({
-      code: 'AUTH_REQUIRED',
-      message: 'Your session is invalid or has expired.',
+      code: 'AUTH_INVALID',
+      message: 'Your session is invalid or has expired. Please log in again.',
     });
   }
 }
+
 

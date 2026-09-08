@@ -11,13 +11,26 @@ import {
   Heart,
   ArrowRight,
   Shirt,
+  CheckCircle2,
+  AlertCircle,
 } from 'lucide-react';
 import { useToast } from '../components/ui/Toast';
+import { SEO } from '../components/common/SEO';
+import {
+  WhatsAppIcon,
+  InstagramIcon,
+  BINGOOO_INSTAGRAM_URL,
+  getWhatsAppUrl,
+} from '../components/ui/SocialIcons';
 
 export function ContactPage() {
   const shouldReduceMotion = useReducedMotion();
   const { toast } = useToast();
   const [submitting, setSubmitting] = useState(false);
+  const [statusState, setStatusState] = useState<{ type: 'idle' | 'success' | 'error'; message: string }>({
+    type: 'idle',
+    message: '',
+  });
   const [formData, setFormData] = useState({
     fullName: '',
     email: '',
@@ -29,9 +42,30 @@ export function ContactPage() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (!formData.fullName.trim() || !formData.email.trim() || !formData.message.trim()) {
+      setStatusState({
+        type: 'error',
+        message: 'Please complete your Name, Email, and Message before submitting.',
+      });
+      return;
+    }
+    if (!formData.email.includes('@')) {
+      setStatusState({
+        type: 'error',
+        message: 'Please enter a valid email address.',
+      });
+      return;
+    }
+
     setSubmitting(true);
+    setStatusState({ type: 'idle', message: '' });
+
     setTimeout(() => {
       setSubmitting(false);
+      setStatusState({
+        type: 'success',
+        message: 'Message dispatched successfully! A tailor from our Srikakulam desk will respond within 24 hours.',
+      });
       toast({
         title: 'Message sent successfully!',
         description: "Thank you for reaching out. We'll get back to you within 24 hours.",
@@ -54,6 +88,10 @@ export function ContactPage() {
 
   return (
     <div className="w-full bg-[#FAF8F5] text-[#171717] min-h-screen">
+      <SEO
+        title="Contact Us"
+        description="Get in touch with the Bingooo team. Reach our Srikakulam atelier for orders, custom apparel printing inquiries, and sizing assistance."
+      />
       <div className="max-w-[1360px] mx-auto px-4 sm:px-8 py-10 sm:py-14 space-y-14">
         {/* ─── Top Section: Contact Info & Form (Exact Image 3) ─── */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-start">
@@ -154,30 +192,58 @@ export function ContactPage() {
               <motion.div
                 whileHover={shouldReduceMotion ? undefined : { y: -3, boxShadow: '0 8px 24px -6px rgba(0, 0, 0, 0.08)' }}
                 transition={{ type: 'spring', stiffness: 400, damping: 25 }}
-                className="flex items-start gap-4 p-4 rounded-xl border border-[#DDD3C5] bg-white shadow-xs transition-colors hover:border-[#E6321C]/40"
+                className="flex items-start gap-4 p-4 rounded-xl border border-[#DDD3C5] bg-white shadow-xs transition-colors hover:border-[#25D366]/60"
               >
-                <div className="h-11 w-11 rounded-full bg-[#FDF0EE] text-[#E6321C] flex items-center justify-center shrink-0">
-                  <Phone size={20} className="stroke-[1.8]" />
+                <div className="h-11 w-11 rounded-full bg-[#E7FCE8] text-[#25D366] flex items-center justify-center shrink-0">
+                  <WhatsAppIcon className="w-5 h-5" />
                 </div>
                 <div>
                   <h4 className="font-heading font-bold text-xs uppercase tracking-wider text-[#171717]">
                     WHATSAPP
                   </h4>
                   <a
-                    href="https://wa.me/917981787317"
+                    href={getWhatsAppUrl('Hi Bingooo, I would like to inquire about orders or custom apparel.')}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="font-sans font-bold text-sm text-[#171717] hover:text-[#E6321C] transition-colors block mt-0.5"
+                    className="font-sans font-bold text-sm text-[#171717] hover:text-[#25D366] transition-colors block mt-0.5"
                   >
                     +91 79817 87317
                   </a>
                   <p className="text-[11px] text-[#6F6A63] font-sans mt-0.5">
-                    Chat with us on WhatsApp
+                    Instant chat support on WhatsApp
+                  </p>
+                </div>
+              </motion.div>
+
+              {/* Instagram Card */}
+              <motion.div
+                whileHover={shouldReduceMotion ? undefined : { y: -3, boxShadow: '0 8px 24px -6px rgba(0, 0, 0, 0.08)' }}
+                transition={{ type: 'spring', stiffness: 400, damping: 25 }}
+                className="flex items-start gap-4 p-4 rounded-xl border border-[#DDD3C5] bg-white shadow-xs transition-colors hover:border-[#E1306C]/60"
+              >
+                <div className="h-11 w-11 rounded-full bg-[#FDEEF2] text-[#E1306C] flex items-center justify-center shrink-0">
+                  <InstagramIcon className="w-5 h-5" />
+                </div>
+                <div>
+                  <h4 className="font-heading font-bold text-xs uppercase tracking-wider text-[#171717]">
+                    INSTAGRAM
+                  </h4>
+                  <a
+                    href={BINGOOO_INSTAGRAM_URL}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="font-sans font-bold text-sm text-[#171717] hover:text-[#E1306C] transition-colors block mt-0.5"
+                  >
+                    @bingooo.sklm
+                  </a>
+                  <p className="text-[11px] text-[#6F6A63] font-sans mt-0.5">
+                    Follow drops, styling tips & behind-the-scenes
                   </p>
                 </div>
               </motion.div>
             </div>
           </div>
+
 
           {/* Right Column: Message Form (7 cols) */}
           <div className="lg:col-span-7">
@@ -241,6 +307,26 @@ export function ContactPage() {
                     className="w-full rounded-xl border border-[#DDD3C5] bg-white p-4 text-xs font-sans text-[#171717] placeholder:text-[#6F6A63] focus:border-[#E6321C] focus:outline-none resize-none"
                   />
                 </div>
+
+                {/* Inline Status Message Banner */}
+                {statusState.type !== 'idle' && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -6 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className={`p-3.5 rounded-xl text-xs font-sans flex items-start gap-2.5 ${
+                      statusState.type === 'success'
+                        ? 'bg-[#E7FCE8] text-[#1E7E34] border border-[#25D366]/30'
+                        : 'bg-[#FDF0EE] text-[#B91F12] border border-[#E6321C]/30'
+                    }`}
+                  >
+                    {statusState.type === 'success' ? (
+                      <CheckCircle2 size={16} className="text-[#25D366] shrink-0 mt-0.5" />
+                    ) : (
+                      <AlertCircle size={16} className="text-[#E6321C] shrink-0 mt-0.5" />
+                    )}
+                    <span className="leading-relaxed font-semibold">{statusState.message}</span>
+                  </motion.div>
+                )}
 
                 <motion.button
                   type="submit"

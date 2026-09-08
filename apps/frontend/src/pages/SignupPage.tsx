@@ -9,6 +9,7 @@ import { Input } from '../components/ui/Input';
 import { Logo } from '../components/ui/Logo';
 import { signUp } from '../lib/auth/supabase';
 import { useToast } from '../components/ui/Toast';
+import { SEO } from '../components/common/SEO';
 
 const signupSchema = z.object({
   fullName: z.string().min(2, 'Name must be at least 2 characters'),
@@ -55,6 +56,10 @@ export function SignupPage() {
 
   return (
     <div className="flex min-h-[70vh] items-center justify-center px-4 py-12">
+      <SEO
+        title="Create Account"
+        description="Join Bingooo for exclusive access to heavyweight menswear drops, saved custom studio drafts, and expedited checkout."
+      />
       <motion.div
         initial={shouldReduceMotion ? false : { opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}

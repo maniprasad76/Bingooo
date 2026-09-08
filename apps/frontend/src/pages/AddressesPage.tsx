@@ -6,6 +6,7 @@ import { api } from '../lib/api/client';
 import { Button } from '../components/ui/Button';
 import { Input } from '../components/ui/Input';
 import { useToast } from '../components/ui/Toast';
+import { SEO } from '../components/common/SEO';
 
 export function AddressesPage() {
   const shouldReduceMotion = useReducedMotion();
@@ -50,6 +51,10 @@ export function AddressesPage() {
 
   return (
     <div className="container-page py-8 sm:py-12 space-y-6">
+      <SEO
+        title="Saved Addresses"
+        description="Manage your delivery addresses and shipping destinations for quick, effortless checkout at Bingooo."
+      />
       <div className="flex items-center justify-between pb-6 border-b border-border">
         <div>
           <h1 className="text-display-lg font-bold text-ink">Saved Addresses</h1>

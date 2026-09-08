@@ -1,12 +1,17 @@
 import { Link } from 'react-router-dom';
 import { motion, useReducedMotion } from 'framer-motion';
 import { ShieldAlert, CheckCircle2, Scale } from 'lucide-react';
+import { SEO } from '../components/common/SEO';
 
 export function TermsPage() {
   const shouldReduceMotion = useReducedMotion();
 
   return (
     <div className="w-full bg-[#FAF8F5] text-[#171717] min-h-screen py-10 sm:py-16 font-sans">
+      <SEO
+        title="Terms of Service"
+        description="Review the terms and conditions governing the purchase of apparel, custom printing guidelines, and website usage at Bingooo."
+      />
       <div className="max-w-[1000px] mx-auto px-4 sm:px-8 space-y-12">
         
         {/* ─── Breadcrumbs & Header ─── */}
@@ -24,7 +29,7 @@ export function TermsPage() {
           </h1>
 
           <p className="text-xs sm:text-sm text-[#6F6A63] font-mono">
-            Effective Date: January 2026 • Governing Law: Andhra Pradesh, India
+            Effective Date: September 2026 • Governing Law: Andhra Pradesh, India
           </p>
         </div>
 

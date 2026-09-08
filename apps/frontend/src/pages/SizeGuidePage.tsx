@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import { Ruler, ArrowRight } from 'lucide-react';
+import { SEO } from '../components/common/SEO';
 
 type Unit = 'in' | 'cm';
 
@@ -59,6 +60,10 @@ export function SizeGuidePage() {
 
   return (
     <div className="w-full bg-[#FAF8F5] text-[#171717] min-h-screen py-10 sm:py-16 font-sans">
+      <SEO
+        title="Size & Fit Guide"
+        description="Find your perfect fit. Precision measurements in inches and centimeters for Bingooo 240 GSM oversized tees, boxy silhouettes, and fleece hoodies."
+      />
       <div className="max-w-[1000px] mx-auto px-4 sm:px-8 space-y-12">
         
         {/* ─── Breadcrumbs & Header ─── */}
@@ -148,7 +153,7 @@ export function SizeGuidePage() {
                 {currentTable.desc}
               </p>
 
-              <div className="overflow-x-auto mt-6">
+              <div className="overflow-x-auto mt-6 no-scrollbar">
                 <table className="w-full text-left border-collapse text-xs sm:text-sm">
                   <thead>
                     <tr className="border-b border-[#DDD3C5] text-[11px] font-mono font-bold uppercase text-[#6F6A63]">

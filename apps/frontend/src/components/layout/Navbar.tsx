@@ -10,18 +10,20 @@ import {
   Truck,
   Sparkles,
   Package,
-  Phone,
   ChevronRight,
   LogOut,
   Shirt,
   HelpCircle,
   ShieldCheck,
+  Phone,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '../../lib/utils';
 import { useCartStore } from '../../store/cart';
 import { useAuthStore } from '../../store/auth';
+import { useUIStore } from '../../store/ui';
 import { Logo } from '../ui/Logo';
+import { WhatsAppIcon, getWhatsAppUrl } from '../ui/SocialIcons';
 
 const navLinks = [
   { label: 'HOME', href: '/' },
@@ -39,16 +41,29 @@ const categoryShortcuts = [
 ];
 
 export function Navbar() {
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
+  const mobileMenuOpen = useUIStore((s) => s.mobileMenuOpen);
+  const openMobileMenu = useUIStore((s) => s.openMobileMenu);
+  const closeMobileMenu = useUIStore((s) => s.closeMobileMenu);
   const location = useLocation();
   const itemCount = useCartStore((s) => s.itemCount);
   const openCartDrawer = useCartStore((s) => s.openDrawer);
   const { isAuthenticated, user, logout } = useAuthStore();
 
+  // Track scroll position for sticky header elevation & compression
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 20);
+    };
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
   // Close drawer on route change
   useEffect(() => {
-    setMobileMenuOpen(false);
-  }, [location.pathname, location.search]);
+    closeMobileMenu();
+  }, [location.pathname, location.search, closeMobileMenu]);
+
 
   // Lock body scroll when mobile menu is open
   useEffect(() => {
@@ -63,18 +78,50 @@ export function Navbar() {
   }, [mobileMenuOpen]);
 
   return (
-    <header className="sticky top-0 z-40 w-full transition-all duration-300 shadow-2xs">
+    <header
+      className={cn(
+        'sticky top-0 z-40 w-full transition-all duration-300',
+        isScrolled
+          ? 'shadow-md bg-[#FAF8F5]/98 backdrop-blur-xl'
+          : 'shadow-2xs bg-[#FAF8F5]'
+      )}
+    >
       {/* ─── Slim Announcement Bar ─── */}
-      <div className="w-full bg-[#F7EEDB] border-b border-[#DDD3C5] py-1.5 px-3 text-center font-heading text-[10px] sm:text-xs tracking-[0.12em] font-bold text-[#171717] uppercase flex items-center justify-center gap-1.5">
-        <Truck size={13} className="text-[#E6321C] shrink-0" />
-        <span>
-          <strong className="text-[#E6321C] font-extrabold">FREE</strong> SHIPPING ON ORDERS ABOVE ₹999
-        </span>
+      <div
+        className={cn(
+          'w-full bg-[#F7EEDB] border-b border-[#DDD3C5] font-heading text-[10px] sm:text-xs tracking-[0.12em] font-bold text-[#171717] uppercase flex items-center justify-between transition-all duration-300 overflow-hidden',
+          isScrolled ? 'max-h-0 py-0 opacity-0 border-none' : 'max-h-12 py-1.5 px-4 opacity-100'
+        )}
+      >
+        <div className="flex items-center gap-1.5 mx-auto sm:mx-0">
+          <Truck size={13} className="text-[#E6321C] shrink-0" />
+          <span>
+            <strong className="text-[#E6321C] font-extrabold">FREE</strong> SHIPPING ON ORDERS ABOVE ₹999
+          </span>
+        </div>
+        <a
+          href="tel:+917981787317"
+          className="hidden sm:inline-flex items-center gap-1.5 text-[#171717] hover:text-[#E6321C] transition-colors"
+          aria-label="Call Bingooo Atelier"
+        >
+          <Phone size={12} className="text-[#E6321C]" />
+          <span>ATELIER: +91 79817 87317</span>
+        </a>
       </div>
 
       {/* ─── Main Header Navigation ─── */}
-      <nav className="w-full bg-[#FAF8F5]/95 backdrop-blur-md border-b border-[#DDD3C5]">
-        <div className="max-w-[1360px] mx-auto px-4 sm:px-8 h-14 sm:h-16 lg:h-17 flex items-center justify-between gap-3 sm:gap-4">
+      <nav
+        className={cn(
+          'w-full border-b border-[#DDD3C5] transition-all duration-300',
+          isScrolled ? 'bg-[#FAF8F5]/95 backdrop-blur-md' : 'bg-[#FAF8F5]'
+        )}
+      >
+        <div
+          className={cn(
+            'max-w-[1360px] mx-auto px-4 sm:px-8 flex items-center justify-between gap-3 sm:gap-4 transition-all duration-300',
+            isScrolled ? 'h-13 sm:h-14 lg:h-15' : 'h-14 sm:h-16 lg:h-17'
+          )}
+        >
           {/* Left: Brand Logo */}
           <Link to="/" className="flex items-center gap-2 shrink-0 py-1 group" aria-label="Bingooo Home">
             <Logo variant="red" size="sm" className="sm:hidden transition-transform duration-200 group-hover:scale-105" />
@@ -124,12 +171,12 @@ export function Navbar() {
               <Heart size={18} className="stroke-[1.8]" />
             </IconButton>
 
-            {/* Cart Drawer Trigger */}
+            {/* Cart Drawer Trigger - Visible on tablet/desktop, hidden on mobile */}
             <motion.button
               whileTap={{ scale: 0.92 }}
               whileHover={{ scale: 1.04 }}
               onClick={() => openCartDrawer()}
-              className="relative flex h-9 w-9 sm:h-10 sm:w-10 items-center justify-center rounded-lg text-[#171717] hover:text-[#E6321C] transition-colors"
+              className="relative hidden sm:flex h-9 w-9 sm:h-10 sm:w-10 items-center justify-center rounded-lg text-[#171717] hover:text-[#E6321C] transition-colors"
               aria-label="Open Shopping Bag"
             >
               <ShoppingBag size={19} className="stroke-[1.8]" />
@@ -152,7 +199,7 @@ export function Navbar() {
             {/* Mobile Menu Toggle */}
             <motion.button
               whileTap={{ scale: 0.92 }}
-              onClick={() => setMobileMenuOpen(true)}
+              onClick={openMobileMenu}
               className="flex h-9 w-9 sm:h-10 sm:w-10 items-center justify-center rounded-lg text-[#171717] hover:text-[#E6321C] transition-colors md:hidden"
               aria-label="Open navigation menu"
             >
@@ -172,7 +219,7 @@ export function Navbar() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.2 }}
-              onClick={() => setMobileMenuOpen(false)}
+              onClick={closeMobileMenu}
               className="fixed inset-0 z-50 bg-[#171717]/60 backdrop-blur-xs md:hidden"
               aria-hidden="true"
             />
@@ -191,7 +238,7 @@ export function Navbar() {
               <div className="p-4 border-b border-[#DDD3C5] flex items-center justify-between bg-[#F7EEDB]/70">
                 <Logo variant="red" size="sm" />
                 <button
-                  onClick={() => setMobileMenuOpen(false)}
+                  onClick={closeMobileMenu}
                   className="p-1.5 rounded-full hover:bg-[#EDE0CC] text-[#171717] transition-colors"
                   aria-label="Close menu"
                 >
@@ -204,7 +251,7 @@ export function Navbar() {
                 {/* Search Quick Bar */}
                 <Link
                   to="/shop"
-                  onClick={() => setMobileMenuOpen(false)}
+                  onClick={closeMobileMenu}
                   className="flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl bg-white border border-[#DDD3C5] text-xs text-[#6F6A63] font-sans shadow-2xs"
                 >
                   <Search size={15} className="text-[#E6321C]" />
@@ -215,7 +262,7 @@ export function Navbar() {
                 <div className="grid grid-cols-2 gap-2.5">
                   <Link
                     to="/customize"
-                    onClick={() => setMobileMenuOpen(false)}
+                    onClick={closeMobileMenu}
                     className="flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl bg-[#E6321C] text-white text-xs font-bold uppercase tracking-wider shadow-xs hover:bg-[#B91F12] transition-colors text-center"
                   >
                     <Sparkles size={13} />
@@ -223,13 +270,14 @@ export function Navbar() {
                   </Link>
                   <Link
                     to="/shop"
-                    onClick={() => setMobileMenuOpen(false)}
+                    onClick={closeMobileMenu}
                     className="flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl border border-[#171717] bg-[#171717] text-white text-xs font-bold uppercase tracking-wider hover:bg-[#E6321C] hover:border-[#E6321C] transition-colors text-center"
                   >
                     <ShoppingBag size={13} />
                     <span>Shop All</span>
                   </Link>
                 </div>
+
 
                 {/* Core Navigation Links */}
                 <div className="space-y-1 border-b border-[#DDD3C5]/70 pb-3">
@@ -242,7 +290,7 @@ export function Navbar() {
                       <Link
                         key={link.label}
                         to={link.href}
-                        onClick={() => setMobileMenuOpen(false)}
+                        onClick={closeMobileMenu}
                         className={cn(
                           'flex items-center justify-between px-3 py-2 rounded-lg text-xs font-bold tracking-wide uppercase transition-colors',
                           isActive
@@ -267,7 +315,7 @@ export function Navbar() {
                       <Link
                         key={cat.label}
                         to={cat.href}
-                        onClick={() => setMobileMenuOpen(false)}
+                        onClick={closeMobileMenu}
                         className="flex items-center gap-2 p-2 rounded-lg bg-white border border-[#DDD3C5]/60 text-xs font-semibold text-[#171717] hover:border-[#E6321C] transition-colors"
                       >
                         <Shirt size={13} className="text-[#E6321C]" />
@@ -284,7 +332,7 @@ export function Navbar() {
                   </span>
                   <Link
                     to="/account"
-                    onClick={() => setMobileMenuOpen(false)}
+                    onClick={closeMobileMenu}
                     className="flex items-center justify-between px-3 py-2 rounded-lg text-xs font-semibold text-[#171717] hover:bg-[#EDE0CC]/60"
                   >
                     <div className="flex items-center gap-2.5">
@@ -295,7 +343,7 @@ export function Navbar() {
                   </Link>
                   <Link
                     to="/account/orders"
-                    onClick={() => setMobileMenuOpen(false)}
+                    onClick={closeMobileMenu}
                     className="flex items-center justify-between px-3 py-2 rounded-lg text-xs font-semibold text-[#171717] hover:bg-[#EDE0CC]/60"
                   >
                     <div className="flex items-center gap-2.5">
@@ -306,7 +354,7 @@ export function Navbar() {
                   </Link>
                   <Link
                     to="/account/wishlist"
-                    onClick={() => setMobileMenuOpen(false)}
+                    onClick={closeMobileMenu}
                     className="flex items-center justify-between px-3 py-2 rounded-lg text-xs font-semibold text-[#171717] hover:bg-[#EDE0CC]/60"
                   >
                     <div className="flex items-center gap-2.5">
@@ -318,7 +366,7 @@ export function Navbar() {
                   <button
                     type="button"
                     onClick={() => {
-                      setMobileMenuOpen(false);
+                      closeMobileMenu();
                       openCartDrawer();
                     }}
                     className="w-full flex items-center justify-between px-3 py-2 rounded-lg text-xs font-semibold text-[#171717] hover:bg-[#EDE0CC]/60 text-left"
@@ -342,7 +390,7 @@ export function Navbar() {
                   </span>
                   <Link
                     to="/contact"
-                    onClick={() => setMobileMenuOpen(false)}
+                    onClick={closeMobileMenu}
                     className="flex items-center gap-2.5 px-3 py-1.5 text-xs text-[#6F6A63] hover:text-[#171717]"
                   >
                     <HelpCircle size={14} />
@@ -350,7 +398,7 @@ export function Navbar() {
                   </Link>
                   <Link
                     to="/policies"
-                    onClick={() => setMobileMenuOpen(false)}
+                    onClick={closeMobileMenu}
                     className="flex items-center gap-2.5 px-3 py-1.5 text-xs text-[#6F6A63] hover:text-[#171717]"
                   >
                     <ShieldCheck size={14} />
@@ -361,7 +409,7 @@ export function Navbar() {
                       type="button"
                       onClick={() => {
                         logout();
-                        setMobileMenuOpen(false);
+                        closeMobileMenu();
                       }}
                       className="flex items-center gap-2.5 px-3 py-2 text-xs font-bold text-[#E6321C] hover:bg-[#FDF0EE] rounded-lg w-full text-left mt-2"
                     >
@@ -370,19 +418,29 @@ export function Navbar() {
                     </button>
                   )}
                 </div>
+
               </div>
 
               {/* Drawer Bottom Support Footer */}
               <div className="p-4 border-t border-[#DDD3C5] bg-[#EDE0CC]/60 space-y-2.5 text-left">
                 <a
-                  href="https://wa.me/917981787317"
+                  href={getWhatsAppUrl('Hi Bingooo, I would like to chat about your menswear and orders.')}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl bg-[#25D366] text-white text-xs font-bold uppercase tracking-wide shadow-xs hover:bg-[#1EBE5D] transition-colors"
                 >
-                  <Phone size={14} />
+                  <WhatsAppIcon className="w-4 h-4" />
                   <span>WhatsApp Concierge</span>
                 </a>
+
+                <a
+                  href="tel:+917981787317"
+                  className="flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl bg-white border border-[#DDD3C5] text-[#171717] text-xs font-bold uppercase tracking-wide shadow-xs hover:border-[#E6321C] hover:text-[#E6321C] transition-colors"
+                >
+                  <Phone size={14} className="text-[#E6321C]" />
+                  <span>Call Atelier: +91 79817 87317</span>
+                </a>
+
                 <div className="text-center text-[10px] text-[#6F6A63] font-sans">
                   Bingooo Mens Wear &bull; Srikakulam Atelier
                 </div>

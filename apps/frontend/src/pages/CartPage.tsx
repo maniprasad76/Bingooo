@@ -15,11 +15,15 @@ import {
   Shirt,
   Sparkles,
   LoaderCircle,
+  CheckCircle2,
+  AlertCircle,
 } from 'lucide-react';
 import { useCart } from '../hooks/useCart';
 import { useToast } from '../components/ui/Toast';
 import { api } from '../lib/api/client';
 import { useQuery } from '@tanstack/react-query';
+import { SEO } from '../components/common/SEO';
+import { EmptyState } from '../components/common/EmptyState';
 
 export function CartPage() {
   const { cart, updateQuantity, removeItem, isLoading } = useCart();
@@ -29,6 +33,10 @@ export function CartPage() {
   const [couponCode, setCouponCode] = useState('');
   const [appliedCoupon, setAppliedCoupon] = useState<{ code: string; discount: number } | null>(null);
   const [validatingCoupon, setValidatingCoupon] = useState(false);
+  const [couponStatus, setCouponStatus] = useState<{ type: 'idle' | 'success' | 'error'; message: string }>({
+    type: 'idle',
+    message: '',
+  });
 
   // Recommendations query
   const { data: recProducts } = useQuery({
@@ -59,18 +67,27 @@ export function CartPage() {
     e.preventDefault();
     if (!couponCode.trim()) return;
     setValidatingCoupon(true);
+    setCouponStatus({ type: 'idle', message: '' });
     try {
       const res = await api.post<any>('/coupons/validate', {
         code: couponCode.trim(),
         orderSubtotal: subtotal,
       });
       setAppliedCoupon({ code: res.coupon.code, discount: res.discount });
+      setCouponStatus({
+        type: 'success',
+        message: `Coupon "${res.coupon.code}" applied! You saved ₹${res.discount}.`,
+      });
       toast({
         title: 'Coupon applied!',
         description: `You saved ₹${res.discount} with code ${res.coupon.code}`,
         variant: 'success',
       });
     } catch (err: any) {
+      setCouponStatus({
+        type: 'error',
+        message: err.message || `Code "${couponCode}" is invalid or expired. Try WELCOME10.`,
+      });
       toast({
         title: 'Invalid coupon',
         description: err.message || 'Coupon could not be applied.',
@@ -98,6 +115,10 @@ export function CartPage() {
 
   return (
     <div className="w-full bg-[#FAF8F5] text-[#171717] min-h-screen">
+      <SEO
+        title="Your Shopping Bag"
+        description="Review your selected heavyweight menswear items, check shipping thresholds, apply promo codes, and proceed to checkout at Bingooo."
+      />
       <div className="max-w-[1360px] mx-auto px-4 sm:px-8 py-6 sm:py-8">
         {/* ─── Breadcrumbs ─── */}
         <nav className="flex items-center gap-2 text-xs font-sans text-[#6F6A63] mb-4">
@@ -133,38 +154,35 @@ export function CartPage() {
                   transition={{ type: 'spring', stiffness: 220, damping: 26 }}
                 />
               </div>
+
+              {/* Scarcity / Essential Reservation Banner */}
+              <div className="mt-4 p-3.5 rounded-xl bg-[#FAF0EE] border border-[#F5C7C1] flex items-center gap-3 shadow-xs">
+                <div className="relative flex h-2.5 w-2.5 shrink-0">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#E6321C] opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-[#E6321C]"></span>
+                </div>
+                <p className="text-xs font-sans text-[#171717] leading-relaxed">
+                  <strong className="text-[#B91F12] uppercase tracking-wide">Essential Stock Reserved: </strong>
+                  Due to limited batch production, the essential garments in your cart are reserved for your checkout session.
+                </p>
+              </div>
             </div>
           )}
         </div>
 
         {items.length === 0 ? (
-          /* ─── Empty Cart State ─── */
-          <div className="py-20 text-center rounded-2xl border border-dashed border-[#DDD3C5] bg-[#FDF9F4] p-8 max-w-2xl mx-auto my-8 shadow-sm">
-            <div className="h-16 w-16 mx-auto mb-4 rounded-2xl bg-[#EDE0CC] flex items-center justify-center text-[#171717]">
-              <ShoppingBag size={30} className="text-[#E6321C]" />
-            </div>
-            <h2 className="font-heading font-extrabold text-2xl uppercase tracking-tight text-[#171717]">
-              Your shopping bag is empty
-            </h2>
-            <p className="mt-2 text-sm text-[#6F6A63] max-w-md mx-auto leading-relaxed">
-              Looks like you haven't added anything to your cart yet. Explore our curated catalog or launch the design studio to create a custom piece.
-            </p>
-            <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
-              <Link
-                to="/shop"
-                className="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-[#E6321C] text-white font-sans font-bold text-xs uppercase tracking-wider hover:bg-[#B91F12] transition-colors shadow-sm"
-              >
-                <ShoppingBag size={15} />
-                <span>Explore Catalog</span>
-              </Link>
-              <Link
-                to="/customize"
-                className="inline-flex items-center gap-2 px-6 py-3 rounded-lg border border-[#171717] bg-[#171717] text-white font-sans font-bold text-xs uppercase tracking-wider hover:bg-[#E6321C] hover:border-[#E6321C] transition-colors shadow-sm"
-              >
-                <Sparkles size={15} />
-                <span>Custom Design Studio</span>
-              </Link>
-            </div>
+          <div className="py-8 bg-white rounded-2xl border border-[#DDD3C5] shadow-xs my-6">
+            <EmptyState
+              icon="bag"
+              title="YOUR SHOPPING BAG IS EMPTY"
+              subtitle="ZERO ITEMS IN CART"
+              description="Looks like you haven't added any heavyweight garments to your cart yet. Explore our curated catalog or launch the design studio to create a custom piece."
+              actionText="EXPLORE DROPS"
+              actionTo="/shop"
+              secondaryActionText="CUSTOM DESIGN STUDIO"
+              secondaryActionTo="/customize"
+              showSuggestions={false}
+            />
           </div>
         ) : (
           /* ─── Two-Column Layout (Items Table + Order Summary) ─── */
@@ -470,6 +488,40 @@ export function CartPage() {
                     {validatingCoupon ? 'Checking...' : 'APPLY'}
                   </motion.button>
                 </form>
+
+                {/* Inline Coupon Feedback Message */}
+                {couponStatus.type !== 'idle' && (
+                  <div
+                    className={`p-2.5 rounded-lg text-xs font-sans flex items-center justify-between gap-2 ${
+                      couponStatus.type === 'success'
+                        ? 'bg-[#E7FCE8] text-[#1E7E34] border border-[#25D366]/30'
+                        : 'bg-[#FDF0EE] text-[#B91F12] border border-[#E6321C]/30'
+                    }`}
+                  >
+                    <div className="flex items-center gap-1.5 min-w-0">
+                      {couponStatus.type === 'success' ? (
+                        <CheckCircle2 size={14} className="text-[#25D366] shrink-0" />
+                      ) : (
+                        <AlertCircle size={14} className="text-[#E6321C] shrink-0" />
+                      )}
+                      <span className="truncate">{couponStatus.message}</span>
+                    </div>
+                    {appliedCoupon && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setAppliedCoupon(null);
+                          setCouponCode('');
+                          setCouponStatus({ type: 'idle', message: '' });
+                          toast({ title: 'Coupon removed', variant: 'info' });
+                        }}
+                        className="text-[11px] font-bold underline hover:opacity-75 shrink-0"
+                      >
+                        Remove
+                      </button>
+                    )}
+                  </div>
+                )}
 
                 {/* Action Buttons: PROCEED TO CHECKOUT */}
                 <div className="space-y-2.5 pt-2">

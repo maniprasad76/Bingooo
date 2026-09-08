@@ -6,6 +6,7 @@ import { api } from '../lib/api/client';
 import { Badge } from '../components/ui/Badge';
 import { Button } from '../components/ui/Button';
 import { Logo } from '../components/ui/Logo';
+import { SEO } from '../components/common/SEO';
 
 export function OrderDetailPage() {
   const shouldReduceMotion = useReducedMotion();
@@ -37,6 +38,10 @@ export function OrderDetailPage() {
 
   return (
     <div className="container-page py-8 sm:py-12 space-y-8">
+      <SEO
+        title={`Order Details #${orderNumber}`}
+        description={`View details, items, delivery updates, and tracking for Bingooo order #${orderNumber}.`}
+      />
       <div className="flex items-center justify-between">
         <Link to="/account/orders" className="inline-flex items-center gap-1.5 text-caption font-semibold text-muted hover:text-ink transition-colors">
           <ArrowLeft size={16} /> Back to All Orders

@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { motion, useReducedMotion } from 'framer-motion';
 import { useQuery } from '@tanstack/react-query';
@@ -14,6 +14,8 @@ import {
   Bookmark,
   ChevronRight,
   Flame,
+  Check,
+  RefreshCw,
 } from 'lucide-react';
 import { useCart } from '../hooks/useCart';
 import { useToast } from '../components/ui/Toast';
@@ -30,6 +32,8 @@ import {
   type GarmentProduct,
   type ColorOption,
 } from '../components/customizer/DesignControls';
+import { MobileCustomizerBar } from '../components/customizer/MobileCustomizerBar';
+import { SEO } from '../components/common/SEO';
 
 const FALLBACK_COLORS: ColorOption[] = [
   { name: 'Obsidian Black', hex: '#111111' },
@@ -171,6 +175,51 @@ export function CustomizerPage() {
 
   const [customerNotes, setCustomerNotes] = useState('');
   const [isSavingDesign, setIsSavingDesign] = useState(false);
+  const [autoSaveStatus, setAutoSaveStatus] = useState<'saved' | 'saving'>('saved');
+  const [lastSavedTime, setLastSavedTime] = useState<string>('Just now');
+
+  // Load draft from localStorage on mount if available
+  useEffect(() => {
+    try {
+      const draft = localStorage.getItem('bingooo_customizer_draft');
+      if (draft) {
+        const parsed = JSON.parse(draft);
+        if (parsed.frontDesign) setFrontDesign(parsed.frontDesign);
+        if (parsed.backDesign) setBackDesign(parsed.backDesign);
+        if (parsed.selectedColor) setSelectedColor(parsed.selectedColor);
+        if (parsed.selectedSize) setSelectedSize(parsed.selectedSize);
+        if (parsed.customerNotes) setCustomerNotes(parsed.customerNotes);
+      }
+    } catch {
+      // Ignore corrupted localStorage draft
+    }
+  }, []);
+
+  // Auto-save debounced sync to localStorage
+  useEffect(() => {
+    setAutoSaveStatus('saving');
+    const timer = setTimeout(() => {
+      try {
+        const draftData = {
+          frontDesign,
+          backDesign,
+          selectedColor,
+          selectedSize,
+          customerNotes,
+          updatedAt: new Date().toISOString(),
+        };
+        localStorage.setItem('bingooo_customizer_draft', JSON.stringify(draftData));
+        setAutoSaveStatus('saved');
+        setLastSavedTime(
+          new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })
+        );
+      } catch {
+        setAutoSaveStatus('saved');
+      }
+    }, 800);
+
+    return () => clearTimeout(timer);
+  }, [frontDesign, backDesign, selectedColor, selectedSize, customerNotes]);
 
   // Active side accessor
   const activeSideDesign = view === 'front' ? frontDesign : backDesign;
@@ -403,6 +452,11 @@ export function CustomizerPage() {
 
   return (
     <div className="w-full bg-[#FAF8F5] text-[#171717] min-h-screen pb-28 sm:pb-32">
+      <SEO
+        title="3D Atelier Customizer Studio — 240 GSM Heavyweight Apparel"
+        description="Design bespoke 240 GSM heavy combed cotton t-shirts and hoodies in our interactive 3D studio. Drag artwork, place custom typography, and produce one-of-a-kind streetwear."
+        keywords="custom t-shirt design, 240 gsm custom tee, bespoke streetwear India, custom DTF apparel, create your own tee"
+      />
       <div className="max-w-[1360px] mx-auto px-4 sm:px-8 py-5 sm:py-8 space-y-6 sm:space-y-8">
         {/* ─── Breadcrumbs & Header Strip ─── */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-[#DDD3C5]">
@@ -414,7 +468,29 @@ export function CustomizerPage() {
             <span className="text-[#171717] font-semibold">240 GSM Atelier Customizer</span>
           </nav>
 
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2.5">
+            {/* Auto-Save Live Status Indicator */}
+            <div
+              className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-mono font-bold uppercase tracking-wider border transition-all ${
+                autoSaveStatus === 'saving'
+                  ? 'bg-amber-50 text-amber-700 border-amber-300 animate-pulse'
+                  : 'bg-emerald-50 text-emerald-700 border-emerald-300'
+              }`}
+              title={`Draft auto-saved at ${lastSavedTime}`}
+            >
+              {autoSaveStatus === 'saving' ? (
+                <>
+                  <RefreshCw size={11} className="animate-spin text-amber-600" />
+                  <span>Auto-Saving Draft...</span>
+                </>
+              ) : (
+                <>
+                  <Check size={12} className="text-emerald-600" />
+                  <span>Draft Auto-Saved ({lastSavedTime})</span>
+                </>
+              )}
+            </div>
+
             <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#171717] text-white text-xs font-mono font-bold uppercase tracking-wider shadow-2xs">
               <Flame size={13} className="text-[#E6321C]" />
               240 GSM HEAVYWEIGHT BESPOKE
@@ -565,8 +641,8 @@ export function CustomizerPage() {
         </div>
       </div>
 
-      {/* ─── Sticky Bottom Atelier Summary Bar ─── */}
-      <div className="fixed bottom-0 inset-x-0 bg-white/95 backdrop-blur-md border-t border-[#DDD3C5] shadow-lg z-40 py-3 sm:py-4 px-4 sm:px-8">
+      {/* ─── Desktop Sticky Atelier Summary Bar (lg+) ─── */}
+      <div className="hidden lg:block fixed bottom-0 inset-x-0 bg-white/95 backdrop-blur-md border-t border-[#DDD3C5] shadow-lg z-40 py-3 sm:py-4 px-4 sm:px-8">
         <div className="max-w-[1360px] mx-auto flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-4">
           {/* Left: Garment Specs Preview */}
           <div className="flex items-center gap-3 w-full sm:w-auto justify-start">
@@ -663,6 +739,44 @@ export function CustomizerPage() {
           </div>
         </div>
       </div>
+
+      {/* ─── Mobile Atelier Bottom Bar & Drawer (< lg) ─── */}
+      <MobileCustomizerBar
+        products={products}
+        currentProduct={currentProduct}
+        onSelectProduct={(p) => {
+          setSelectedProductId(p.id);
+          if (p.variants?.[0]?.color) {
+            setSelectedColor({
+              name: p.variants[0].color,
+              hex: p.variants[0].colorHex || '#111111',
+            });
+          }
+          if (p.variants?.[0]?.size) {
+            setSelectedSize(p.variants[0].size);
+          }
+        }}
+        availableColors={availableColors}
+        selectedColor={selectedColor}
+        onSelectColor={setSelectedColor}
+        availableSizes={availableSizes}
+        selectedSize={selectedSize}
+        onSelectSize={setSelectedSize}
+        activeView={view}
+        artwork={activeSideDesign.artwork}
+        onUpdateArtwork={handleUpdateArtwork}
+        onRemoveArtwork={handleRemoveArtwork}
+        onUploadFile={handleUploadFile}
+        typography={activeSideDesign.typography}
+        onUpdateTypography={handleUpdateTypography}
+        onRemoveTypography={handleRemoveTypography}
+        basePrice={basePrice}
+        dualSidedFee={dualSideAddon}
+        totalPrice={totalPrice}
+        isDualSided={isDualSided}
+        onAddToCart={handleAddToCart}
+        isAddingToCart={isSavingDesign || isAdding}
+      />
     </div>
   );
 }

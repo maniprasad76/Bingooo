@@ -13,6 +13,7 @@ import { Logo } from '../components/ui/Logo';
 import { api } from '../lib/api/client';
 import { useToast } from '../components/ui/Toast';
 import { useAuthStore } from '../store/auth';
+import { SEO } from '../components/common/SEO';
 
 const addressSchema = z.object({
   name: z.string().min(2, 'Name is required'),
@@ -256,6 +257,10 @@ export function CheckoutPage() {
 
   return (
     <div className="min-h-screen bg-paper/30 py-8 lg:py-12">
+      <SEO
+        title="Secure Checkout"
+        description="Complete your Bingooo purchase securely with 256-bit encryption. UPI, Cards, Netbanking, and COD supported."
+      />
       <div className="container-page">
         <div className="mb-6 flex items-center justify-between border-b border-border pb-4">
           <Logo variant="red" size="md" />

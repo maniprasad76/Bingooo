@@ -9,6 +9,7 @@ import { Input } from '../components/ui/Input';
 import { Logo } from '../components/ui/Logo';
 import { signIn } from '../lib/auth/supabase';
 import { useToast } from '../components/ui/Toast';
+import { SEO } from '../components/common/SEO';
 
 const loginSchema = z.object({
   email: z.string().email('Please enter a valid email'),
@@ -50,6 +51,10 @@ export function LoginPage() {
 
   return (
     <div className="flex min-h-[70vh] items-center justify-center px-4 py-12">
+      <SEO
+        title="Sign In"
+        description="Sign in to your Bingooo account to manage your profile, view orders, and access saved 240 GSM custom designs."
+      />
       <motion.div
         initial={shouldReduceMotion ? false : { opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}

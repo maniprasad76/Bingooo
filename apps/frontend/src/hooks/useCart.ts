@@ -49,10 +49,26 @@ export function useCart() {
 
   const removeItemMutation = useMutation({
     mutationFn: (itemId: string) => api.delete<any>(`/cart/items/${itemId}`),
-    onSuccess: (updatedCart) => {
+    onSuccess: (updatedCart, itemId) => {
+      const removedItem = cartQuery.data?.items?.find((i: any) => i.id === itemId);
       queryClient.setQueryData(['cart'], updatedCart);
       setItemCount(updatedCart.itemCount || 0);
-      toast({ title: 'Item removed', variant: 'default' });
+
+      toast({
+        title: 'Item removed from bag',
+        description: removedItem?.productTitle || 'Garment removed',
+        variant: 'info',
+        onUndo: removedItem
+          ? () => {
+              addItemMutation.mutate({
+                variantId: removedItem.variantId,
+                quantity: removedItem.quantity || 1,
+                customizationId: removedItem.customizationId,
+              });
+            }
+          : undefined,
+        undoLabel: 'Undo',
+      });
     },
     onError: (err: any) => {
       toast({ title: 'Remove failed', description: err.message, variant: 'danger' });

@@ -5,6 +5,7 @@ import { Package, ArrowRight } from 'lucide-react';
 import { api } from '../lib/api/client';
 import { Badge } from '../components/ui/Badge';
 import { Button } from '../components/ui/Button';
+import { SEO } from '../components/common/SEO';
 
 export function OrdersPage() {
   const shouldReduceMotion = useReducedMotion();
@@ -31,6 +32,10 @@ export function OrdersPage() {
 
   return (
     <div className="container-page py-8 sm:py-12 space-y-6">
+      <SEO
+        title="My Orders"
+        description="Track your active Bingooo menswear orders, check fulfillment milestones, and view shipment tracking."
+      />
       <div className="pb-6 border-b border-border">
         <h1 className="text-display-lg font-bold text-ink">My Orders</h1>
         <p className="text-body text-muted">Track deliveries and view order history</p>

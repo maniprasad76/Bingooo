@@ -1,5 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
+import { APP_GUARD } from '@nestjs/core';
+import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
 import { HealthModule } from './health/health.module';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
@@ -31,6 +33,20 @@ import { BannersModule } from './banners/banners.module';
       isGlobal: true,
       envFilePath: ['.env', '../../.env'],
     }),
+
+    // ── Rate Limiting (DoS & Brute Force Defense) ──
+    ThrottlerModule.forRoot([
+      {
+        name: 'burst',
+        ttl: 10000,
+        limit: 25,
+      },
+      {
+        name: 'default',
+        ttl: 60000,
+        limit: 100,
+      },
+    ]),
 
     // ── Core ──
     HealthModule,
@@ -67,5 +83,12 @@ import { BannersModule } from './banners/banners.module';
     AuditModule,
     BannersModule,
   ],
+  providers: [
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard,
+    },
+  ],
 })
 export class AppModule {}
+

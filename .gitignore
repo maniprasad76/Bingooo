@@ -40,6 +40,8 @@ coverage/
 
 # Supabase local
 .supabase/
+supabase/.temp/
+.temp/
 
 # Misc
 *.tgz

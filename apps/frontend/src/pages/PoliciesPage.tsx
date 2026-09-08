@@ -7,6 +7,7 @@ import { ReturnsRefundsPage } from './ReturnsRefundsPage';
 import { PrivacyPolicyPage } from './PrivacyPolicyPage';
 import { TermsPage } from './TermsPage';
 import { CancellationPolicyPage } from './CancellationPolicyPage';
+import { SEO } from '../components/common/SEO';
 
 const POLICY_CARDS = [
   {
@@ -74,6 +75,10 @@ export function PoliciesPage() {
   // Otherwise, render the Central Policy Directory
   return (
     <div className="w-full bg-[#FAF8F5] text-[#171717] min-h-screen py-10 sm:py-16 font-sans">
+      <SEO
+        title="Store Policies & Legal Standards"
+        description="Explore Bingooo customer policies: pan-India delivery, 7-day exchanges, cancellations, data privacy, and size guides."
+      />
       <div className="max-w-[1100px] mx-auto px-4 sm:px-8 space-y-12">
         
         {/* ─── Breadcrumb & Header ─── */}

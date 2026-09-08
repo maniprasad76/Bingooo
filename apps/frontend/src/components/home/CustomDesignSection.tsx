@@ -111,35 +111,41 @@ export function CustomDesignSection() {
             <div className="relative grid grid-cols-1 sm:grid-cols-3 gap-4 lg:gap-4">
               
               {/* ─── STEP 01: CHOOSE ─── */}
-              <div className="relative bg-[#FDF9F4] border border-[#DDD3C5] rounded-2xl p-5 sm:p-6 shadow-xs flex flex-col justify-between text-left transition-all duration-200 hover:-translate-y-1 hover:shadow-md">
+              <div className="relative bg-[#FDF9F4] border border-[#DDD3C5] rounded-2xl p-5 sm:p-6 shadow-xs flex flex-col justify-between text-left transition-all duration-200 hover:-translate-y-1 hover:shadow-md group">
                 <div>
                   {/* Top Badges */}
                   <div className="flex items-center justify-between">
                     <div className="h-7 w-7 rounded-full bg-[#B91F12] text-white font-bold text-xs flex items-center justify-center font-mono">
                       01
                     </div>
-                    <div className="h-8 w-8 rounded-full bg-white border border-[#DDD3C5] flex items-center justify-center text-[#171717] shadow-2xs">
+                    <Link
+                      to="/customize"
+                      aria-label="Open Customizer"
+                      className="h-8 w-8 rounded-full bg-white border border-[#DDD3C5] flex items-center justify-center text-[#171717] shadow-2xs hover:bg-[#E6321C] hover:text-white transition-colors"
+                    >
                       <Shirt size={16} strokeWidth={1.7} />
-                    </div>
+                    </Link>
                   </div>
 
                   {/* Title & Copy */}
-                  <h3 className="font-heading font-extrabold text-base uppercase text-[#171717] tracking-wider mt-4">
-                    CHOOSE
-                  </h3>
+                  <Link to="/customize" className="block group-hover:text-[#E6321C] transition-colors">
+                    <h3 className="font-heading font-extrabold text-base uppercase text-[#171717] group-hover:text-[#E6321C] tracking-wider mt-4">
+                      CHOOSE
+                    </h3>
+                  </Link>
                   <p className="text-xs text-[#6F6A63] font-sans mt-1">
                     Select a garment and colour.
                   </p>
                 </div>
 
                 {/* Garment Image */}
-                <div className="my-5 flex items-center justify-center">
+                <Link to="/customize" className="my-5 flex items-center justify-center group-hover:scale-105 transition-transform">
                   <img
                     src="/custom/tshirt-step-1.png"
                     alt="Choose garment"
                     className="h-40 sm:h-44 w-auto object-contain drop-shadow-sm select-none"
                   />
-                </div>
+                </Link>
 
                 {/* Interactive Color Swatches */}
                 <div className="flex items-center justify-center gap-2 pt-2">
@@ -175,20 +181,23 @@ export function CustomDesignSection() {
               </div>
 
               {/* ─── STEP 02: MAKE IT YOURS ─── */}
-              <div className="relative bg-[#FDF9F4] border border-[#DDD3C5] rounded-2xl p-5 sm:p-6 shadow-xs flex flex-col justify-between text-left transition-all duration-200 hover:-translate-y-1 hover:shadow-md">
+              <Link
+                to="/customize"
+                className="relative bg-[#FDF9F4] border border-[#DDD3C5] rounded-2xl p-5 sm:p-6 shadow-xs flex flex-col justify-between text-left transition-all duration-200 hover:-translate-y-1 hover:shadow-md group block"
+              >
                 <div>
                   {/* Top Badges */}
                   <div className="flex items-center justify-between">
                     <div className="h-7 w-7 rounded-full bg-[#B91F12] text-white font-bold text-xs flex items-center justify-center font-mono">
                       02
                     </div>
-                    <div className="h-8 w-8 rounded-full bg-white border border-[#DDD3C5] flex items-center justify-center text-[#171717] shadow-2xs">
+                    <div className="h-8 w-8 rounded-full bg-white border border-[#DDD3C5] flex items-center justify-center text-[#171717] shadow-2xs group-hover:bg-[#E6321C] group-hover:text-white transition-colors">
                       <PenTool size={16} strokeWidth={1.7} />
                     </div>
                   </div>
 
                   {/* Title & Copy */}
-                  <h3 className="font-heading font-extrabold text-base uppercase text-[#171717] tracking-wider mt-4">
+                  <h3 className="font-heading font-extrabold text-base uppercase text-[#171717] group-hover:text-[#E6321C] tracking-wider mt-4 transition-colors">
                     MAKE IT YOURS
                   </h3>
                   <p className="text-xs text-[#6F6A63] font-sans mt-1">
@@ -197,7 +206,7 @@ export function CustomDesignSection() {
                 </div>
 
                 {/* Garment Image with Dashed Canvas Area */}
-                <div className="my-5 flex items-center justify-center">
+                <div className="my-5 flex items-center justify-center group-hover:scale-105 transition-transform">
                   <img
                     src="/custom/tshirt-step-2.png"
                     alt="Make it yours artwork"
@@ -207,8 +216,8 @@ export function CustomDesignSection() {
 
                 {/* Empty spacer to balance card height with Step 1 & 3 */}
                 <div className="h-6 flex items-center justify-center">
-                  <span className="text-[11px] font-mono text-[#6F6A63]/80 uppercase tracking-wider">
-                    DTG High-Def Print
+                  <span className="text-[11px] font-mono text-[#6F6A63]/80 uppercase tracking-wider group-hover:text-[#E6321C] transition-colors">
+                    Open Design Studio &rarr;
                   </span>
                 </div>
 
@@ -216,23 +225,26 @@ export function CustomDesignSection() {
                 <div className="hidden sm:flex absolute -right-3.5 top-1/2 -translate-y-1/2 z-10 h-7 w-7 rounded-full bg-white border border-[#DDD3C5] items-center justify-center text-[#B91F12] shadow-xs">
                   <ArrowRight size={13} strokeWidth={2.2} />
                 </div>
-              </div>
+              </Link>
 
               {/* ─── STEP 03: PREVIEW ─── */}
-              <div className="relative bg-[#FDF9F4] border border-[#DDD3C5] rounded-2xl p-5 sm:p-6 shadow-xs flex flex-col justify-between text-left transition-all duration-200 hover:-translate-y-1 hover:shadow-md">
+              <Link
+                to="/customize"
+                className="relative bg-[#FDF9F4] border border-[#DDD3C5] rounded-2xl p-5 sm:p-6 shadow-xs flex flex-col justify-between text-left transition-all duration-200 hover:-translate-y-1 hover:shadow-md group block"
+              >
                 <div>
                   {/* Top Badges */}
                   <div className="flex items-center justify-between">
                     <div className="h-7 w-7 rounded-full bg-[#B91F12] text-white font-bold text-xs flex items-center justify-center font-mono">
                       03
                     </div>
-                    <div className="h-8 w-8 rounded-full bg-white border border-[#DDD3C5] flex items-center justify-center text-[#171717] shadow-2xs">
+                    <div className="h-8 w-8 rounded-full bg-white border border-[#DDD3C5] flex items-center justify-center text-[#171717] shadow-2xs group-hover:bg-[#E6321C] group-hover:text-white transition-colors">
                       <Eye size={16} strokeWidth={1.7} />
                     </div>
                   </div>
 
                   {/* Title & Copy */}
-                  <h3 className="font-heading font-extrabold text-base uppercase text-[#171717] tracking-wider mt-4">
+                  <h3 className="font-heading font-extrabold text-base uppercase text-[#171717] group-hover:text-[#E6321C] tracking-wider mt-4 transition-colors">
                     PREVIEW
                   </h3>
                   <p className="text-xs text-[#6F6A63] font-sans mt-1">
@@ -241,7 +253,7 @@ export function CustomDesignSection() {
                 </div>
 
                 {/* Garment Image */}
-                <div className="my-5 flex items-center justify-center">
+                <div className="my-5 flex items-center justify-center group-hover:scale-105 transition-transform">
                   <img
                     src="/custom/tshirt-step-3-black.png"
                     alt="Preview customized garment"
@@ -251,12 +263,13 @@ export function CustomDesignSection() {
 
                 {/* Bottom Pill: Looks perfect! ❤️ */}
                 <div className="flex items-center justify-center pt-1">
-                  <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white border border-[#DDD3C5] shadow-xs text-xs font-semibold text-[#171717]">
+                  <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white border border-[#DDD3C5] shadow-xs text-xs font-semibold text-[#171717] group-hover:border-[#E6321C] transition-colors">
                     <span>Looks perfect!</span>
                     <span className="text-[#E6321C]">❤️</span>
                   </div>
                 </div>
-              </div>
+              </Link>
+
 
             </div>
 

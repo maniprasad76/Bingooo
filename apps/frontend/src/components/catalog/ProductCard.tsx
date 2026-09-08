@@ -100,6 +100,9 @@ export function ProductCard({
 
             {/* Badges Top-Left */}
             <div className="absolute top-2 left-2 sm:top-3.5 sm:left-3.5 flex flex-col gap-1 z-10">
+              <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-[#171717] text-white text-[8px] sm:text-[9px] font-sans font-bold uppercase tracking-wider shadow-sm">
+                ESSENTIAL
+              </span>
               {customizationEnabled && (
                 <span className="inline-flex items-center gap-1 px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-full bg-[#E6321C] text-white text-[8px] sm:text-[10px] font-sans font-bold uppercase tracking-wider shadow-sm">
                   <Sparkles size={10} />
@@ -107,7 +110,7 @@ export function ProductCard({
                 </span>
               )}
               {discountPct && (
-                <span className="inline-flex items-center px-1.5 py-0.5 sm:px-2 rounded-full bg-[#171717] text-white text-[8px] sm:text-[10px] font-sans font-bold tracking-wider shadow-sm">
+                <span className="inline-flex items-center px-1.5 py-0.5 sm:px-2 rounded-full bg-[#E6321C] text-white text-[8px] sm:text-[10px] font-sans font-bold tracking-wider shadow-sm">
                   {discountPct}% OFF
                 </span>
               )}
@@ -191,6 +194,14 @@ export function ProductCard({
                   {title}
                 </h3>
               </Link>
+              {/* Scarcity / Essential Indicator */}
+              <div className="mt-1 flex items-center gap-1.5 text-[9px] sm:text-[10px] text-[#B91F12] font-semibold">
+                <span className="relative flex h-1.5 w-1.5">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#E6321C] opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-[#E6321C]"></span>
+                </span>
+                <span>Essential • Few Left</span>
+              </div>
             </div>
 
             <div className="mt-2 sm:mt-4 pt-2 sm:pt-3 border-t border-[#DDD3C5]/60 flex items-center justify-between gap-1">

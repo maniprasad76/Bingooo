@@ -1,11 +1,22 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowUp, ArrowRight, Check } from 'lucide-react';
+import { ArrowUp, ArrowRight, Check, Phone } from 'lucide-react';
 import { Logo } from '../ui/Logo';
+import {
+  WhatsAppIcon,
+  InstagramIcon,
+  EmailIcon,
+  YouTubeIcon,
+  XTwitterIcon,
+  BINGOOO_PHONE_DISPLAY,
+  BINGOOO_EMAIL_SUPPORT,
+  BINGOOO_INSTAGRAM_URL,
+  getWhatsAppUrl,
+} from '../ui/SocialIcons';
 
 interface FooterColumn {
   title: string;
-  links: { label: string; to: string }[];
+  links: { label: string; to: string; isExternal?: boolean }[];
 }
 
 const FOOTER_COLUMNS: FooterColumn[] = [
@@ -26,7 +37,7 @@ const FOOTER_COLUMNS: FooterColumn[] = [
       { label: '3D Design Lab', to: '/customize' },
       { label: 'DTF Printing', to: '/customize' },
       { label: 'Bulk Orders', to: '/contact' },
-      { label: 'Fabric Specifications', to: '/policies/size-guide' },
+      { label: 'Fabric Specifications', to: '/size-guide' },
       { label: 'Artwork Guidelines', to: '/about' },
     ],
   },
@@ -36,18 +47,20 @@ const FOOTER_COLUMNS: FooterColumn[] = [
       { label: 'Track Order', to: '/account/orders' },
       { label: 'Shipping Policy', to: '/shipping-policy' },
       { label: 'Returns and Exchange', to: '/returns-refunds' },
-      { label: 'Size and Fit Guide', to: '/policies/size-guide' },
+      { label: 'Size and Fit Guide', to: '/size-guide' },
       { label: 'Contact Support', to: '/contact' },
       { label: 'FAQ', to: '/faq' },
     ],
   },
   {
-    title: 'Company',
+    title: 'Direct Connect',
     links: [
-      { label: 'About Bingooo', to: '/about' },
+      { label: `WhatsApp: ${BINGOOO_PHONE_DISPLAY}`, to: getWhatsAppUrl('Hi Bingooo, I would like to inquire about an order.'), isExternal: true },
+      { label: `Email: ${BINGOOO_EMAIL_SUPPORT}`, to: `mailto:${BINGOOO_EMAIL_SUPPORT}`, isExternal: true },
+      { label: 'Instagram: @bingooo.sklm', to: BINGOOO_INSTAGRAM_URL, isExternal: true },
+      { label: 'About Atelier', to: '/about' },
       { label: 'Terms of Service', to: '/terms' },
       { label: 'Privacy Policy', to: '/privacy-policy' },
-      { label: 'My Account', to: '/account' },
     ],
   },
 ];
@@ -74,9 +87,9 @@ export function Footer() {
     >
       <div className="max-w-[1360px] mx-auto px-6 sm:px-10 lg:px-12 py-16 sm:py-20">
         
-        {/* ─── Top Section: Logo & Clean Drop Subscription ─── */}
+        {/* ─── Top Section: Logo & Clean Drop Subscription & Socials ─── */}
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-8 pb-14 border-b border-white/10">
-          <div className="space-y-3 max-w-md">
+          <div className="space-y-4 max-w-md">
             <Link
               to="/"
               aria-label="Bingooo Home"
@@ -87,6 +100,60 @@ export function Footer() {
             <p className="text-sm text-[#DDD3C5]/70 leading-relaxed">
               Contemporary Indian menswear crafted with 240 to 280 GSM heavyweight cotton. Wear what feels like you.
             </p>
+
+            {/* Social Icons Row */}
+            <div className="flex items-center gap-3 pt-2" aria-label="Bingooo Social Channels">
+              <a
+                href={getWhatsAppUrl('Hi Bingooo, I would like to chat about your menswear.')}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Chat on WhatsApp"
+                className="w-9 h-9 rounded-full bg-white/5 border border-white/10 hover:border-[#25D366] hover:bg-[#25D366] text-[#DDD3C5] hover:text-white flex items-center justify-center transition-all duration-200 focus-visible:ring-2 focus-visible:ring-[#25D366] focus-visible:outline-none"
+              >
+                <WhatsAppIcon className="w-4 h-4" />
+              </a>
+              <a
+                href={BINGOOO_INSTAGRAM_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Follow on Instagram"
+                className="w-9 h-9 rounded-full bg-white/5 border border-white/10 hover:border-[#E1306C] hover:bg-[#E1306C] text-[#DDD3C5] hover:text-white flex items-center justify-center transition-all duration-200 focus-visible:ring-2 focus-visible:ring-[#E1306C] focus-visible:outline-none"
+              >
+                <InstagramIcon className="w-4 h-4" />
+              </a>
+              <a
+                href={`mailto:${BINGOOO_EMAIL_SUPPORT}`}
+                aria-label="Email support"
+                className="w-9 h-9 rounded-full bg-white/5 border border-white/10 hover:border-[#E6321C] hover:bg-[#E6321C] text-[#DDD3C5] hover:text-white flex items-center justify-center transition-all duration-200 focus-visible:ring-2 focus-visible:ring-[#E6321C] focus-visible:outline-none"
+              >
+                <EmailIcon className="w-4 h-4" />
+              </a>
+              <a
+                href={`tel:+917981787317`}
+                aria-label="Call store"
+                className="w-9 h-9 rounded-full bg-white/5 border border-white/10 hover:border-white hover:bg-white hover:text-[#171717] text-[#DDD3C5] flex items-center justify-center transition-all duration-200 focus-visible:ring-2 focus-visible:ring-white focus-visible:outline-none"
+              >
+                <Phone className="w-4 h-4" />
+              </a>
+              <a
+                href="https://youtube.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Bingooo YouTube"
+                className="w-9 h-9 rounded-full bg-white/5 border border-white/10 hover:border-[#FF0000] hover:bg-[#FF0000] text-[#DDD3C5] hover:text-white flex items-center justify-center transition-all duration-200 focus-visible:ring-2 focus-visible:ring-[#FF0000] focus-visible:outline-none"
+              >
+                <YouTubeIcon className="w-4 h-4" />
+              </a>
+              <a
+                href="https://twitter.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Bingooo X (Twitter)"
+                className="w-9 h-9 rounded-full bg-white/5 border border-white/10 hover:border-white hover:bg-white hover:text-[#171717] text-[#DDD3C5] flex items-center justify-center transition-all duration-200 focus-visible:ring-2 focus-visible:ring-white focus-visible:outline-none"
+              >
+                <XTwitterIcon className="w-4 h-4" />
+              </a>
+            </div>
           </div>
 
           {/* Simple Drop Newsletter Form */}
@@ -139,18 +206,31 @@ export function Footer() {
               <ul className="space-y-3" role="list">
                 {col.links.map((link) => (
                   <li key={link.label}>
-                    <Link
-                      to={link.to}
-                      className="text-sm text-[#DDD3C5]/70 hover:text-white transition-colors duration-150 block truncate focus-visible:ring-2 focus-visible:ring-[#E6321C] focus-visible:outline-none rounded"
-                    >
-                      {link.label}
-                    </Link>
+                    {link.isExternal || link.to.startsWith('http') || link.to.startsWith('mailto:') ? (
+                      <a
+                        href={link.to}
+                        target={link.to.startsWith('http') ? '_blank' : undefined}
+                        rel={link.to.startsWith('http') ? 'noopener noreferrer' : undefined}
+                        className="text-sm text-[#DDD3C5]/70 hover:text-white transition-colors duration-150 block truncate focus-visible:ring-2 focus-visible:ring-[#E6321C] focus-visible:outline-none rounded"
+                      >
+                        {link.label}
+                      </a>
+                    ) : (
+                      <Link
+                        to={link.to}
+                        className="text-sm text-[#DDD3C5]/70 hover:text-white transition-colors duration-150 block truncate focus-visible:ring-2 focus-visible:ring-[#E6321C] focus-visible:outline-none rounded"
+                      >
+                        {link.label}
+                      </Link>
+                    )}
                   </li>
                 ))}
               </ul>
             </div>
           ))}
         </div>
+
+
 
         {/* ─── Massive Bingooo Brand Typography Statement ─── */}
         <div className="pt-14 sm:pt-20 pb-8 sm:pb-12 border-b border-white/10 overflow-hidden select-none">

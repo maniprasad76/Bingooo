@@ -8,9 +8,14 @@ import {
   Body,
   Query,
   Req,
+  UseGuards,
 } from '@nestjs/common';
-import { ApiTags, ApiOperation } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { ReviewsService } from './reviews.service';
+import { CreateReviewDto, UpdateReviewStatusDto } from './dto/review.dto';
+import { AuthGuard } from '../common/guards/auth.guard';
+import { RolesGuard } from '../common/guards/roles.guard';
+import { Permissions } from '../common/decorators/permissions.decorator';
 
 @ApiTags('Reviews')
 @Controller('reviews')
@@ -34,39 +39,39 @@ export class ReviewsController {
   @ApiOperation({ summary: 'Submit product review' })
   create(
     @Req() req: any,
-    @Body()
-    body: {
-      productId: string;
-      userId?: string;
-      rating: number;
-      title?: string;
-      body?: string;
-      customerName?: string;
-      imageUrl?: string;
-    },
+    @Body() dto: CreateReviewDto,
   ) {
-    const activeUserId = req?.user?.id || body.userId || 'usr-cust-1';
-    return this.reviewsService.createReview({ ...body, userId: activeUserId });
+    const activeUserId = req?.user?.id || dto.userId || 'usr-cust-1';
+    return this.reviewsService.createReview({ ...dto, userId: activeUserId });
   }
 
   // ── Admin Endpoints ──
 
   @Get('admin/all')
+  @UseGuards(AuthGuard, RolesGuard)
+  @Permissions('reviews.manage')
+  @ApiBearerAuth()
   @ApiOperation({ summary: 'Admin list all reviews with moderation filters' })
   getAllAdmin(@Query('status') status?: string, @Query('search') search?: string) {
     return this.reviewsService.getAllAdmin(status, search);
   }
 
   @Patch(':id/status')
+  @UseGuards(AuthGuard, RolesGuard)
+  @Permissions('reviews.manage')
+  @ApiBearerAuth()
   @ApiOperation({ summary: 'Admin approve or reject review' })
   updateStatus(
     @Param('id') id: string,
-    @Body() body: { status: 'approved' | 'rejected' | 'pending' },
+    @Body() dto: UpdateReviewStatusDto,
   ) {
-    return this.reviewsService.updateStatus(id, body.status);
+    return this.reviewsService.updateStatus(id, dto.status);
   }
 
   @Delete(':id')
+  @UseGuards(AuthGuard, RolesGuard)
+  @Permissions('reviews.manage')
+  @ApiBearerAuth()
   @ApiOperation({ summary: 'Admin delete review' })
   delete(@Param('id') id: string) {
     return this.reviewsService.delete(id);

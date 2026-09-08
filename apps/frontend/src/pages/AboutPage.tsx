@@ -1,10 +1,15 @@
 import { Award, PenTool, Heart, Calendar, Shirt, Star, Eye, ShoppingBag, ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import { SEO } from '../components/common/SEO';
 
 export function AboutPage() {
   return (
     <div className="w-full bg-[#FAF8F5] text-[#171717]">
+      <SEO
+        title="About Us — The Bingooo Story & Atelier"
+        description="Learn about Bingooo Men's Wear: 240–280 GSM heavyweight combed cotton, architectural silhouettes, and bespoke self-expression crafted in Srikakulam."
+      />
       {/* ─── 1. ABOUT US HERO ─── */}
       <section className="max-w-[1360px] mx-auto px-4 sm:px-8 py-10 sm:py-16">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
@@ -248,31 +253,36 @@ export function AboutPage() {
         {/* 5 Garment Cards in a Row */}
         <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 sm:gap-4">
           {[
-            { id: 1, label: 'HOODIES', sub: 'Heavyweight Fleece' },
-            { id: 2, label: 'PACKAGING', sub: 'Bespoke Unboxing' },
-            { id: 3, label: 'CHAOS PRINT', sub: 'Streetwear Graphic' },
-            { id: 4, label: 'EMBROIDERY', sub: 'Precision Stitch' },
-            { id: 5, label: 'OVERSIZED', sub: 'Signature Fit' },
+            { id: 1, label: 'HOODIES', sub: 'Heavyweight Fleece', href: '/shop?category=hoodies' },
+            { id: 2, label: 'PACKAGING', sub: 'Bespoke Unboxing', href: '/about' },
+            { id: 3, label: 'CHAOS PRINT', sub: 'Streetwear Graphic', href: '/shop' },
+            { id: 4, label: 'EMBROIDERY', sub: 'Precision Stitch', href: '/customize' },
+            { id: 5, label: 'OVERSIZED', sub: 'Signature Fit', href: '/shop?category=t-shirts' },
           ].map((item, i) => (
-            <motion.div
+            <Link
               key={item.id}
-              initial={{ opacity: 0, y: 16 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: i * 0.08, duration: 0.4 }}
-              whileHover={{ scale: 1.02 }}
-              className="group relative aspect-[3/4] sm:aspect-[4/5] last:col-span-2 sm:last:col-span-1 overflow-hidden rounded-xl bg-[#EDE0CC] border border-[#DDD3C5] shadow-xs flex flex-col justify-end p-4 text-left transition-all hover:shadow-md cursor-pointer"
+              to={item.href}
+              className="contents"
             >
-              <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/25 to-transparent z-10" />
-              <div className="relative z-20 text-white">
-                <span className="font-heading font-bold text-sm sm:text-base uppercase tracking-wider">
-                  {item.label}
-                </span>
-                <p className="text-[11px] font-sans text-white/80">
-                  {item.sub}
-                </p>
-              </div>
-            </motion.div>
+              <motion.div
+                initial={{ opacity: 0, y: 16 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.08, duration: 0.4 }}
+                whileHover={{ scale: 1.02 }}
+                className="group relative aspect-[3/4] sm:aspect-[4/5] last:col-span-2 sm:last:col-span-1 overflow-hidden rounded-xl bg-[#EDE0CC] border border-[#DDD3C5] shadow-xs flex flex-col justify-end p-4 text-left transition-all hover:shadow-md cursor-pointer"
+              >
+                <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/25 to-transparent z-10" />
+                <div className="relative z-20 text-white">
+                  <span className="font-heading font-bold text-sm sm:text-base uppercase tracking-wider group-hover:text-[#F39C12] transition-colors">
+                    {item.label}
+                  </span>
+                  <p className="text-[11px] font-sans text-white/80">
+                    {item.sub}
+                  </p>
+                </div>
+              </motion.div>
+            </Link>
           ))}
         </div>
 

@@ -9,88 +9,109 @@ import {
   Body,
   Query,
   Req,
+  UseGuards,
 } from '@nestjs/common';
-import { ApiTags, ApiOperation } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { UsersService } from './users.service';
+import { AuthGuard } from '../common/guards/auth.guard';
+import { RolesGuard } from '../common/guards/roles.guard';
+import { Permissions } from '../common/decorators/permissions.decorator';
 
 @ApiTags('Users')
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  private resolveUserId(req: any, fallbackQuery?: string): string {
-    return req?.user?.id || fallbackQuery || 'usr-cust-1';
-  }
-
-  // ── Customer Profile & Addresses ──
+  // ── Customer Profile & Addresses (Strictly Isolated to Authenticated User) ──
 
   @Get('profile')
-  @ApiOperation({ summary: 'Get current user profile' })
-  getProfile(@Req() req: any, @Query('userId') userId?: string) {
-    return this.usersService.getProfile(this.resolveUserId(req, userId));
+  @UseGuards(AuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Get authenticated user profile' })
+  getProfile(@Req() req: any) {
+    return this.usersService.getProfile(req.user.id);
   }
 
   @Patch('profile')
-  @ApiOperation({ summary: 'Update profile details' })
+  @UseGuards(AuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Update authenticated user profile' })
   updateProfile(
     @Req() req: any,
     @Body() body: { fullName?: string; phone?: string; avatarKey?: string },
-    @Query('userId') userId?: string,
   ) {
-    return this.usersService.updateProfile(this.resolveUserId(req, userId), body);
+    return this.usersService.updateProfile(req.user.id, body);
   }
 
   @Get('addresses')
-  @ApiOperation({ summary: 'Get saved user addresses' })
-  getAddresses(@Req() req: any, @Query('userId') userId?: string) {
-    return this.usersService.getAddresses(this.resolveUserId(req, userId));
+  @UseGuards(AuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Get authenticated user saved addresses' })
+  getAddresses(@Req() req: any) {
+    return this.usersService.getAddresses(req.user.id);
   }
 
   @Post('addresses')
-  @ApiOperation({ summary: 'Add new address' })
-  addAddress(@Req() req: any, @Body() body: any, @Query('userId') userId?: string) {
-    return this.usersService.addAddress(this.resolveUserId(req, userId), body);
+  @UseGuards(AuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Add address for authenticated user' })
+  addAddress(@Req() req: any, @Body() body: any) {
+    return this.usersService.addAddress(req.user.id, body);
   }
 
   @Put('addresses/:id')
-  @ApiOperation({ summary: 'Update address' })
+  @UseGuards(AuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Update authenticated user address' })
   updateAddress(
     @Req() req: any,
     @Param('id') id: string,
     @Body() body: any,
-    @Query('userId') userId?: string,
   ) {
-    return this.usersService.updateAddress(this.resolveUserId(req, userId), id, body);
+    return this.usersService.updateAddress(req.user.id, id, body);
   }
 
   @Delete('addresses/:id')
-  @ApiOperation({ summary: 'Delete address' })
-  deleteAddress(@Req() req: any, @Param('id') id: string, @Query('userId') userId?: string) {
-    return this.usersService.deleteAddress(this.resolveUserId(req, userId), id);
+  @UseGuards(AuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Delete authenticated user address' })
+  deleteAddress(@Req() req: any, @Param('id') id: string) {
+    return this.usersService.deleteAddress(req.user.id, id);
   }
 
   @Patch('addresses/:id/default')
-  @ApiOperation({ summary: 'Set address as default' })
-  setDefaultAddress(@Req() req: any, @Param('id') id: string, @Query('userId') userId?: string) {
-    return this.usersService.setDefaultAddress(this.resolveUserId(req, userId), id);
+  @UseGuards(AuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Set default address for authenticated user' })
+  setDefaultAddress(@Req() req: any, @Param('id') id: string) {
+    return this.usersService.setDefaultAddress(req.user.id, id);
   }
 
-  // ── Admin: Customers & Staff ──
+  // ── Admin: Customers & Staff (Guarded by RBAC) ──
 
   @Get('staff')
-  @ApiOperation({ summary: 'List all staff users' })
+  @UseGuards(AuthGuard, RolesGuard)
+  @Permissions('staff.manage')
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'List all staff users (Staff Manager only)' })
   getStaffUsers() {
     return this.usersService.getStaffUsers();
   }
 
   @Post('staff')
-  @ApiOperation({ summary: 'Create a new staff user' })
+  @UseGuards(AuthGuard, RolesGuard)
+  @Permissions('staff.manage')
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Create a new staff user (Staff Manager only)' })
   createStaffUser(@Body() body: { name: string; email: string; role: string; password?: string }) {
     return this.usersService.createStaffUser(body);
   }
 
   @Patch('staff/:id')
-  @ApiOperation({ summary: 'Update staff user role or status' })
+  @UseGuards(AuthGuard, RolesGuard)
+  @Permissions('staff.manage')
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Update staff user role or status (Staff Manager only)' })
   updateStaffUser(
     @Param('id') id: string,
     @Body() body: Partial<{ role: string; status: string; name: string }>,
@@ -99,14 +120,21 @@ export class UsersController {
   }
 
   @Get()
-  @ApiOperation({ summary: 'Admin list all customer records' })
+  @UseGuards(AuthGuard, RolesGuard)
+  @Permissions('users.manage')
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Admin list all customer records (Admin only)' })
   getAllCustomers(@Query('search') search?: string) {
     return this.usersService.getAllCustomers(search);
   }
 
   @Get(':id')
-  @ApiOperation({ summary: 'Admin get single customer details' })
+  @UseGuards(AuthGuard, RolesGuard)
+  @Permissions('users.manage')
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Admin get single customer details (Admin only)' })
   getCustomerDetail(@Param('id') id: string) {
     return this.usersService.getCustomerDetail(id);
   }
 }
+

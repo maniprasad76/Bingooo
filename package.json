@@ -8,6 +8,7 @@
     "packages/*"
   ],
   "scripts": {
+    "dev": "concurrently -n \"backend,frontend,admin\" -c \"blue,green,magenta\" \"npm run dev:api\" \"npm run dev:frontend\" \"npm run dev:admin\"",
     "dev:frontend": "npm run dev -w apps/frontend",
     "dev:web": "npm run dev -w apps/frontend",
     "dev:admin": "npm run dev -w apps/admin",
@@ -26,10 +27,11 @@
     "node": ">=20.0.0"
   },
   "dependencies": {
-    "@supabase/ssr": "^0.12.5",
-    "@supabase/supabase-js": "^2.109.0"
+    "@supabase/ssr": "^0.12.6",
+    "@supabase/supabase-js": "^2.115.0"
   },
   "devDependencies": {
+    "concurrently": "^9.2.4",
     "playwright": "^1.62.1"
   }
 }

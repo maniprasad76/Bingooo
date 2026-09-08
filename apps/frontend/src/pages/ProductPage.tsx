@@ -18,14 +18,19 @@ import {
   Shirt,
   Sparkles,
   X,
-  UserCheck,
+  AlertCircle,
 } from 'lucide-react';
 import { useProduct } from '../hooks/useProducts';
 import { useCart } from '../hooks/useCart';
 import { useWishlist, useIsInWishlist } from '../hooks/useWishlist';
-import { Skeleton } from '../components/ui/Skeleton';
+import { ProductDetailSkeleton } from '../components/ui/Skeleton';
 import { useToast } from '../components/ui/Toast';
 import { api } from '../lib/api/client';
+import { SEO } from '../components/common/SEO';
+import { EmptyState } from '../components/common/EmptyState';
+import { WhatsAppIcon, getWhatsAppUrl } from '../components/ui/SocialIcons';
+import { ResponseTimePromise } from '../components/common/ResponseTimePromise';
+import { RealReviews } from '../components/catalog/RealReviews';
 
 const RELATED_PRODUCTS = [
   {
@@ -171,17 +176,54 @@ export function ProductPage() {
     navigate('/checkout');
   };
 
+  const handleShare = async () => {
+    const shareData = {
+      title: `${title} | Bingooo Men's Wear`,
+      text: `Check out ${title} at Bingooo:`,
+      url: window.location.href,
+    };
+    if (typeof navigator !== 'undefined' && navigator.share && navigator.canShare && navigator.canShare(shareData)) {
+      try {
+        await navigator.share(shareData);
+        return;
+      } catch (err) {
+        if ((err as Error)?.name === 'AbortError') return;
+      }
+    }
+    try {
+      await navigator.clipboard.writeText(window.location.href);
+      toast({
+        title: 'Product link copied!',
+        description: 'Product link copied to clipboard.',
+        variant: 'success',
+      });
+    } catch {
+      toast({
+        title: 'Share product',
+        description: window.location.href,
+      });
+    }
+  };
+
   if (isLoading) {
+    return <ProductDetailSkeleton />;
+  }
+
+  if (!product) {
     return (
-      <div className="max-w-[1360px] mx-auto px-4 sm:px-8 py-12 grid grid-cols-1 md:grid-cols-2 gap-10">
-        <Skeleton className="aspect-[4/5] rounded-2xl w-full" />
-        <div className="space-y-6">
-          <Skeleton className="h-6 w-24" />
-          <Skeleton className="h-10 w-3/4" />
-          <Skeleton className="h-8 w-32" />
-          <Skeleton className="h-20 w-full" />
-          <Skeleton className="h-12 w-full" />
-        </div>
+      <div className="w-full min-h-[70vh] flex items-center justify-center bg-[#FAF8F5] py-16 px-4">
+        <SEO title="Garment Not Found — Bingooo Men's Wear" />
+        <EmptyState
+          icon="shirt"
+          title="GARMENT NOT FOUND IN ATELIER"
+          subtitle="DISCONTINUED OR MOVED"
+          description="This specific garment is currently not available in our Srikakulam inventory. Discover our active 240 GSM drops or craft your own in the design studio."
+          actionText="EXPLORE ALL GARMENTS"
+          actionTo="/shop"
+          secondaryActionText="CUSTOM DESIGN STUDIO"
+          secondaryActionTo="/customize"
+          showSuggestions={true}
+        />
       </div>
     );
   }
@@ -191,7 +233,13 @@ export function ProductPage() {
 
   return (
     <div className="w-full bg-[#FAF8F5] text-[#171717] min-h-screen">
-      <div className="max-w-[1360px] mx-auto px-4 sm:px-8 py-6 sm:py-8">
+      <SEO
+        title={`${title} — ${categoryName}`}
+        description={product?.description ? product.description.slice(0, 160) : `Buy ${title} online at Bingooo. Premium heavyweight 240 GSM combed cotton menswear tailored for effortless streetwear expression.`}
+        ogImage={productImages[0] || '/og-image.png'}
+        ogType="product"
+      />
+      <div className="max-w-[1360px] mx-auto px-4 sm:px-8 pt-6 pb-28 md:pb-12">
         {/* ─── Breadcrumbs ─── */}
         <nav className="flex items-center gap-2 text-xs font-sans text-[#6F6A63] mb-6">
           <Link to="/" className="hover:text-[#E6321C]">Home</Link>
@@ -208,9 +256,9 @@ export function ProductPage() {
         {/* ─── Main Product Details Grid (Exact Image 1) ─── */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
           {/* Left: Product Gallery with Vertical Thumbnails (7 cols) */}
-          <div className="lg:col-span-7 flex flex-col sm:flex-row gap-4">
+          <div className="lg:col-span-7 flex flex-col sm:flex-row gap-4 max-w-full">
             {/* 4 Thumbnails on the left */}
-            <div className="flex sm:flex-col gap-3 order-2 sm:order-1 overflow-x-auto sm:overflow-visible shrink-0">
+            <div className="flex sm:flex-col gap-2.5 sm:gap-3 order-2 sm:order-1 overflow-x-auto sm:overflow-visible shrink-0 no-scrollbar w-full sm:w-auto max-w-full py-1">
               {[0, 1, 2, 3].map((idx) => {
                 const img = productImages[idx];
                 const isActive = activeImageIndex === idx;
@@ -219,14 +267,14 @@ export function ProductPage() {
                     key={idx}
                     type="button"
                     onClick={() => setActiveImageIndex(idx)}
-                    className={`relative h-20 w-18 sm:h-24 sm:w-20 rounded-xl overflow-hidden border-2 transition-all bg-[#EDE0CC] flex items-center justify-center shrink-0 ${
+                    className={`relative h-16 w-16 sm:h-24 sm:w-20 rounded-xl overflow-hidden border-2 transition-all bg-[#EDE0CC] flex items-center justify-center shrink-0 ${
                       isActive ? 'border-[#E6321C] shadow-sm' : 'border-[#DDD3C5] hover:border-[#171717]/40'
                     }`}
                   >
                     {img ? (
                       <img src={img} alt={`Thumbnail ${idx + 1}`} className="w-full h-full object-cover" />
                     ) : (
-                      <Shirt size={26} className="text-[#171717]/40" />
+                      <Shirt size={22} className="text-[#171717]/40" />
                     )}
                   </button>
                 );
@@ -259,11 +307,12 @@ export function ProductPage() {
                       {title}
                     </span>
                     <span className="mt-1 text-xs font-sans text-[#6F6A63]">
-                      Ready for Admin Photos
+                      240 GSM Heavyweight • Srikakulam Atelier
                     </span>
                   </motion.div>
                 )}
               </AnimatePresence>
+
 
               {/* Prev / Next Circular Arrows */}
               <button
@@ -297,10 +346,16 @@ export function ProductPage() {
           {/* Right: Product Purchase Panel (5 cols) */}
           <div className="lg:col-span-5 flex flex-col justify-between text-left space-y-5">
             <div>
-              {/* NEW Pill Badge */}
-              <div className="inline-block">
+              {/* Badges */}
+              <div className="flex flex-wrap items-center gap-2">
                 <span className="px-2.5 py-0.5 rounded-[4px] bg-[#E6321C] text-white text-[10px] font-sans font-bold uppercase tracking-wider">
                   NEW
+                </span>
+                <span className="px-2.5 py-0.5 rounded-[4px] bg-[#171717] text-white text-[10px] font-sans font-bold uppercase tracking-wider">
+                  ESSENTIAL
+                </span>
+                <span className="px-2.5 py-0.5 rounded-[4px] bg-[#FAF0EE] text-[#B91F12] border border-[#F5C7C1] text-[10px] font-sans font-bold uppercase tracking-wider">
+                  LIMITED ATELIER DROP
                 </span>
               </div>
 
@@ -323,6 +378,33 @@ export function ProductPage() {
                 </span>
                 <p className="text-xs text-[#6F6A63] font-sans mt-0.5">
                   Inclusive of all taxes
+                </p>
+              </div>
+
+              {/* Scarcity Effect Urgency Card */}
+              <div className="mt-4 p-3.5 rounded-xl bg-[#FAF0EE] border border-[#F5C7C1]/90 shadow-xs">
+                <div className="flex items-center justify-between text-xs mb-1.5">
+                  <div className="flex items-center gap-2">
+                    <span className="relative flex h-2.5 w-2.5">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#E6321C] opacity-75"></span>
+                      <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-[#E6321C]"></span>
+                    </span>
+                    <span className="font-heading font-extrabold text-[#B91F12] uppercase tracking-wider text-[11px]">
+                      Essential Scarcity Alert
+                    </span>
+                  </div>
+                  <span className="font-bold text-[#B91F12] text-xs">Only 3 pieces left in batch</span>
+                </div>
+                <div className="w-full bg-[#EADDD7] h-1.5 rounded-full overflow-hidden mb-2">
+                  <motion.div
+                    className="bg-[#E6321C] h-full rounded-full"
+                    initial={{ width: 0 }}
+                    animate={{ width: '92%' }}
+                    transition={{ duration: 1, ease: 'easeOut' }}
+                  />
+                </div>
+                <p className="text-[11px] font-sans text-[#6F6A63] leading-tight">
+                  <strong className="text-[#171717]">Essential Heavyweight Drop:</strong> Handcrafted in a limited 50-piece run at our atelier. 18 shoppers have this essential item in their bag right now.
                 </p>
               </div>
 
@@ -365,13 +447,13 @@ export function ProductPage() {
               <div className="mt-5 pt-4 border-t border-[#DDD3C5]/60">
                 <div className="flex items-center justify-between text-xs font-sans font-bold text-[#171717] mb-2.5">
                   <span>SIZE:</span>
-                  <button
-                    type="button"
-                    className="inline-flex items-center gap-1 text-[11px] text-[#171717] hover:text-[#E6321C] font-semibold"
+                  <Link
+                    to="/size-guide"
+                    className="inline-flex items-center gap-1 text-[11px] text-[#171717] hover:text-[#E6321C] font-semibold transition-colors"
                   >
                     <Ruler size={13} />
                     <span>Size Guide</span>
-                  </button>
+                  </Link>
                 </div>
                 <div className="grid grid-cols-5 gap-2.5">
                   {['S', 'M', 'L', 'XL', 'XXL'].map((sz) => {
@@ -403,7 +485,7 @@ export function ProductPage() {
               </div>
 
               {/* 4 Feature Trust Badges Row (Exact Image 1) */}
-              <div className="mt-6 pt-5 border-t border-[#DDD3C5]/60 grid grid-cols-4 gap-2 text-center">
+              <div className="mt-6 pt-5 border-t border-[#DDD3C5]/60 grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-2 text-center">
                 <div className="flex flex-col items-center">
                   <Shirt size={18} className="text-[#171717]/80 mb-1" />
                   <span className="font-heading font-bold text-[10px] uppercase text-[#171717]">
@@ -471,26 +553,43 @@ export function ProductPage() {
                 </motion.button>
               </div>
 
-              {/* Bottom Wishlist & Share row */}
-              <div className="mt-4 flex items-center justify-between text-xs font-sans text-[#6F6A63] pt-2">
+              {/* Atelier Response Time Promise */}
+              <div className="mt-4">
+                <ResponseTimePromise variant="compact" />
+              </div>
+
+              {/* Bottom Wishlist, Share & WhatsApp row */}
+              <div className="mt-4 flex flex-wrap items-center justify-between gap-y-2 text-xs font-sans text-[#6F6A63] pt-2 border-t border-[#DDD3C5]/40">
                 <motion.button
                   type="button"
                   whileTap={{ scale: 0.92 }}
                   onClick={() => toggleWishlist(product?.id || 'temp', inWishlist)}
-                  className="inline-flex items-center gap-1.5 hover:text-[#E6321C] transition-colors"
+                  className="inline-flex items-center gap-1.5 hover:text-[#E6321C] transition-colors focus-visible:outline-none"
                 >
                   <Heart size={14} className={inWishlist ? 'fill-[#E6321C] text-[#E6321C]' : ''} />
-                  <span>Add to Wishlist</span>
+                  <span>{inWishlist ? 'In Wishlist' : 'Add to Wishlist'}</span>
                 </motion.button>
 
                 <button
                   type="button"
-                  className="inline-flex items-center gap-1.5 hover:text-[#E6321C] transition-colors"
+                  onClick={handleShare}
+                  className="inline-flex items-center gap-1.5 hover:text-[#E6321C] transition-colors focus-visible:outline-none"
                 >
                   <Share2 size={14} />
                   <span>Share</span>
                 </button>
+
+                <a
+                  href={getWhatsAppUrl(`Hi Bingooo, I would like to inquire about "${title}" (${window.location.href}). Is size ${selectedSize} in stock?`)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 text-[#171717] hover:text-[#25D366] transition-colors focus-visible:outline-none"
+                >
+                  <WhatsAppIcon className="w-4 h-4 text-[#25D366]" />
+                  <span>Chat on WhatsApp</span>
+                </a>
               </div>
+
             </div>
           </div>
         </div>
@@ -498,7 +597,7 @@ export function ProductPage() {
         {/* ─── Product Tabs Section (Exact Image 1) ─── */}
         <div className="mt-14 pt-8 border-t border-[#DDD3C5]">
           {/* Tab Navigation */}
-          <div className="flex items-center gap-8 border-b border-[#DDD3C5] overflow-x-auto">
+          <div className="flex items-center gap-6 sm:gap-8 border-b border-[#DDD3C5] overflow-x-auto no-scrollbar max-w-full -mx-4 px-4 sm:mx-0 sm:px-0">
             {[
               { id: 'description', label: 'DESCRIPTION' },
               { id: 'details', label: 'DETAILS' },
@@ -527,62 +626,69 @@ export function ProductPage() {
 
           {/* Tab Content Box */}
           {activeTab === 'reviews' ? (
-            <div className="pt-6 text-left space-y-6">
-              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-5 rounded-xl border border-[#DDD3C5] bg-white">
-                <div>
-                  <div className="flex items-center gap-3">
-                    <span className="font-heading font-black text-3xl text-[#171717]">
-                      {reviewsData?.averageRating || '5.0'}
-                    </span>
-                    <div>
-                      <div className="flex text-amber-500 text-sm">
-                        {'★'.repeat(Math.min(5, Math.max(1, Math.round(reviewsData?.averageRating || 5))))}
-                        {'☆'.repeat(5 - Math.min(5, Math.max(1, Math.round(reviewsData?.averageRating || 5))))}
-                      </div>
-                      <span className="text-xs text-[#6F6A63] font-sans">
-                        Based on {reviewsData?.total || 0} customer verified reviews
-                      </span>
-                    </div>
-                  </div>
+            <div className="pt-6 text-left">
+              <RealReviews
+                productTitle={title}
+                title={`Verified Reviews for ${title}`}
+                subtitle="REAL FIT & FABRIC FEEDBACK FROM VERIFIED BUYERS"
+              />
+            </div>
+          ) : activeTab === 'details' ? (
+            <div className="pt-6 text-left space-y-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div className="p-4 rounded-xl border border-[#DDD3C5] bg-white">
+                  <span className="text-[10px] font-mono uppercase text-[#6F6A63] tracking-wider block">Fabric Density</span>
+                  <span className="font-heading font-bold text-sm text-[#171717] mt-0.5 block">240–280 GSM French Terry / Combed Cotton</span>
                 </div>
-                <button
-                  type="button"
-                  onClick={() => setIsReviewModalOpen(true)}
-                  className="px-4 py-2 rounded-lg bg-[#E6321C] text-white text-xs font-bold uppercase tracking-wider hover:bg-[#B91F12] transition-colors"
-                >
-                  Write a Review
-                </button>
+                <div className="p-4 rounded-xl border border-[#DDD3C5] bg-white">
+                  <span className="text-[10px] font-mono uppercase text-[#6F6A63] tracking-wider block">Collar & Ribbing</span>
+                  <span className="font-heading font-bold text-sm text-[#171717] mt-0.5 block">1.25" Heavy-Duty Lycra Ribbed Neckline</span>
+                </div>
+                <div className="p-4 rounded-xl border border-[#DDD3C5] bg-white">
+                  <span className="text-[10px] font-mono uppercase text-[#6F6A63] tracking-wider block">Pre-Shrunk Treatment</span>
+                  <span className="font-heading font-bold text-sm text-[#171717] mt-0.5 block">Bio-Enzyme Washed & Silicon Softened</span>
+                </div>
+                <div className="p-4 rounded-xl border border-[#DDD3C5] bg-white">
+                  <span className="text-[10px] font-mono uppercase text-[#6F6A63] tracking-wider block">Stitching</span>
+                  <span className="font-heading font-bold text-sm text-[#171717] mt-0.5 block">Double-Needle Reinforced Hem & Shoulder</span>
+                </div>
+                <div className="p-4 rounded-xl border border-[#DDD3C5] bg-white">
+                  <span className="text-[10px] font-mono uppercase text-[#6F6A63] tracking-wider block">Cut & Silhouette</span>
+                  <span className="font-heading font-bold text-sm text-[#171717] mt-0.5 block">Dropped Shoulder Boxy Streetwear Silhouette</span>
+                </div>
+                <div className="p-4 rounded-xl border border-[#DDD3C5] bg-white">
+                  <span className="text-[10px] font-mono uppercase text-[#6F6A63] tracking-wider block">Atelier Origin</span>
+                  <span className="font-heading font-bold text-sm text-[#171717] mt-0.5 block">Made in Srikakulam, Andhra Pradesh, India</span>
+                </div>
               </div>
-
-              {!reviewsData?.reviews || reviewsData.reviews.length === 0 ? (
-                <p className="py-8 text-center text-xs text-[#6F6A63]">No reviews yet. Be the first to share your experience with this garment!</p>
-              ) : (
-                <div className="divide-y divide-[#DDD3C5]/60">
-                  {reviewsData.reviews.map((rev: any) => (
-                    <div key={rev.id} className="py-4 space-y-1.5">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                          <span className="font-sans font-bold text-xs text-[#171717]">{rev.customerName}</span>
-                          {rev.verifiedBuyer && (
-                            <span className="inline-flex items-center gap-1 text-[10px] text-green-700 bg-green-50 px-1.5 py-0.5 rounded font-semibold">
-                              <UserCheck size={11} /> Verified Buyer
-                            </span>
-                          )}
-                        </div>
-                        <div className="flex text-amber-500 text-xs">
-                          {'★'.repeat(rev.rating)}{'☆'.repeat(5 - rev.rating)}
-                        </div>
-                      </div>
-                      {rev.title && <h4 className="text-xs font-bold text-[#171717]">{rev.title}</h4>}
-                      <p className="text-xs text-[#6F6A63] font-sans leading-relaxed">{rev.body}</p>
-                      {rev.imageUrl && (
-                        <img src={rev.imageUrl} alt="Review attachment" className="h-20 w-20 rounded-lg object-cover border border-[#DDD3C5]" />
-                      )}
-                      <span className="text-[10px] text-[#6F6A63] block font-mono">Posted on {new Date(rev.created_at).toLocaleDateString()}</span>
-                    </div>
-                  ))}
-                </div>
-              )}
+            </div>
+          ) : activeTab === 'wash_care' ? (
+            <div className="pt-6 text-left space-y-4">
+              <div className="rounded-2xl border border-[#DDD3C5] bg-white p-6 space-y-3">
+                <h4 className="font-heading font-bold text-sm uppercase tracking-wider text-[#171717]">
+                  Garment Wash & Longevity Guidelines
+                </h4>
+                <ul className="space-y-2 text-xs text-[#6F6A63] font-sans leading-relaxed">
+                  <li>• <strong>Machine Wash Cold:</strong> Turn garment inside-out before washing in cold water (max 30°C) on a gentle cycle.</li>
+                  <li>• <strong>No Direct Ironing:</strong> Never place a hot iron directly onto the DTF pigment or puff print. Iron inside-out at low temperatures.</li>
+                  <li>• <strong>Line Dry in Shade:</strong> Avoid direct scorching sun exposure or tumble dryers to preserve the fabric softness and print elasticity.</li>
+                  <li>• <strong>Mild Detergent:</strong> Avoid harsh bleaching agents or fabric softeners containing chlorine.</li>
+                </ul>
+              </div>
+            </div>
+          ) : activeTab === 'shipping' ? (
+            <div className="pt-6 text-left space-y-4">
+              <div className="rounded-2xl border border-[#DDD3C5] bg-white p-6 space-y-3">
+                <h4 className="font-heading font-bold text-sm uppercase tracking-wider text-[#171717]">
+                  Dispatch, Delivery & Doorstep Exchanges
+                </h4>
+                <ul className="space-y-2 text-xs text-[#6F6A63] font-sans leading-relaxed">
+                  <li>• <strong>Atelier Dispatch:</strong> Standard catalog garments dispatch within 24–48 hours directly from our Srikakulam facility.</li>
+                  <li>• <strong>Express Transit:</strong> Delivery takes 3–5 business days across metros and tier-1/2 Indian cities via Bluedart and Delhivery.</li>
+                  <li>• <strong>Free Shipping:</strong> All orders above ₹999 qualify for 100% free delivery across India.</li>
+                  <li>• <strong>7-Day Doorstep Exchange:</strong> If the size isn't right, initiate an exchange from your account for a hassle-free doorstep pickup.</li>
+                </ul>
+              </div>
             </div>
           ) : (
             <div className="pt-6 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
@@ -604,15 +710,22 @@ export function ProductPage() {
 
               {/* Right Column: Garment Detail Frame */}
               <div className="lg:col-span-5 flex justify-center lg:justify-end">
-                <div className="w-full aspect-[16/9] rounded-xl overflow-hidden bg-[#171717] border border-[#DDD3C5] shadow-xs flex items-center justify-center p-6 text-center">
-                  <span className="font-heading font-bold text-xl uppercase tracking-wider text-white/90">
-                    PRINT DETAIL CLOSEUP
+                <div className="w-full aspect-[16/9] rounded-xl overflow-hidden bg-[#171717] border border-[#DDD3C5] shadow-xs flex flex-col items-center justify-center p-6 text-center select-none">
+                  <span className="text-[10px] font-mono text-[#E6321C] uppercase tracking-[0.2em]">
+                    BINGOOO ATELIER SPEC
+                  </span>
+                  <span className="font-heading font-bold text-xl uppercase tracking-wider text-white/95 mt-1">
+                    240 GSM HEAVYWEIGHT
+                  </span>
+                  <span className="text-xs text-white/60 font-sans mt-1">
+                    Bio-Washed • Silicon Softened • Zero Pilling
                   </span>
                 </div>
               </div>
             </div>
           )}
         </div>
+
 
         {/* ─── Review Modal ─── */}
         {isReviewModalOpen && (
@@ -671,6 +784,13 @@ export function ProductPage() {
                     className="w-full px-3 py-2 rounded-xl border border-[#DDD3C5] text-xs font-sans"
                   />
                 </div>
+                {submitReviewMutation.isError && (
+                  <div className="p-2.5 rounded-xl bg-[#FDF0EE] text-[#B91F12] border border-[#E6321C]/30 text-xs font-sans flex items-center gap-2">
+                    <AlertCircle size={15} className="shrink-0 text-[#E6321C]" />
+                    <span>{(submitReviewMutation.error as any)?.message || 'Failed to submit review. Please ensure you are logged in.'}</span>
+                  </div>
+                )}
+
                 <div className="pt-2 flex justify-end gap-2">
                   <button type="button" onClick={() => setIsReviewModalOpen(false)} className="px-4 py-2 rounded-xl border border-[#DDD3C5] text-xs font-bold">Cancel</button>
                   <button type="submit" disabled={submitReviewMutation.isPending} className="px-4 py-2 rounded-xl bg-[#E6321C] text-white text-xs font-bold uppercase">
@@ -767,7 +887,7 @@ export function ProductPage() {
       </div>
 
       {/* ─── Mobile Sticky Purchase Bar (floats directly above MobileNav) ─── */}
-      <div className="fixed bottom-14 left-0 right-0 z-30 md:hidden bg-white/95 backdrop-blur-md border-t border-[#DDD3C5] px-3.5 py-2.5 shadow-lg flex items-center justify-between gap-3">
+      <div className="fixed bottom-15 left-0 right-0 z-30 md:hidden bg-[#FAF8F5]/95 backdrop-blur-md border-t border-[#DDD3C5] px-4 py-2.5 shadow-lg flex items-center justify-between gap-3">
         <div className="flex items-center gap-2.5 min-w-0">
           <div className="h-10 w-9 rounded-lg bg-[#EDE0CC] overflow-hidden shrink-0 border border-[#DDD3C5] flex items-center justify-center">
             {productImages[0] ? (

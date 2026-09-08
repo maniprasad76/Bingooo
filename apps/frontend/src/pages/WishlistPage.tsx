@@ -16,6 +16,8 @@ import {
 import { useWishlist } from '../hooks/useWishlist';
 import { useCart } from '../hooks/useCart';
 import { useToast } from '../components/ui/Toast';
+import { SEO } from '../components/common/SEO';
+import { EmptyState } from '../components/common/EmptyState';
 
 const RELATED_PRODUCTS = [
   {
@@ -125,6 +127,10 @@ export function WishlistPage() {
 
   return (
     <div className="w-full bg-[#FAF8F5] text-[#171717] min-h-screen">
+      <SEO
+        title="My Wishlist"
+        description="View and manage your saved heavyweight streetwear styles, move items to cart, and track favorite menswear drops at Bingooo."
+      />
       <div className="max-w-[1360px] mx-auto px-4 sm:px-8 py-6 sm:py-8 space-y-10">
         {/* ─── Breadcrumbs ─── */}
         <nav className="flex items-center gap-2 text-xs font-sans text-[#6F6A63]">
@@ -157,25 +163,18 @@ export function WishlistPage() {
 
         {/* ─── 4 Wishlist Cards Grid / Empty State ─── */}
         {items.length === 0 ? (
-          <div className="py-20 text-center rounded-2xl border border-dashed border-[#DDD3C5] bg-[#FDF9F4] p-8 max-w-xl mx-auto shadow-sm">
-            <div className="h-16 w-16 mx-auto mb-4 rounded-2xl bg-[#EDE0CC] flex items-center justify-center text-[#171717]">
-              <Heart size={28} className="text-[#E6321C]" />
-            </div>
-            <h2 className="font-heading font-extrabold text-2xl uppercase tracking-tight text-[#171717]">
-              Your wishlist is empty
-            </h2>
-            <p className="mt-2 text-sm text-[#6F6A63] max-w-sm mx-auto">
-              Save pieces you love by tapping the heart icon while exploring our catalog.
-            </p>
-            <div className="mt-6">
-              <Link
-                to="/shop"
-                className="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-[#E6321C] text-white font-sans font-bold text-xs uppercase tracking-wider hover:bg-[#B91F12] transition-colors shadow-sm"
-              >
-                <ShoppingBag size={14} />
-                <span>Explore Catalog</span>
-              </Link>
-            </div>
+          <div className="py-8 bg-white rounded-2xl border border-[#DDD3C5] shadow-xs">
+            <EmptyState
+              icon="heart"
+              title="YOUR WISHLIST IS WAITING"
+              subtitle="ZERO SAVED GARMENTS"
+              description="Save pieces you love by tapping the heart icon while exploring our catalog so you can track seasonal drops and exclusive restocks."
+              actionText="EXPLORE DROPS"
+              actionTo="/shop"
+              secondaryActionText="CUSTOM DESIGN STUDIO"
+              secondaryActionTo="/customize"
+              showSuggestions={false}
+            />
           </div>
         ) : (
           <motion.div layout className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-6">

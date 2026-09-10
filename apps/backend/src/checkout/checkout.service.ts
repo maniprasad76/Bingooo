@@ -84,10 +84,30 @@ export class CheckoutService {
     let codDeposit = 0;
     let codRemaining = 0;
     if (dto.paymentMethod === 'partial_cod') {
-      const depositPct = db.settings.cod_deposit_percentage || 30;
-      codDeposit = Math.round((total * depositPct) / 100);
-      codRemaining = total - codDeposit;
+      if (db.settings.partial_cod_enabled === false) {
+        throw new BadRequestException({
+          code: 'PARTIAL_COD_DISABLED',
+          message: 'Partial Cash on Delivery is currently disabled by store policy',
+        });
+      }
+      // Advance security deposit (default ₹79)
+      codDeposit = Number(db.settings.partial_cod_advance_amount) || 79;
+      codDeposit = Math.min(codDeposit, total);
+      codRemaining = Math.max(0, total - codDeposit);
     } else if (dto.paymentMethod === 'cod') {
+      if (db.settings.cod_enabled === false) {
+        throw new BadRequestException({
+          code: 'COD_DISABLED',
+          message: 'Cash on Delivery is currently disabled by store policy',
+        });
+      }
+      const maxCod = Number(db.settings.max_cod_limit) || 5000;
+      if (total > maxCod) {
+        throw new BadRequestException({
+          code: 'COD_LIMIT_EXCEEDED',
+          message: `Cash on Delivery is capped at ₹${maxCod}. Please choose Partial COD (₹79 advance) or Prepaid.`,
+        });
+      }
       codDeposit = 0;
       codRemaining = total;
     }

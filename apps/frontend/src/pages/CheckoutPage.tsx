@@ -4,7 +4,20 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { ShieldCheck, CreditCard, Banknote, Lock, MapPin, Sparkles, ChevronDown, ChevronUp, ShoppingBag } from 'lucide-react';
+import { 
+  ShieldCheck, 
+  CreditCard, 
+  Banknote, 
+  Lock, 
+  MapPin, 
+  Sparkles, 
+  ChevronDown, 
+  ChevronUp, 
+  ShoppingBag,
+  CheckCircle2,
+  AlertCircle,
+  Zap
+} from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { useCart } from '../hooks/useCart';
 import { Button } from '../components/ui/Button';
@@ -14,6 +27,7 @@ import { api } from '../lib/api/client';
 import { useToast } from '../components/ui/Toast';
 import { useAuthStore } from '../store/auth';
 import { SEO } from '../components/common/SEO';
+import { PhonePeIcon, GooglePayIcon, PaytmIcon, UpiIcon } from '../components/checkout/PaymentAppIcons';
 
 const addressSchema = z.object({
   name: z.string().min(2, 'Name is required'),
@@ -27,6 +41,8 @@ const addressSchema = z.object({
 });
 
 type AddressFormData = z.infer<typeof addressSchema>;
+type PaymentMethodType = 'upi' | 'partial_cod' | 'cod' | 'cards';
+type UpiAppType = 'phonepe' | 'gpay' | 'paytm' | 'any';
 
 function loadRazorpayScript(): Promise<boolean> {
   return new Promise((resolve) => {
@@ -49,11 +65,30 @@ export function CheckoutPage() {
   const location = useLocation();
   const { toast } = useToast();
 
-  const [paymentMethod, setPaymentMethod] = useState<'prepaid' | 'cod' | 'partial_cod'>('prepaid');
+  const [paymentMethod, setPaymentMethod] = useState<PaymentMethodType>('upi');
+  const [selectedUpiApp, setSelectedUpiApp] = useState<UpiAppType>('phonepe');
   const [isProcessing, setIsProcessing] = useState(false);
   const [selectedAddressId, setSelectedAddressId] = useState<string>('custom');
   const [isMobileSummaryOpen, setIsMobileSummaryOpen] = useState(false);
   const couponCode = (location.state as any)?.couponCode;
+
+  // Load live payment & COD configuration from backend
+  const { data: paymentConfig } = useQuery({
+    queryKey: ['payment-config'],
+    queryFn: () =>
+      api.get<{
+        cod_enabled: boolean;
+        partial_cod_enabled: boolean;
+        partial_cod_advance_amount: number;
+        max_cod_limit: number;
+      }>('/payments/config'),
+    staleTime: 30000,
+  });
+
+  const isCodEnabled = paymentConfig?.cod_enabled !== false;
+  const isPartialCodEnabled = paymentConfig?.partial_cod_enabled !== false;
+  const partialCodAdvance = Number(paymentConfig?.partial_cod_advance_amount) || 79;
+  const maxCodLimit = Number(paymentConfig?.max_cod_limit) || 5000;
 
   // Load saved customer addresses
   const { data: addresses = [] } = useQuery({
@@ -95,6 +130,16 @@ export function CheckoutPage() {
     }
   }, [addresses, setValue]);
 
+  // Adjust selection if COD option is turned off by admin
+  useEffect(() => {
+    if (paymentMethod === 'cod' && !isCodEnabled) {
+      setPaymentMethod(isPartialCodEnabled ? 'partial_cod' : 'upi');
+    }
+    if (paymentMethod === 'partial_cod' && !isPartialCodEnabled) {
+      setPaymentMethod('upi');
+    }
+  }, [isCodEnabled, isPartialCodEnabled, paymentMethod]);
+
   // Load Razorpay script on mount
   useEffect(() => {
     loadRazorpayScript();
@@ -117,8 +162,8 @@ export function CheckoutPage() {
   const total = subtotal + shippingFee + tax;
 
   const hasCustomItems = cart?.items?.some((i: any) => Boolean(i.customization || i.customizationId));
-  const partialCodDeposit = hasCustomItems ? Math.round(total * 0.3) : 0;
-  const partialCodRemaining = total - partialCodDeposit;
+  const effectivePartialAdvance = Math.min(partialCodAdvance, total);
+  const partialCodRemaining = Math.max(0, total - effectivePartialAdvance);
 
   const onSubmit = async (addressData: AddressFormData) => {
     if (!cart?.id || !cart.items || cart.items.length === 0) {
@@ -126,22 +171,47 @@ export function CheckoutPage() {
       return;
     }
 
+    if (paymentMethod === 'cod' && !isCodEnabled) {
+      toast({
+        title: 'Cash on Delivery Unavailable',
+        description: 'COD is currently disabled by store. Please use Partial COD (₹79) or UPI.',
+        variant: 'danger',
+      });
+      return;
+    }
+
+    if (paymentMethod === 'cod' && total > maxCodLimit) {
+      toast({
+        title: 'COD Limit Exceeded',
+        description: `Cash on Delivery is limited to orders up to ₹${maxCodLimit}. Please use UPI or Partial COD.`,
+        variant: 'danger',
+      });
+      return;
+    }
+
     setIsProcessing(true);
 
     try {
-      const effectivePaymentMethod =
-        hasCustomItems && paymentMethod === 'cod' ? 'partial_cod' : paymentMethod;
+      // Map frontend selection to backend paymentMethod: 'prepaid' | 'partial_cod' | 'cod'
+      let backendPaymentMethod: 'prepaid' | 'partial_cod' | 'cod' = 'prepaid';
+      if (paymentMethod === 'partial_cod') {
+        backendPaymentMethod = 'partial_cod';
+      } else if (paymentMethod === 'cod') {
+        backendPaymentMethod = 'cod';
+      } else {
+        backendPaymentMethod = 'prepaid';
+      }
 
       // 1. Create order on backend
       const order = await api.post<any>('/orders', {
         cartId: cart.id,
         couponCode: couponCode || undefined,
-        paymentMethod: effectivePaymentMethod,
+        paymentMethod: backendPaymentMethod,
         shippingAddress: addressData,
       });
 
-      // 2. Handle Payment Flow
-      if (effectivePaymentMethod === 'prepaid' || effectivePaymentMethod === 'partial_cod') {
+      // 2. Handle Payment Flow (Prepaid UPI / Cards OR Partial COD advance)
+      if (backendPaymentMethod === 'prepaid' || backendPaymentMethod === 'partial_cod') {
         const rzpOrder = await api.post<any>('/payments/razorpay/order', {
           orderId: order.id,
         });
@@ -158,18 +228,30 @@ export function CheckoutPage() {
           rzpOrder.keyId || import.meta.env.VITE_RAZORPAY_KEY_ID || 'rzp_test_TYDFxO8bZagWG6';
         const razorpayOrderId = rzpOrder.order_id || rzpOrder.razorpayOrderId;
 
-        // Launch Razorpay Standard Modal
-        const rzp = new (window as any).Razorpay({
+        const isPartialPayment = backendPaymentMethod === 'partial_cod';
+        const orderDescription = isPartialPayment
+          ? `Partial COD Token (₹${effectivePartialAdvance}) • Order #${order.order_number}`
+          : `Order #${order.order_number}`;
+
+        // Configure direct UPI instrument routing
+        const upiAppMapping: Record<string, string> = {
+          phonepe: 'phonepe',
+          gpay: 'google_pay',
+          paytm: 'paytm',
+        };
+
+        const rzpConfig: any = {
           key: razorpayKey,
-          amount: rzpOrder.amount,
+          amount: rzpOrder.amount, // backend sets 7900 for partial_cod or total in paise
           currency: rzpOrder.currency || 'INR',
           name: 'Bingooo Luxury Streetwear',
-          description: `Order #${order.order_number}`,
+          description: orderDescription,
           order_id: razorpayOrderId,
           prefill: {
             name: addressData.name,
             contact: addressData.phone,
             email: user?.email || 'customer@bingooo.in',
+            method: paymentMethod === 'upi' || isPartialPayment ? 'upi' : undefined,
           },
           theme: { color: '#E6321C' },
           handler: async (response: any) => {
@@ -186,7 +268,7 @@ export function CheckoutPage() {
               });
               clearCart();
               toast({
-                title: 'Payment Confirmed!',
+                title: isPartialPayment ? 'Advance Paid & COD Confirmed!' : 'Payment Confirmed!',
                 description: `Order #${order.order_number} successfully placed.`,
                 variant: 'success',
               });
@@ -205,20 +287,54 @@ export function CheckoutPage() {
             ondismiss: () => {
               toast({
                 title: 'Payment Cancelled',
-                description: 'You closed the payment window. Your order remains pending.',
+                description: 'Payment session closed. You can retry anytime.',
                 variant: 'default',
               });
               setIsProcessing(false);
             },
           },
-        });
+        };
 
-        // Handle payment failure event
+        // If specific UPI app selected, optimize Razorpay display
+        if (paymentMethod === 'upi' && selectedUpiApp !== 'any') {
+          const targetApp = upiAppMapping[selectedUpiApp];
+          if (targetApp) {
+            rzpConfig.config = {
+              display: {
+                blocks: {
+                  preferred_upi: {
+                    name: `Pay with ${
+                      selectedUpiApp === 'phonepe'
+                        ? 'PhonePe'
+                        : selectedUpiApp === 'gpay'
+                        ? 'Google Pay'
+                        : 'Paytm'
+                    }`,
+                    instruments: [
+                      {
+                        method: 'upi',
+                        flows: ['intent', 'qr', 'collect'],
+                        apps: [targetApp],
+                      },
+                    ],
+                  },
+                },
+                sequence: ['block.preferred_upi'],
+                preferences: {
+                  show_default_blocks: true,
+                },
+              },
+            };
+          }
+        }
+
+        const rzp = new (window as any).Razorpay(rzpConfig);
+
         rzp.on('payment.failed', (failResponse: any) => {
           const desc =
             failResponse?.error?.description ||
             failResponse?.error?.reason ||
-            'Payment could not be processed. Please try another method.';
+            'Payment could not be completed. Please try again.';
           toast({
             title: 'Payment Failed',
             description: desc,
@@ -231,12 +347,20 @@ export function CheckoutPage() {
         return;
       }
 
-      // 3. Clear cart state & navigate
+      // 3. Full COD (No online payment required)
       clearCart();
-      toast({ title: 'Order Placed!', description: `Order ${order.order_number} confirmed`, variant: 'success' });
+      toast({
+        title: 'COD Order Confirmed!',
+        description: `Order #${order.order_number} will be delivered with Cash on Delivery.`,
+        variant: 'success',
+      });
       navigate('/payment/success', { state: { order } });
     } catch (err: any) {
-      toast({ title: 'Order failed', description: err.message || 'Unable to place order', variant: 'danger' });
+      toast({
+        title: 'Order failed',
+        description: err.message || 'Unable to place order. Please try again.',
+        variant: 'danger',
+      });
     } finally {
       setIsProcessing(false);
     }
@@ -260,7 +384,7 @@ export function CheckoutPage() {
     <div className="min-h-screen bg-paper/30 py-8 lg:py-12">
       <SEO
         title="Secure Checkout"
-        description="Complete your Bingooo purchase securely with 256-bit encryption. UPI, Cards, Netbanking, and COD supported."
+        description="Complete your Bingooo purchase securely with 256-bit encryption. PhonePe, Google Pay, Paytm, Cards, and COD supported."
       />
       <h1 className="sr-only">Secure Checkout</h1>
       <div className="container-page">
@@ -304,7 +428,11 @@ export function CheckoutPage() {
                       <div key={item.id} className="pt-2.5 first:pt-0 flex gap-3 text-left">
                         <div className="h-12 w-12 rounded-lg bg-paper border border-border flex items-center justify-center shrink-0 overflow-hidden">
                           {item.customization?.previewKey ? (
-                            <img src={item.customization.previewKey} alt="Custom artwork" className="h-full w-full object-cover" />
+                            <img
+                              src={item.customization.previewKey}
+                              alt="Custom artwork"
+                              className="h-full w-full object-cover"
+                            />
                           ) : (
                             <span className="font-heading font-black text-[10px] text-muted">BGO</span>
                           )}
@@ -314,7 +442,9 @@ export function CheckoutPage() {
                           <span className="text-[10px] text-muted block">
                             Size: {item.variant?.size} • Qty: {item.quantity}
                           </span>
-                          <div className="text-xs font-bold text-ink mt-0.5">₹{item.total_price || item.unit_price * item.quantity}</div>
+                          <div className="text-xs font-bold text-ink mt-0.5">
+                            ₹{item.total_price || item.unit_price * item.quantity}
+                          </div>
                         </div>
                       </div>
                     ))}
@@ -327,12 +457,20 @@ export function CheckoutPage() {
                     </div>
                     <div className="flex justify-between text-muted">
                       <span>Shipping Fee</span>
-                      <span className="font-medium text-ink">{shippingFee === 0 ? 'FREE' : `₹${shippingFee}`}</span>
+                      <span className="font-medium text-ink">
+                        {shippingFee === 0 ? 'FREE' : `₹${shippingFee}`}
+                      </span>
                     </div>
                     <div className="flex justify-between text-muted">
                       <span>GST / Taxes (5%)</span>
                       <span className="font-medium text-ink">₹{tax}</span>
                     </div>
+                    {paymentMethod === 'partial_cod' && (
+                      <div className="border-t border-dashed border-border pt-1.5 text-xs text-accent font-bold flex justify-between">
+                        <span>Pay Advance Now</span>
+                        <span>₹{effectivePartialAdvance}</span>
+                      </div>
+                    )}
                     <div className="border-t border-border pt-2 flex justify-between font-black text-ink">
                       <span>Total Payable</span>
                       <span className="text-accent">₹{total}</span>
@@ -366,7 +504,9 @@ export function CheckoutPage() {
                     >
                       <div className="font-bold text-ink">{addr.name}</div>
                       <div className="truncate">{addr.line1}</div>
-                      <div>{addr.city}, {addr.postal_code}</div>
+                      <div>
+                        {addr.city}, {addr.postal_code}
+                      </div>
                     </div>
                   ))}
                   <div
@@ -427,75 +567,284 @@ export function CheckoutPage() {
               </div>
             </div>
 
-            {/* Payment Method */}
-            <div className="rounded-xl border border-border bg-white p-6 shadow-sm">
-              <h2 className="text-heading font-bold text-ink mb-4">2. Payment Method</h2>
+            {/* Payment Method Selector */}
+            <div className="rounded-xl border border-border bg-white p-6 shadow-sm space-y-6">
+              <div className="flex items-center justify-between">
+                <h2 className="text-heading font-bold text-ink">2. Choose Payment Method</h2>
+                <div className="flex items-center gap-1.5 text-xs text-success font-semibold">
+                  <ShieldCheck size={15} />
+                  <span>100% Safe & Secure</span>
+                </div>
+              </div>
 
               {hasCustomItems && (
-                <div className="mb-4 rounded-lg bg-accent/10 border border-accent/20 p-3.5 flex items-start gap-3 text-left">
+                <div className="rounded-lg bg-accent/10 border border-accent/20 p-3.5 flex items-start gap-3 text-left">
                   <Sparkles size={18} className="text-accent shrink-0 mt-0.5" />
                   <div className="text-xs">
                     <p className="font-bold text-ink">Bespoke Custom Print Item in Cart</p>
                     <p className="text-muted mt-0.5">
-                      Because custom designs are printed exclusively for you, Cash on Delivery requires a{' '}
-                      <strong>30% advance deposit (₹{partialCodDeposit})</strong> with balance ₹{partialCodRemaining} due at delivery.
+                      Because custom garments are printed exclusively for you, Cash on Delivery requires a small token
+                      advance to confirm dispatch.
                     </p>
                   </div>
                 </div>
               )}
 
-              <div className="space-y-3">
-                <motion.label
-                  whileHover={{ scale: 1.008 }}
-                  whileTap={{ scale: 0.99 }}
-                  className={`flex cursor-pointer items-center justify-between rounded-xl border p-4 transition-all ${
-                    paymentMethod === 'prepaid' ? 'border-accent bg-accent/5 ring-1 ring-accent' : 'border-border hover:border-ink/30'
-                  }`}
+              {/* OPTION 1: UPI APPS (PhonePe, Google Pay, Paytm, UPI) */}
+              <div
+                className={`rounded-xl border transition-all ${
+                  paymentMethod === 'upi'
+                    ? 'border-accent bg-accent/5 ring-2 ring-accent/20 shadow-xs'
+                    : 'border-border bg-white hover:border-ink/20'
+                } p-4`}
+              >
+                <div
+                  className="flex items-start justify-between cursor-pointer"
+                  onClick={() => setPaymentMethod('upi')}
                 >
-                  <div className="flex items-center gap-3">
+                  <div className="flex items-start gap-3">
                     <input
                       type="radio"
                       name="paymentMethod"
-                      value="prepaid"
-                      checked={paymentMethod === 'prepaid'}
-                      onChange={() => setPaymentMethod('prepaid')}
-                      className="accent-accent"
+                      value="upi"
+                      checked={paymentMethod === 'upi'}
+                      onChange={() => setPaymentMethod('upi')}
+                      className="accent-accent mt-1"
                     />
                     <div>
-                      <span className="text-body font-bold text-ink block">Prepaid (Razorpay / UPI / Cards / NetBanking)</span>
-                      <span className="text-caption text-muted">Zero contact, priority processing, free courier insurance</span>
+                      <div className="flex items-center gap-2">
+                        <span className="text-body font-bold text-ink">Instant UPI Payment</span>
+                        <span className="rounded-full bg-accent px-2 py-0.5 text-[10px] font-black uppercase text-white tracking-wider">
+                          Recommended
+                        </span>
+                      </div>
+                      <p className="text-xs text-muted mt-0.5">
+                        Direct payment via your favorite UPI app. Instant refund & zero convenience fee.
+                      </p>
                     </div>
                   </div>
-                  <CreditCard size={20} className="text-accent" />
-                </motion.label>
+                  <Zap size={20} className="text-accent shrink-0" />
+                </div>
 
-                <motion.label
-                  whileHover={{ scale: 1.008 }}
-                  whileTap={{ scale: 0.99 }}
-                  className={`flex cursor-pointer items-center justify-between rounded-xl border p-4 transition-all ${
-                    paymentMethod === 'cod' ? 'border-accent bg-accent/5 ring-1 ring-accent' : 'border-border hover:border-ink/30'
-                  }`}
-                >
-                  <div className="flex items-center gap-3">
+                {/* Branded UPI Apps Grid */}
+                <div className="mt-4 pt-3 border-t border-border/60">
+                  <span className="text-[11px] font-bold text-ink/70 uppercase tracking-wider block mb-2.5">
+                    Select Your Payment App:
+                  </span>
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+                    {/* PhonePe */}
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setPaymentMethod('upi');
+                        setSelectedUpiApp('phonepe');
+                      }}
+                      className={`relative flex flex-col items-center justify-center p-3 rounded-lg border transition-all text-center ${
+                        paymentMethod === 'upi' && selectedUpiApp === 'phonepe'
+                          ? 'border-[#5F259F] bg-[#5F259F]/5 ring-2 ring-[#5F259F]/30 shadow-xs'
+                          : 'border-border bg-paper/50 hover:border-[#5F259F]/40'
+                      }`}
+                    >
+                      {paymentMethod === 'upi' && selectedUpiApp === 'phonepe' && (
+                        <CheckCircle2 size={14} className="absolute top-1.5 right-1.5 text-[#5F259F]" />
+                      )}
+                      <PhonePeIcon className="w-8 h-8" />
+                      <span className="text-xs font-bold text-ink mt-1.5">PhonePe</span>
+                      <span className="text-[9px] text-muted font-medium">Direct App</span>
+                    </button>
+
+                    {/* Google Pay */}
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setPaymentMethod('upi');
+                        setSelectedUpiApp('gpay');
+                      }}
+                      className={`relative flex flex-col items-center justify-center p-3 rounded-lg border transition-all text-center ${
+                        paymentMethod === 'upi' && selectedUpiApp === 'gpay'
+                          ? 'border-[#4285F4] bg-[#4285F4]/5 ring-2 ring-[#4285F4]/30 shadow-xs'
+                          : 'border-border bg-paper/50 hover:border-[#4285F4]/40'
+                      }`}
+                    >
+                      {paymentMethod === 'upi' && selectedUpiApp === 'gpay' && (
+                        <CheckCircle2 size={14} className="absolute top-1.5 right-1.5 text-[#4285F4]" />
+                      )}
+                      <GooglePayIcon className="w-8 h-8" />
+                      <span className="text-xs font-bold text-ink mt-1.5">Google Pay</span>
+                      <span className="text-[9px] text-muted font-medium">GPay UPI</span>
+                    </button>
+
+                    {/* Paytm */}
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setPaymentMethod('upi');
+                        setSelectedUpiApp('paytm');
+                      }}
+                      className={`relative flex flex-col items-center justify-center p-3 rounded-lg border transition-all text-center ${
+                        paymentMethod === 'upi' && selectedUpiApp === 'paytm'
+                          ? 'border-[#00BAF2] bg-[#00BAF2]/5 ring-2 ring-[#00BAF2]/30 shadow-xs'
+                          : 'border-border bg-paper/50 hover:border-[#00BAF2]/40'
+                      }`}
+                    >
+                      {paymentMethod === 'upi' && selectedUpiApp === 'paytm' && (
+                        <CheckCircle2 size={14} className="absolute top-1.5 right-1.5 text-[#002970]" />
+                      )}
+                      <PaytmIcon className="w-8 h-8" />
+                      <span className="text-xs font-bold text-ink mt-1.5">Paytm</span>
+                      <span className="text-[9px] text-muted font-medium">UPI / Wallet</span>
+                    </button>
+
+                    {/* Any UPI / QR */}
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setPaymentMethod('upi');
+                        setSelectedUpiApp('any');
+                      }}
+                      className={`relative flex flex-col items-center justify-center p-3 rounded-lg border transition-all text-center ${
+                        paymentMethod === 'upi' && selectedUpiApp === 'any'
+                          ? 'border-ink bg-ink/5 ring-2 ring-ink/20 shadow-xs'
+                          : 'border-border bg-paper/50 hover:border-ink/40'
+                      }`}
+                    >
+                      {paymentMethod === 'upi' && selectedUpiApp === 'any' && (
+                        <CheckCircle2 size={14} className="absolute top-1.5 right-1.5 text-ink" />
+                      )}
+                      <UpiIcon className="w-8 h-8" />
+                      <span className="text-xs font-bold text-ink mt-1.5">Any UPI</span>
+                      <span className="text-[9px] text-muted font-medium">Scan QR / ID</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              {/* OPTION 2: PARTIAL COD (Pay ₹79 Advance + Balance on Delivery) */}
+              <div
+                className={`rounded-xl border transition-all ${
+                  !isPartialCodEnabled
+                    ? 'opacity-50 border-border bg-paper/40 cursor-not-allowed'
+                    : paymentMethod === 'partial_cod'
+                    ? 'border-accent bg-accent/5 ring-2 ring-accent/20 shadow-xs'
+                    : 'border-border bg-white hover:border-ink/20 cursor-pointer'
+                } p-4`}
+                onClick={() => {
+                  if (isPartialCodEnabled) setPaymentMethod('partial_cod');
+                }}
+              >
+                <div className="flex items-start justify-between">
+                  <div className="flex items-start gap-3">
+                    <input
+                      type="radio"
+                      name="paymentMethod"
+                      value="partial_cod"
+                      disabled={!isPartialCodEnabled}
+                      checked={paymentMethod === 'partial_cod'}
+                      onChange={() => setPaymentMethod('partial_cod')}
+                      className="accent-accent mt-1"
+                    />
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-body font-bold text-ink">Partial COD (Pay ₹{effectivePartialAdvance} Advance)</span>
+                        <span className="rounded-full bg-emerald-600 px-2 py-0.5 text-[10px] font-black uppercase text-white tracking-wider">
+                          Smart COD
+                        </span>
+                      </div>
+                      <p className="text-xs text-muted mt-0.5">
+                        Pay a ₹{effectivePartialAdvance} verification token now via UPI; pay the remaining balance{' '}
+                        <strong>₹{partialCodRemaining}</strong> in cash or UPI to the courier agent upon doorstep delivery.
+                      </p>
+                      <div className="mt-2 flex items-center gap-2 text-[11px] text-emerald-700 font-medium">
+                        <CheckCircle2 size={13} />
+                        <span>Guarantees immediate priority dispatch & reduces return delivery fraud.</span>
+                      </div>
+                    </div>
+                  </div>
+                  <Banknote size={20} className="text-emerald-600 shrink-0" />
+                </div>
+
+                {!isPartialCodEnabled && (
+                  <div className="mt-2 text-xs text-danger font-medium flex items-center gap-1.5">
+                    <AlertCircle size={14} />
+                    <span>Partial COD is currently disabled in store settings.</span>
+                  </div>
+                )}
+              </div>
+
+              {/* OPTION 3: FULL CASH ON DELIVERY (Controlled by Admin Toggle) */}
+              <div
+                className={`rounded-xl border transition-all ${
+                  !isCodEnabled || total > maxCodLimit
+                    ? 'opacity-60 border-border bg-paper/40 cursor-not-allowed'
+                    : paymentMethod === 'cod'
+                    ? 'border-accent bg-accent/5 ring-2 ring-accent/20 shadow-xs'
+                    : 'border-border bg-white hover:border-ink/20 cursor-pointer'
+                } p-4`}
+                onClick={() => {
+                  if (isCodEnabled && total <= maxCodLimit) setPaymentMethod('cod');
+                }}
+              >
+                <div className="flex items-start justify-between">
+                  <div className="flex items-start gap-3">
                     <input
                       type="radio"
                       name="paymentMethod"
                       value="cod"
+                      disabled={!isCodEnabled || total > maxCodLimit}
                       checked={paymentMethod === 'cod'}
                       onChange={() => setPaymentMethod('cod')}
-                      className="accent-accent"
+                      className="accent-accent mt-1"
                     />
                     <div>
-                      <span className="text-body font-bold text-ink block">
-                        {hasCustomItems ? 'Partial COD (30% Deposit + Balance on Delivery)' : 'Cash on Delivery (Full COD)'}
-                      </span>
-                      <span className="text-caption text-muted">
-                        {hasCustomItems ? `Pay ₹${partialCodDeposit} now, pay ₹${partialCodRemaining} upon doorstep delivery` : 'Pay full amount when your parcel arrives'}
-                      </span>
+                      <div className="flex items-center gap-2">
+                        <span className="text-body font-bold text-ink">Cash on Delivery (Full COD)</span>
+                        {!isCodEnabled && (
+                          <span className="rounded-full bg-muted/30 px-2 py-0.5 text-[10px] font-bold uppercase text-muted tracking-wider">
+                            Turned Off by Admin
+                          </span>
+                        )}
+                      </div>
+                      <p className="text-xs text-muted mt-0.5">
+                        {isCodEnabled
+                          ? total > maxCodLimit
+                            ? `Full COD is not available for orders above ₹${maxCodLimit}.`
+                            : `Pay full amount of ₹${total} in cash when your parcel arrives.`
+                          : 'Full COD is temporarily disabled by admin. Please use Partial COD (₹79) or UPI.'}
+                      </p>
                     </div>
                   </div>
-                  <Banknote size={20} className="text-muted" />
-                </motion.label>
+                  <Banknote size={20} className="text-muted shrink-0" />
+                </div>
+              </div>
+
+              {/* OPTION 4: CARDS / NETBANKING */}
+              <div
+                className={`rounded-xl border transition-all cursor-pointer ${
+                  paymentMethod === 'cards'
+                    ? 'border-accent bg-accent/5 ring-2 ring-accent/20 shadow-xs'
+                    : 'border-border bg-white hover:border-ink/20'
+                } p-4`}
+                onClick={() => setPaymentMethod('cards')}
+              >
+                <div className="flex items-start justify-between">
+                  <div className="flex items-start gap-3">
+                    <input
+                      type="radio"
+                      name="paymentMethod"
+                      value="cards"
+                      checked={paymentMethod === 'cards'}
+                      onChange={() => setPaymentMethod('cards')}
+                      className="accent-accent mt-1"
+                    />
+                    <div>
+                      <span className="text-body font-bold text-ink block">Debit / Credit Cards & NetBanking</span>
+                      <p className="text-xs text-muted mt-0.5">
+                        Visa, Mastercard, RuPay, Maestro, Corporate Cards & all major Indian banks.
+                      </p>
+                    </div>
+                  </div>
+                  <CreditCard size={20} className="text-muted shrink-0" />
+                </div>
               </div>
             </div>
           </div>
@@ -506,12 +855,16 @@ export function CheckoutPage() {
               <h2 className="text-heading font-bold text-ink pb-3 border-b border-border">Order Summary</h2>
 
               {/* Items List */}
-              <div className="space-y-4 max-h-[300px] overflow-y-auto pr-1 divide-y divide-border/60">
+              <div className="space-y-4 max-h-[280px] overflow-y-auto pr-1 divide-y divide-border/60">
                 {cart.items.map((item: any) => (
                   <div key={item.id} className="pt-3 first:pt-0 flex gap-3 text-left">
                     <div className="h-16 w-16 rounded-lg bg-paper border border-border flex items-center justify-center shrink-0 overflow-hidden">
                       {item.customization?.previewKey ? (
-                        <img src={item.customization.previewKey} alt="Custom artwork" className="h-full w-full object-cover" />
+                        <img
+                          src={item.customization.previewKey}
+                          alt="Custom artwork"
+                          className="h-full w-full object-cover"
+                        />
                       ) : (
                         <span className="font-heading font-black text-xs text-muted">BGO</span>
                       )}
@@ -526,7 +879,9 @@ export function CheckoutPage() {
                           ★ Custom Artwork
                         </span>
                       )}
-                      <div className="text-caption font-bold text-ink mt-1">₹{item.total_price || item.unit_price * item.quantity}</div>
+                      <div className="text-caption font-bold text-ink mt-1">
+                        ₹{item.total_price || item.unit_price * item.quantity}
+                      </div>
                     </div>
                   </div>
                 ))}
@@ -540,33 +895,56 @@ export function CheckoutPage() {
                 </div>
                 <div className="flex justify-between text-muted">
                   <span>Shipping Fee</span>
-                  <span className="font-medium text-ink">{shippingFee === 0 ? 'FREE' : `₹${shippingFee}`}</span>
+                  <span className="font-medium text-ink">
+                    {shippingFee === 0 ? 'FREE' : `₹${shippingFee}`}
+                  </span>
                 </div>
                 <div className="flex justify-between text-muted">
                   <span>GST / Taxes (5%)</span>
                   <span className="font-medium text-ink">₹{tax}</span>
                 </div>
-                {hasCustomItems && paymentMethod === 'cod' && (
-                  <div className="border-t border-dashed border-border pt-2 space-y-1">
-                    <div className="flex justify-between text-xs text-accent font-bold">
-                      <span>Advance Deposit Due Now (30%)</span>
-                      <span>₹{partialCodDeposit}</span>
+
+                {/* Partial COD Advance / Balance Breakdown */}
+                {paymentMethod === 'partial_cod' && (
+                  <div className="border-t border-dashed border-emerald-500/40 bg-emerald-50/50 p-3 rounded-lg space-y-1.5 text-xs">
+                    <div className="flex justify-between text-emerald-800 font-bold">
+                      <span>Advance Online Token (Due Now)</span>
+                      <span>₹{effectivePartialAdvance}</span>
                     </div>
-                    <div className="flex justify-between text-xs text-muted">
-                      <span>Balance on Delivery (70%)</span>
-                      <span>₹{partialCodRemaining}</span>
+                    <div className="flex justify-between text-muted font-medium">
+                      <span>Balance on Delivery (COD)</span>
+                      <span className="text-ink font-semibold">₹{partialCodRemaining}</span>
                     </div>
                   </div>
                 )}
+
                 <div className="border-t border-border pt-3 flex justify-between text-heading font-black text-ink">
-                  <span>Total Payable</span>
+                  <span>Total Order Value</span>
                   <span className="text-accent">₹{total}</span>
                 </div>
               </div>
 
-              {/* Submit Button */}
+              {/* Submit CTA Button */}
               <Button type="submit" variant="primary" size="lg" fullWidth disabled={isProcessing}>
-                {isProcessing ? 'Securing Order...' : paymentMethod === 'prepaid' ? `Pay ₹${total} via Razorpay` : hasCustomItems ? `Pay Deposit ₹${partialCodDeposit} & Confirm Order` : `Place COD Order (₹${total})`}
+                {isProcessing ? (
+                  'Securing Order...'
+                ) : paymentMethod === 'partial_cod' ? (
+                  `Pay ₹${effectivePartialAdvance} Advance & Confirm COD`
+                ) : paymentMethod === 'upi' ? (
+                  `Pay ₹${total} via ${
+                    selectedUpiApp === 'phonepe'
+                      ? 'PhonePe'
+                      : selectedUpiApp === 'gpay'
+                      ? 'Google Pay'
+                      : selectedUpiApp === 'paytm'
+                      ? 'Paytm'
+                      : 'UPI'
+                  }`
+                ) : paymentMethod === 'cod' ? (
+                  `Place Cash on Delivery (₹${total})`
+                ) : (
+                  `Pay ₹${total} via Cards / NetBanking`
+                )}
               </Button>
 
               <div className="flex items-center justify-center gap-2 text-caption text-muted">
@@ -580,3 +958,4 @@ export function CheckoutPage() {
     </div>
   );
 }
+

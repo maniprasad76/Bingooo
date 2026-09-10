@@ -78,6 +78,19 @@ export class VerifyPaymentDto {
 export class PaymentsService {
   constructor(private readonly ordersService: OrdersService) {}
 
+  getPaymentConfig() {
+    return {
+      cod_enabled: db.settings.cod_enabled !== false,
+      partial_cod_enabled: db.settings.partial_cod_enabled !== false,
+      partial_cod_advance_amount: Number(db.settings.partial_cod_advance_amount) || 79,
+      max_cod_limit: Number(db.settings.max_cod_limit) || 5000,
+      free_shipping_threshold: Number(db.settings.free_shipping_threshold) || 999,
+      shipping_fee_default: Number(db.settings.shipping_fee_default) || 99,
+      currency: db.settings.currency || 'INR',
+      key_id: process.env.RAZORPAY_KEY_ID || 'rzp_test_TYDFxO8bZagWG6',
+    };
+  }
+
   private getRazorpayClient(): Razorpay {
     const keyId = process.env.RAZORPAY_KEY_ID;
     const keySecret = process.env.RAZORPAY_KEY_SECRET;
@@ -245,7 +258,7 @@ export class PaymentsService {
 
       const order = db.orders.find((o) => o.id === payment.order_id);
       if (order) {
-        order.payment_status = 'captured';
+        order.payment_status = order.payment_method === 'partial_cod' ? 'partial_paid' : 'captured';
         order.status = 'processing';
         order.updated_at = new Date().toISOString();
       }

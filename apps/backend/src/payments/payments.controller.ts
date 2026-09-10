@@ -25,6 +25,12 @@ import { Permissions } from '../common/decorators/permissions.decorator';
 export class PaymentsController {
   constructor(private readonly paymentsService: PaymentsService) {}
 
+  @Get('config')
+  @ApiOperation({ summary: 'Get public payment rules and COD configurations' })
+  getPaymentConfig() {
+    return this.paymentsService.getPaymentConfig();
+  }
+
   @Get()
   @UseGuards(AuthGuard, RolesGuard)
   @Permissions('payments.manage')

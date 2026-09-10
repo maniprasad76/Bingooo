@@ -78,6 +78,9 @@ export function SettingsPage() {
       if (serverSettings.shipping_fee_default) setStandardShippingFee(String(serverSettings.shipping_fee_default));
       if (serverSettings.tax_rate_percentage) setGstRate(String(serverSettings.tax_rate_percentage));
       if (serverSettings.cod_enabled !== undefined) setCodEnabled(Boolean(serverSettings.cod_enabled));
+      if (serverSettings.partial_cod_enabled !== undefined) setPartialCodEnabled(Boolean(serverSettings.partial_cod_enabled));
+      if (serverSettings.partial_cod_advance_amount !== undefined) setPartialCodAmount(String(serverSettings.partial_cod_advance_amount));
+      if (serverSettings.max_cod_limit !== undefined) setMaxCodLimit(String(serverSettings.max_cod_limit));
       if (serverSettings.currency) setCurrency(serverSettings.currency);
     }
   }, [serverSettings]);
@@ -111,6 +114,9 @@ export function SettingsPage() {
       shipping_fee_default: Number(standardShippingFee) || 99,
       tax_rate_percentage: Number(gstRate) || 5,
       cod_enabled: codEnabled,
+      partial_cod_enabled: partialCodEnabled,
+      partial_cod_advance_amount: Number(partialCodAmount) || 79,
+      max_cod_limit: Number(maxCodLimit) || 5000,
       currency: currency,
     });
   };
@@ -340,61 +346,149 @@ export function SettingsPage() {
 
         {/* Tab 4: COD */}
         {activeTab === 'cod' && (
-          <div className="card-admin p-6 space-y-4">
-            <h3 className="font-bold text-ink text-base border-b border-border pb-3">
-              Cash On Delivery & Partial COD Advance
-            </h3>
+          <div className="card-admin p-6 space-y-6">
+            <div className="flex items-center justify-between border-b border-border pb-3">
+              <div>
+                <h3 className="font-bold text-ink text-base">
+                  Cash On Delivery & Partial COD Advance Controls
+                </h3>
+                <p className="text-xs text-muted mt-0.5">
+                  Toggle COD availability and configure token advance requirements to prevent courier RTOs.
+                </p>
+              </div>
+            </div>
 
-            <div className="space-y-4">
-              <label className="flex items-center gap-3 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={codEnabled}
-                  onChange={(e) => setCodEnabled(e.target.checked)}
-                  className="h-4 w-4 accent-brand-red"
-                />
-                <div>
-                  <span className="text-xs font-bold text-ink block">Enable Cash on Delivery (COD)</span>
-                  <span className="text-[11px] text-muted">Allow shoppers to pay courier at delivery</span>
+            {/* Status Summary Banner */}
+            <div className="rounded-xl border border-border bg-[#FAF7F2] p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div className="space-y-1">
+                <span className="text-xs font-black uppercase tracking-wider text-ink block">
+                  Live Storefront Checkout Policy
+                </span>
+                <div className="flex flex-wrap items-center gap-2 text-xs font-semibold">
+                  <span
+                    className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-[11px] font-bold ${
+                      codEnabled
+                        ? 'bg-emerald-100 text-emerald-800 border border-emerald-300'
+                        : 'bg-rose-100 text-rose-800 border border-rose-300'
+                    }`}
+                  >
+                    Full COD: {codEnabled ? 'ACTIVE (100% on delivery)' : 'DISABLED'}
+                  </span>
+                  <span
+                    className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-[11px] font-bold ${
+                      partialCodEnabled
+                        ? 'bg-blue-100 text-blue-800 border border-blue-300'
+                        : 'bg-gray-100 text-gray-700 border border-gray-300'
+                    }`}
+                  >
+                    Partial COD: {partialCodEnabled ? `ACTIVE (₹${partialCodAmount} Advance via UPI)` : 'DISABLED'}
+                  </span>
                 </div>
-              </label>
+              </div>
+            </div>
 
-              <label className="flex items-center gap-3 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={partialCodEnabled}
-                  onChange={(e) => setPartialCodEnabled(e.target.checked)}
-                  className="h-4 w-4 accent-brand-red"
-                />
-                <div>
-                  <span className="text-xs font-bold text-ink block">Enable Partial COD (Advance Security Deposit)</span>
-                  <span className="text-[11px] text-muted">Collect advance via UPI to minimize courier RTO return rates</span>
+            <div className="space-y-5">
+              {/* Toggle 1: Full COD */}
+              <div className="flex items-center justify-between p-4 rounded-xl border border-border bg-white shadow-2xs">
+                <div className="space-y-0.5 pr-4">
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm font-bold text-ink">Enable Full Cash on Delivery (COD)</span>
+                    <span
+                      className={`text-[10px] font-black uppercase px-2 py-0.5 rounded-full ${
+                        codEnabled ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'
+                      }`}
+                    >
+                      {codEnabled ? 'ON' : 'OFF'}
+                    </span>
+                  </div>
+                  <p className="text-xs text-muted">
+                    Allow shoppers to place orders without online payment; courier collects 100% of order total at doorstep.
+                  </p>
                 </div>
-              </label>
+                <button
+                  type="button"
+                  role="switch"
+                  aria-checked={codEnabled}
+                  onClick={() => setCodEnabled(!codEnabled)}
+                  className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
+                    codEnabled ? 'bg-[#E6321C]' : 'bg-gray-300'
+                  }`}
+                >
+                  <span
+                    className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-md ring-0 transition duration-200 ease-in-out ${
+                      codEnabled ? 'translate-x-5' : 'translate-x-0'
+                    }`}
+                  />
+                </button>
+              </div>
 
+              {/* Toggle 2: Partial COD */}
+              <div className="flex items-center justify-between p-4 rounded-xl border border-border bg-white shadow-2xs">
+                <div className="space-y-0.5 pr-4">
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm font-bold text-ink">
+                      Enable Partial COD (Advance Token Deposit)
+                    </span>
+                    <span
+                      className={`text-[10px] font-black uppercase px-2 py-0.5 rounded-full ${
+                        partialCodEnabled ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-700'
+                      }`}
+                    >
+                      {partialCodEnabled ? 'ON' : 'OFF'}
+                    </span>
+                  </div>
+                  <p className="text-xs text-muted">
+                    Customer pays a small nominal advance (e.g. ₹79) right now via UPI (PhonePe / GPay / Paytm) to confirm booking, then pays remaining balance at delivery.
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  role="switch"
+                  aria-checked={partialCodEnabled}
+                  onClick={() => setPartialCodEnabled(!partialCodEnabled)}
+                  className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
+                    partialCodEnabled ? 'bg-[#E6321C]' : 'bg-gray-300'
+                  }`}
+                >
+                  <span
+                    className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-md ring-0 transition duration-200 ease-in-out ${
+                      partialCodEnabled ? 'translate-x-5' : 'translate-x-0'
+                    }`}
+                  />
+                </button>
+              </div>
+
+              {/* Numeric Inputs */}
               <div className="grid gap-4 sm:grid-cols-2 pt-2">
-                <div>
-                  <label className="block text-xs font-bold text-muted">
-                    Partial COD Advance Deposit (₹)
+                <div className="rounded-xl border border-border p-4 bg-white">
+                  <label className="block text-xs font-bold text-ink">
+                    Partial COD Advance Token (₹)
                     <input
                       type="number"
+                      min={1}
                       value={partialCodAmount}
                       onChange={(e) => setPartialCodAmount(e.target.value)}
-                      className="input-admin mt-1 font-bold"
+                      className="input-admin mt-1.5 font-bold text-base text-[#E6321C]"
                     />
                   </label>
+                  <p className="text-[11px] text-muted mt-1.5">
+                    Amount paid upfront via UPI. Defaults to ₹79. Remaining order balance is collected by delivery agent.
+                  </p>
                 </div>
 
-                <div>
-                  <label className="block text-xs font-bold text-muted">
+                <div className="rounded-xl border border-border p-4 bg-white">
+                  <label className="block text-xs font-bold text-ink">
                     Maximum COD Order Cap (₹)
                     <input
                       type="number"
                       value={maxCodLimit}
                       onChange={(e) => setMaxCodLimit(e.target.value)}
-                      className="input-admin mt-1"
+                      className="input-admin mt-1.5 font-bold text-base"
                     />
                   </label>
+                  <p className="text-[11px] text-muted mt-1.5">
+                    Orders exceeding this cart total cannot be placed via Full COD (prepaid or Partial COD required).
+                  </p>
                 </div>
               </div>
             </div>

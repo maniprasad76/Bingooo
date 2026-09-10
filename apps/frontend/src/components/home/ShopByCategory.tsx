@@ -104,7 +104,7 @@ export function ShopByCategory() {
             <Link
               key={category.id}
               to={`/category/${category.slug}`}
-              className="flex flex-col items-center shrink-0 group text-center snap-center focus:outline-none"
+              className="flex flex-col items-center shrink-0 group text-center snap-center focus:outline-none focus-visible:ring-2 focus-visible:ring-[#E6321C] focus-visible:ring-offset-2 focus-visible:rounded-2xl"
             >
               {/* Circular Avatar / Image Container */}
               <div className="relative w-28 h-28 sm:w-36 sm:h-36 md:w-40 md:h-40 rounded-full overflow-hidden bg-[#EDE0CC]/40 border-2 border-[#DDD3C5]/60 shadow-sm flex items-center justify-center transition-all duration-300 group-hover:scale-105 group-hover:border-[#E6321C]/60 group-hover:shadow-md">

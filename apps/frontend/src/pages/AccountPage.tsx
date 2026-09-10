@@ -20,8 +20,10 @@ import {
   Plus,
   Trash2,
   X,
+  Eye,
 } from 'lucide-react';
 import { useAuthStore } from '../store/auth';
+import { useRecentlyViewedStore } from '../store/recentlyViewed';
 import { useToast } from '../components/ui/Toast';
 import { SEO } from '../components/common/SEO';
 
@@ -29,6 +31,7 @@ const SIDEBAR_NAV = [
   { id: 'dashboard', label: 'Account Dashboard', icon: Home },
   { id: 'orders', label: 'My Orders', icon: Package, href: '/account/orders' },
   { id: 'wishlist', label: 'Wishlist', icon: Heart, href: '/account/wishlist' },
+  { id: 'recently-viewed', label: 'Recently Viewed', icon: Eye, href: '/recently-viewed' },
   { id: 'addresses', label: 'My Addresses', icon: MapPin },
   { id: 'profile', label: 'Profile Information', icon: User },
   { id: 'password', label: 'Change Password', icon: Lock },
@@ -45,6 +48,7 @@ export function AccountPage() {
 
   const [activeTab, setActiveTab] = useState('dashboard');
   const [newsletterEmail, setNewsletterEmail] = useState('');
+  const recentCount = useRecentlyViewedStore((s) => s.items.length);
 
   // Modals state
   const [isEditProfileOpen, setIsEditProfileOpen] = useState(false);
@@ -318,7 +322,7 @@ export function AccountPage() {
                     </div>
                   </div>
 
-                  <div className="w-full md:w-auto grid grid-cols-3 gap-4 sm:gap-8 pt-4 md:pt-0 border-t md:border-t-0 md:border-l border-[#DDD3C5] md:pl-8 text-center sm:text-left">
+                  <div className="w-full md:w-auto grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-6 pt-4 md:pt-0 border-t md:border-t-0 md:border-l border-[#DDD3C5] md:pl-8 text-center sm:text-left">
                     <div>
                       <ShoppingBag size={18} className="text-[#6F6A63] mx-auto sm:mx-0 mb-1" />
                       <span className="text-[11px] font-sans text-[#6F6A63] block">Total Orders</span>
@@ -333,6 +337,14 @@ export function AccountPage() {
                       <span className="font-heading font-black text-2xl text-[#E6321C] block">{wishlist.length}</span>
                       <Link to="/account/wishlist" className="text-[11px] text-[#E6321C] font-sans hover:underline block mt-0.5">
                         View wishlist
+                      </Link>
+                    </div>
+                    <div>
+                      <Eye size={18} className="text-[#6F6A63] mx-auto sm:mx-0 mb-1" />
+                      <span className="text-[11px] font-sans text-[#6F6A63] block">Recently Viewed</span>
+                      <span className="font-heading font-black text-2xl text-[#E6321C] block">{recentCount}</span>
+                      <Link to="/recently-viewed" className="text-[11px] text-[#E6321C] font-sans hover:underline block mt-0.5">
+                        View history
                       </Link>
                     </div>
                     <div>

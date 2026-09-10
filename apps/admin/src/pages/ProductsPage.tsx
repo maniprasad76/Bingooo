@@ -30,6 +30,7 @@ interface ProductItem {
   compare_at_price?: number | null;
   customization_enabled: boolean;
   category?: { id: string; name: string; slug: string } | null;
+  images?: Array<{ id?: string; url?: string; object_key?: string; alt_text?: string }>;
   variants: Array<{
     id: string;
     sku: string;
@@ -102,6 +103,7 @@ export function ProductsPage() {
           compareAtPrice: values.compareAtPrice ? Number(values.compareAtPrice) : undefined,
           status: values.status,
           customizationEnabled: values.customizationEnabled,
+          imageUrl: values.imageUrl?.trim() || undefined,
         });
         toast({ title: 'Product updated successfully', variant: 'success' });
       } else {
@@ -114,6 +116,7 @@ export function ProductsPage() {
           compareAtPrice: values.compareAtPrice ? Number(values.compareAtPrice) : undefined,
           status: values.status,
           customizationEnabled: values.customizationEnabled,
+          imageUrl: values.imageUrl?.trim() || undefined,
         });
 
         await api.post(`/products/${created.id}/variants`, {
@@ -185,6 +188,7 @@ export function ProductsPage() {
           : '',
         status: editingProduct.status === 'archived' ? 'draft' : editingProduct.status,
         customizationEnabled: editingProduct.customization_enabled,
+        imageUrl: editingProduct.images?.[0]?.url || editingProduct.images?.[0]?.object_key || '',
         sku: editingProduct.variants[0]?.sku || '',
         size: editingProduct.variants[0]?.size || 'M',
         color: editingProduct.variants[0]?.color || 'Black',
@@ -208,6 +212,7 @@ export function ProductsPage() {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search title, slug or SKU..."
+              aria-label="Search products by title, slug or SKU"
               className="input-admin pl-10 text-xs"
             />
           </div>
@@ -216,6 +221,7 @@ export function ProductsPage() {
           <select
             value={selectedCategory}
             onChange={(e) => setSelectedCategory(e.target.value)}
+            aria-label="Filter products by category"
             className="input-admin w-auto min-w-[150px] text-xs"
           >
             <option value="all">All Categories</option>
@@ -230,6 +236,7 @@ export function ProductsPage() {
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
+            aria-label="Filter products by status"
             className="input-admin w-auto min-w-[130px] text-xs"
           >
             <option value="all">All Statuses</option>
@@ -290,9 +297,20 @@ export function ProductsPage() {
                   <tr key={product.id} className="hover:bg-[#FDF9F4] transition-colors">
                     <td className="p-4">
                       <div className="flex items-center gap-3">
-                        <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#F7EEDB] text-brand-red font-bold">
-                          <Shirt size={20} />
-                        </span>
+                        {product.images?.[0]?.url || product.images?.[0]?.object_key ? (
+                          <img
+                            src={product.images[0].url || product.images[0].object_key}
+                            alt={product.title}
+                            className="h-11 w-11 shrink-0 rounded-xl border border-border object-cover bg-[#EDE0CC]"
+                            onError={(e) => {
+                              (e.currentTarget as HTMLElement).style.display = 'none';
+                            }}
+                          />
+                        ) : (
+                          <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#F7EEDB] text-brand-red font-bold">
+                            <Shirt size={20} />
+                          </span>
+                        )}
                         <div>
                           <p className="font-bold text-ink text-sm">{product.title}</p>
                           <p className="font-mono text-[11px] text-muted">/{product.slug}</p>
@@ -349,6 +367,7 @@ export function ProductsPage() {
                             status: e.target.value,
                           })
                         }
+                        aria-label={`Status of ${product.title || product.slug || 'product'}`}
                         className="rounded-lg border border-border bg-white px-2.5 py-1 text-xs font-bold text-ink focus:border-brand-red focus:outline-none"
                       >
                         <option value="draft">Draft</option>

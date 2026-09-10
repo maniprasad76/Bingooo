@@ -56,14 +56,9 @@ export default {
       },
       fontFamily: {
         sans: ['Manrope', 'system-ui', '-apple-system', 'sans-serif'],
-        display: ['Outfit', 'Manrope', 'sans-serif'],
-        heading: ['Outfit', 'Manrope', 'sans-serif'],
+        display: ['Outfit', 'sans-serif'],
+        heading: ['Outfit', 'sans-serif'],
         outfit: ['Outfit', 'sans-serif'],
-        jakarta: ['"Plus Jakarta Sans"', 'sans-serif'],
-        serif: ['"Playfair Display"', 'Georgia', 'serif'],
-        cursive: ['Satisfy', 'Caveat', 'cursive'],
-        script: ['Satisfy', 'Caveat', 'cursive'],
-        caveat: ['Caveat', 'cursive'],
       },
       fontSize: {
         'hero': ['3.5rem', { lineHeight: '1.1', fontWeight: '800' }],
@@ -92,6 +87,9 @@ export default {
         'card': '0.5rem',
       },
       spacing: {
+        '13': '3.25rem',
+        '15': '3.75rem',
+        '17': '4.25rem',
         '18': '4.5rem',
         '88': '22rem',
         '128': '32rem',

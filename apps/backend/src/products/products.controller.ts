@@ -74,4 +74,16 @@ export class ProductsController {
   addVariant(@Param('id') id: string, @Body() dto: CreateVariantDto) {
     return this.productsService.addVariant(id, dto);
   }
+
+  @Post(':id/images')
+  @UseGuards(AuthGuard, RolesGuard)
+  @Permissions('products.update')
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Attach image to product (admin)' })
+  attachImage(
+    @Param('id') id: string,
+    @Body() body: { url: string; altText?: string; isPrimary?: boolean },
+  ) {
+    return this.productsService.attachImage(id, body.url, body.altText, body.isPrimary);
+  }
 }

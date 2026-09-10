@@ -20,12 +20,9 @@ export const tokens = {
   },
 
   fonts: {
-    sans: "'Inter', system-ui, -apple-system, sans-serif",
-    display: "'Oswald', 'Barlow Condensed', 'Bebas Neue', sans-serif",
-    heading: "'Oswald', 'Barlow Condensed', 'Bebas Neue', sans-serif",
-    condensed: "'Barlow Condensed', 'Oswald', sans-serif",
-    serif: "'Playfair Display', Georgia, 'Times New Roman', serif",
-    cursive: "'Caveat', 'Segoe Script', cursive",
+    sans: "'Manrope', system-ui, -apple-system, sans-serif",
+    display: "'Outfit', sans-serif",
+    heading: "'Outfit', sans-serif",
   },
 
   typography: {

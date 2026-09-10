@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -23,6 +23,7 @@ import {
 import { useProduct } from '../hooks/useProducts';
 import { useCart } from '../hooks/useCart';
 import { useWishlist, useIsInWishlist } from '../hooks/useWishlist';
+import { useRecentlyViewed } from '../hooks/useRecentlyViewed';
 import { ProductDetailSkeleton } from '../components/ui/Skeleton';
 import { useToast } from '../components/ui/Toast';
 import { api } from '../lib/api/client';
@@ -81,6 +82,18 @@ export function ProductPage() {
   const { toast } = useToast();
 
   const inWishlist = !!wishlistData?.inWishlist;
+  const { addProduct, getRecentExcluding } = useRecentlyViewed();
+
+  // Track product view in persistent history
+  useEffect(() => {
+    if (product && (product.id || product.slug)) {
+      addProduct(product);
+    }
+  }, [product, addProduct]);
+
+  const recentGarments = useMemo(() => {
+    return getRecentExcluding(slug || product?.id, 4);
+  }, [getRecentExcluding, slug, product?.id]);
 
   const [selectedColor, setSelectedColor] = useState<string | null>(null);
   const [selectedSize, setSelectedSize] = useState<string>('S');
@@ -269,6 +282,7 @@ export function ProductPage() {
                     key={idx}
                     type="button"
                     onClick={() => setActiveImageIndex(idx)}
+                    aria-label={`View image ${idx + 1} of ${title}`}
                     className={`relative h-16 w-16 sm:h-24 sm:w-20 rounded-xl overflow-hidden border-2 transition-all bg-[#EDE0CC] flex items-center justify-center shrink-0 ${
                       isActive ? 'border-[#E6321C] shadow-sm' : 'border-[#DDD3C5] hover:border-[#171717]/40'
                     }`}
@@ -886,6 +900,82 @@ export function ProductPage() {
             ))}
           </div>
         </div>
+
+        {/* ─── Recently Viewed Section ─── */}
+        {recentGarments.length > 0 && (
+          <div className="mt-14 pt-10 border-t border-[#DDD3C5]">
+            <div className="flex items-center justify-between mb-6">
+              <div>
+                <span className="font-mono text-[10px] sm:text-xs uppercase tracking-widest text-[#E6321C] font-bold">
+                  YOUR BROWSING TRAIL
+                </span>
+                <h2 className="font-heading font-extrabold text-xl sm:text-2xl text-[#171717] uppercase tracking-tight">
+                  RECENTLY VIEWED
+                </h2>
+              </div>
+              <Link
+                to="/recently-viewed"
+                className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-bold text-[#E6321C] hover:text-[#B91F12] transition-colors"
+              >
+                <span>VIEW ALL ({recentGarments.length})</span>
+                <ArrowRight size={14} />
+              </Link>
+            </div>
+
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-6">
+              {recentGarments.map((item) => (
+                <div
+                  key={item.id}
+                  className="group flex flex-col justify-between rounded-2xl bg-white border border-[#DDD3C5] p-3 shadow-xs hover:shadow-md transition-all text-left"
+                >
+                  <Link
+                    to={`/product/${item.slug}`}
+                    className="relative aspect-[4/5] rounded-xl bg-[#EDE0CC] overflow-hidden flex items-center justify-center"
+                  >
+                    {item.image ? (
+                      <img
+                        src={item.image}
+                        alt={item.title}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                      />
+                    ) : (
+                      <Shirt size={32} className="text-[#171717]/40" />
+                    )}
+                  </Link>
+
+                  <div className="mt-2.5 flex flex-col flex-1 justify-between">
+                    <div>
+                      <Link to={`/product/${item.slug}`}>
+                        <h3 className="font-sans font-bold text-xs sm:text-sm text-[#171717] hover:text-[#E6321C] transition-colors line-clamp-1">
+                          {item.title}
+                        </h3>
+                      </Link>
+                      <div className="mt-1 flex items-baseline justify-between">
+                        <span className="font-sans font-extrabold text-xs sm:text-sm text-[#171717]">
+                          ₹{item.basePrice.toLocaleString('en-IN')}
+                        </span>
+                        {item.compareAtPrice && item.compareAtPrice > item.basePrice && (
+                          <span className="text-[11px] text-[#6F6A63] line-through font-sans">
+                            ₹{item.compareAtPrice.toLocaleString('en-IN')}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+
+                    <div className="mt-3 pt-2.5 border-t border-[#DDD3C5]/60">
+                      <Link
+                        to={`/product/${item.slug}`}
+                        className="w-full inline-flex items-center justify-center gap-1 py-1.5 rounded-md border border-[#DDD3C5] hover:border-[#171717] bg-white text-[#171717] text-[10px] font-sans font-bold uppercase tracking-wider transition-colors"
+                      >
+                        VIEW PIECE
+                      </Link>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
 
       {/* ─── Mobile Sticky Purchase Bar (floats directly above MobileNav) ─── */}

@@ -28,6 +28,14 @@ export class CreateProductDto {
   @ApiPropertyOptional() @IsOptional() @IsString() seoTitle?: string;
   @ApiPropertyOptional() @IsOptional() @IsString() seoDescription?: string;
   @ApiPropertyOptional() @IsOptional() @IsEnum(['draft', 'active', 'archived']) status?: string;
+  @ApiPropertyOptional() @IsOptional() @IsString() imageUrl?: string;
+  @ApiPropertyOptional() @IsOptional() images?: Array<{ url: string; alt_text?: string; is_primary?: boolean }>;
+  @ApiPropertyOptional() @IsOptional() @IsString() fabric?: string;
+  @ApiPropertyOptional() @IsOptional() @IsString() gsm?: string;
+  @ApiPropertyOptional() @IsOptional() @IsString() fit?: string;
+  @ApiPropertyOptional() @IsOptional() tags?: string[];
+  @ApiPropertyOptional() @IsOptional() @IsBoolean() featured?: boolean;
+  @ApiPropertyOptional() @IsOptional() @IsBoolean() bestseller?: boolean;
 }
 
 export class UpdateProductDto {
@@ -41,6 +49,14 @@ export class UpdateProductDto {
   @ApiPropertyOptional() @IsOptional() @IsString() seoTitle?: string;
   @ApiPropertyOptional() @IsOptional() @IsString() seoDescription?: string;
   @ApiPropertyOptional() @IsOptional() @IsEnum(['draft', 'active', 'archived']) status?: string;
+  @ApiPropertyOptional() @IsOptional() @IsString() imageUrl?: string;
+  @ApiPropertyOptional() @IsOptional() images?: Array<{ url: string; alt_text?: string; is_primary?: boolean }>;
+  @ApiPropertyOptional() @IsOptional() @IsString() fabric?: string;
+  @ApiPropertyOptional() @IsOptional() @IsString() gsm?: string;
+  @ApiPropertyOptional() @IsOptional() @IsString() fit?: string;
+  @ApiPropertyOptional() @IsOptional() tags?: string[];
+  @ApiPropertyOptional() @IsOptional() @IsBoolean() featured?: boolean;
+  @ApiPropertyOptional() @IsOptional() @IsBoolean() bestseller?: boolean;
 }
 
 export class CreateVariantDto {

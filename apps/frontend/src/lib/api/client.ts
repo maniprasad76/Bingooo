@@ -4,13 +4,13 @@
 // ─────────────────────────────────────────────────────────
 
 /**
- * The Vite proxy is used in local development.  A deployed storefront can set
+ * The Vite proxy is used in local development. A deployed storefront can set
  * VITE_API_URL to point at its API without changing any application code.
  */
 const configuredApiUrl = import.meta.env.VITE_API_URL?.replace(/\/$/, '');
 const API_BASE = configuredApiUrl ? `${configuredApiUrl}/api/v1` : '/api/v1';
 
-interface RequestOptions extends Omit<RequestInit, 'body'> {
+export interface RequestOptions extends Omit<RequestInit, 'body'> {
   body?: unknown;
   params?: Record<string, string | number | boolean | undefined | null>;
   raw?: boolean;
@@ -67,7 +67,10 @@ async function request<T = unknown>(path: string, options: RequestOptions = {}):
   }
 
   const headers = new Headers(init.headers);
-  headers.set('Content-Type', 'application/json');
+  const isFormData = typeof FormData !== 'undefined' && body instanceof FormData;
+  if (!isFormData) {
+    headers.set('Content-Type', 'application/json');
+  }
   headers.set('Accept', 'application/json');
   headers.set('x-session-id', getGuestSessionId());
 
@@ -79,7 +82,7 @@ async function request<T = unknown>(path: string, options: RequestOptions = {}):
   const response = await fetch(url, {
     ...init,
     headers,
-    body: body ? JSON.stringify(body) : undefined,
+    body: isFormData ? (body as FormData) : body ? JSON.stringify(body) : undefined,
   });
 
   if (raw) {
@@ -107,6 +110,9 @@ export const api = {
 
   post: <T = unknown>(path: string, body?: unknown, options?: RequestOptions) =>
     request<T>(path, { ...options, method: 'POST', body }),
+
+  upload: <T = unknown>(path: string, formData: FormData, options?: RequestOptions) =>
+    request<T>(path, { ...options, method: 'POST', body: formData }),
 
   patch: <T = unknown>(path: string, body?: unknown, options?: RequestOptions) =>
     request<T>(path, { ...options, method: 'PATCH', body }),

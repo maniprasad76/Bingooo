@@ -10,6 +10,7 @@
     "test:security": "node --require @swc-node/register test/run-security-suite.ts",
     "test:checkout": "node --require @swc-node/register test/run-checkout-e2e.ts",
     "test:admin": "node --require @swc-node/register test/run-admin-e2e.ts",
+    "test:upload": "node --require @swc-node/register test/run-upload-e2e.ts",
     "lint": "echo 'TODO: add linter'"
   },
   "dependencies": {
@@ -34,6 +35,7 @@
     "@swc/core": "^1.9.0",
     "@types/cookie-parser": "^1.4.10",
     "@types/express": "^5.0.0",
+    "@types/multer": "^2.2.0",
     "@types/node": "^22.10.0",
     "@types/uuid": "^10.0.0",
     "typescript": "^5.7.0"

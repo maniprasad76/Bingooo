@@ -16,6 +16,7 @@ import {
   Flame,
   Check,
   RefreshCw,
+  ArrowLeft,
 } from 'lucide-react';
 import { useCart } from '../hooks/useCart';
 import { useToast } from '../components/ui/Toast';
@@ -247,7 +248,7 @@ export function CustomizerPage() {
     toast({ title: 'Artwork removed', variant: 'default' });
   };
 
-  const handleUploadFile = (file: File) => {
+  const handleUploadFile = async (file: File) => {
     if (file.size > 25 * 1024 * 1024) {
       toast({
         title: 'File too large',
@@ -257,23 +258,36 @@ export function CustomizerPage() {
       return;
     }
 
-    const reader = new FileReader();
-    reader.onload = () => {
-      handleUpdateArtwork({
-        url: reader.result as string,
-        scale: 1,
-        rotation: 0,
-        x: 0,
-        y: 0,
-      });
-      setSelectedLayer('artwork');
-      toast({
-        title: 'Artwork uploaded successfully!',
-        description: `Placed on ${view.toUpperCase()} print area.`,
-        variant: 'success',
-      });
-    };
-    reader.readAsDataURL(file);
+    // Immediate preview for zero latency
+    const localUrl = URL.createObjectURL(file);
+    handleUpdateArtwork({
+      url: localUrl,
+      scale: 1,
+      rotation: 0,
+      x: 0,
+      y: 0,
+    });
+    setSelectedLayer('artwork');
+    toast({
+      title: 'Artwork loaded!',
+      description: `Placed on ${view.toUpperCase()} print area.`,
+      variant: 'success',
+    });
+
+    // Upload to backend media storage
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('category', 'designs');
+      formData.append('name', file.name);
+
+      const res = await api.upload<{ success: boolean; url: string }>('/media/upload', formData);
+      if (res?.url) {
+        handleUpdateArtwork({ url: res.url });
+      }
+    } catch {
+      // Local preview remains functional
+    }
   };
 
   const handleUpdateTypography = (updates: Partial<TypographyLayer>) => {
@@ -460,13 +474,24 @@ export function CustomizerPage() {
       <div className="max-w-[1360px] mx-auto px-4 sm:px-8 py-5 sm:py-8 space-y-6 sm:space-y-8">
         {/* ─── Breadcrumbs & Header Strip ─── */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-[#DDD3C5]">
-          <nav className="flex items-center gap-2 text-xs font-sans text-[#6F6A63]">
-            <Link to="/" className="hover:text-[#E6321C]">Home</Link>
-            <ChevronRight size={12} />
-            <Link to="/shop" className="hover:text-[#E6321C]">Catalog</Link>
-            <ChevronRight size={12} />
-            <span className="text-[#171717] font-semibold">240 GSM Atelier Customizer</span>
-          </nav>
+          <div className="flex items-center gap-3">
+            <button
+              type="button"
+              onClick={() => navigate(-1)}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-[#DDD3C5] bg-white hover:bg-[#171717] hover:text-white text-xs font-bold text-[#171717] transition-all shadow-2xs"
+              aria-label="Go back"
+            >
+              <ArrowLeft size={14} />
+              <span>Back</span>
+            </button>
+            <nav className="flex items-center gap-2 text-xs font-sans text-[#6F6A63]">
+              <Link to="/" className="hover:text-[#E6321C]">Home</Link>
+              <ChevronRight size={12} />
+              <Link to="/shop" className="hover:text-[#E6321C]">Catalog</Link>
+              <ChevronRight size={12} />
+              <span className="text-[#171717] font-semibold">240 GSM Atelier Customizer</span>
+            </nav>
+          </div>
 
           <div className="flex flex-wrap items-center gap-2.5">
             {/* Auto-Save Live Status Indicator */}

@@ -185,18 +185,33 @@ export function BannersPage() {
     setIsModalOpen(true);
   };
 
-  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const [isUploadingBanner, setIsUploadingBanner] = useState(false);
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    const reader = new FileReader();
-    reader.onload = () => {
-      const result = reader.result as string;
-      setDesktopImage(result);
-      if (!mobileImage) setMobileImage(result);
-      toast({ title: 'Image loaded from local file', variant: 'success' });
-    };
-    reader.readAsDataURL(file);
+    if (file.size > 25 * 1024 * 1024) {
+      toast({ title: 'File too large', description: 'Banner images must be under 25MB.', variant: 'danger' });
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('category', 'banners');
+    formData.append('name', file.name);
+
+    setIsUploadingBanner(true);
+    try {
+      const res = await api.upload<{ success: boolean; url: string }>('/media/upload', formData);
+      setDesktopImage(res.url);
+      if (!mobileImage) setMobileImage(res.url);
+      toast({ title: 'Banner uploaded to storage!', variant: 'success' });
+    } catch (err: any) {
+      toast({ title: 'Upload failed', description: err.message, variant: 'danger' });
+    } finally {
+      setIsUploadingBanner(false);
+    }
   };
 
   const handleSave = async (e: React.FormEvent) => {

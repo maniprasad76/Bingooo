@@ -1,11 +1,63 @@
-import { Controller, Post, Body, Get, Query, HttpCode, HttpStatus } from '@nestjs/common';
-import { ApiTags, ApiOperation } from '@nestjs/swagger';
+import {
+  Controller,
+  Post,
+  Body,
+  Get,
+  Query,
+  Param,
+  HttpCode,
+  HttpStatus,
+  UseInterceptors,
+  UploadedFile,
+  Res,
+} from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { ApiTags, ApiOperation, ApiConsumes } from '@nestjs/swagger';
+import { Response } from 'express';
+import * as path from 'path';
 import { MediaService } from './media.service';
 
 @ApiTags('Media')
 @Controller('media')
 export class MediaController {
   constructor(private readonly mediaService: MediaService) {}
+
+  @Post('upload')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Upload an image or asset file' })
+  @ApiConsumes('multipart/form-data', 'application/json')
+  @UseInterceptors(FileInterceptor('file'))
+  async uploadFile(
+    @UploadedFile() file?: Express.Multer.File,
+    @Body() body?: { category?: string; name?: string; dataUrl?: string },
+  ) {
+    if (file) {
+      return this.mediaService.saveUploadedFile(file, body?.category, body?.name);
+    }
+    if (body?.dataUrl) {
+      return this.mediaService.saveBase64File(body.dataUrl, body.category, body.name);
+    }
+    return this.mediaService.saveUploadedFile(file as any, body?.category, body?.name);
+  }
+
+  @Get('file/:filename')
+  @ApiOperation({ summary: 'Serve uploaded static asset' })
+  serveFile(@Param('filename') filename: string, @Res() res: Response) {
+    const filePath = this.mediaService.getFilePath(filename);
+    const ext = path.extname(filename).toLowerCase();
+    const mimeTypes: Record<string, string> = {
+      '.jpg': 'image/jpeg',
+      '.jpeg': 'image/jpeg',
+      '.png': 'image/png',
+      '.webp': 'image/webp',
+      '.svg': 'image/svg+xml',
+      '.gif': 'image/gif',
+    };
+    const contentType = mimeTypes[ext] || 'application/octet-stream';
+    res.setHeader('Content-Type', contentType);
+    res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+    return res.sendFile(filePath);
+  }
 
   @Post('presign')
   @ApiOperation({ summary: 'Get presigned upload URL for Cloudflare R2' })
@@ -35,7 +87,8 @@ export class MediaController {
   @Post('assets/:id/delete')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Delete media asset' })
-  deleteAsset(@Query('id') id: string) {
+  deleteAsset(@Param('id') id: string) {
     return this.mediaService.deleteAsset(id);
   }
 }
+

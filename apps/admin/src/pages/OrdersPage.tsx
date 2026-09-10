@@ -126,6 +126,7 @@ export function OrdersPage() {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search by Order #, customer name, or phone..."
+            aria-label="Search orders by order number, customer name, or phone"
             className="input-admin pl-10 text-xs"
           />
         </div>
@@ -133,6 +134,7 @@ export function OrdersPage() {
         <select
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value)}
+          aria-label="Filter orders by fulfillment stage"
           className="input-admin w-auto min-w-[160px] text-xs font-bold"
         >
           <option value="all">All Fulfillment Stages</option>
@@ -225,6 +227,7 @@ export function OrdersPage() {
                             status: e.target.value,
                           })
                         }
+                        aria-label={`Fulfillment status of order ${order.order_number}`}
                         className="rounded-lg border border-border bg-white px-2.5 py-1 text-xs font-bold text-ink focus:border-brand-red focus:outline-none"
                       >
                         <option value="pending_payment">Pending Payment</option>

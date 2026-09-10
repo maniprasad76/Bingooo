@@ -46,4 +46,8 @@ supabase/.temp/
 # Misc
 *.tgz
 .cache/
-graphify-out/
+
+# Local uploads
+apps/backend/uploads/
+**/uploads/*
+!**/uploads/.gitkeep

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { motion, useReducedMotion } from 'framer-motion';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -22,7 +22,12 @@ export function LoginPage() {
   const shouldReduceMotion = useReducedMotion();
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
   const { toast } = useToast();
+
+  // If the user was bounced here from a protected page, return them there
+  const redirectTo =
+    (location.state as { from?: { pathname?: string; search?: string } })?.from?.pathname || '/account';
 
   const {
     register,
@@ -37,7 +42,7 @@ export function LoginPage() {
     try {
       await signIn(data.email, data.password);
       toast({ title: 'Welcome back', variant: 'success' });
-      navigate('/account');
+      navigate(redirectTo, { replace: true });
     } catch (error) {
       toast({
         title: 'Unable to sign in',

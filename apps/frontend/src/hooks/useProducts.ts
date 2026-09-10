@@ -20,14 +20,30 @@ export interface ProductQueryParams {
   limit?: number;
 }
 
+const CATEGORY_ALIASES: Record<string, string[]> = {
+  't-shirts': ['oversized-tees', 't-shirts', 't-shirt', 'tees', 'tshirts', 'oversized-t-shirts'],
+  'oversized-tees': ['oversized-tees', 't-shirts', 't-shirt', 'tees', 'tshirts', 'oversized-t-shirts'],
+  'oversized-t-shirts': ['oversized-tees', 't-shirts', 't-shirt', 'tees', 'tshirts', 'oversized-t-shirts'],
+  'hoodies': ['hoodies', 'fleece', 'sweatshirts', 'hoodie'],
+  'jeans': ['cargos', 'jeans', 'denim', 'pants', 'trousers'],
+  'cargos': ['cargos', 'jeans', 'denim', 'pants', 'trousers'],
+  'pants': ['cargos', 'jeans', 'denim', 'pants', 'trousers'],
+  'shirts': ['shirts', 'casual-shirts', 'textured-shirt', 'camp-collar', 'oxford'],
+  'graphic-drops': ['graphic-drops', 'graphics', 'anime'],
+};
+
 function filterFallbackProducts(params: ProductQueryParams) {
   let list = [...FALLBACK_PRODUCTS];
 
   if (params.categorySlug) {
+    const rawSlug = params.categorySlug.toLowerCase();
+    const allowed = CATEGORY_ALIASES[rawSlug] || [rawSlug];
     list = list.filter(
       (p) =>
-        p.category?.slug?.toLowerCase() === params.categorySlug?.toLowerCase() ||
-        p.tags?.includes(params.categorySlug!)
+        allowed.includes(p.category?.slug?.toLowerCase() || '') ||
+        p.tags?.some((t) => allowed.includes(t.toLowerCase())) ||
+        p.category?.slug?.toLowerCase() === rawSlug ||
+        p.tags?.includes(rawSlug)
     );
   }
 

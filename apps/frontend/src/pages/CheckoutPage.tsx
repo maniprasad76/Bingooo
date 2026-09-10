@@ -246,6 +246,7 @@ export function CheckoutPage() {
     return (
       <div className="container-narrow py-20 text-center">
         <Logo variant="red" size="lg" className="mb-4" />
+        <h1 className="sr-only">Secure Checkout</h1>
         <h2 className="text-display-sm font-bold text-ink">Your bag is empty</h2>
         <p className="mt-2 text-body text-muted">Add some heavyweight essentials before checking out.</p>
         <Button variant="primary" className="mt-6" onClick={() => navigate('/shop')}>
@@ -261,6 +262,7 @@ export function CheckoutPage() {
         title="Secure Checkout"
         description="Complete your Bingooo purchase securely with 256-bit encryption. UPI, Cards, Netbanking, and COD supported."
       />
+      <h1 className="sr-only">Secure Checkout</h1>
       <div className="container-page">
         <div className="mb-6 flex items-center justify-between border-b border-border pb-4">
           <Logo variant="red" size="md" />

@@ -208,6 +208,10 @@ export function HomePage() {
         description="Discover luxury streetwear crafted from 240–280 GSM combed cotton. Shop oversized graphic tees, drop-shoulder hoodies, or customize your own bespoke garments."
         keywords="heavyweight t-shirts, 240 gsm customizer, streetwear India, oversized tees, luxury menswear"
       />
+      {/* ── Visually hidden H1 for SEO & accessibility (hero art is image-driven) ── */}
+      <h1 className="sr-only">
+        Bingooo Premium Heavyweight Men's Wear & Custom Fashion Studio
+      </h1>
       {/* ── Ultra-Smooth Full-Screen Hero Section with Seamless Auto-Scroll ── */}
       <section
         className="relative w-full h-[85vh] sm:h-[90vh] lg:h-[calc(100vh-80px)] min-h-[580px] max-h-[920px] overflow-hidden border-b border-[#DDD3C5] bg-[#F0E7DF]"

@@ -173,6 +173,32 @@ export class ProductsService {
     };
 
     db.products.push(product);
+
+    // Save images if provided
+    if (dto.imageUrl) {
+      db.product_images.push({
+        id: uuidv4(),
+        product_id: product.id,
+        url: dto.imageUrl,
+        object_key: dto.imageUrl,
+        alt_text: product.title,
+        sort_order: 0,
+        is_primary: true,
+      });
+    } else if (dto.images && dto.images.length > 0) {
+      dto.images.forEach((img, idx) => {
+        db.product_images.push({
+          id: uuidv4(),
+          product_id: product.id,
+          url: img.url,
+          object_key: img.url,
+          alt_text: img.alt_text || product.title,
+          sort_order: idx,
+          is_primary: img.is_primary !== undefined ? img.is_primary : idx === 0,
+        });
+      });
+    }
+
     return this.enrichProduct(product);
   }
 
@@ -203,7 +229,56 @@ export class ProductsService {
     };
 
     db.products[idx] = updated;
+
+    // Update images if provided
+    if (dto.imageUrl !== undefined) {
+      const existing = db.product_images.find((i: any) => i.product_id === id && i.is_primary);
+      if (existing) {
+        existing.url = dto.imageUrl;
+        existing.object_key = dto.imageUrl;
+      } else if (dto.imageUrl) {
+        db.product_images.push({
+          id: uuidv4(),
+          product_id: id,
+          url: dto.imageUrl,
+          object_key: dto.imageUrl,
+          alt_text: updated.title,
+          sort_order: 0,
+          is_primary: true,
+        });
+      }
+    } else if (dto.images && dto.images.length > 0) {
+      db.product_images = db.product_images.filter((i: any) => i.product_id !== id);
+      dto.images.forEach((img, idx) => {
+        db.product_images.push({
+          id: uuidv4(),
+          product_id: id,
+          url: img.url,
+          object_key: img.url,
+          alt_text: img.alt_text || updated.title,
+          sort_order: idx,
+          is_primary: img.is_primary !== undefined ? img.is_primary : idx === 0,
+        });
+      });
+    }
+
     return this.enrichProduct(updated);
+  }
+
+  /** Attach image to product */
+  attachImage(productId: string, url: string, altText?: string, isPrimary = false) {
+    this.findById(productId);
+    const image = {
+      id: uuidv4(),
+      product_id: productId,
+      url,
+      object_key: url,
+      alt_text: altText || null,
+      sort_order: db.product_images.filter((i: any) => i.product_id === productId).length,
+      is_primary: isPrimary,
+    };
+    db.product_images.push(image);
+    return image;
   }
 
   /** Delete product (admin) */

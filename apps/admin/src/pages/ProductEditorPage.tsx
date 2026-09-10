@@ -1,4 +1,4 @@
-import { useState, useEffect, type FormEvent } from 'react';
+import { useState, useEffect, useRef, type FormEvent } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import {
@@ -7,6 +7,7 @@ import {
   Sparkles,
   Shirt,
   Upload,
+  UploadCloud,
   Layers,
   Plus,
   Trash2,
@@ -24,6 +25,8 @@ export function ProductEditorPage() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { toast } = useToast();
+  const imageInputRef = useRef<HTMLInputElement>(null);
+  const [isUploadingImage, setIsUploadingImage] = useState(false);
 
   const [title, setTitle] = useState('');
   const [slug, setSlug] = useState('');
@@ -85,6 +88,9 @@ export function ProductEditorPage() {
       setCompareAtPrice(String(existingProduct.compare_at_price || ''));
       setStatus(existingProduct.status || 'active');
       setCustomizationEnabled(Boolean(existingProduct.customization_enabled));
+      if (existingProduct.images && existingProduct.images.length > 0) {
+        setImageUrl(existingProduct.images[0].url || existingProduct.images[0].object_key || '');
+      }
       if (existingProduct.variants && existingProduct.variants.length > 0) {
         setVariants(
           existingProduct.variants.map((v: any) => ({
@@ -98,6 +104,31 @@ export function ProductEditorPage() {
       }
     }
   }, [existingProduct]);
+
+  const handleUploadGarmentImage = async (file: File) => {
+    if (!file) return;
+    if (file.size > 25 * 1024 * 1024) {
+      toast({ title: 'File too large', description: 'Maximum upload file size is 25MB.', variant: 'danger' });
+      return;
+    }
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('category', 'products');
+    formData.append('name', file.name);
+
+    setIsUploadingImage(true);
+    try {
+      const res = await api.upload<{ success: boolean; url: string }>('/media/upload', formData);
+      setImageUrl(res.url);
+      queryClient.invalidateQueries({ queryKey: ['admin', 'media-assets'] });
+      toast({ title: 'Garment image uploaded!', description: 'Image attached to this product.', variant: 'success' });
+    } catch (err: any) {
+      toast({ title: 'Upload failed', description: err.message || 'Could not upload garment image.', variant: 'danger' });
+    } finally {
+      setIsUploadingImage(false);
+      if (imageInputRef.current) imageInputRef.current.value = '';
+    }
+  };
 
   const handleTitleChange = (val: string) => {
     setTitle(val);
@@ -137,6 +168,7 @@ export function ProductEditorPage() {
         compareAtPrice: compareAtPrice ? Number(compareAtPrice) : undefined,
         status,
         customizationEnabled,
+        imageUrl: imageUrl.trim() || undefined,
         fabric,
         gsm,
         fit,
@@ -575,29 +607,107 @@ export function ProductEditorPage() {
             </div>
           </div>
 
-          {/* Product Image URL / Mock Upload */}
+          {/* Product Image URL & Direct Upload */}
           <div className="card-admin p-6 space-y-4">
-            <h3 className="text-xs font-bold uppercase tracking-wider text-muted">
-              Hero Garment Photography
-            </h3>
-
-            <div>
-              <label className="block text-xs font-bold text-muted">
-                Primary Image URL
-                <input
-                  value={imageUrl}
-                  onChange={(e) => setImageUrl(e.target.value)}
-                  placeholder="https://images.unsplash.com/..."
-                  className="input-admin mt-1.5 text-xs"
-                />
-              </label>
+            <div className="flex items-center justify-between">
+              <h3 className="text-xs font-bold uppercase tracking-wider text-muted">
+                Hero Garment Photography
+              </h3>
+              {imageUrl && (
+                <button
+                  type="button"
+                  onClick={() => setImageUrl('')}
+                  className="text-[11px] font-bold text-danger hover:underline"
+                >
+                  Remove Photo
+                </button>
+              )}
             </div>
 
-            <div className="rounded-xl border border-dashed border-border bg-[#F7EEDB]/30 p-6 text-center text-muted">
-              <ImageIcon size={28} className="mx-auto mb-2 text-muted/60" />
-              <p className="text-xs font-bold text-ink">Drag image or paste URL</p>
-              <p className="text-[10px] text-muted mt-1">Recommended: 1200x1600px editorial portrait</p>
-            </div>
+            {/* Hidden file input */}
+            <input
+              ref={imageInputRef}
+              type="file"
+              accept="image/jpeg,image/png,image/webp,image/svg+xml"
+              className="hidden"
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                if (file) handleUploadGarmentImage(file);
+              }}
+            />
+
+            {imageUrl ? (
+              <div className="space-y-3">
+                <div className="relative aspect-[3/4] w-full overflow-hidden rounded-xl border border-border bg-[#EDE0CC]">
+                  <img
+                    src={imageUrl}
+                    alt="Garment Preview"
+                    className="h-full w-full object-cover"
+                  />
+                  <div className="absolute inset-0 bg-black/40 opacity-0 hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => imageInputRef.current?.click()}
+                      disabled={isUploadingImage}
+                      className="rounded-lg bg-white px-3 py-1.5 text-xs font-bold text-ink shadow hover:bg-brand-sand transition"
+                    >
+                      {isUploadingImage ? 'Uploading...' : 'Replace Photo'}
+                    </button>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-muted">
+                    Photo URL
+                    <input
+                      value={imageUrl}
+                      onChange={(e) => setImageUrl(e.target.value)}
+                      placeholder="https://..."
+                      className="input-admin mt-1 text-xs"
+                    />
+                  </label>
+                </div>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                <div
+                  onClick={() => imageInputRef.current?.click()}
+                  onDragOver={(e) => e.preventDefault()}
+                  onDrop={(e) => {
+                    e.preventDefault();
+                    const file = e.dataTransfer.files?.[0];
+                    if (file) handleUploadGarmentImage(file);
+                  }}
+                  className="group cursor-pointer rounded-xl border-2 border-dashed border-border bg-[#F7EEDB]/30 p-6 text-center hover:border-brand-red/50 hover:bg-[#FDF0EE]/50 transition-all"
+                >
+                  <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-white shadow-sm text-brand-red transition-transform group-hover:scale-110">
+                    {isUploadingImage ? (
+                      <LoaderCircle size={22} className="animate-spin" />
+                    ) : (
+                      <UploadCloud size={22} />
+                    )}
+                  </div>
+                  <p className="mt-3 text-xs font-bold text-ink">
+                    {isUploadingImage ? 'Uploading to Server...' : 'Click or Drag Image to Upload'}
+                  </p>
+                  <p className="text-[10px] text-muted mt-0.5">
+                    JPG, PNG, WEBP (up to 25MB)
+                  </p>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-muted">
+                    Or Paste Image URL Directly
+                    <input
+                      value={imageUrl}
+                      onChange={(e) => setImageUrl(e.target.value)}
+                      placeholder="https://images.unsplash.com/..."
+                      className="input-admin mt-1 text-xs"
+                    />
+                  </label>
+                </div>
+              </div>
+            )}
           </div>
 
           {/* SEO & Meta */}

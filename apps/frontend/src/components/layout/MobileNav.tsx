@@ -1,24 +1,22 @@
 import { Link, useLocation } from 'react-router-dom';
-import { Home, LayoutGrid, Sparkles, ShoppingBag, Menu } from 'lucide-react';
+import { Home, LayoutGrid, Sparkles, ShoppingBag, User } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { cn } from '../../lib/utils';
 import { useCartStore } from '../../store/cart';
-import { useUIStore } from '../../store/ui';
+import { triggerHaptic } from '../../lib/native/capacitorBridge';
 
 export function MobileNav() {
   const location = useLocation();
   const itemCount = useCartStore((s) => s.itemCount);
   const openDrawer = useCartStore((s) => s.openDrawer);
-  const mobileMenuOpen = useUIStore((s) => s.mobileMenuOpen);
-  const toggleMobileMenu = useUIStore((s) => s.toggleMobileMenu);
 
   const getActiveTab = () => {
-    if (mobileMenuOpen) return 'menu';
     const path = location.pathname;
     if (path === '/') return 'home';
     if (path.startsWith('/shop') || path.startsWith('/category') || path.startsWith('/product')) return 'shop';
     if (path.startsWith('/customize')) return 'custom';
     if (path.startsWith('/cart') || path.startsWith('/checkout')) return 'bag';
+    if (path.startsWith('/account') || path.startsWith('/login') || path.startsWith('/signup')) return 'profile';
     return '';
   };
 
@@ -52,10 +50,10 @@ export function MobileNav() {
       badge: itemCount,
     },
     {
-      id: 'menu',
-      label: 'Menu',
-      onClick: toggleMobileMenu,
-      icon: Menu,
+      id: 'profile',
+      label: 'Profile',
+      href: '/account',
+      icon: User,
     },
   ];
 
@@ -131,10 +129,12 @@ export function MobileNav() {
               <button
                 key={item.id}
                 type="button"
-                onClick={item.onClick}
-                className="flex-1 h-full flex items-center justify-center focus:outline-none"
+                onClick={() => {
+                  triggerHaptic('light');
+                  item.onClick!();
+                }}
+                className="flex-1 h-full flex items-center justify-center focus:outline-none focus-visible:ring-2 focus-visible:ring-[#E6321C] focus-visible:ring-inset"
                 aria-label={item.label}
-                aria-expanded={item.id === 'menu' ? mobileMenuOpen : undefined}
               >
                 {content}
               </button>
@@ -145,7 +145,8 @@ export function MobileNav() {
             <Link
               key={item.id}
               to={item.href!}
-              className="flex-1 h-full flex items-center justify-center focus:outline-none"
+              onClick={() => triggerHaptic('selection')}
+              className="flex-1 h-full flex items-center justify-center focus:outline-none focus-visible:ring-2 focus-visible:ring-[#E6321C] focus-visible:ring-inset"
               aria-label={item.label}
               aria-current={isActive ? 'page' : undefined}
             >

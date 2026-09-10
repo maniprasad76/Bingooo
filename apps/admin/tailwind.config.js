@@ -54,8 +54,8 @@ export default {
       },
       fontFamily: {
         sans: ['Manrope', 'system-ui', '-apple-system', 'sans-serif'],
-        display: ['Manrope', 'system-ui', '-apple-system', 'sans-serif'],
-        heading: ['Manrope', 'system-ui', '-apple-system', 'sans-serif'],
+        display: ['Outfit', 'sans-serif'],
+        heading: ['Outfit', 'sans-serif'],
       },
       boxShadow: {
         '2xs': '0 1px 1px rgba(0,0,0,0.03)',

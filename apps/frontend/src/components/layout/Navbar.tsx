@@ -16,14 +16,17 @@ import {
   HelpCircle,
   ShieldCheck,
   Phone,
+  Eye,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '../../lib/utils';
 import { useCartStore } from '../../store/cart';
 import { useAuthStore } from '../../store/auth';
 import { useUIStore } from '../../store/ui';
+import { useRecentlyViewedStore } from '../../store/recentlyViewed';
 import { Logo } from '../ui/Logo';
 import { WhatsAppIcon, getWhatsAppUrl } from '../ui/SocialIcons';
+import { triggerHaptic } from '../../lib/native/capacitorBridge';
 
 const navLinks = [
   { label: 'HOME', href: '/' },
@@ -49,6 +52,7 @@ export function Navbar() {
   const itemCount = useCartStore((s) => s.itemCount);
   const openCartDrawer = useCartStore((s) => s.openDrawer);
   const { isAuthenticated, user, logout } = useAuthStore();
+  const recentlyViewedCount = useRecentlyViewedStore((s) => s.items.length);
 
   // Track scroll position for sticky header elevation & compression
   useEffect(() => {
@@ -175,7 +179,10 @@ export function Navbar() {
             <motion.button
               whileTap={{ scale: 0.92 }}
               whileHover={{ scale: 1.04 }}
-              onClick={() => openCartDrawer()}
+              onClick={() => {
+                triggerHaptic('light');
+                openCartDrawer();
+              }}
               className="relative hidden sm:flex h-9 w-9 sm:h-10 sm:w-10 items-center justify-center rounded-lg text-[#171717] hover:text-[#E6321C] transition-colors"
               aria-label="Open Shopping Bag"
             >
@@ -199,7 +206,10 @@ export function Navbar() {
             {/* Mobile Menu Toggle */}
             <motion.button
               whileTap={{ scale: 0.92 }}
-              onClick={openMobileMenu}
+              onClick={() => {
+                triggerHaptic('light');
+                openMobileMenu();
+              }}
               className="flex h-9 w-9 sm:h-10 sm:w-10 items-center justify-center rounded-lg text-[#171717] hover:text-[#E6321C] transition-colors md:hidden"
               aria-label="Open navigation menu"
             >
@@ -362,6 +372,24 @@ export function Navbar() {
                       <span>Saved Wishlist</span>
                     </div>
                     <ChevronRight size={14} className="text-[#6F6A63]/60" />
+                  </Link>
+                  <Link
+                    to="/recently-viewed"
+                    onClick={closeMobileMenu}
+                    className="flex items-center justify-between px-3 py-2 rounded-lg text-xs font-semibold text-[#171717] hover:bg-[#EDE0CC]/60"
+                  >
+                    <div className="flex items-center gap-2.5">
+                      <Eye size={15} className="text-[#6F6A63]" />
+                      <span>Recently Viewed</span>
+                    </div>
+                    <div className="flex items-center gap-1.5">
+                      {recentlyViewedCount > 0 && (
+                        <span className="px-1.5 py-0.2 rounded-full bg-[#EDE0CC] text-[10px] font-bold text-[#171717]">
+                          {recentlyViewedCount}
+                        </span>
+                      )}
+                      <ChevronRight size={14} className="text-[#6F6A63]/60" />
+                    </div>
                   </Link>
                   <button
                     type="button"

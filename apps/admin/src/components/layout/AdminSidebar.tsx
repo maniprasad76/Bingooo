@@ -26,11 +26,11 @@ import {
   User,
   LogOut,
   ExternalLink,
-  Crown,
   X,
 } from 'lucide-react';
 import { signOut } from '../../lib/auth/supabase';
 import { useAuthStore } from '../../store/auth';
+import { Logo } from '../ui/Logo';
 
 interface AdminSidebarProps {
   isOpen: boolean;
@@ -138,10 +138,8 @@ export function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
       >
         {/* Brand Header */}
         <div className="flex items-center justify-between pb-3 px-1">
-          <Link to="/" className="flex items-center gap-2">
-            <span className="font-sans text-2xl font-black tracking-tight text-white">
-              BINGOOO<span className="text-brand-red">.</span>
-            </span>
+          <Link to="/" className="flex items-center gap-2.5 group">
+            <Logo variant="white" size="sm" />
             <span className="rounded-md bg-brand-red/20 px-2 py-0.5 text-[10px] font-extrabold uppercase tracking-widest text-brand-red">
               ADMIN
             </span>
@@ -162,9 +160,7 @@ export function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
           className="rounded-2xl border border-white/10 bg-white/5 p-3 transition-colors hover:bg-white/10 block mb-2"
         >
           <div className="flex items-center gap-3">
-            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-brand-red text-white shadow-sm">
-              <Crown size={16} />
-            </span>
+            <Logo variant="icon" size="sm" />
             <div className="min-w-0 flex-1">
               <p className="truncate text-xs font-bold text-white">
                 {user?.name || user?.email || 'Operations Admin'}

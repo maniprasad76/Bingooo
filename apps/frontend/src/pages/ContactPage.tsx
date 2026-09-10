@@ -259,6 +259,8 @@ export function ContactPage() {
                       type="text"
                       required
                       placeholder="Full Name"
+                      aria-label="Full Name"
+                      autoComplete="name"
                       value={formData.fullName}
                       onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
                       className="w-full h-12 rounded-xl border border-[#DDD3C5] bg-white px-4 text-xs font-sans text-[#171717] placeholder:text-[#6F6A63] focus:border-[#E6321C] focus:outline-none"
@@ -269,6 +271,8 @@ export function ContactPage() {
                       type="email"
                       required
                       placeholder="Email Address"
+                      aria-label="Email Address"
+                      autoComplete="email"
                       value={formData.email}
                       onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                       className="w-full h-12 rounded-xl border border-[#DDD3C5] bg-white px-4 text-xs font-sans text-[#171717] placeholder:text-[#6F6A63] focus:border-[#E6321C] focus:outline-none"
@@ -280,6 +284,8 @@ export function ContactPage() {
                   <input
                     type="tel"
                     placeholder="Phone Number"
+                    aria-label="Phone Number"
+                    autoComplete="tel"
                     value={formData.phone}
                     onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                     className="w-full h-12 rounded-xl border border-[#DDD3C5] bg-white px-4 text-xs font-sans text-[#171717] placeholder:text-[#6F6A63] focus:border-[#E6321C] focus:outline-none"
@@ -291,6 +297,7 @@ export function ContactPage() {
                     type="text"
                     required
                     placeholder="Subject"
+                    aria-label="Subject"
                     value={formData.subject}
                     onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
                     className="w-full h-12 rounded-xl border border-[#DDD3C5] bg-white px-4 text-xs font-sans text-[#171717] placeholder:text-[#6F6A63] focus:border-[#E6321C] focus:outline-none"
@@ -302,6 +309,7 @@ export function ContactPage() {
                     required
                     rows={6}
                     placeholder="Your Message"
+                    aria-label="Your Message"
                     value={formData.message}
                     onChange={(e) => setFormData({ ...formData, message: e.target.value })}
                     className="w-full rounded-xl border border-[#DDD3C5] bg-white p-4 text-xs font-sans text-[#171717] placeholder:text-[#6F6A63] focus:border-[#E6321C] focus:outline-none resize-none"
@@ -311,6 +319,8 @@ export function ContactPage() {
                 {/* Inline Status Message Banner */}
                 {statusState.type !== 'idle' && (
                   <motion.div
+                    role="status"
+                    aria-live="polite"
                     initial={{ opacity: 0, y: -6 }}
                     animate={{ opacity: 1, y: 0 }}
                     className={`p-3.5 rounded-xl text-xs font-sans flex items-start gap-2.5 ${
@@ -505,6 +515,8 @@ export function ContactPage() {
               type="email"
               required
               placeholder="Enter your email"
+              aria-label="Email for drop updates"
+              autoComplete="email"
               value={newsletterEmail}
               onChange={(e) => setNewsletterEmail(e.target.value)}
               className="flex-1 sm:w-72 h-12 rounded-xl border border-[#DDD3C5] bg-white px-4 text-xs font-sans text-[#171717] placeholder:text-[#6F6A63] focus:border-[#E6321C] focus:outline-none shadow-xs"

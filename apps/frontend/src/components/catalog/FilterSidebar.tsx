@@ -186,6 +186,7 @@ export function FilterSidebar({
               </div>
               <input
                 type="range"
+                aria-label="Maximum price"
                 min={priceRange?.min ?? 299}
                 max={priceRange?.max ?? 1999}
                 step="50"

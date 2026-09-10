@@ -1,8 +1,9 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Lock, Mail, ArrowRight, Crown, Sparkles, Shield } from 'lucide-react';
+import { Lock, Mail, ArrowRight, Sparkles, Shield } from 'lucide-react';
 import { signIn, loginAsDevAdmin } from '../lib/auth/supabase';
 import { useToast } from '../components/ui/Toast';
+import { Logo } from '../components/ui/Logo';
 
 export function LoginPage() {
   const navigate = useNavigate();
@@ -45,12 +46,12 @@ export function LoginPage() {
       <div className="w-full max-w-md space-y-8 rounded-2xl border border-white/10 bg-[#1F1D1B] p-8 shadow-2xl">
         {/* Brand Header */}
         <div className="text-center">
-          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-brand-red text-white shadow-lg shadow-brand-red/30">
-            <Crown size={28} />
+          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-white/5 border border-white/10 p-2.5 shadow-lg mb-4">
+            <img src="/app-icon-white.png" alt="Bingooo" className="h-full w-full object-contain" />
           </div>
-          <h1 className="mt-4 text-3xl font-black tracking-tight text-white">
-            BINGOOO<span className="text-brand-red">.</span>
-          </h1>
+          <div className="flex justify-center mb-3">
+            <Logo variant="white" size="lg" />
+          </div>
           <p className="mt-1 text-xs font-bold uppercase tracking-widest text-brand-red">
             Operations & Control Panel
           </p>

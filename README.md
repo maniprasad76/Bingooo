@@ -13,9 +13,8 @@
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=flat&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
 [![Cloudflare R2](https://img.shields.io/badge/Cloudflare_R2-F38020?style=flat&logo=cloudflare&logoColor=white)](https://www.cloudflare.com/developer-platform/r2/)
 [![Razorpay](https://img.shields.io/badge/Razorpay-0C2340?style=flat&logo=razorpay&logoColor=white)](https://razorpay.com/)
-[![Graphify](https://img.shields.io/badge/Memory-Graphify-blueviolet?style=flat)](https://github.com/graphifyy/graphify)
 
-Bingooo is an end-to-end, streetwear-inspired men's fashion e-commerce ecosystem and interactive custom garment customization studio. Built as a high-performance monorepo, it pairs a customer-facing storefront with a dedicated 27-route operational control center, a modular NestJS API, and a persistent topological codebase memory layer powered by **Graphify**.
+Bingooo is an end-to-end, streetwear-inspired men's fashion e-commerce ecosystem and interactive custom garment customization studio. Built as a high-performance monorepo, it pairs a customer-facing storefront with a dedicated 27-route operational control center and a modular NestJS API.
 
 ---
 
@@ -36,17 +35,13 @@ bingooo/
 │       └── src/              # Products, Orders, Customizations, Inventory, Payments, R2 Media
 │
 ├── .agents/              # AI Pair Programming Customizations & Memory
-│   ├── rules/            # Architectural constraints (graphify.md, etc.)
-│   ├── workflows/        # Executable workflows (/graphify, etc.)
+│   ├── rules/            # Architectural constraints
+│   ├── workflows/        # Executable workflows
 │   └── skills/           # Specialized runbooks:
 │       ├── bingooo-ui-ux/            # Canonical design tokens & section specs
 │       ├── never-get-hacked/         # Application security & defensive engineering
 │       ├── context7/                 # Upstash live docs & backend error resolver
 │       └── nestjs-best-practices/    # Layered architecture & module hygiene
-│
-├── graphify-out/         # Persistent Codebase Knowledge Graph
-│   ├── graph.json        # 1,355 nodes, 2,498 edges, 82 topological communities
-│   └── graph.html        # Interactive browser-based architecture visualization
 │
 └── design.md             # Canonical Design System & UI/UX Specification
 ```
@@ -129,7 +124,6 @@ Guided by the **Never Get Hacked** skill ([.agents/skills/never-get-hacked/SKILL
 ### Prerequisites
 - **Node.js**: `>= 20.0.0`
 - **npm**: `>= 10.0.0`
-- **Python**: `>= 3.11` (for Graphify codebase memory)
 
 ### 1. Installation
 Clone the repository and install dependencies across all workspaces:
@@ -170,33 +164,6 @@ npm run typecheck
 # Build all monorepo applications
 npm run build
 ```
-
----
-
-## 🧠 Codebase Memory & Graphify Integration
-
-This repository uses **Graphify** to construct a persistent, queryable knowledge graph of all code modules, endpoints, components, and relationships.
-
-### Querying the Codebase Memory
-Query architecture and symbol relationships directly from the terminal:
-```bash
-# Ask questions about the codebase architecture
-python -m graphify query "How does order fulfillment relate to payments?"
-
-# Find the shortest dependency path between components
-python -m graphify path "OrdersController" "OrderDetailPage"
-
-# Deep-dive into a specific class or symbol
-python -m graphify explain "ProductEditorPage"
-```
-
-### Refreshing the Knowledge Graph
-After making structural code modifications, keep the graph synchronized:
-```bash
-python -m graphify extract . --code-only
-python -m graphify export html
-```
-To visually explore the complete codebase graph, open `graphify-out/graph.html` in any web browser.
 
 ---
 

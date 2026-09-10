@@ -103,6 +103,7 @@ export function InventoryPage() {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search variant SKU or product title..."
+            aria-label="Search inventory by SKU or product title"
             className="input-admin pl-10 text-xs"
           />
         </div>
@@ -209,6 +210,7 @@ export function InventoryPage() {
                             step="1"
                             required
                             placeholder="+/-"
+                            aria-label={`Stock adjustment quantity for ${item.sku}`}
                             value={adjustDelta}
                             onChange={(e) => setAdjustDelta(e.target.value)}
                             className="h-8 w-20 rounded-lg border border-border px-2 text-xs font-bold focus:border-brand-red focus:outline-none"
@@ -217,7 +219,7 @@ export function InventoryPage() {
                             type="submit"
                             disabled={adjustMutation.isPending}
                             className="rounded-lg bg-brand-red p-1.5 text-white hover:bg-[#B91F12]"
-                            title="Confirm adjustment"
+                            aria-label={`Confirm stock adjustment for ${item.sku}`}
                           >
                             <Check size={14} />
                           </button>
@@ -228,7 +230,7 @@ export function InventoryPage() {
                               setAdjustDelta('');
                             }}
                             className="rounded-lg border border-border p-1.5 text-muted hover:bg-[#F7EEDB]"
-                            title="Cancel"
+                            aria-label="Cancel stock adjustment"
                           >
                             <X size={14} />
                           </button>

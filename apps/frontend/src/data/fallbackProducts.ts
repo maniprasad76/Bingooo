@@ -37,7 +37,9 @@ export const FALLBACK_CATEGORIES = [
   { id: 'cat-2', name: 'Hoodies & Fleece', slug: 'hoodies', product_count: 8 },
   { id: 'cat-3', name: 'Graphic Drops', slug: 'graphic-drops', product_count: 6 },
   { id: 'cat-4', name: 'Pants & Cargos', slug: 'cargos', product_count: 5 },
-  { id: 'cat-5', name: 'Accessories', slug: 'accessories', product_count: 4 },
+  { id: 'cat-5', name: 'Denim & Jeans', slug: 'jeans', product_count: 4 },
+  { id: 'cat-6', name: 'Shirts', slug: 'shirts', product_count: 5 },
+  { id: 'cat-7', name: 'Accessories', slug: 'accessories', product_count: 4 },
 ];
 
 export const FALLBACK_PRODUCTS: FallbackProduct[] = [
@@ -72,7 +74,7 @@ export const FALLBACK_PRODUCTS: FallbackProduct[] = [
       { id: 'v-1-l-crm', sku: 'COT-CRM-L', size: 'L', color: 'Vintage Cream', colorHex: '#F7EEDB', inStock: true, stockQuantity: 25 },
       { id: 'v-1-m-red', sku: 'COT-RED-M', size: 'M', color: 'Atelier Crimson', colorHex: '#B91F12', inStock: true, stockQuantity: 18 },
     ],
-    tags: ['bestseller', 'streetwear', 'heavyweight', 'customizable'],
+    tags: ['bestseller', 'streetwear', 'heavyweight', 'customizable', 't-shirts', 'tshirts', 'tees', 'oversized-tees'],
   },
   {
     id: 'prod-2',
@@ -103,7 +105,7 @@ export const FALLBACK_PRODUCTS: FallbackProduct[] = [
       { id: 'v-2-l-crm', sku: 'CYH-CRM-L', size: 'L', color: 'Raw Linen', colorHex: '#EDE0CC', inStock: true, stockQuantity: 18 },
       { id: 'v-2-xl-blk', sku: 'CYH-BLK-XL', size: 'XL', color: 'Ink Black', colorHex: '#171717', inStock: true, stockQuantity: 12 },
     ],
-    tags: ['customizable', 'winter', 'hoodie', 'featured'],
+    tags: ['customizable', 'winter', 'hoodie', 'featured', 'hoodies'],
   },
   {
     id: 'prod-3',
@@ -133,7 +135,7 @@ export const FALLBACK_PRODUCTS: FallbackProduct[] = [
       { id: 'v-3-l-blk', sku: 'MBT-BLK-L', size: 'L', color: 'Midnight Black', colorHex: '#111111', inStock: true, stockQuantity: 26 },
       { id: 'v-3-m-wht', sku: 'MBT-WHT-M', size: 'M', color: 'Optic White', colorHex: '#FFFFFF', inStock: true, stockQuantity: 28 },
     ],
-    tags: ['essential', 'minimal', 't-shirt'],
+    tags: ['essential', 'minimal', 't-shirt', 't-shirts', 'tshirts', 'tees', 'oversized-tees'],
   },
   {
     id: 'prod-4',
@@ -162,7 +164,7 @@ export const FALLBACK_PRODUCTS: FallbackProduct[] = [
       { id: 'v-4-l-blk', sku: 'AH-BLK-L', size: 'L', color: 'Onyx Black', colorHex: '#111111', inStock: true, stockQuantity: 19 },
       { id: 'v-4-xl-blk', sku: 'AH-BLK-XL', size: 'XL', color: 'Onyx Black', colorHex: '#111111', inStock: true, stockQuantity: 15 },
     ],
-    tags: ['anime', 'graphic', 'bestseller', 'hoodie'],
+    tags: ['anime', 'graphic', 'bestseller', 'hoodie', 'hoodies', 'graphic-drops'],
   },
   {
     id: 'prod-5',
@@ -173,9 +175,9 @@ export const FALLBACK_PRODUCTS: FallbackProduct[] = [
     compareAtPrice: 1099,
     customizationEnabled: false,
     category: {
-      id: 'cat-1',
-      name: 'Oversized Tees',
-      slug: 'oversized-tees',
+      id: 'cat-6',
+      name: 'Shirts',
+      slug: 'shirts',
     },
     fabric_gsm: 210,
     fit_silhouette: 'Cuban Relaxed Silhouette',
@@ -191,7 +193,7 @@ export const FALLBACK_PRODUCTS: FallbackProduct[] = [
       { id: 'v-5-l-crm', sku: 'TS-CRM-L', size: 'L', color: 'Warm Oatmeal', colorHex: '#E8DEC8', inStock: true, stockQuantity: 18 },
       { id: 'v-5-m-blk', sku: 'TS-BLK-M', size: 'M', color: 'Pitch Black', colorHex: '#111111', inStock: true, stockQuantity: 16 },
     ],
-    tags: ['textured', 'resort', 'casual'],
+    tags: ['textured', 'resort', 'casual', 'shirts', 'shirt'],
   },
   {
     id: 'prod-6',
@@ -221,7 +223,65 @@ export const FALLBACK_PRODUCTS: FallbackProduct[] = [
       { id: 'v-6-34-olv', sku: 'TC-OLV-34', size: '34', color: 'Army Olive', colorHex: '#3D4532', inStock: true, stockQuantity: 15 },
       { id: 'v-6-32-blk', sku: 'TC-BLK-32', size: '32', color: 'Stealth Black', colorHex: '#171717', inStock: true, stockQuantity: 30 },
     ],
-    tags: ['tactical', 'cargos', 'utility', 'pants'],
+    tags: ['tactical', 'cargos', 'utility', 'pants', 'jeans', 'denim'],
+  },
+  {
+    id: 'prod-7',
+    title: 'Heavyweight Raw Selvedge Denim Jeans',
+    slug: 'raw-selvedge-denim-jeans',
+    description: '14.5 oz premium Japanese selvedge denim. Straight relaxed vintage fit with copper rivet reinforcements, custom leather waistband patch, and deep indigo fade potential.',
+    basePrice: 1799,
+    compareAtPrice: 2499,
+    customizationEnabled: false,
+    category: {
+      id: 'cat-5',
+      name: 'Denim & Jeans',
+      slug: 'jeans',
+    },
+    fabric_gsm: 410,
+    fit_silhouette: 'Straight Relaxed Silhouette',
+    care_instructions: 'Wash inside out in cold water after 3-6 months of wear. Hang dry.',
+    rating: 4.9,
+    reviews_count: 38,
+    images: [
+      { url: '/hero-banner-3.jpg', alt_text: 'Raw Selvedge Denim Front' },
+      { url: '/hero-banner-4.jpg', alt_text: 'Raw Denim Lifestyle' },
+    ],
+    variants: [
+      { id: 'v-7-30-ind', sku: 'RSD-IND-30', size: '30', color: 'Raw Indigo', colorHex: '#1A2744', inStock: true, stockQuantity: 12 },
+      { id: 'v-7-32-ind', sku: 'RSD-IND-32', size: '32', color: 'Raw Indigo', colorHex: '#1A2744', inStock: true, stockQuantity: 20 },
+      { id: 'v-7-34-ind', sku: 'RSD-IND-34', size: '34', color: 'Raw Indigo', colorHex: '#1A2744', inStock: true, stockQuantity: 16 },
+    ],
+    tags: ['jeans', 'denim', 'pants', 'selvedge', 'bestseller'],
+  },
+  {
+    id: 'prod-8',
+    title: 'Atelier Boxy Heavy Oxford Shirt',
+    slug: 'boxy-oxford-shirt',
+    description: '260 GSM structured heavyweight Oxford cloth. Tailored drop shoulders, mother-of-pearl buttons, and structured collar that maintains its shape all day.',
+    basePrice: 999,
+    compareAtPrice: 1499,
+    customizationEnabled: false,
+    category: {
+      id: 'cat-6',
+      name: 'Shirts',
+      slug: 'shirts',
+    },
+    fabric_gsm: 260,
+    fit_silhouette: 'Boxy Drop Fit',
+    care_instructions: 'Machine wash warm. Hang dry. Steam iron.',
+    rating: 4.8,
+    reviews_count: 47,
+    images: [
+      { url: '/hero-banner-2.jpg', alt_text: 'Oxford Shirt Front' },
+      { url: '/hero-banner-5.jpg', alt_text: 'Oxford Shirt Side' },
+    ],
+    variants: [
+      { id: 'v-8-m-wht', sku: 'BOS-WHT-M', size: 'M', color: 'Chalk White', colorHex: '#FDFBF7', inStock: true, stockQuantity: 18 },
+      { id: 'v-8-l-wht', sku: 'BOS-WHT-L', size: 'L', color: 'Chalk White', colorHex: '#FDFBF7', inStock: true, stockQuantity: 14 },
+      { id: 'v-8-m-blu', sku: 'BOS-BLU-M', size: 'M', color: 'Pale Sky Blue', colorHex: '#D2DFEC', inStock: true, stockQuantity: 12 },
+    ],
+    tags: ['shirts', 'shirt', 'oxford', 'formal', 'casual'],
   },
 ];
 

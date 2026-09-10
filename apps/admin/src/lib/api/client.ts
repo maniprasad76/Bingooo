@@ -53,7 +53,10 @@ async function request<T = unknown>(path: string, options: RequestOptions = {}):
   }
 
   const headers = new Headers(init.headers);
-  headers.set('Content-Type', 'application/json');
+  const isFormData = typeof FormData !== 'undefined' && body instanceof FormData;
+  if (!isFormData) {
+    headers.set('Content-Type', 'application/json');
+  }
   headers.set('Accept', 'application/json');
 
   const token = localStorage.getItem('bingooo_admin_token') || localStorage.getItem('bingooo_auth_token');
@@ -64,7 +67,7 @@ async function request<T = unknown>(path: string, options: RequestOptions = {}):
   const response = await fetch(url, {
     ...init,
     headers,
-    body: body ? JSON.stringify(body) : undefined,
+    body: isFormData ? (body as FormData) : body ? JSON.stringify(body) : undefined,
   });
 
   if (raw) {
@@ -93,6 +96,9 @@ export const api = {
   post: <T = unknown>(path: string, body?: unknown, options?: RequestOptions) =>
     request<T>(path, { ...options, method: 'POST', body }),
 
+  upload: <T = unknown>(path: string, formData: FormData, options?: RequestOptions) =>
+    request<T>(path, { ...options, method: 'POST', body: formData }),
+
   patch: <T = unknown>(path: string, body?: unknown, options?: RequestOptions) =>
     request<T>(path, { ...options, method: 'PATCH', body }),
 
@@ -102,3 +108,4 @@ export const api = {
   delete: <T = unknown>(path: string, options?: RequestOptions) =>
     request<T>(path, { ...options, method: 'DELETE' }),
 };
+

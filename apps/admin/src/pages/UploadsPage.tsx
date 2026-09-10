@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import {
   FolderUp,
@@ -8,17 +8,16 @@ import {
   Copy,
   Trash2,
   ExternalLink,
-  Filter,
-  Check,
-  File,
-  Layers,
-  Sparkles,
+  LoaderCircle,
+  Plus,
+  UploadCloud,
+  X,
 } from 'lucide-react';
 import { api } from '../lib/api/client';
 import { formatDate } from '../lib/utils';
 import { useToast } from '../components/ui/Toast';
 
-interface MediaAsset {
+export interface MediaAsset {
   id: string;
   name: string;
   category: 'products' | 'designs' | 'banners' | 'lookbook';
@@ -28,82 +27,27 @@ interface MediaAsset {
   uploaded_at: string;
 }
 
-const mockAssets: MediaAsset[] = [
-  {
-    id: 'asset-1',
-    name: 'heavyweight-tee-black-front.jpg',
-    category: 'products',
-    url: 'https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=800&auto=format&fit=crop',
-    sizeBytes: 840000,
-    dimensions: '1600x2000',
-    uploaded_at: new Date(Date.now() - 86400000 * 2).toISOString(),
-  },
-  {
-    id: 'asset-2',
-    name: 'oversized-hoodie-bone-white.jpg',
-    category: 'products',
-    url: 'https://images.unsplash.com/photo-1556905055-8f358a7a47b2?w=800&auto=format&fit=crop',
-    sizeBytes: 1200000,
-    dimensions: '1600x2000',
-    uploaded_at: new Date(Date.now() - 86400000 * 4).toISOString(),
-  },
-  {
-    id: 'asset-3',
-    name: 'summer-drop-hero-banner-desktop.jpg',
-    category: 'banners',
-    url: 'https://images.unsplash.com/photo-1490481651871-ab68de25d43d?w=1200&auto=format&fit=crop',
-    sizeBytes: 2450000,
-    dimensions: '2880x1200',
-    uploaded_at: new Date(Date.now() - 86400000 * 8).toISOString(),
-  },
-  {
-    id: 'asset-4',
-    name: 'tokyo-cyber-custom-graphic.png',
-    category: 'designs',
-    url: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=800&auto=format&fit=crop',
-    sizeBytes: 650000,
-    dimensions: '1200x1200',
-    uploaded_at: new Date(Date.now() - 86400000 * 1).toISOString(),
-  },
-  {
-    id: 'asset-5',
-    name: 'cargo-pants-styling-lookbook.jpg',
-    category: 'lookbook',
-    url: 'https://images.unsplash.com/photo-1517445312882-bc9910d016b7?w=800&auto=format&fit=crop',
-    sizeBytes: 1800000,
-    dimensions: '1800x2400',
-    uploaded_at: new Date(Date.now() - 86400000 * 12).toISOString(),
-  },
-];
-
 export function UploadsPage() {
   const queryClient = useQueryClient();
   const { toast } = useToast();
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [categoryFilter, setCategoryFilter] = useState('all');
   const [search, setSearch] = useState('');
+  const [selectedUploadCategory, setSelectedUploadCategory] = useState<'products' | 'designs' | 'banners' | 'lookbook'>('products');
+  const [isDragOver, setIsDragOver] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
 
   const { data: assets = [], isLoading } = useQuery<MediaAsset[]>({
     queryKey: ['admin', 'media-assets', categoryFilter, search],
     queryFn: () => api.get<MediaAsset[]>('/media/assets', { category: categoryFilter, search }),
   });
 
-  const uploadMutation = useMutation({
-    mutationFn: (data: Partial<MediaAsset>) => api.post('/media/assets', data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['admin', 'media-assets'] });
-      toast({ title: 'New media asset stored in R2 bucket', variant: 'success' });
-    },
-    onError: (err: any) => {
-      toast({ title: 'Upload failed', description: err.message, variant: 'danger' });
-    },
-  });
-
   const deleteMutation = useMutation({
     mutationFn: (id: string) => api.post(`/media/assets/${id}/delete`, {}),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin', 'media-assets'] });
-      toast({ title: 'Asset deleted from Cloudflare R2', variant: 'success' });
+      toast({ title: 'Asset removed from storage', variant: 'success' });
     },
     onError: (err: any) => {
       toast({ title: 'Delete failed', description: err.message, variant: 'danger' });
@@ -112,54 +56,163 @@ export function UploadsPage() {
 
   const handleCopyUrl = (url: string) => {
     navigator.clipboard.writeText(url);
-    toast({ title: 'CDN URL copied to clipboard', variant: 'success' });
+    toast({ title: 'Media URL copied to clipboard', variant: 'success' });
   };
 
   const handleDelete = (id: string) => {
-    deleteMutation.mutate(id);
+    if (confirm('Are you sure you want to delete this media asset?')) {
+      deleteMutation.mutate(id);
+    }
   };
 
-  const handleMockUpload = () => {
-    uploadMutation.mutate({
-      name: `garment-asset-${Date.now().toString().slice(-4)}.jpg`,
-      category: (categoryFilter === 'all' ? 'products' : categoryFilter) as any,
-      url: 'https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?w=800&auto=format&fit=crop',
-      sizeBytes: 980000,
-      dimensions: '1600x2000',
-    });
+  const uploadFile = async (file: File) => {
+    if (!file) return;
+
+    if (file.size > 25 * 1024 * 1024) {
+      toast({
+        title: 'File too large',
+        description: 'Maximum upload file size is 25MB.',
+        variant: 'danger',
+      });
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('category', selectedUploadCategory);
+    formData.append('name', file.name);
+
+    setIsUploading(true);
+    try {
+      const response = await api.upload<{ success: boolean; url: string; asset: MediaAsset }>('/media/upload', formData);
+      queryClient.invalidateQueries({ queryKey: ['admin', 'media-assets'] });
+      toast({
+        title: 'File uploaded successfully!',
+        description: `${file.name} is now stored and ready to use.`,
+        variant: 'success',
+      });
+    } catch (err: any) {
+      toast({
+        title: 'Upload failed',
+        description: err.message || 'Could not upload file to server.',
+        variant: 'danger',
+      });
+    } finally {
+      setIsUploading(false);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+    }
   };
 
-  const formatFileSize = (bytes: number) => {
-    return `${(bytes / (1024 * 1024)).toFixed(2)} MB`;
+  const handleFilesSelected = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (files && files.length > 0) {
+      Array.from(files).forEach((file) => uploadFile(file));
+    }
   };
 
-  const isUploading = uploadMutation.isPending;
-  const filtered = assets;
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragOver(false);
+    const files = e.dataTransfer.files;
+    if (files && files.length > 0) {
+      Array.from(files).forEach((file) => uploadFile(file));
+    }
+  };
+
+  const formatFileSize = (bytes?: number) => {
+    if (!bytes) return '0 KB';
+    if (bytes >= 1024 * 1024) {
+      return `${(bytes / (1024 * 1024)).toFixed(2)} MB`;
+    }
+    return `${(bytes / 1024).toFixed(0)} KB`;
+  };
 
   return (
     <div className="space-y-6">
-      {/* Header */}
+      {/* Hidden File Input */}
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/jpeg,image/png,image/webp,image/svg+xml,image/gif"
+        multiple
+        className="hidden"
+        onChange={handleFilesSelected}
+      />
+
+      {/* Top Header Card */}
       <div className="flex flex-wrap items-center justify-between gap-4 card-admin p-6">
         <div>
           <span className="inline-flex items-center gap-1.5 rounded-full bg-[#FDF0EE] px-3 py-1 text-xs font-bold uppercase text-brand-red">
-            <FolderUp size={14} /> Cloudflare R2 Storage
+            <FolderUp size={14} /> Cloud & Local Storage
           </span>
           <h2 className="mt-2 text-xl font-black text-ink sm:text-2xl">
             Media Asset Library & File Storage
           </h2>
           <p className="text-xs text-muted">
-            Manage high-resolution garment imagery, customer print uploads, and campaign lookbooks.
+            Upload and manage high-resolution garment imagery, customer custom graphics, lookbooks, and hero banners.
           </p>
         </div>
 
-        <button
-          onClick={handleMockUpload}
-          disabled={isUploading}
-          className="btn-primary"
-        >
-          <Upload size={16} />
-          {isUploading ? 'Uploading to R2...' : 'Upload Media Asset'}
-        </button>
+        <div className="flex items-center gap-3">
+          <select
+            value={selectedUploadCategory}
+            onChange={(e) => setSelectedUploadCategory(e.target.value as any)}
+            className="input-admin text-xs py-2 w-36"
+            title="Choose category for new uploads"
+          >
+            <option value="products">Garment Product</option>
+            <option value="designs">Custom Design</option>
+            <option value="banners">Hero Banner</option>
+            <option value="lookbook">Editorial Lookbook</option>
+          </select>
+
+          <button
+            onClick={() => fileInputRef.current?.click()}
+            disabled={isUploading}
+            className="btn-primary"
+          >
+            {isUploading ? (
+              <>
+                <LoaderCircle size={16} className="animate-spin" />
+                Uploading...
+              </>
+            ) : (
+              <>
+                <UploadCloud size={16} />
+                Upload New Image
+              </>
+            )}
+          </button>
+        </div>
+      </div>
+
+      {/* Drag & Drop Zone */}
+      <div
+        onDragOver={(e) => {
+          e.preventDefault();
+          setIsDragOver(true);
+        }}
+        onDragLeave={() => setIsDragOver(false)}
+        onDrop={handleDrop}
+        onClick={() => fileInputRef.current?.click()}
+        className={`group cursor-pointer rounded-2xl border-2 border-dashed p-8 text-center transition-all ${
+          isDragOver
+            ? 'border-brand-red bg-[#FDF0EE]/80 scale-[1.005]'
+            : 'border-border bg-white hover:border-brand-red/50 hover:bg-[#F7EEDB]/20'
+        }`}
+      >
+        <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-[#F7EEDB] text-brand-red transition-transform group-hover:scale-110">
+          <UploadCloud size={28} />
+        </div>
+        <h3 className="mt-3 text-sm font-black text-ink">
+          Drag & Drop Images Here, or <span className="text-brand-red underline">Browse Files</span>
+        </h3>
+        <p className="mt-1 text-xs text-muted">
+          Supports JPG, PNG, WEBP, and SVG (up to 25MB). Uploads will be categorized as{' '}
+          <span className="font-bold text-ink uppercase">{selectedUploadCategory}</span>.
+        </p>
       </div>
 
       {/* Filter & Search Bar */}
@@ -198,65 +251,82 @@ export function UploadsPage() {
       </div>
 
       {/* Media Grid */}
-      <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-        {filtered.map((asset) => (
-          <div
-            key={asset.id}
-            className="group card-admin overflow-hidden border border-border transition-all hover:border-brand-red/40 hover:shadow-md"
-          >
-            {/* Image Preview Container */}
-            <div className="relative aspect-[4/3] w-full overflow-hidden bg-[#EDE0CC]">
-              <img
-                src={asset.url}
-                alt={asset.name}
-                className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
-                loading="lazy"
-              />
-              <span className="absolute top-2 left-2 rounded-md bg-black/60 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-white backdrop-blur-sm">
-                {asset.category}
-              </span>
-            </div>
-
-            {/* Meta & Actions */}
-            <div className="p-4 space-y-2">
-              <p className="truncate text-xs font-bold text-ink" title={asset.name}>
-                {asset.name}
-              </p>
-              <div className="flex items-center justify-between text-[11px] text-muted">
-                <span>{formatFileSize(asset.sizeBytes)}</span>
-                {asset.dimensions && <span>{asset.dimensions}</span>}
+      {isLoading ? (
+        <div className="flex min-h-[300px] items-center justify-center gap-3 card-admin p-12 text-muted">
+          <LoaderCircle size={24} className="animate-spin text-brand-red" />
+          <span className="text-xs font-bold uppercase tracking-wider">Loading media assets...</span>
+        </div>
+      ) : assets.length === 0 ? (
+        <div className="card-admin p-12 text-center">
+          <ImageIcon size={40} className="mx-auto mb-3 text-muted/50" />
+          <h3 className="text-sm font-bold text-ink">No media assets found</h3>
+          <p className="text-xs text-muted mt-1">Upload an image above to populate the library.</p>
+        </div>
+      ) : (
+        <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+          {assets.map((asset) => (
+            <div
+              key={asset.id}
+              className="group card-admin overflow-hidden border border-border transition-all hover:border-brand-red/40 hover:shadow-md"
+            >
+              {/* Image Preview Container */}
+              <div className="relative aspect-[4/3] w-full overflow-hidden bg-[#EDE0CC]">
+                <img
+                  src={asset.url}
+                  alt={asset.name}
+                  className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                  loading="lazy"
+                  onError={(e) => {
+                    (e.currentTarget as HTMLImageElement).src = '/hero-banner.png';
+                  }}
+                />
+                <span className="absolute top-2 left-2 rounded-md bg-black/60 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-white backdrop-blur-sm">
+                  {asset.category}
+                </span>
               </div>
 
-              <div className="flex items-center justify-between pt-2 border-t border-border">
-                <button
-                  onClick={() => handleCopyUrl(asset.url)}
-                  className="inline-flex items-center gap-1 text-[11px] font-bold text-ink hover:text-brand-red transition-colors"
-                >
-                  <Copy size={13} /> Copy URL
-                </button>
-                <div className="flex items-center gap-2">
-                  <a
-                    href={asset.url}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="p-1 text-muted hover:text-ink rounded"
-                    title="Open full size"
-                  >
-                    <ExternalLink size={14} />
-                  </a>
+              {/* Meta & Actions */}
+              <div className="p-4 space-y-2">
+                <p className="truncate text-xs font-bold text-ink" title={asset.name}>
+                  {asset.name}
+                </p>
+                <div className="flex items-center justify-between text-[11px] text-muted">
+                  <span>{formatFileSize(asset.sizeBytes)}</span>
+                  {asset.uploaded_at && <span>{formatDate(asset.uploaded_at)}</span>}
+                </div>
+
+                <div className="flex items-center justify-between pt-2 border-t border-border">
                   <button
-                    onClick={() => handleDelete(asset.id)}
-                    className="p-1 text-muted hover:text-danger rounded"
-                    title="Delete file"
+                    onClick={() => handleCopyUrl(asset.url)}
+                    className="inline-flex items-center gap-1 text-[11px] font-bold text-ink hover:text-brand-red transition-colors"
                   >
-                    <Trash2 size={14} />
+                    <Copy size={13} /> Copy URL
                   </button>
+                  <div className="flex items-center gap-2">
+                    <a
+                      href={asset.url}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="p-1 text-muted hover:text-ink rounded"
+                      title="Open full size in new tab"
+                    >
+                      <ExternalLink size={14} />
+                    </a>
+                    <button
+                      onClick={() => handleDelete(asset.id)}
+                      disabled={deleteMutation.isPending}
+                      className="p-1 text-muted hover:text-danger rounded"
+                      title="Delete asset"
+                    >
+                      <Trash2 size={14} />
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

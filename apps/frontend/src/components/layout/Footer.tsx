@@ -35,18 +35,17 @@ const FOOTER_COLUMNS: FooterColumn[] = [
     title: 'Custom Studio',
     links: [
       { label: '3D Design Lab', to: '/customize' },
-      { label: 'DTF Printing', to: '/customize' },
-      { label: 'Bulk Orders', to: '/contact' },
-      { label: 'Fabric Specifications', to: '/size-guide' },
-      { label: 'Artwork Guidelines', to: '/about' },
+      { label: 'DTF Printing', to: '/dtf-printing' },
+      { label: 'Bulk Orders', to: '/bulk-orders' },
+      { label: 'Fabric Specifications', to: '/fabric-specifications' },
+      { label: 'Artwork Guidelines', to: '/artwork-guidelines' },
     ],
   },
   {
     title: 'Customer Care',
     links: [
-      { label: 'Track Order', to: '/account/orders' },
+      { label: 'Track Order', to: '/track-order' },
       { label: 'Shipping Policy', to: '/shipping-policy' },
-      { label: 'Returns and Exchange', to: '/returns-refunds' },
       { label: 'Size and Fit Guide', to: '/size-guide' },
       { label: 'Contact Support', to: '/contact' },
       { label: 'FAQ', to: '/faq' },

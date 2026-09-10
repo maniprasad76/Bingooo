@@ -1,7 +1,9 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { AdminSidebar } from './AdminSidebar';
 import { AdminHeader } from './AdminHeader';
+import { ScrollToTop } from '../common/ScrollToTop';
+import { RouteFallback } from '../common/RouteFallback';
 import { useAuthStore } from '../../store/auth';
 import { initAuth } from '../../lib/auth/supabase';
 import { LoaderCircle } from 'lucide-react';
@@ -37,13 +39,18 @@ export function AdminLayout() {
 
   return (
     <div className="min-h-screen bg-[#F7EEDB] text-ink">
+      {/* ─── Global Scroll Restoration to Top ─── */}
+      <ScrollToTop />
+
       <AdminSidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
       <div className="flex flex-col lg:pl-72">
         <AdminHeader onOpenSidebar={() => setSidebarOpen(true)} />
         <main className="flex-1 p-4 sm:p-8">
           <div className="mx-auto max-w-[1600px]">
-            <Outlet />
+            <Suspense fallback={<RouteFallback />}>
+              <Outlet />
+            </Suspense>
           </div>
         </main>
       </div>

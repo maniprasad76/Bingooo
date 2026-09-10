@@ -6,7 +6,7 @@ import { SEO } from '../components/common/SEO';
 import { ShopByCategory } from '../components/home/ShopByCategory';
 import { HowItWorksBanner } from '../components/home/HowItWorksBanner';
 import { NewArrivals } from '../components/home/NewArrivals';
-import { WhyBingooo } from '../components/home/WhyBingooo';
+import { InstagramCommunity } from '../components/home/InstagramCommunity';
 import { LovedByCommunity } from '../components/home/LovedByCommunity';
 import { ReadyToExpressBanner } from '../components/home/ReadyToExpressBanner';
 
@@ -303,8 +303,8 @@ export function HomePage() {
       {/* ── 3. New Arrivals Carousel ── */}
       <NewArrivals />
 
-      {/* ── 4. Why Bingooo? (5 Value Propositions) ── */}
-      <WhyBingooo />
+      {/* ── 4. Join Our Instagram Community (Reels & Posts Showcase) ── */}
+      <InstagramCommunity />
 
       {/* ── 5. Loved By Our Community (Reviews Showcase) ── */}
       <LovedByCommunity />

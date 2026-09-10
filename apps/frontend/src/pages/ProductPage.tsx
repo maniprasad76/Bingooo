@@ -19,6 +19,9 @@ import {
   Sparkles,
   X,
   AlertCircle,
+  Flame,
+  Eye,
+  CheckCircle2,
 } from 'lucide-react';
 import { useProduct } from '../hooks/useProducts';
 import { useCart } from '../hooks/useCart';
@@ -397,31 +400,68 @@ export function ProductPage() {
                 </p>
               </div>
 
-              {/* Scarcity Effect Urgency Card */}
-              <div className="mt-4 p-3.5 rounded-xl bg-[#FAF0EE] border border-[#F5C7C1]/90 shadow-xs">
-                <div className="flex items-center justify-between text-xs mb-1.5">
-                  <div className="flex items-center gap-2">
-                    <span className="relative flex h-2.5 w-2.5">
-                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#E6321C] opacity-75"></span>
-                      <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-[#E6321C]"></span>
-                    </span>
-                    <span className="font-heading font-extrabold text-[#B91F12] uppercase tracking-wider text-[11px]">
-                      Essential Scarcity Alert
-                    </span>
+              {/* Limited Atelier Batch Card */}
+              <div className="mt-4 p-4 rounded-2xl border border-[#DDD3C5] bg-gradient-to-br from-white via-[#FDFBF7] to-[#F7EEDB]/30 shadow-[0_2px_12px_rgba(23,23,23,0.03)] relative overflow-hidden">
+                {/* Subtle atelier watermark */}
+                <div className="absolute -right-2 -bottom-2 select-none pointer-events-none text-[#DDD3C5]/20 font-heading font-black text-5xl tracking-tighter">
+                  BGO
+                </div>
+
+                <div className="relative z-10 space-y-2.5">
+                  {/* Top Bar */}
+                  <div className="flex items-center justify-between gap-2">
+                    <div className="flex items-center gap-2">
+                      <span className="relative flex h-2 w-2">
+                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#E6321C] opacity-60"></span>
+                        <span className="relative inline-flex rounded-full h-2 w-2 bg-[#E6321C]"></span>
+                      </span>
+                      <span className="font-heading font-black text-[#171717] uppercase tracking-[0.12em] text-[10px] sm:text-[11px]">
+                        Limited Atelier Run
+                      </span>
+                      <span className="bg-[#171717] text-[#F7EEDB] px-2 py-0.5 rounded-full text-[9px] font-extrabold uppercase tracking-wider">
+                        50 Pcs Only
+                      </span>
+                    </div>
+
+                    <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#E6321C]/10 border border-[#E6321C]/20 text-[#E6321C] text-[11px] font-bold shrink-0">
+                      <Flame size={12} className="fill-[#E6321C]/30" />
+                      <span>Only 3 Left</span>
+                    </div>
                   </div>
-                  <span className="font-bold text-[#B91F12] text-xs">Only 3 pieces left in batch</span>
+
+                  {/* Sleek Minimal Progress Meter */}
+                  <div className="space-y-1">
+                    <div className="w-full bg-[#EDE0CC]/70 h-1.5 rounded-full overflow-hidden">
+                      <motion.div
+                        className="bg-gradient-to-r from-[#171717] via-[#B91F12] to-[#E6321C] h-full rounded-full"
+                        initial={{ width: 0 }}
+                        animate={{ width: '94%' }}
+                        transition={{ duration: 1.1, ease: 'easeOut' }}
+                      />
+                    </div>
+                    <div className="flex items-center justify-between text-[10px] font-sans text-[#6F6A63]">
+                      <span>Batch 01 Allocation: <strong>94% Claimed</strong></span>
+                      <span className="text-[#171717] font-semibold">Edition 47/50</span>
+                    </div>
+                  </div>
+
+                  {/* Craftmanship Statement */}
+                  <p className="text-[11px] font-sans text-[#6F6A63] leading-relaxed">
+                    Crafted in small numbered batches at our Bengaluru studio. Once this run is archived, this colorway will not be restocked.
+                  </p>
+
+                  {/* Live Demand Bar */}
+                  <div className="pt-2 border-t border-[#DDD3C5]/50 flex items-center justify-between text-[10px] sm:text-[11px] text-[#6F6A63]">
+                    <div className="flex items-center gap-1.5 font-medium">
+                      <Eye size={12} className="text-[#171717]" />
+                      <span><strong className="text-[#171717]">18 collectors</strong> viewing right now</span>
+                    </div>
+                    <div className="flex items-center gap-1 text-[#238636] font-semibold">
+                      <CheckCircle2 size={12} />
+                      <span>Ready to Ship</span>
+                    </div>
+                  </div>
                 </div>
-                <div className="w-full bg-[#EADDD7] h-1.5 rounded-full overflow-hidden mb-2">
-                  <motion.div
-                    className="bg-[#E6321C] h-full rounded-full"
-                    initial={{ width: 0 }}
-                    animate={{ width: '92%' }}
-                    transition={{ duration: 1, ease: 'easeOut' }}
-                  />
-                </div>
-                <p className="text-[11px] font-sans text-[#6F6A63] leading-tight">
-                  <strong className="text-[#171717]">Essential Heavyweight Drop:</strong> Handcrafted in a limited 50-piece run at our atelier. 18 shoppers have this essential item in their bag right now.
-                </p>
               </div>
 
               {/* Short Excerpt */}

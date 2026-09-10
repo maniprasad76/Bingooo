@@ -52,7 +52,6 @@ export function usePWA() {
           });
       }
     }
-  }, []);
 
     // Check if already in standalone PWA mode
     if (window.matchMedia('(display-mode: standalone)').matches || (navigator as any).standalone) {

@@ -37,10 +37,10 @@ const navLinks = [
 ];
 
 const categoryShortcuts = [
-  { label: 'T-Shirts', href: '/shop?category=t-shirts' },
-  { label: 'Hoodies', href: '/shop?category=hoodies' },
-  { label: 'Shirts', href: '/shop?category=shirts' },
-  { label: 'Bottoms', href: '/shop?category=jeans' },
+  { label: 'T-Shirts', href: '/category/t-shirts' },
+  { label: 'Hoodies', href: '/category/hoodies' },
+  { label: 'Shirts', href: '/category/shirts' },
+  { label: 'Bottoms', href: '/category/jeans' },
 ];
 
 export function Navbar() {

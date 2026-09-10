@@ -13,6 +13,7 @@ import {
   ShieldCheck,
 } from 'lucide-react';
 import { SEO } from '../components/common/SEO';
+import { Breadcrumbs } from '../components/common/Breadcrumbs';
 import { getWhatsAppUrl } from '../components/ui/SocialIcons';
 
 interface TrackingResult {
@@ -244,20 +245,20 @@ export function TrackOrderPage() {
   return (
     <div className="w-full bg-[#FAF8F5] text-[#171717] min-h-screen py-10 sm:py-16 font-sans">
       <SEO
-        title="Track Order Status — Bingooo Men's Wear"
+        title="Track Order Status"
         description="Track your Bingooo garment shipment in real-time. Enter your order number to view dispatch status, courier AWB tracking, and estimated delivery."
+        canonical="https://bingooo.in/track-order"
       />
 
       <div className="max-w-[1000px] mx-auto px-4 sm:px-8 space-y-10">
         {/* ─── Breadcrumb & Header ─── */}
         <div className="space-y-4 text-left border-b border-[#DDD3C5] pb-8">
-          <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-xs font-mono text-[#6F6A63] uppercase tracking-wider">
-            <Link to="/" className="hover:text-[#E6321C] transition-colors">Home</Link>
-            <span>/</span>
-            <span className="text-[#171717] font-bold">Customer Care</span>
-            <span>/</span>
-            <span className="text-[#171717]">Track Order</span>
-          </nav>
+          <Breadcrumbs
+            items={[
+              { name: 'Customer Care', url: '/contact' },
+              { name: 'Track Order', url: '/track-order' },
+            ]}
+          />
 
           <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
             <div>

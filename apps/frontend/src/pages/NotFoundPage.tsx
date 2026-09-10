@@ -58,8 +58,9 @@ export function NotFoundPage() {
   return (
     <div className="w-full min-h-[85vh] bg-[#FAF8F5] text-[#171717] py-12 sm:py-20 px-4">
       <SEO
-        title="Page Not Found (404) — Bingooo Men's Wear"
+        title="Page Not Found (404)"
         description="The garment or page you are looking for has been moved or does not exist. Explore our 240 GSM heavyweight collection or return to the Bingooo atelier."
+        noindex={true}
       />
 
       <div className="max-w-4xl mx-auto text-center">

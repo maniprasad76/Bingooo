@@ -69,8 +69,9 @@ export function EmptyStatePage() {
   return (
     <div className="w-full min-h-screen bg-[#FAF8F5] text-[#171717] py-8 sm:py-12">
       <SEO
-        title="Empty State — Bingooo Men's Wear"
+        title="Empty State"
         description="Our craftsmen in Srikakulam are preparing new 240 GSM drops. Explore our signature collection or design your own bespoke streetwear."
+        noindex={true}
       />
 
       <div className="max-w-4xl mx-auto px-4">

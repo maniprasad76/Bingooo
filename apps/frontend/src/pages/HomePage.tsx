@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { ArrowRight, PenTool } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { SEO } from '../components/common/SEO';
+import { generateOrganizationSchema, generateWebSiteSchema } from '../lib/seo/schema';
 import { ShopByCategory } from '../components/home/ShopByCategory';
 import { HowItWorksBanner } from '../components/home/HowItWorksBanner';
 import { NewArrivals } from '../components/home/NewArrivals';
@@ -204,9 +205,11 @@ export function HomePage() {
   return (
     <div className="overflow-hidden bg-[#FAF8F5] text-[#171717]">
       <SEO
-        title="Premium Heavyweight Men's Wear & Custom Fashion"
+        title="Premium Heavyweight Men's Wear & 3D Atelier"
         description="Discover luxury streetwear crafted from 240–280 GSM combed cotton. Shop oversized graphic tees, drop-shoulder hoodies, or customize your own bespoke garments."
         keywords="heavyweight t-shirts, 240 gsm customizer, streetwear India, oversized tees, luxury menswear"
+        canonical="https://bingooo.in"
+        schema={[generateOrganizationSchema(), generateWebSiteSchema()]}
       />
       {/* ── Visually hidden H1 for SEO & accessibility (hero art is image-driven) ── */}
       <h1 className="sr-only">

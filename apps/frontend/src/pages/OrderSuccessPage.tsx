@@ -127,6 +127,7 @@ export function OrderSuccessPage() {
       <SEO
         title={`Order Confirmed #${displayOrder.order_number}`}
         description="Your Bingooo bespoke menswear order has been successfully placed. View item details, fulfillment timeline, and dispatch guarantee."
+        noindex={true}
       />
 
       <div className="mx-auto max-w-[1080px] px-4 sm:px-6 lg:px-8 space-y-8">

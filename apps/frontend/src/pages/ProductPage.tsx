@@ -29,6 +29,8 @@ import { ProductDetailSkeleton } from '../components/ui/Skeleton';
 import { useToast } from '../components/ui/Toast';
 import { api } from '../lib/api/client';
 import { SEO } from '../components/common/SEO';
+import { Breadcrumbs } from '../components/common/Breadcrumbs';
+import { generateProductSchema } from '../lib/seo/schema';
 import { EmptyState } from '../components/common/EmptyState';
 import { WhatsAppIcon, getWhatsAppUrl } from '../components/ui/SocialIcons';
 import { ResponseTimePromise } from '../components/common/ResponseTimePromise';
@@ -228,7 +230,7 @@ export function ProductPage() {
   if (!product) {
     return (
       <div className="w-full min-h-[70vh] flex items-center justify-center bg-[#FAF8F5] py-16 px-4">
-        <SEO title="Garment Not Found — Bingooo Men's Wear" />
+        <SEO title="Garment Not Found" noindex={true} />
         <EmptyState
           icon="shirt"
           title="GARMENT NOT FOUND IN ATELIER"
@@ -244,30 +246,39 @@ export function ProductPage() {
     );
   }
 
+  const isUnpublished = Boolean((product as any)?.status && (product as any).status !== 'active');
   const title = product?.title || 'Oversized Graphic Tee';
   const categoryName = product?.category?.name || 'T-Shirts';
+  const categorySlug = product?.category?.slug || 't-shirts';
+  const seoTitle = `${title} — ${categoryName}`;
+  const productSchema = generateProductSchema(product as any);
 
   return (
     <div className="w-full bg-[#FAF8F5] text-[#171717] min-h-screen">
       <SEO
-        title={`${title} — ${categoryName}`}
+        title={isUnpublished ? `[Draft] ${seoTitle}` : seoTitle}
         description={product?.description ? product.description.slice(0, 160) : `Buy ${title} online at Bingooo. Premium heavyweight 240 GSM combed cotton menswear tailored for effortless streetwear expression.`}
         ogImage={productImages[0] || '/og-image.png'}
         ogType="product"
+        canonical={`https://bingooo.in/product/${product.slug}`}
+        noindex={isUnpublished}
+        schema={isUnpublished ? undefined : productSchema}
       />
+      {isUnpublished && (
+        <aside aria-label="Unpublished preview notice" className="w-full bg-[#FFF3CD] border-b border-[#FFEEBA] text-[#856404] px-4 py-2 text-xs font-mono text-center">
+          ⚠️ <strong>UNPUBLISHED DRAFT PREVIEW</strong> — This garment is currently in draft status and hidden from public search, sitemaps, and shopping feeds.
+        </aside>
+      )}
       <div className="max-w-[1360px] mx-auto px-4 sm:px-8 pt-6 pb-28 md:pb-12">
-        {/* ─── Breadcrumbs ─── */}
-        <nav className="flex items-center gap-2 text-xs font-sans text-[#6F6A63] mb-6">
-          <Link to="/" className="hover:text-[#E6321C]">Home</Link>
-          <span>&gt;</span>
-          <Link to="/shop" className="hover:text-[#E6321C]">Shop</Link>
-          <span>&gt;</span>
-          <Link to={`/shop?category=${product?.category?.slug || 't-shirts'}`} className="hover:text-[#E6321C]">
-            {categoryName}
-          </Link>
-          <span>&gt;</span>
-          <span className="text-[#171717] font-medium truncate max-w-[200px]">{title}</span>
-        </nav>
+        {/* ─── Breadcrumbs with Schema ─── */}
+        <Breadcrumbs
+          items={[
+            { name: 'Shop', url: '/shop' },
+            { name: categoryName, url: `/category/${categorySlug}` },
+            { name: title, url: `/product/${product.slug}` },
+          ]}
+          className="mb-6"
+        />
 
         {/* ─── Main Product Details Grid (Exact Image 1) ─── */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
@@ -500,36 +511,36 @@ export function ProductPage() {
                 </div>
               </div>
 
-              {/* 4 Feature Trust Badges Row (Exact Image 1) */}
+              {/* 4 Feature Trust Badges Row (Semantic Internal Links) */}
               <div className="mt-6 pt-5 border-t border-[#DDD3C5]/60 grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-2 text-center">
-                <div className="flex flex-col items-center">
-                  <Shirt size={18} className="text-[#171717]/80 mb-1" />
-                  <span className="font-heading font-bold text-[10px] uppercase text-[#171717]">
+                <Link to="/fabric-guide" className="flex flex-col items-center group hover:text-[#E6321C] transition-colors">
+                  <Shirt size={18} className="text-[#171717]/80 group-hover:text-[#E6321C] mb-1" />
+                  <span className="font-heading font-bold text-[10px] uppercase text-[#171717] group-hover:text-[#E6321C]">
                     PREMIUM FABRIC
                   </span>
-                  <span className="text-[9px] text-[#6F6A63] font-sans">240 GSM Cotton</span>
-                </div>
-                <div className="flex flex-col items-center">
-                  <RotateCcw size={18} className="text-[#171717]/80 mb-1" />
-                  <span className="font-heading font-bold text-[10px] uppercase text-[#171717]">
+                  <span className="text-[9px] text-[#6F6A63] font-sans">240 GSM Cotton &rarr;</span>
+                </Link>
+                <Link to="/returns-refunds" className="flex flex-col items-center group hover:text-[#E6321C] transition-colors">
+                  <RotateCcw size={18} className="text-[#171717]/80 group-hover:text-[#E6321C] mb-1" />
+                  <span className="font-heading font-bold text-[10px] uppercase text-[#171717] group-hover:text-[#E6321C]">
                     EASY RETURNS
                   </span>
-                  <span className="text-[9px] text-[#6F6A63] font-sans">7 Days Return</span>
-                </div>
-                <div className="flex flex-col items-center">
-                  <ShieldCheck size={18} className="text-[#171717]/80 mb-1" />
-                  <span className="font-heading font-bold text-[10px] uppercase text-[#171717]">
+                  <span className="text-[9px] text-[#6F6A63] font-sans">7 Days Return &rarr;</span>
+                </Link>
+                <Link to="/policies" className="flex flex-col items-center group hover:text-[#E6321C] transition-colors">
+                  <ShieldCheck size={18} className="text-[#171717]/80 group-hover:text-[#E6321C] mb-1" />
+                  <span className="font-heading font-bold text-[10px] uppercase text-[#171717] group-hover:text-[#E6321C]">
                     SECURE PAYMENT
                   </span>
-                  <span className="text-[9px] text-[#6F6A63] font-sans">100% Protected</span>
-                </div>
-                <div className="flex flex-col items-center">
-                  <Truck size={18} className="text-[#171717]/80 mb-1" />
-                  <span className="font-heading font-bold text-[10px] uppercase text-[#171717]">
+                  <span className="text-[9px] text-[#6F6A63] font-sans">100% Protected &rarr;</span>
+                </Link>
+                <Link to="/shipping-policy" className="flex flex-col items-center group hover:text-[#E6321C] transition-colors">
+                  <Truck size={18} className="text-[#171717]/80 group-hover:text-[#E6321C] mb-1" />
+                  <span className="font-heading font-bold text-[10px] uppercase text-[#171717] group-hover:text-[#E6321C]">
                     FAST DELIVERY
                   </span>
-                  <span className="text-[9px] text-[#6F6A63] font-sans">3-7 Days Delivery</span>
-                </div>
+                  <span className="text-[9px] text-[#6F6A63] font-sans">3-7 Days Delivery &rarr;</span>
+                </Link>
               </div>
 
               {/* CTAs: ADD TO CART & BUY NOW */}

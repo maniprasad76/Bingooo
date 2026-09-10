@@ -24,6 +24,7 @@ export function SavedDesignsPage() {
       <SEO
         title="My Custom Designs"
         description="View and re-order your personalized 240 GSM tees and hoodies from the Bingooo Atelier Studio."
+        noindex={true}
       />
       <div className="flex items-center justify-between pb-6 border-b border-border">
         <div>

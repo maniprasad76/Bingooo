@@ -6,6 +6,7 @@ import {
   ArrowRight,
 } from 'lucide-react';
 import { SEO } from '../components/common/SEO';
+import { Breadcrumbs } from '../components/common/Breadcrumbs';
 
 const FABRICS = [
   {
@@ -102,13 +103,12 @@ export function FabricGuidePage() {
       <div className="max-w-[1100px] mx-auto px-4 sm:px-8 space-y-14">
         {/* ─── Breadcrumb & Hero Header ─── */}
         <div className="space-y-4 text-left border-b border-[#DDD3C5] pb-10">
-          <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-xs font-mono text-[#6F6A63] uppercase tracking-wider">
-            <Link to="/" className="hover:text-[#E6321C] transition-colors">Home</Link>
-            <span>/</span>
-            <span className="text-[#171717] font-bold">Custom Studio</span>
-            <span>/</span>
-            <span className="text-[#171717]">Fabric Specifications</span>
-          </nav>
+          <Breadcrumbs
+            items={[
+              { name: 'Custom Studio', url: '/customize' },
+              { name: 'Fabric Guide', url: '/fabric-guide' },
+            ]}
+          />
 
           <div className="space-y-3 max-w-3xl">
             <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#E6321C]/10 text-[#E6321C] text-xs font-mono font-bold uppercase tracking-wider">

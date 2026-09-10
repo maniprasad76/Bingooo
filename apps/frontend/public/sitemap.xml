@@ -1,0 +1,295 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+
+  <!-- Core Storefront & Homepage -->
+  <url>
+    <loc>https://bingooo.in/</loc>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+    <xhtml:link rel="alternate" hreflang="en-IN" href="https://bingooo.in/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://bingooo.in/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://bingooo.in/" />
+  </url>
+
+  <url>
+    <loc>https://bingooo.in/shop</loc>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+    <xhtml:link rel="alternate" hreflang="en-IN" href="https://bingooo.in/shop" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://bingooo.in/shop" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://bingooo.in/shop" />
+  </url>
+
+  <!-- Categories -->
+  <url>
+    <loc>https://bingooo.in/category/oversized-tees</loc>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://bingooo.in/category/hoodies</loc>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://bingooo.in/category/graphic-drops</loc>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://bingooo.in/category/cargos</loc>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://bingooo.in/category/jeans</loc>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://bingooo.in/category/shirts</loc>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://bingooo.in/category/caps</loc>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://bingooo.in/category/accessories</loc>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://bingooo.in/category/t-shirts</loc>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://bingooo.in/category/sweatshirts</loc>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- Custom Atelier & B2B Services -->
+  <url>
+    <loc>https://bingooo.in/customize</loc>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://bingooo.in/dtf-printing</loc>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://bingooo.in/bulk-orders</loc>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- Product Pages -->
+  <url>
+    <loc>https://bingooo.in/product/classic-oversized-tee</loc>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://bingooo.in/hero-banner.png</image:loc>
+      <image:title>Classic Heavyweight Oversized Tee</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://bingooo.in/product/create-your-own-hoodie</loc>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://bingooo.in/custom/tshirt-step-2.png</image:loc>
+      <image:title>Create Your Own Custom Hoodie</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://bingooo.in/product/minimal-b-tee</loc>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://bingooo.in/hero-banner-5.jpg</image:loc>
+      <image:title>Minimal Atelier B Tee</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://bingooo.in/product/graphic-anime-hoodie</loc>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://bingooo.in/custom/tshirt-step-3-black.png</image:loc>
+      <image:title>Cyber Tokyo Anime Graphic Hoodie</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://bingooo.in/product/textured-shirt</loc>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://bingooo.in/hero-banner-2.jpg</image:loc>
+      <image:title>Waffle-Weave Textured Camp Collar Shirt</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://bingooo.in/product/tactical-cargo-trousers</loc>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://bingooo.in/hero-banner-3.jpg</image:loc>
+      <image:title>Tactical Multi-Pocket Cargo Trousers</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://bingooo.in/product/raw-selvedge-denim-jeans</loc>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://bingooo.in/hero-banner-3.jpg</image:loc>
+      <image:title>Heavyweight Raw Selvedge Denim Jeans</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://bingooo.in/product/boxy-oxford-shirt</loc>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://bingooo.in/hero-banner-2.jpg</image:loc>
+      <image:title>Atelier Boxy Heavy Oxford Shirt</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://bingooo.in/product/graphic-print-tee-midnight</loc>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://bingooo.in/custom/tshirt-step-3-black.png</image:loc>
+      <image:title>Graphic Print Tee — Midnight</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://bingooo.in/product/essential-pullover-hoodie</loc>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://bingooo.in/custom/tshirt-step-2.png</image:loc>
+      <image:title>Essential Pullover Hoodie</image:title>
+    </image:image>
+  </url>
+
+  <!-- Technical Guides & Measurements -->
+  <url>
+    <loc>https://bingooo.in/size-guide</loc>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://bingooo.in/fabric-guide</loc>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://bingooo.in/artwork-guidelines</loc>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <!-- Brand & Support -->
+  <url>
+    <loc>https://bingooo.in/about</loc>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://bingooo.in/contact</loc>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://bingooo.in/faq</loc>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://bingooo.in/track-order</loc>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <!-- Legal & Policies -->
+  <url>
+    <loc>https://bingooo.in/policies</loc>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://bingooo.in/privacy-policy</loc>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://bingooo.in/terms</loc>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://bingooo.in/shipping-policy</loc>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://bingooo.in/returns-refunds</loc>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://bingooo.in/cancellation-policy</loc>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+
+</urlset>

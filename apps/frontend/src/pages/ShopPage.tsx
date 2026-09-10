@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Link, useParams, useSearchParams } from 'react-router-dom';
+import { useParams, useSearchParams } from 'react-router-dom';
 import { ChevronDown, ChevronLeft, ChevronRight, SlidersHorizontal } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { Drawer } from '../components/ui/Drawer';
@@ -8,6 +8,7 @@ import { FilterSidebar } from '../components/catalog/FilterSidebar';
 import { ProductCard } from '../components/catalog/ProductCard';
 import { useCategories, useProductFilters, useProducts, type ProductQueryParams } from '../hooks/useProducts';
 import { SEO } from '../components/common/SEO';
+import { Breadcrumbs } from '../components/common/Breadcrumbs';
 import { EmptyState } from '../components/common/EmptyState';
 
 function formatTitle(value?: string) {
@@ -76,17 +77,31 @@ export function ShopPage() {
     priceRange={filtersQuery.data?.priceRange}
   />;
 
+  const isSearch = Boolean(filters.search);
+  const canonicalUrl = filters.categorySlug
+    ? `https://bingooo.in/category/${filters.categorySlug}`
+    : 'https://bingooo.in/shop';
+
   return <div className="min-h-screen bg-[#FAF8F5] text-[#171717]">
     <SEO
-      title={filters.search ? `Search: ${filters.search}` : filters.categorySlug ? `${formatTitle(filters.categorySlug)}` : 'Shop All Menswear'}
+      title={filters.search ? `Search: ${filters.search}` : filters.categorySlug ? `${formatTitle(filters.categorySlug)} — Menswear` : 'Shop All Heavyweight Menswear'}
       description={filters.categorySlug ? `Explore premium ${formatTitle(filters.categorySlug).toLowerCase()} at Bingooo. Heavyweight fabrics, custom streetwear cuts, and durable comfort.` : 'Browse the full collection of Bingooo luxury menswear. Heavyweight 240 GSM tees, oversized fits, hoodies, and signature drops.'}
+      canonical={canonicalUrl}
+      noindex={isSearch}
     />
     <div className="mx-auto max-w-[1360px] px-4 py-8 sm:px-8 sm:py-10">
       <div className="flex flex-col justify-between gap-5 border-b border-[#DDD3C5] pb-6 sm:flex-row sm:items-end">
         <div>
-          <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-xs text-[#6F6A63]">
-            <Link to="/" className="hover:text-[#E6321C]">Home</Link><span>/</span><span className="font-medium text-[#171717]">Shop</span>
-          </nav>
+          <Breadcrumbs
+            items={
+              filters.categorySlug
+                ? [
+                    { name: 'Shop', url: '/shop' },
+                    { name: formatTitle(filters.categorySlug), url: `/category/${filters.categorySlug}` },
+                  ]
+                : [{ name: 'Shop All', url: '/shop' }]
+            }
+          />
           <h1 className="mt-2 text-2xl sm:text-4xl font-extrabold uppercase tracking-tight">{pageTitle}</h1>
           <p className="mt-1 text-xs sm:text-sm text-[#6F6A63]">{resultCopy} curated for your wardrobe.</p>
         </div>

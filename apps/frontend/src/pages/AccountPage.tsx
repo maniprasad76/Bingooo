@@ -207,6 +207,7 @@ export function AccountPage() {
       <SEO
         title="My Account"
         description="Manage your Bingooo profile, view your order history, track deliveries, edit shipping addresses, and review saved designs."
+        noindex={true}
       />
       <div className="max-w-[1360px] mx-auto px-4 sm:px-8 py-6 sm:py-8 space-y-8">
         {/* ─── Breadcrumbs ─── */}

@@ -59,6 +59,7 @@ export function LoginPage() {
       <SEO
         title="Sign In"
         description="Sign in to your Bingooo account to manage your profile, view orders, and access saved 240 GSM custom designs."
+        noindex={true}
       />
       <motion.div
         initial={shouldReduceMotion ? false : { opacity: 0, y: 16 }}

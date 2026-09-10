@@ -118,6 +118,7 @@ export function CartPage() {
       <SEO
         title="Your Shopping Bag"
         description="Review your selected heavyweight menswear items, check shipping thresholds, apply promo codes, and proceed to checkout at Bingooo."
+        noindex={true}
       />
       <div className="max-w-[1360px] mx-auto px-4 sm:px-8 py-6 sm:py-8">
         {/* ─── Breadcrumbs ─── */}

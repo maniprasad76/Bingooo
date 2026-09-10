@@ -35,6 +35,7 @@ export function OrdersPage() {
       <SEO
         title="My Orders"
         description="Track your active Bingooo menswear orders, check fulfillment milestones, and view shipment tracking."
+        noindex={true}
       />
       <div className="pb-6 border-b border-border">
         <h1 className="text-display-lg font-bold text-ink">My Orders</h1>

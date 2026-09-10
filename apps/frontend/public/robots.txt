@@ -1,0 +1,32 @@
+# Bingooo Menswear - Robots.txt
+# https://bingooo.in
+
+User-agent: *
+Allow: /
+
+# Disallow private customer accounts and checkout funnels
+Disallow: /admin
+Disallow: /admin/
+Disallow: /account
+Disallow: /account/
+Disallow: /orders
+Disallow: /orders/
+Disallow: /cart
+Disallow: /checkout
+Disallow: /order-success
+Disallow: /saved-designs
+Disallow: /wishlist
+Disallow: /recently-viewed
+Disallow: /login
+Disallow: /signup
+Disallow: /api/
+
+# Allow major bots
+User-agent: Googlebot
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+# Sitemap Index
+Sitemap: https://bingooo.in/sitemap.xml

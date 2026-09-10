@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
 import {
   Users,
   Phone,
@@ -7,6 +6,7 @@ import {
   Send,
 } from 'lucide-react';
 import { SEO } from '../components/common/SEO';
+import { Breadcrumbs } from '../components/common/Breadcrumbs';
 import { getWhatsAppUrl } from '../components/ui/SocialIcons';
 
 const TIERS = [
@@ -87,13 +87,12 @@ export function BulkOrdersPage() {
       <div className="max-w-[1100px] mx-auto px-4 sm:px-8 space-y-14">
         {/* ─── Breadcrumb & Hero Header ─── */}
         <div className="space-y-4 text-left border-b border-[#DDD3C5] pb-10">
-          <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-xs font-mono text-[#6F6A63] uppercase tracking-wider">
-            <Link to="/" className="hover:text-[#E6321C] transition-colors">Home</Link>
-            <span>/</span>
-            <span className="text-[#171717] font-bold">Custom Studio</span>
-            <span>/</span>
-            <span className="text-[#171717]">Bulk Orders</span>
-          </nav>
+          <Breadcrumbs
+            items={[
+              { name: 'Custom Studio', url: '/customize' },
+              { name: 'Bulk Orders', url: '/bulk-orders' },
+            ]}
+          />
 
           <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6">
             <div className="space-y-3 max-w-2xl">

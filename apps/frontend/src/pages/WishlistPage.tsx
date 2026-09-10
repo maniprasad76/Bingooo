@@ -130,6 +130,7 @@ export function WishlistPage() {
       <SEO
         title="My Wishlist"
         description="View and manage your saved heavyweight streetwear styles, move items to cart, and track favorite menswear drops at Bingooo."
+        noindex={true}
       />
       <div className="max-w-[1360px] mx-auto px-4 sm:px-8 py-6 sm:py-8 space-y-10">
         {/* ─── Breadcrumbs ─── */}

@@ -14,6 +14,8 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { SEO } from '../components/common/SEO';
+import { Breadcrumbs } from '../components/common/Breadcrumbs';
+import { generateFaqSchema } from '../lib/seo/schema';
 import { WhatsAppIcon, getWhatsAppUrl } from '../components/ui/SocialIcons';
 
 interface FaqItem {
@@ -164,17 +166,19 @@ export function FaqPage() {
   return (
     <div className="w-full bg-[#FAF8F5] text-[#171717] min-h-screen py-10 sm:py-16">
       <SEO
-        title="Frequently Asked Questions (FAQ)"
+        title="Frequently Asked Questions & Help Hub"
         description="Find answers to common questions about orders, shipping times, 240 GSM fabric care, 3D Customizer Studio, and easy returns at Bingooo."
+        schema={generateFaqSchema(FAQ_DATA)}
       />
       <div className="max-w-[1100px] mx-auto px-4 sm:px-8 space-y-12">
         
         {/* ─── Breadcrumb & Hero Header ─── */}
         <div className="text-center space-y-4 max-w-2xl mx-auto">
-          <div className="flex items-center justify-center gap-2 text-xs font-mono text-[#6F6A63] uppercase tracking-wider">
-            <Link to="/" className="hover:text-[#E6321C] transition-colors">Home</Link>
-            <span>/</span>
-            <span className="text-[#171717] font-bold">Help & FAQ</span>
+          <div className="flex items-center justify-center">
+            <Breadcrumbs
+              items={[{ name: 'FAQ & Help', url: '/faq' }]}
+              showSchema={false}
+            />
           </div>
 
           <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight text-[#171717] font-heading">

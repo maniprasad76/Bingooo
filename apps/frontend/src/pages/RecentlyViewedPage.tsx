@@ -397,8 +397,9 @@ export function RecentlyViewedPage() {
   return (
     <div className="w-full bg-[#FAF8F5] text-[#171717] min-h-screen">
       <SEO
-        title="Recently Viewed Products — Bingooo Atelier"
+        title="Recently Viewed Products"
         description="Pick up where you left off. Revisit recently viewed 240 GSM heavyweights, streetwear tees, hoodies, and bespoke garments crafted at Bingooo."
+        noindex={true}
       />
 
       <div className="max-w-[1360px] mx-auto px-4 sm:px-8 py-6 sm:py-8 space-y-8">

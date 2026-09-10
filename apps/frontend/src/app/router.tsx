@@ -1,4 +1,4 @@
-import { createBrowserRouter } from 'react-router-dom';
+import { createBrowserRouter, Navigate, useParams } from 'react-router-dom';
 import { PageLayout } from '../components/layout/PageLayout';
 import { RequireAuth } from '../components/common/RequireAuth';
 import { RouteErrorBoundary } from '../components/common/RouteErrorBoundary';
@@ -31,7 +31,6 @@ const ShippingPolicyPage = lazyPage(() => import('../pages/ShippingPolicyPage'),
 const ReturnsRefundsPage = lazyPage(() => import('../pages/ReturnsRefundsPage'), 'ReturnsRefundsPage');
 const CancellationPolicyPage = lazyPage(() => import('../pages/CancellationPolicyPage'), 'CancellationPolicyPage');
 const SizeGuidePage = lazyPage(() => import('../pages/SizeGuidePage'), 'SizeGuidePage');
-const EmptyStatePage = lazyPage(() => import('../pages/EmptyStatePage'), 'EmptyStatePage');
 const RecentlyViewedPage = lazyPage(() => import('../pages/RecentlyViewedPage'), 'RecentlyViewedPage');
 const TrackOrderPage = lazyPage(() => import('../pages/TrackOrderPage'), 'TrackOrderPage');
 const DtfPrintingPage = lazyPage(() => import('../pages/DtfPrintingPage'), 'DtfPrintingPage');
@@ -40,64 +39,109 @@ const FabricGuidePage = lazyPage(() => import('../pages/FabricGuidePage'), 'Fabr
 const ArtworkGuidelinesPage = lazyPage(() => import('../pages/ArtworkGuidelinesPage'), 'ArtworkGuidelinesPage');
 const NotFoundPage = lazyPage(() => import('../pages/NotFoundPage'), 'NotFoundPage');
 
+// Helper redirect component for legacy/sub-policy slugs to resolve cannibalization and redirect chains
+function PolicyRedirect() {
+  const { slug } = useParams<{ slug: string }>();
+  if (slug === 'size-guide') return <Navigate to="/size-guide" replace />;
+  if (slug?.startsWith('shipping')) return <Navigate to="/shipping-policy" replace />;
+  if (slug?.startsWith('return')) return <Navigate to="/returns-refunds" replace />;
+  if (slug?.startsWith('privacy')) return <Navigate to="/privacy-policy" replace />;
+  if (slug?.startsWith('terms')) return <Navigate to="/terms" replace />;
+  if (slug?.startsWith('cancellation')) return <Navigate to="/cancellation-policy" replace />;
+  return <Navigate to="/policies" replace />;
+}
+
+// Helper redirect component for collection slugs
+function CollectionRedirect() {
+  const { slug } = useParams<{ slug: string }>();
+  return <Navigate to={`/shop?collection=${slug || ''}`} replace />;
+}
+
 export const router = createBrowserRouter([
   {
     element: <PageLayout />,
     errorElement: <RouteErrorBoundary />,
     children: [
       { index: true, element: <HomePage /> },
+
+      // Brand Story
       { path: 'about', element: <AboutPage /> },
-      { path: 'about-us', element: <AboutPage /> },
+      { path: 'about-us', element: <Navigate to="/about" replace /> },
+
+      // Catalog & Categories
       { path: 'shop', element: <ShopPage /> },
       { path: 'category/:slug', element: <ShopPage /> },
-      { path: 'collection/:slug', element: <ShopPage /> },
+      { path: 'collection/:slug', element: <CollectionRedirect /> },
       { path: 'product/:slug', element: <ProductPage /> },
+
+      // Custom Atelier
       { path: 'customize', element: <CustomizerPage /> },
       { path: 'customize/:productSlug', element: <CustomizerPage /> },
+
+      // Shopping Bag & Checkout
       { path: 'cart', element: <CartPage /> },
       { path: 'checkout', element: <CheckoutPage /> },
       { path: 'order-success', element: <OrderSuccessPage /> },
       { path: 'order-success/:orderNumber', element: <OrderSuccessPage /> },
       { path: 'payment/success', element: <OrderSuccessPage /> },
       { path: 'payment/failure', element: <OrderSuccessPage /> },
+
+      // Search & Discovery
       { path: 'search', element: <ShopPage /> },
       { path: 'recently-viewed', element: <RecentlyViewedPage /> },
+
+      // User Account (Protected)
       { path: 'account', element: <RequireAuth><AccountPage /></RequireAuth> },
       { path: 'account/orders', element: <RequireAuth><OrdersPage /></RequireAuth> },
       { path: 'account/orders/:orderNumber', element: <RequireAuth><OrderDetailPage /></RequireAuth> },
       { path: 'account/wishlist', element: <RequireAuth><WishlistPage /></RequireAuth> },
-      { path: 'wishlist', element: <RequireAuth><WishlistPage /></RequireAuth> },
+      { path: 'wishlist', element: <Navigate to="/account/wishlist" replace /> },
       { path: 'account/recently-viewed', element: <RecentlyViewedPage /> },
       { path: 'account/designs', element: <RequireAuth><SavedDesignsPage /></RequireAuth> },
       { path: 'account/addresses', element: <RequireAuth><AddressesPage /></RequireAuth> },
+
+      // Auth
       { path: 'login', element: <LoginPage /> },
       { path: 'signup', element: <SignupPage /> },
+
+      // Customer Care & Direct Links
       { path: 'contact', element: <ContactPage /> },
       { path: 'faq', element: <FaqPage /> },
-      { path: 'privacy-policy', element: <PrivacyPolicyPage /> },
-      { path: 'privacy', element: <PrivacyPolicyPage /> },
-      { path: 'terms', element: <TermsPage /> },
-      { path: 'terms-and-conditions', element: <TermsPage /> },
-      { path: 'shipping-policy', element: <ShippingPolicyPage /> },
-      { path: 'shipping', element: <ShippingPolicyPage /> },
-      { path: 'returns-refunds', element: <ReturnsRefundsPage /> },
-      { path: 'return-policy', element: <ReturnsRefundsPage /> },
-      { path: 'returns', element: <ReturnsRefundsPage /> },
-      { path: 'cancellation-policy', element: <CancellationPolicyPage /> },
-      { path: 'size-guide', element: <SizeGuidePage /> },
       { path: 'track-order', element: <TrackOrderPage /> },
-      { path: 'track', element: <TrackOrderPage /> },
+      { path: 'track', element: <Navigate to="/track-order" replace /> },
+
+      // Legal & Store Policies (Canonical paths + single-hop redirects)
+      { path: 'policies', element: <PoliciesPage /> },
+      { path: 'policies/:slug', element: <PolicyRedirect /> },
+      { path: 'privacy-policy', element: <PrivacyPolicyPage /> },
+      { path: 'privacy', element: <Navigate to="/privacy-policy" replace /> },
+      { path: 'terms', element: <TermsPage /> },
+      { path: 'terms-and-conditions', element: <Navigate to="/terms" replace /> },
+      { path: 'shipping-policy', element: <ShippingPolicyPage /> },
+      { path: 'shipping', element: <Navigate to="/shipping-policy" replace /> },
+      { path: 'returns-refunds', element: <ReturnsRefundsPage /> },
+      { path: 'return-policy', element: <Navigate to="/returns-refunds" replace /> },
+      { path: 'returns', element: <Navigate to="/returns-refunds" replace /> },
+      { path: 'cancellation-policy', element: <CancellationPolicyPage /> },
+      { path: 'cancellation', element: <Navigate to="/cancellation-policy" replace /> },
+      { path: 'size-guide', element: <SizeGuidePage /> },
+
+      // Services & Textile Engineering Guides
       { path: 'dtf-printing', element: <DtfPrintingPage /> },
       { path: 'bulk-orders', element: <BulkOrdersPage /> },
-      { path: 'fabric-specifications', element: <FabricGuidePage /> },
       { path: 'fabric-guide', element: <FabricGuidePage /> },
+      { path: 'fabric-specifications', element: <Navigate to="/fabric-guide" replace /> },
       { path: 'artwork-guidelines', element: <ArtworkGuidelinesPage /> },
-      { path: 'policies', element: <PoliciesPage /> },
-      { path: 'policies/:slug', element: <PoliciesPage /> },
-      { path: 'empty', element: <EmptyStatePage /> },
-      { path: 'empty-state', element: <EmptyStatePage /> },
+
+      // Redundant / Demo routes redirected to clean destinations
+      { path: 'empty', element: <Navigate to="/" replace /> },
+      { path: 'empty-state', element: <Navigate to="/" replace /> },
+
+      // Admin Portal
       { path: 'admin', element: <AdminDashboardPage /> },
       { path: 'admin/*', element: <AdminDashboardPage /> },
+
+      // Catch-all 404
       { path: '*', element: <NotFoundPage /> },
     ],
   },

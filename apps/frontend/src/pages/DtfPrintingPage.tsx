@@ -8,6 +8,7 @@ import {
   Palette,
 } from 'lucide-react';
 import { SEO } from '../components/common/SEO';
+import { Breadcrumbs } from '../components/common/Breadcrumbs';
 
 const STEPS = [
   {
@@ -86,20 +87,19 @@ export function DtfPrintingPage() {
   return (
     <div className="w-full bg-[#FAF8F5] text-[#171717] min-h-screen py-10 sm:py-16 font-sans">
       <SEO
-        title="DTF Printing Technology — Industrial Textile Quality"
+        title="Industrial DTF Printing Services"
         description="Discover Bingooo's advanced Direct-To-Film (DTF) apparel printing process. 1440 DPI Japanese pigment inks, 50+ wash durability, and buttery soft hand-feel on 240 GSM cotton."
       />
 
       <div className="max-w-[1100px] mx-auto px-4 sm:px-8 space-y-14">
         {/* ─── Breadcrumb & Hero Header ─── */}
         <div className="space-y-4 text-left border-b border-[#DDD3C5] pb-10">
-          <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-xs font-mono text-[#6F6A63] uppercase tracking-wider">
-            <Link to="/" className="hover:text-[#E6321C] transition-colors">Home</Link>
-            <span>/</span>
-            <span className="text-[#171717] font-bold">Custom Studio</span>
-            <span>/</span>
-            <span className="text-[#171717]">DTF Printing</span>
-          </nav>
+          <Breadcrumbs
+            items={[
+              { name: 'Custom Studio', url: '/customize' },
+              { name: 'DTF Printing', url: '/dtf-printing' },
+            ]}
+          />
 
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
             <div className="lg:col-span-8 space-y-4">

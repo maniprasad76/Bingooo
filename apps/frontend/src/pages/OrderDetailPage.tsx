@@ -41,6 +41,7 @@ export function OrderDetailPage() {
       <SEO
         title={`Order Details #${orderNumber}`}
         description={`View details, items, delivery updates, and tracking for Bingooo order #${orderNumber}.`}
+        noindex={true}
       />
       <div className="flex items-center justify-between">
         <Link to="/account/orders" className="inline-flex items-center gap-1.5 text-caption font-semibold text-muted hover:text-ink transition-colors">

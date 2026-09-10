@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:g="http://base.google.com/ns/1.0">
+  <channel>
+    <title>Bingooo Contemporary Luxury Menswear</title>
+    <link>https://bingooo.in</link>
+    <description>Official product feed for Bingooo menswear, heavyweight cotton streetwear and custom atelier apparel.</description>
+
+    <item>
+      <g:id>prod-1-cot</g:id>
+      <g:title>Classic Heavyweight Oversized Tee (240 GSM)</g:title>
+      <g:description>Constructed from premium 240 GSM combed cotton. Boxy streetwear silhouette with double-needle ribbed collar and dropped shoulders for relaxed luxury everyday drape.</g:description>
+      <g:link>https://bingooo.in/product/classic-oversized-tee</g:link>
+      <g:image_link>https://bingooo.in/hero-banner.png</g:image_link>
+      <g:condition>new</g:condition>
+      <g:availability>in_stock</g:availability>
+      <g:price>699.00 INR</g:price>
+      <g:sale_price>699.00 INR</g:sale_price>
+      <g:brand>Bingooo</g:brand>
+      <g:google_product_category>212</g:google_product_category>
+      <g:product_type>Apparel &gt; Men's &gt; Tops &gt; T-Shirts &gt; Oversized</g:product_type>
+      <g:gender>unisex</g:gender>
+      <g:age_group>adult</g:age_group>
+      <g:color>Charcoal Black</g:color>
+      <g:shipping>
+        <g:country>IN</g:country>
+        <g:service>Standard Air Express</g:service>
+        <g:price>0.00 INR</g:price>
+      </g:shipping>
+    </item>
+
+    <item>
+      <g:id>prod-2-cyh</g:id>
+      <g:title>Create Your Own Custom Hoodie (380 GSM Fleece)</g:title>
+      <g:description>380 GSM ultra-heavyweight cotton-poly blend fleece. Features double-lined hood, seamless kangaroo pocket, and customizable front/back graphic atelier zones.</g:description>
+      <g:link>https://bingooo.in/product/create-your-own-hoodie</g:link>
+      <g:image_link>https://bingooo.in/custom/tshirt-step-2.png</g:image_link>
+      <g:condition>new</g:condition>
+      <g:availability>in_stock</g:availability>
+      <g:price>1299.00 INR</g:price>
+      <g:brand>Bingooo</g:brand>
+      <g:google_product_category>5598</g:google_product_category>
+      <g:product_type>Apparel &gt; Men's &gt; Tops &gt; Hoodies &amp; Sweatshirts</g:product_type>
+      <g:gender>unisex</g:gender>
+      <g:age_group>adult</g:age_group>
+      <g:color>Forest Pine</g:color>
+      <g:shipping>
+        <g:country>IN</g:country>
+        <g:service>Standard Air Express</g:service>
+        <g:price>0.00 INR</g:price>
+      </g:shipping>
+    </item>
+
+    <item>
+      <g:id>prod-3-mbt</g:id>
+      <g:title>Minimal Atelier B Tee (220 GSM)</g:title>
+      <g:description>Understated aesthetic crafted in 220 GSM high-grade cotton with subtle embroidery chest emblem. High tensile fabric with zero color bleeding guaranteed.</g:description>
+      <g:link>https://bingooo.in/product/minimal-b-tee</g:link>
+      <g:image_link>https://bingooo.in/hero-banner-5.jpg</g:image_link>
+      <g:condition>new</g:condition>
+      <g:availability>in_stock</g:availability>
+      <g:price>699.00 INR</g:price>
+      <g:brand>Bingooo</g:brand>
+      <g:google_product_category>212</g:google_product_category>
+      <g:product_type>Apparel &gt; Men's &gt; Tops &gt; T-Shirts</g:product_type>
+      <g:gender>male</g:gender>
+      <g:age_group>adult</g:age_group>
+      <g:color>Crimson Red</g:color>
+      <g:shipping>
+        <g:country>IN</g:country>
+        <g:service>Standard Air Express</g:service>
+        <g:price>0.00 INR</g:price>
+      </g:shipping>
+    </item>
+
+    <item>
+      <g:id>prod-4-cah</g:id>
+      <g:title>Cyber Tokyo Anime Graphic Hoodie (360 GSM)</g:title>
+      <g:description>High-density screenprint combined with reflective ink highlights on 360 GSM heavyweight French terry. Designed for standout nightwear and street style.</g:description>
+      <g:link>https://bingooo.in/product/graphic-anime-hoodie</g:link>
+      <g:image_link>https://bingooo.in/custom/tshirt-step-3-black.png</g:image_link>
+      <g:condition>new</g:condition>
+      <g:availability>in_stock</g:availability>
+      <g:price>1299.00 INR</g:price>
+      <g:brand>Bingooo</g:brand>
+      <g:google_product_category>5598</g:google_product_category>
+      <g:product_type>Apparel &gt; Men's &gt; Tops &gt; Graphic Hoodies</g:product_type>
+      <g:gender>unisex</g:gender>
+      <g:age_group>adult</g:age_group>
+      <g:color>Onyx Black</g:color>
+      <g:shipping>
+        <g:country>IN</g:country>
+        <g:service>Standard Air Express</g:service>
+        <g:price>0.00 INR</g:price>
+      </g:shipping>
+    </item>
+
+    <item>
+      <g:id>prod-5-wws</g:id>
+      <g:title>Waffle-Weave Textured Camp Collar Shirt (210 GSM)</g:title>
+      <g:description>Breathable 210 GSM honeycomb textured knit shirt. Styled with a cuban open collar, horn buttons, and casual drop silhouette tailored for warm weather.</g:description>
+      <g:link>https://bingooo.in/product/textured-shirt</g:link>
+      <g:image_link>https://bingooo.in/hero-banner-2.jpg</g:image_link>
+      <g:condition>new</g:condition>
+      <g:availability>in_stock</g:availability>
+      <g:price>799.00 INR</g:price>
+      <g:brand>Bingooo</g:brand>
+      <g:google_product_category>212</g:google_product_category>
+      <g:product_type>Apparel &gt; Men's &gt; Tops &gt; Casual Shirts</g:product_type>
+      <g:gender>male</g:gender>
+      <g:age_group>adult</g:age_group>
+      <g:color>Warm Oatmeal</g:color>
+      <g:shipping>
+        <g:country>IN</g:country>
+        <g:service>Standard Air Express</g:service>
+        <g:price>0.00 INR</g:price>
+      </g:shipping>
+    </item>
+
+    <item>
+      <g:id>prod-6-tcp</g:id>
+      <g:title>Tactical Multi-Pocket Cargo Trousers (280 GSM)</g:title>
+      <g:description>Engineered with 280 GSM ripstop cotton twill. Features 6 ergonomic gusseted utility pockets, adjustable ankle bungee toggles, and reinforced knee stitching.</g:description>
+      <g:link>https://bingooo.in/product/tactical-cargo-trousers</g:link>
+      <g:image_link>https://bingooo.in/hero-banner-3.jpg</g:image_link>
+      <g:condition>new</g:condition>
+      <g:availability>in_stock</g:availability>
+      <g:price>1499.00 INR</g:price>
+      <g:brand>Bingooo</g:brand>
+      <g:google_product_category>204</g:google_product_category>
+      <g:product_type>Apparel &gt; Men's &gt; Bottoms &gt; Cargos &amp; Trousers</g:product_type>
+      <g:gender>male</g:gender>
+      <g:age_group>adult</g:age_group>
+      <g:color>Army Olive</g:color>
+      <g:shipping>
+        <g:country>IN</g:country>
+        <g:service>Standard Air Express</g:service>
+        <g:price>0.00 INR</g:price>
+      </g:shipping>
+    </item>
+
+    <item>
+      <g:id>prod-7-rsd</g:id>
+      <g:title>Heavyweight Raw Selvedge Denim Jeans (14.5 oz)</g:title>
+      <g:description>14.5 oz premium Japanese selvedge denim. Straight relaxed vintage fit with copper rivet reinforcements, custom leather waistband patch, and deep indigo fade potential.</g:description>
+      <g:link>https://bingooo.in/product/raw-selvedge-denim-jeans</g:link>
+      <g:image_link>https://bingooo.in/hero-banner-3.jpg</g:image_link>
+      <g:condition>new</g:condition>
+      <g:availability>in_stock</g:availability>
+      <g:price>1799.00 INR</g:price>
+      <g:brand>Bingooo</g:brand>
+      <g:google_product_category>204</g:google_product_category>
+      <g:product_type>Apparel &gt; Men's &gt; Bottoms &gt; Jeans</g:product_type>
+      <g:gender>male</g:gender>
+      <g:age_group>adult</g:age_group>
+      <g:color>Raw Indigo</g:color>
+      <g:shipping>
+        <g:country>IN</g:country>
+        <g:service>Standard Air Express</g:service>
+        <g:price>0.00 INR</g:price>
+      </g:shipping>
+    </item>
+
+    <item>
+      <g:id>prod-8-bos</g:id>
+      <g:title>Atelier Boxy Heavy Oxford Shirt (260 GSM)</g:title>
+      <g:description>260 GSM structured heavyweight Oxford cloth. Tailored drop shoulders, mother-of-pearl buttons, and structured collar that maintains its shape all day.</g:description>
+      <g:link>https://bingooo.in/product/boxy-oxford-shirt</g:link>
+      <g:image_link>https://bingooo.in/hero-banner-2.jpg</g:image_link>
+      <g:condition>new</g:condition>
+      <g:availability>in_stock</g:availability>
+      <g:price>999.00 INR</g:price>
+      <g:brand>Bingooo</g:brand>
+      <g:google_product_category>212</g:google_product_category>
+      <g:product_type>Apparel &gt; Men's &gt; Tops &gt; Oxford Shirts</g:product_type>
+      <g:gender>male</g:gender>
+      <g:age_group>adult</g:age_group>
+      <g:color>Chalk White</g:color>
+      <g:shipping>
+        <g:country>IN</g:country>
+        <g:service>Standard Air Express</g:service>
+        <g:price>0.00 INR</g:price>
+      </g:shipping>
+    </item>
+  </channel>
+</rss>

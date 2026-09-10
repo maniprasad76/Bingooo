@@ -43,7 +43,7 @@ const POLICY_CARDS = [
   {
     title: 'Size & Fit Guide',
     desc: 'Precision chest, length, and sleeve measurements for our 240+ GSM heavyweight fits.',
-    to: '/policies/size-guide',
+    to: '/size-guide',
     icon: Ruler,
   },
 ];

@@ -467,7 +467,7 @@ export function CustomizerPage() {
   return (
     <div className="w-full bg-[#FAF8F5] text-[#171717] min-h-screen pb-28 sm:pb-32">
       <SEO
-        title="3D Atelier Customizer Studio — 240 GSM Heavyweight Apparel"
+        title="3D Atelier Studio — Design Custom Apparel"
         description="Design bespoke 240 GSM heavy combed cotton t-shirts and hoodies in our interactive 3D studio. Drag artwork, place custom typography, and produce one-of-a-kind streetwear."
         keywords="custom t-shirt design, 240 gsm custom tee, bespoke streetwear India, custom DTF apparel, create your own tee"
       />

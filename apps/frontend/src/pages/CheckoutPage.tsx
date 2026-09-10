@@ -385,6 +385,7 @@ export function CheckoutPage() {
       <SEO
         title="Secure Checkout"
         description="Complete your Bingooo purchase securely with 256-bit encryption. PhonePe, Google Pay, Paytm, Cards, and COD supported."
+        noindex={true}
       />
       <h1 className="sr-only">Secure Checkout</h1>
       <div className="container-page">

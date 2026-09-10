@@ -59,6 +59,7 @@ export function SignupPage() {
       <SEO
         title="Create Account"
         description="Join Bingooo for exclusive access to heavyweight menswear drops, saved custom studio drafts, and expedited checkout."
+        noindex={true}
       />
       <motion.div
         initial={shouldReduceMotion ? false : { opacity: 0, y: 16 }}

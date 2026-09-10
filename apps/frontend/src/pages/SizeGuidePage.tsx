@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import { Ruler, ArrowRight } from 'lucide-react';
 import { SEO } from '../components/common/SEO';
+import { Breadcrumbs } from '../components/common/Breadcrumbs';
 
 type Unit = 'in' | 'cm';
 
@@ -61,20 +62,16 @@ export function SizeGuidePage() {
   return (
     <div className="w-full bg-[#FAF8F5] text-[#171717] min-h-screen py-10 sm:py-16 font-sans">
       <SEO
-        title="Size & Fit Guide"
+        title="Size & Fit Measurement Guide"
         description="Find your perfect fit. Precision measurements in inches and centimeters for Bingooo 240 GSM oversized tees, boxy silhouettes, and fleece hoodies."
       />
       <div className="max-w-[1000px] mx-auto px-4 sm:px-8 space-y-12">
         
         {/* ─── Breadcrumbs & Header ─── */}
         <div className="space-y-4 text-left border-b border-[#DDD3C5] pb-8">
-          <div className="flex items-center gap-2 text-xs font-mono text-[#6F6A63] uppercase tracking-wider">
-            <Link to="/" className="hover:text-[#E6321C] transition-colors">Home</Link>
-            <span>/</span>
-            <span className="text-[#171717] font-bold">Guide</span>
-            <span>/</span>
-            <span className="text-[#171717]">Size & Fit Guide</span>
-          </div>
+          <Breadcrumbs
+            items={[{ name: 'Size Guide', url: '/size-guide' }]}
+          />
 
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>

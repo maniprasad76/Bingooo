@@ -23,10 +23,10 @@ const FOOTER_COLUMNS: FooterColumn[] = [
   {
     title: 'Shop',
     links: [
-      { label: 'Oversized Tees', to: '/shop?category=t-shirts' },
-      { label: 'Heavyweight Hoodies', to: '/shop?category=hoodies' },
-      { label: 'Denim and Pants', to: '/shop?category=jeans' },
-      { label: 'Casual Shirts', to: '/shop?category=shirts' },
+      { label: 'Oversized Tees', to: '/category/t-shirts' },
+      { label: 'Heavyweight Hoodies', to: '/category/hoodies' },
+      { label: 'Denim and Pants', to: '/category/jeans' },
+      { label: 'Casual Shirts', to: '/category/shirts' },
       { label: 'New Arrivals', to: '/shop?sort=newest' },
       { label: 'All Garments', to: '/shop' },
     ],
@@ -37,7 +37,7 @@ const FOOTER_COLUMNS: FooterColumn[] = [
       { label: '3D Design Lab', to: '/customize' },
       { label: 'DTF Printing', to: '/dtf-printing' },
       { label: 'Bulk Orders', to: '/bulk-orders' },
-      { label: 'Fabric Specifications', to: '/fabric-specifications' },
+      { label: 'Fabric Specifications', to: '/fabric-guide' },
       { label: 'Artwork Guidelines', to: '/artwork-guidelines' },
     ],
   },

@@ -3,6 +3,26 @@
   "framework": "vite",
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
+  "redirects": [
+    { "source": "/about-us", "destination": "/about", "permanent": true },
+    { "source": "/privacy", "destination": "/privacy-policy", "permanent": true },
+    { "source": "/terms-and-conditions", "destination": "/terms", "permanent": true },
+    { "source": "/shipping", "destination": "/shipping-policy", "permanent": true },
+    { "source": "/returns", "destination": "/returns-refunds", "permanent": true },
+    { "source": "/return-policy", "destination": "/returns-refunds", "permanent": true },
+    { "source": "/cancellation", "destination": "/cancellation-policy", "permanent": true },
+    { "source": "/fabric-specifications", "destination": "/fabric-guide", "permanent": true },
+    { "source": "/track", "destination": "/track-order", "permanent": true },
+    { "source": "/wishlist", "destination": "/account/wishlist", "permanent": true },
+    { "source": "/empty", "destination": "/", "permanent": true },
+    { "source": "/empty-state", "destination": "/", "permanent": true },
+    { "source": "/policies/size-guide", "destination": "/size-guide", "permanent": true },
+    { "source": "/policies/shipping(.*)", "destination": "/shipping-policy", "permanent": true },
+    { "source": "/policies/return(.*)", "destination": "/returns-refunds", "permanent": true },
+    { "source": "/policies/privacy(.*)", "destination": "/privacy-policy", "permanent": true },
+    { "source": "/policies/terms(.*)", "destination": "/terms", "permanent": true },
+    { "source": "/policies/cancellation(.*)", "destination": "/cancellation-policy", "permanent": true }
+  ],
   "rewrites": [
     {
       "source": "/(.*)",

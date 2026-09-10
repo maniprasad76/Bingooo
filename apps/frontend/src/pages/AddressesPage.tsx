@@ -54,6 +54,7 @@ export function AddressesPage() {
       <SEO
         title="Saved Addresses"
         description="Manage your delivery addresses and shipping destinations for quick, effortless checkout at Bingooo."
+        noindex={true}
       />
       <div className="flex items-center justify-between pb-6 border-b border-border">
         <div>

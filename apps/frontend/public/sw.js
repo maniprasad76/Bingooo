@@ -2,18 +2,11 @@
 // Bingooo Atelier Progressive Web App Service Worker (v1.0)
 // ─────────────────────────────────────────────────────────
 
-const CACHE_NAME = 'bingooo-cache-v1';
+const CACHE_NAME = 'bingooo-cache-v4';
 const STATIC_ASSETS = [
   '/',
   '/index.html',
   '/manifest.webmanifest',
-  '/favicon.svg',
-  '/favicon.ico',
-  '/app-icon.png',
-  '/app-icon-white.png',
-  '/icon-192.png',
-  '/icon-512.png',
-  '/apple-touch-icon.png',
   '/custom/tshirt-step-1.png',
   '/custom/tshirt-step-2.png',
   '/custom/tshirt-step-3-black.png',
@@ -31,7 +24,7 @@ self.addEventListener('install', (event) => {
   );
 });
 
-// 2. Activate: Clean stale caches
+// 2. Activate: Clean stale caches immediately
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys().then((cacheNames) => {
@@ -51,6 +44,16 @@ self.addEventListener('fetch', (event) => {
 
   // Skip non-GET requests or browser extension requests
   if (request.method !== 'GET' || !url.protocol.startsWith('http')) {
+    return;
+  }
+
+  // Always fetch favicons, logos, and manifests straight from network (never serve stale)
+  if (
+    url.pathname.includes('favicon') ||
+    url.pathname.includes('logo') ||
+    url.pathname.includes('icon') ||
+    url.pathname.includes('manifest')
+  ) {
     return;
   }
 

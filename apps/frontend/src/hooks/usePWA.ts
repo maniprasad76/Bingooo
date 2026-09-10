@@ -12,29 +12,47 @@ export function usePWA() {
   const [isOffline, setIsOffline] = useState(!navigator.onLine);
   const [swRegistration, setSwRegistration] = useState<ServiceWorkerRegistration | null>(null);
 
-  // 1. Register Service Worker
+  // 1. Register Service Worker (Production Only to prevent dev stale cache lock)
   useEffect(() => {
-    if ('serviceWorker' in navigator && import.meta.env.MODE !== 'test') {
-      navigator.serviceWorker
-        .register('/sw.js')
-        .then((reg) => {
-          setSwRegistration(reg);
-          // Check for periodic updates
-          reg.onupdatefound = () => {
-            const installing = reg.installing;
-            if (installing) {
-              installing.onstatechange = () => {
-                if (installing.state === 'installed' && navigator.serviceWorker.controller) {
-                  console.info('[PWA] New version available.');
-                }
-              };
-            }
-          };
-        })
-        .catch((err) => {
-          console.warn('[PWA] Service worker registration failed:', err);
+    if ('serviceWorker' in navigator) {
+      if (import.meta.env.DEV) {
+        // Automatically purge any stale service workers & caches on localhost
+        navigator.serviceWorker.getRegistrations().then((registrations) => {
+          for (const reg of registrations) {
+            reg.unregister();
+          }
         });
+        if ('caches' in window) {
+          caches.keys().then((keys) => {
+            keys.forEach((key) => caches.delete(key));
+          });
+        }
+        return;
+      }
+
+      if (import.meta.env.MODE !== 'test') {
+        navigator.serviceWorker
+          .register('/sw.js')
+          .then((reg) => {
+            setSwRegistration(reg);
+            // Check for periodic updates
+            reg.onupdatefound = () => {
+              const installing = reg.installing;
+              if (installing) {
+                installing.onstatechange = () => {
+                  if (installing.state === 'installed' && navigator.serviceWorker.controller) {
+                    console.info('[PWA] New version available.');
+                  }
+                };
+              }
+            };
+          })
+          .catch((err) => {
+            console.warn('[PWA] Service worker registration failed:', err);
+          });
+      }
     }
+  }, []);
 
     // Check if already in standalone PWA mode
     if (window.matchMedia('(display-mode: standalone)').matches || (navigator as any).standalone) {

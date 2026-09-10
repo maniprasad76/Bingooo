@@ -106,7 +106,7 @@ export function Logo({
         'inline-flex items-center justify-center font-heading font-black select-none border transition-colors shrink-0 shadow-xs',
         variant === 'icon-white'
           ? 'bg-white/10 border-white/15'
-          : 'bg-[#171717] border-[#2B2825]',
+          : 'bg-[#F7EEDB] border-[#D6C8AE]',
         iconSizeClasses[size],
         imgClassName
       )}
@@ -114,7 +114,7 @@ export function Logo({
       role="img"
     >
       <span className="leading-none text-[#E6321C] flex items-baseline">
-        B<span className="text-white">.</span>
+        B<span className="text-[#171717]">.</span>
       </span>
     </div>
   ) : (

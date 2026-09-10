@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512" fill="none">
+  <defs>
+    <linearGradient id="beigeGrad" x1="40" y1="20" x2="470" y2="490" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#FFFDF8" />
+      <stop offset="50%" stop-color="#F7EEDB" />
+      <stop offset="100%" stop-color="#ECE0C7" />
+    </linearGradient>
+    <radialGradient id="topHighlight" cx="256" cy="30" r="280" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.6" />
+      <stop offset="70%" stop-color="#FFFFFF" stop-opacity="0" />
+    </radialGradient>
+    <filter id="subtleShadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="5" stdDeviation="8" flood-color="#E6321C" flood-opacity="0.22" />
+    </filter>
+  </defs>
+
+  <!-- Beige Squircle Base -->
+  <rect width="512" height="512" rx="124" fill="url(#beigeGrad)" />
+  
+  <!-- Subtle Outer Rim Stroke -->
+  <rect x="3" y="3" width="506" height="506" rx="121" stroke="#D6C8AE" stroke-width="6" />
+  
+  <!-- Inner Highlight Glow -->
+  <rect x="12" y="12" width="488" height="488" rx="112" stroke="#FFFFFF" stroke-opacity="0.5" stroke-width="3" />
+  
+  <!-- Top Specular Ambient Glow -->
+  <path d="M 0 124 C 0 55 55 0 124 0 L 388 0 C 457 0 512 55 512 124 L 512 210 Q 256 260 0 210 Z" fill="url(#topHighlight)" />
+
+  <!-- Monogram Red B + Black Dot -->
+  <g filter="url(#subtleShadow)">
+    <!-- High Precision Geometric Outfit Black 'B' in Vermilion Red (#E6321C) -->
+    <!-- Outer Contour + 2 Inner Cutout Loops (Fill Rule EvenOdd) -->
+    <path fill="#E6321C" fill-rule="evenodd" d="
+      M 148 116
+      L 272 116
+      C 328 116 364 146 364 194
+      C 364 226 348 248 322 258
+      C 356 269 376 295 376 334
+      C 376 388 334 422 272 422
+      L 148 422
+      Z
+      M 218 178
+      L 218 240
+      L 262 240
+      C 284 240 298 228 298 209
+      C 298 190 284 178 262 178
+      Z
+      M 218 296
+      L 218 360
+      L 266 360
+      C 290 360 306 346 306 328
+      C 306 310 290 296 266 296
+      Z
+    " />
+    
+    <!-- Signature Black Dot (#171717) -->
+    <circle cx="414" cy="398" r="24" fill="#171717" />
+  </g>
+</svg>

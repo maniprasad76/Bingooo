@@ -20,8 +20,6 @@ import {
   X,
   AlertCircle,
   Flame,
-  Eye,
-  CheckCircle2,
 } from 'lucide-react';
 import { useProduct } from '../hooks/useProducts';
 import { useCart } from '../hooks/useCart';
@@ -398,68 +396,30 @@ export function ProductPage() {
                 <p className="text-xs text-[#6F6A63] font-sans mt-0.5">
                   Inclusive of all taxes
                 </p>
-              </div>
-
-              {/* Limited Atelier Batch Card */}
-              <div className="mt-4 p-4 rounded-2xl border border-[#DDD3C5] bg-gradient-to-br from-white via-[#FDFBF7] to-[#F7EEDB]/30 shadow-[0_2px_12px_rgba(23,23,23,0.03)] relative overflow-hidden">
-                {/* Subtle atelier watermark */}
-                <div className="absolute -right-2 -bottom-2 select-none pointer-events-none text-[#DDD3C5]/20 font-heading font-black text-5xl tracking-tighter">
-                  BGO
-                </div>
-
-                <div className="relative z-10 space-y-2.5">
-                  {/* Top Bar */}
-                  <div className="flex items-center justify-between gap-2">
+                {/* Compact Stock & Urgency Indicator */}
+                <div className="mt-3.5 p-3 rounded-xl bg-[#F7EEDB]/40 border border-[#DDD3C5]/80">
+                  <div className="flex items-center justify-between text-xs">
                     <div className="flex items-center gap-2">
                       <span className="relative flex h-2 w-2">
-                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#E6321C] opacity-60"></span>
+                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#E6321C] opacity-75"></span>
                         <span className="relative inline-flex rounded-full h-2 w-2 bg-[#E6321C]"></span>
                       </span>
-                      <span className="font-heading font-black text-[#171717] uppercase tracking-[0.12em] text-[10px] sm:text-[11px]">
-                        Limited Atelier Run
-                      </span>
-                      <span className="bg-[#171717] text-[#F7EEDB] px-2 py-0.5 rounded-full text-[9px] font-extrabold uppercase tracking-wider">
-                        50 Pcs Only
+                      <span className="font-sans font-bold text-[#171717] text-xs">
+                        Only 3 pieces left in batch
                       </span>
                     </div>
-
-                    <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#E6321C]/10 border border-[#E6321C]/20 text-[#E6321C] text-[11px] font-bold shrink-0">
-                      <Flame size={12} className="fill-[#E6321C]/30" />
-                      <span>Only 3 Left</span>
-                    </div>
+                    <span className="text-[11px] font-bold text-[#E6321C] flex items-center gap-1">
+                      <Flame size={12} className="fill-[#E6321C]" />
+                      <span>Selling Fast</span>
+                    </span>
                   </div>
-
-                  {/* Sleek Minimal Progress Meter */}
-                  <div className="space-y-1">
-                    <div className="w-full bg-[#EDE0CC]/70 h-1.5 rounded-full overflow-hidden">
-                      <motion.div
-                        className="bg-gradient-to-r from-[#171717] via-[#B91F12] to-[#E6321C] h-full rounded-full"
-                        initial={{ width: 0 }}
-                        animate={{ width: '94%' }}
-                        transition={{ duration: 1.1, ease: 'easeOut' }}
-                      />
-                    </div>
-                    <div className="flex items-center justify-between text-[10px] font-sans text-[#6F6A63]">
-                      <span>Batch 01 Allocation: <strong>94% Claimed</strong></span>
-                      <span className="text-[#171717] font-semibold">Edition 47/50</span>
-                    </div>
-                  </div>
-
-                  {/* Craftmanship Statement */}
-                  <p className="text-[11px] font-sans text-[#6F6A63] leading-relaxed">
-                    Crafted in small numbered batches at our Bengaluru studio. Once this run is archived, this colorway will not be restocked.
-                  </p>
-
-                  {/* Live Demand Bar */}
-                  <div className="pt-2 border-t border-[#DDD3C5]/50 flex items-center justify-between text-[10px] sm:text-[11px] text-[#6F6A63]">
-                    <div className="flex items-center gap-1.5 font-medium">
-                      <Eye size={12} className="text-[#171717]" />
-                      <span><strong className="text-[#171717]">18 collectors</strong> viewing right now</span>
-                    </div>
-                    <div className="flex items-center gap-1 text-[#238636] font-semibold">
-                      <CheckCircle2 size={12} />
-                      <span>Ready to Ship</span>
-                    </div>
+                  <div className="mt-2 w-full bg-[#DDD3C5]/50 h-1 rounded-full overflow-hidden">
+                    <motion.div
+                      className="bg-[#E6321C] h-full rounded-full"
+                      initial={{ width: 0 }}
+                      animate={{ width: '92%' }}
+                      transition={{ duration: 0.8, ease: 'easeOut' }}
+                    />
                   </div>
                 </div>
               </div>

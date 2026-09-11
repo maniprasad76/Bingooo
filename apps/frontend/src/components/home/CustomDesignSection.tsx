@@ -61,18 +61,18 @@ export function CustomDesignSection() {
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 pt-2">
               <Link
                 to="/customize"
-                className="inline-flex h-12 w-full sm:w-auto items-center justify-center gap-2.5 rounded-xl bg-[#B91F12] hover:bg-[#E6321C] px-7 text-xs sm:text-sm font-bold uppercase tracking-wider text-white shadow-md shadow-[#B91F12]/25 transition-all duration-200 hover:-translate-y-0.5 active:translate-y-0"
+                className="inline-flex h-9 w-full sm:w-auto items-center justify-center gap-2 rounded-lg bg-[#B91F12] hover:bg-[#E6321C] px-4 text-xs font-semibold uppercase tracking-wide text-white shadow-xs transition-all duration-200 hover:-translate-y-0.5 active:translate-y-0"
               >
-                <Sparkles size={16} />
+                <Sparkles size={14} />
                 <span>START DESIGNING</span>
               </Link>
 
               <Link
                 to="/customize"
-                className="inline-flex h-12 w-full sm:w-auto items-center justify-center gap-2.5 rounded-xl border border-[#DDD3C5] bg-white/70 hover:bg-white px-6 text-xs sm:text-sm font-bold uppercase tracking-wider text-[#171717] transition-all duration-200 hover:border-[#E6321C] hover:-translate-y-0.5"
+                className="inline-flex h-9 w-full sm:w-auto items-center justify-center gap-2 rounded-lg border border-[#DDD3C5] bg-white/70 hover:bg-white px-4 text-xs font-semibold uppercase tracking-wide text-[#171717] shadow-xs transition-all duration-200 hover:border-[#E6321C] hover:-translate-y-0.5"
               >
-                <div className="h-6 w-6 rounded-full border border-[#B91F12] flex items-center justify-center text-[#B91F12]">
-                  <Play size={10} className="fill-[#B91F12] translate-x-0.5" />
+                <div className="h-5 w-5 rounded-full border border-[#B91F12] flex items-center justify-center text-[#B91F12]">
+                  <Play size={9} className="fill-[#B91F12] translate-x-0.5" />
                 </div>
                 <span>HOW IT WORKS</span>
               </Link>

@@ -23,7 +23,7 @@ import {
   X,
 } from 'lucide-react';
 import { api } from '../lib/api/client';
-import { signOut } from '../lib/auth/supabase';
+import { signOut, loginAsDevAdmin } from '../lib/auth/supabase';
 import { useToast } from '../components/ui/Toast';
 import { SEO } from '../components/common/SEO';
 import { Logo } from '../components/ui/Logo';
@@ -305,7 +305,44 @@ function EmptyRow({ message }: { message: string }) {
 
 function AccessMessage({ error }: { error: unknown }) {
   const message = error instanceof Error ? error.message : 'This operation needs an authorised administrator account.';
-  return <div className="rounded-2xl border border-[#E6321C]/20 bg-[#FDF0EE] p-6"><div className="flex items-start gap-3"><AlertTriangle className="mt-0.5 text-brand-red" size={20} /><div><p className="font-bold text-ink">Admin access required</p><p className="mt-1 text-sm text-muted">{message}</p><p className="mt-3 text-xs text-muted">Sign in with a Supabase user that has the required Bingooo role, then return to this workspace.</p></div></div></div>;
+  return (
+    <div className="rounded-2xl border border-[#E6321C]/20 bg-[#FDF0EE] p-6 sm:p-8 max-w-2xl">
+      <div className="flex items-start gap-4">
+        <AlertTriangle className="mt-1 text-brand-red shrink-0" size={24} />
+        <div className="space-y-3">
+          <div>
+            <p className="text-lg font-bold text-ink">Administrator Access Required</p>
+            <p className="mt-1 text-sm text-muted leading-relaxed">{message}</p>
+          </div>
+          <div className="flex flex-wrap items-center gap-3 pt-2">
+            <Link
+              to="/admin/login"
+              className="inline-flex items-center gap-2 rounded-lg bg-brand-red px-4 py-2.5 text-xs font-bold uppercase tracking-wider text-white hover:bg-[#B91F12] transition-colors"
+            >
+              Sign In to Console
+            </Link>
+            <button
+              type="button"
+              onClick={() => {
+                loginAsDevAdmin();
+                window.location.reload();
+              }}
+              className="inline-flex items-center gap-2 rounded-lg border border-border bg-white px-4 py-2.5 text-xs font-bold text-ink hover:border-brand-red transition-colors"
+            >
+              <Sparkles size={14} className="text-brand-red" />
+              Dev Admin Bypass
+            </button>
+            <Link
+              to="/"
+              className="text-xs font-semibold text-muted hover:text-ink px-2"
+            >
+              Back to store
+            </Link>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 }
 
 function ProductEditor({ form, setForm, categories, editing, onClose, onSubmit }: { form: ProductForm; setForm: (value: ProductForm) => void; categories: Array<{ id: string; name: string }>; editing: boolean; onClose: () => void; onSubmit: (event: FormEvent<HTMLFormElement>) => void }) {

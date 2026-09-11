@@ -152,7 +152,7 @@ function ToastItem({ toast, onRemove }: { toast: ToastItemData; onRemove: (id: s
       transition={{ duration: 0.2 }}
       className={cn(
         'flex items-center gap-3 rounded-xl border px-4 py-3 shadow-lg select-none',
-        'min-w-[300px] max-w-md',
+        'w-[calc(100vw-2rem)] sm:w-auto sm:min-w-[300px] max-w-md',
         typeStyles[toast.type],
       )}
       role="alert"

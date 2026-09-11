@@ -32,3 +32,12 @@ export function formatDate(dateString?: string | null) {
     return dateString;
   }
 }
+
+export function resolveImageUrl(url?: string | null): string {
+  if (!url) return '';
+  // If it's a localhost:3000 API URL, rewrite to relative /api/ for Vite proxy reliability
+  if (url.startsWith('http://localhost:3000/api/')) {
+    return url.replace('http://localhost:3000', '');
+  }
+  return url;
+}

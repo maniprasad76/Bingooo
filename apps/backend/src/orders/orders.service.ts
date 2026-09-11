@@ -1,7 +1,8 @@
 import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { v4 as uuidv4 } from 'uuid';
-import { db } from '../common/database/store';
+import { db, saveDb } from '../common/database/store';
 import { CheckoutService, CheckoutValidationDto } from '../checkout/checkout.service';
+
 
 export interface CreateOrderDto extends CheckoutValidationDto {
   userId?: string;
@@ -111,6 +112,7 @@ export class OrdersService {
     // Clear cart items
     db.cart_items = db.cart_items.filter((i) => i.cart_id !== dto.cartId);
 
+    saveDb();
     return this.enrichOrder(order);
   }
 
@@ -177,8 +179,41 @@ export class OrdersService {
       created_at: new Date().toISOString(),
     });
 
+    saveDb();
     return this.enrichOrder(order);
   }
+
+  deleteOrder(orderId: string) {
+    const index = db.orders.findIndex((o) => o.id === orderId || o.order_number === orderId);
+    if (index === -1) {
+      throw new NotFoundException({ code: 'ORDER_NOT_FOUND', message: 'Order not found' });
+    }
+    const [deleted] = db.orders.splice(index, 1);
+    db.order_items = db.order_items.filter((i) => i.order_id !== deleted.id);
+    db.payments = db.payments.filter((p) => p.order_id !== deleted.id);
+    db.shipments = db.shipments.filter((s) => s.order_id !== deleted.id);
+
+    if (db.audit_logs) {
+      db.audit_logs.unshift({
+        id: `log-${Date.now()}`,
+        admin_email: 'admin@bingooo.in',
+        action: 'order.deleted',
+        resource: 'orders',
+        resource_id: deleted.order_number,
+        details: `Order #${deleted.order_number} was permanently removed.`,
+        ip_address: '127.0.0.1',
+        created_at: new Date().toISOString(),
+      });
+    }
+
+    saveDb();
+    return {
+      success: true,
+      message: `Order #${deleted.order_number} deleted successfully`,
+      deletedId: deleted.id,
+    };
+  }
+
 
   private enrichOrder(order: any) {
     const items = db.order_items

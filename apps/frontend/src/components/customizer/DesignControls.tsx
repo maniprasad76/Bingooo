@@ -136,6 +136,7 @@ export function DesignControls({
   onChangeCustomerNotes,
 }: DesignControlsProps) {
   const [activeTab, setActiveTab] = useState<'garment' | 'artwork' | 'typography' | 'specs'>('garment');
+  const [isDragging, setIsDragging] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -375,7 +376,35 @@ export function DesignControls({
               {/* Drag and Drop Uploader */}
               <div
                 onClick={() => fileInputRef.current?.click()}
-                className="rounded-2xl border-2 border-dashed border-[#DDD3C5] hover:border-[#E6321C] bg-[#FAF8F5]/80 p-6 flex flex-col items-center justify-center text-center cursor-pointer transition-colors"
+                onDragOver={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  setIsDragging(true);
+                }}
+                onDragEnter={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  setIsDragging(true);
+                }}
+                onDragLeave={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  setIsDragging(false);
+                }}
+                onDrop={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  setIsDragging(false);
+                  const file = e.dataTransfer.files?.[0];
+                  if (file) {
+                    onUploadFile(file);
+                  }
+                }}
+                className={`rounded-2xl border-2 border-dashed p-6 flex flex-col items-center justify-center text-center cursor-pointer transition-all ${
+                  isDragging
+                    ? 'border-[#E6321C] bg-[#FDF0EE] scale-[1.01] ring-4 ring-[#E6321C]/10'
+                    : 'border-[#DDD3C5] hover:border-[#E6321C] bg-[#FAF8F5]/80 hover:bg-[#FDF0EE]/30'
+                }`}
               >
                 <input
                   ref={fileInputRef}
@@ -384,11 +413,15 @@ export function DesignControls({
                   onChange={handleFileChange}
                   className="hidden"
                 />
-                <div className="h-11 w-11 rounded-full bg-[#FDF0EE] text-[#E6321C] flex items-center justify-center mb-2.5 shadow-2xs">
+                <div className={`h-11 w-11 rounded-full bg-[#FDF0EE] text-[#E6321C] flex items-center justify-center mb-2.5 shadow-2xs transition-transform ${isDragging ? 'scale-110' : ''}`}>
                   <UploadCloud size={22} />
                 </div>
                 <p className="text-xs font-sans text-[#171717] font-bold mb-1">
-                  {artwork?.url ? 'Click to replace graphic' : 'Drop your artwork file here or click to browse'}
+                  {isDragging
+                    ? 'Drop image here now!'
+                    : artwork?.url
+                    ? 'Drag new image here or click to replace graphic'
+                    : 'Drop your artwork file here or click to browse'}
                 </p>
                 <span className="text-[11px] text-[#6F6A63] font-sans">
                   PNG with transparent background recommended (Up to 25MB • 300 DPI)

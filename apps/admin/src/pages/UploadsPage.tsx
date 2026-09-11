@@ -14,7 +14,7 @@ import {
   X,
 } from 'lucide-react';
 import { api } from '../lib/api/client';
-import { formatDate } from '../lib/utils';
+import { formatDate, resolveImageUrl } from '../lib/utils';
 import { useToast } from '../components/ui/Toast';
 
 export interface MediaAsset {
@@ -272,8 +272,9 @@ export function UploadsPage() {
               {/* Image Preview Container */}
               <div className="relative aspect-[4/3] w-full overflow-hidden bg-[#EDE0CC]">
                 <img
-                  src={asset.url}
+                  src={resolveImageUrl(asset.url)}
                   alt={asset.name}
+                  crossOrigin="anonymous"
                   className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
                   loading="lazy"
                   onError={(e) => {

@@ -33,13 +33,13 @@ export function ReadyToExpressBanner() {
         <div className="flex flex-wrap sm:flex-nowrap items-center gap-3 sm:gap-4 w-full md:w-auto justify-start md:justify-end shrink-0">
           <Link
             to="/shop"
-            className="w-full sm:w-auto text-center rounded-full bg-white text-[#171717] px-6 sm:px-7 py-3 sm:py-3.5 text-xs sm:text-sm font-extrabold uppercase tracking-[0.12em] shadow-lg hover:bg-[#FAF8F5] active:scale-95 transition-all"
+            className="w-full sm:w-auto text-center rounded-full bg-white text-[#171717] px-4 sm:px-5 py-2 sm:py-2.5 text-xs font-semibold uppercase tracking-wider shadow-md hover:bg-[#FAF8F5] active:scale-95 transition-all"
           >
             Shop Men's Wear
           </Link>
           <Link
             to="/customize"
-            className="w-full sm:w-auto text-center rounded-full bg-[#8F160C] border border-white/40 text-white px-6 sm:px-7 py-3 sm:py-3.5 text-xs sm:text-sm font-extrabold uppercase tracking-[0.12em] shadow-lg hover:bg-white/10 hover:border-white active:scale-95 transition-all"
+            className="w-full sm:w-auto text-center rounded-full bg-[#8F160C] border border-white/40 text-white px-4 sm:px-5 py-2 sm:py-2.5 text-xs font-semibold uppercase tracking-wider shadow-md hover:bg-white/10 hover:border-white active:scale-95 transition-all"
           >
             Create Your Design
           </Link>

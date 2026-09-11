@@ -1,6 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { v4 as uuidv4 } from 'uuid';
-import { db } from '../common/database/store';
+import { db, saveDb } from '../common/database/store';
+
 
 export interface BannerItem {
   id: string;
@@ -59,6 +60,7 @@ export class BannersService {
 
     if (!db.banners) db.banners = [];
     db.banners.push(newBanner);
+    saveDb();
     return newBanner;
   }
 
@@ -75,6 +77,7 @@ export class BannersService {
       updated_at: new Date().toISOString(),
     };
 
+    saveDb();
     return db.banners[idx];
   }
 
@@ -85,6 +88,8 @@ export class BannersService {
     }
 
     db.banners.splice(idx, 1);
+    saveDb();
     return { success: true };
   }
 }
+

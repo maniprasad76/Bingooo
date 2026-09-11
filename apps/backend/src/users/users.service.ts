@@ -1,7 +1,8 @@
 import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
 import { v4 as uuidv4 } from 'uuid';
-import { db } from '../common/database/store';
+import { db, saveDb } from '../common/database/store';
 import { hashPassword } from '../common/utils/crypto.util';
+
 
 @Injectable()
 export class UsersService {
@@ -80,6 +81,7 @@ export class UsersService {
     };
 
     db.addresses.push(address);
+    saveDb();
     return address;
   }
 
@@ -105,11 +107,13 @@ export class UsersService {
       address.is_default = true;
     }
     address.updated_at = new Date().toISOString();
+    saveDb();
     return address;
   }
 
   deleteAddress(userId: string, addressId: string) {
     db.addresses = db.addresses.filter((a) => !(a.user_id === userId && a.id === addressId));
+    saveDb();
     return this.getAddresses(userId);
   }
 
@@ -117,8 +121,10 @@ export class UsersService {
     db.addresses.forEach((a) => {
       if (a.user_id === userId) a.is_default = a.id === addressId;
     });
+    saveDb();
     return this.getAddresses(userId);
   }
+
 
   /** Admin: List customer users with orders aggregation */
   getAllCustomers(search?: string) {

@@ -1,321 +1,464 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, PenTool } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
 import { SEO } from '../components/common/SEO';
 import { generateOrganizationSchema, generateWebSiteSchema } from '../lib/seo/schema';
-import { ShopByCategory } from '../components/home/ShopByCategory';
-import { HowItWorksBanner } from '../components/home/HowItWorksBanner';
-import { NewArrivals } from '../components/home/NewArrivals';
-import { InstagramCommunity } from '../components/home/InstagramCommunity';
-import { LovedByCommunity } from '../components/home/LovedByCommunity';
-import { ReadyToExpressBanner } from '../components/home/ReadyToExpressBanner';
+import { BINGOOO_INSTAGRAM_URL, getWhatsAppUrl, WhatsAppIcon } from '../components/ui/SocialIcons';
+import { triggerHaptic } from '../lib/native/capacitorBridge';
 
-export interface HeroSlideItem {
+interface FeaturedProduct {
   id: string;
-  title: string;
-  subtitle: string;
-  ctaText: string;
-  targetUrl: string;
-  desktopImageUrl: string;
-  mobileImageUrl?: string;
-  badge?: string;
-  eyebrow?: string;
-  priority: number;
-  isActive: boolean;
+  name: string;
+  price: string;
+  image: string;
+  swatches: string[];
+  link: string;
 }
 
-const DEFAULT_HERO_SLIDES: HeroSlideItem[] = [
+const FEATURED_PRODUCTS: FeaturedProduct[] = [
   {
-    id: 'ban-1',
-    title: 'Wear What Feels Like You.',
-    subtitle: 'Streetwear silhouettes. Heavyweight 240 GSM combed cotton. Engineered for personal expression.',
-    ctaText: "Shop Men's Wear",
-    targetUrl: '/shop',
-    desktopImageUrl: '/hero-banner.png',
-    mobileImageUrl: '/hero-banner.png',
-    badge: 'DROP 01 • OVERSIZED FIT',
-    eyebrow: "Bingooo Men’s Wear",
-    priority: 1,
-    isActive: true,
+    id: 'prod-1',
+    name: 'Classic Logo Tee',
+    price: '₹999',
+    image: 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&w=900&q=85',
+    swatches: ['#171717', '#ffffff', '#d9cbb8'],
+    link: '/product/classic-oversized-tee',
   },
   {
-    id: 'ban-2',
-    title: 'Everyday Luxury. Built to Last.',
-    subtitle: 'Minimalist cuts crafted from premium combed cotton. Tailored for effortless confidence.',
-    ctaText: 'Explore Drop 02',
-    targetUrl: '/shop',
-    desktopImageUrl: '/hero-banner-2.jpg',
-    mobileImageUrl: '/hero-banner-2.jpg',
-    badge: 'STUDIO DROP • DROP 02',
-    eyebrow: 'Architectural Edit',
-    priority: 2,
-    isActive: true,
+    id: 'prod-2',
+    name: 'Minimal Tee',
+    price: '₹1,099',
+    image: 'https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?auto=format&fit=crop&w=900&q=85',
+    swatches: ['#171717', '#d9cbb8', '#ffffff'],
+    link: '/product/minimalist-heavyweight-tee',
   },
   {
-    id: 'ban-3',
-    title: 'Tailored Statement Menswear.',
-    subtitle: 'Signature back prints, relaxed drape, and confident proportions that redefine streetwear.',
-    ctaText: 'Shop The Look',
-    targetUrl: '/shop',
-    desktopImageUrl: '/hero-banner-3.jpg',
-    mobileImageUrl: '/hero-banner-3.jpg',
-    badge: 'CAMPAIGN 2026 • SIGNATURE FIT',
-    eyebrow: 'Signature Drop',
-    priority: 3,
-    isActive: true,
+    id: 'prod-3',
+    name: 'Statement Hoodie',
+    price: '₹1,499',
+    image: 'https://images.unsplash.com/photo-1556821840-3a63f95609a7?auto=format&fit=crop&w=900&q=85',
+    swatches: ['#171717', '#8d8984', '#d9cbb8'],
+    link: '/product/heavyweight-fleece-hoodie',
   },
   {
-    id: 'ban-4',
-    title: 'Natural Earth Tones & Minimalism.',
-    subtitle: 'Warm cream streetwear essentials featuring precision high-density Bingooo chest embroidery.',
-    ctaText: 'Discover Essentials',
-    targetUrl: '/shop',
-    desktopImageUrl: '/hero-banner-4.jpg',
-    mobileImageUrl: '/hero-banner-4.jpg',
-    badge: 'LIMITED EDITION • NATURAL PALETTE',
-    eyebrow: 'Earth Collection',
-    priority: 4,
-    isActive: true,
-  },
-  {
-    id: 'ban-5',
-    title: 'Heavyweight Crimson Collection.',
-    subtitle: 'Ultra-warm drop-shoulder hoodies with iconic distressed B artwork and brushed fleece lining.',
-    ctaText: 'Create Your Design',
-    targetUrl: '/customize',
-    desktopImageUrl: '/hero-banner-5.jpg',
-    mobileImageUrl: '/hero-banner-5.jpg',
-    badge: 'CUSTOM STUDIO • HOODIES & TEES',
-    eyebrow: 'Crimson Studio',
-    priority: 5,
-    isActive: true,
+    id: 'prod-4',
+    name: 'Bold B Tee',
+    price: '₹1,199',
+    image: 'https://images.unsplash.com/photo-1583743814966-8936f37f7996?auto=format&fit=crop&w=900&q=85',
+    swatches: ['#171717', '#ffffff', '#8d8984'],
+    link: '/product/bold-signature-tee',
   },
 ];
 
-
-// Spring physics for slide transitions
-const slideVariants = {
-  enter: (direction: number) => ({
-    x: direction > 0 ? '100%' : '-100%',
-    opacity: 0,
-    scale: 1.04,
-  }),
-  center: {
-    x: 0,
-    opacity: 1,
-    scale: 1,
-    transition: {
-      x: { type: 'spring', stiffness: 240, damping: 28, mass: 0.8 },
-      opacity: { duration: 0.45, ease: [0.25, 1, 0.5, 1] },
-      scale: { duration: 0.7, ease: [0.16, 1, 0.3, 1] },
-    },
-  },
-  exit: (direction: number) => ({
-    x: direction < 0 ? '100%' : '-100%',
-    opacity: 0,
-    scale: 0.96,
-    transition: {
-      x: { type: 'spring', stiffness: 240, damping: 28, mass: 0.8 },
-      opacity: { duration: 0.35, ease: [0.4, 0, 1, 1] },
-      scale: { duration: 0.5 },
-    },
-  }),
-};
-
-const getImagePositionClass = (slide: HeroSlideItem, index: number) => {
-  if (slide.id === 'ban-1' || index === 0 || slide.desktopImageUrl?.includes('hero-banner.png')) {
-    // Model in image 1 is on the right side of the canvas (~82% horizontally).
-    // Targeting 82% 18% centers the model perfectly in the middle of mobile screens!
-    return 'object-[82%_18%] sm:object-[78%_center] lg:object-[80%_center]';
-  }
-  if (slide.id === 'ban-2' || index === 1 || slide.desktopImageUrl?.includes('hero-banner-2')) {
-    return 'object-[52%_20%] sm:object-center';
-  }
-  if (slide.id === 'ban-3' || index === 2 || slide.desktopImageUrl?.includes('hero-banner-3')) {
-    return 'object-[56%_16%] sm:object-center';
-  }
-  if (slide.id === 'ban-4' || index === 3 || slide.desktopImageUrl?.includes('hero-banner-4')) {
-    return 'object-[52%_15%] sm:object-center';
-  }
-  if (slide.id === 'ban-5' || index === 4 || slide.desktopImageUrl?.includes('hero-banner-5')) {
-    return 'object-[54%_20%] sm:object-center';
-  }
-  return 'object-[center_18%] sm:object-center';
-};
+const SOCIAL_IMAGES = [
+  'https://images.unsplash.com/photo-1529139574466-a303027c1d8b?auto=format&fit=crop&w=600&q=80',
+  'https://images.unsplash.com/photo-1496747611176-843222e1e57c?auto=format&fit=crop&w=600&q=80',
+  'https://images.unsplash.com/photo-1551488831-00ddcb6c6bd3?auto=format&fit=crop&w=600&q=80',
+  'https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?auto=format&fit=crop&w=600&q=80',
+  'https://images.unsplash.com/photo-1556821840-3a63f95609a7?auto=format&fit=crop&w=600&q=80',
+  'https://images.unsplash.com/photo-1583743814966-8936f37f7996?auto=format&fit=crop&w=600&q=80',
+];
 
 export function HomePage() {
-  const [slides, setSlides] = useState<HeroSlideItem[]>(() => {
-    try {
-      const saved = localStorage.getItem('bingooo_hero_banners_v3');
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          return parsed.filter((s: HeroSlideItem) => s.isActive !== false);
-        }
-      }
-    } catch {
-      // ignore
-    }
-    return DEFAULT_HERO_SLIDES;
-  });
+  const [wishlist, setWishlist] = useState<Record<string, boolean>>({});
+  const [email, setEmail] = useState('');
+  const [subscribed, setSubscribed] = useState(false);
 
-  const [[page, direction], setPage] = useState<[number, number]>([0, 0]);
-  const [isPaused, setIsPaused] = useState(false);
+  const toggleWishlist = (id: string, e: React.MouseEvent) => {
+    e.preventDefault();
+    triggerHaptic('light');
+    setWishlist((prev) => ({ ...prev, [id]: !prev[id] }));
+  };
 
-  // Sync banners from backend API
-  useEffect(() => {
-    fetch('/api/v1/banners')
-      .then((res) => (res.ok ? res.json() : null))
-      .then((data) => {
-        if (Array.isArray(data) && data.length > 0) {
-          const activeOnly = data.filter((item: HeroSlideItem) => item.isActive !== false);
-          if (activeOnly.length > 0) {
-            setSlides(activeOnly);
-            localStorage.setItem('bingooo_hero_banners_v3', JSON.stringify(activeOnly));
-          }
-        }
-      })
-      .catch(() => {
-        // Fallback gracefully
-      });
-  }, []);
-
-  const totalSlides = slides.length || 1;
-  const currentSlide = ((page % totalSlides) + totalSlides) % totalSlides;
-  const activeSlide = slides[currentSlide] || DEFAULT_HERO_SLIDES[0];
-
-  const paginate = useCallback(
-    (newDirection: number) => {
-      setPage(([prevPage]) => [prevPage + newDirection, newDirection]);
-    },
-    []
-  );
-
-  // Auto swipe left one by one every 4.5 seconds
-  useEffect(() => {
-    if (isPaused || totalSlides <= 1) return;
-    const interval = setInterval(() => {
-      paginate(1);
-    }, 4500);
-    return () => clearInterval(interval);
-  }, [paginate, isPaused, totalSlides]);
-
+  const handleSubscribe = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email.trim() || !email.includes('@')) return;
+    setSubscribed(true);
+    setEmail('');
+  };
 
   return (
-    <div className="overflow-hidden bg-[#FAF8F5] text-[#171717]">
+    <main className="bg-[#f7eedb] text-[#171717] font-sans antialiased selection:bg-[#e6321c] selection:text-white">
       <SEO
-        title="Premium Heavyweight Men's Wear & 3D Atelier"
-        description="Discover luxury streetwear crafted from 240–280 GSM combed cotton. Shop oversized graphic tees, drop-shoulder hoodies, or customize your own bespoke garments."
-        keywords="heavyweight t-shirts, 240 gsm customizer, streetwear India, oversized tees, luxury menswear"
+        title="BINGOOO — Wear What Defines You"
+        description="BINGOOO — Men's fashion, custom designs and clothing culture."
+        keywords="mens wear, oversized tees, streetwear, custom t-shirts, hoodies, bingooo"
         canonical="https://bingooo.in"
         schema={[generateOrganizationSchema(), generateWebSiteSchema()]}
       />
-      {/* ── Visually hidden H1 for SEO & accessibility (hero art is image-driven) ── */}
-      <h1 className="sr-only">
-        Bingooo Premium Heavyweight Men's Wear & Custom Fashion Studio
-      </h1>
-      {/* ── Ultra-Smooth Full-Screen Hero Section with Seamless Auto-Scroll ── */}
-      <section
-        className="relative w-full h-[85vh] sm:h-[90vh] lg:h-[calc(100vh-80px)] min-h-[580px] max-h-[920px] overflow-hidden border-b border-[#DDD3C5] bg-[#F0E7DF]"
-        onMouseEnter={() => setIsPaused(true)}
-        onMouseLeave={() => setIsPaused(false)}
-        aria-label="Hero Carousel Showcase"
-      >
-        <AnimatePresence initial={false} custom={direction}>
-          <motion.div
-            key={page}
-            custom={direction}
-            variants={slideVariants}
-            initial="enter"
-            animate="center"
-            exit="exit"
-            drag="x"
-            dragConstraints={{ left: 0, right: 0 }}
-            dragElastic={0.25}
-            onDragEnd={(_, { offset, velocity }) => {
-              const swipe = Math.abs(offset.x) * velocity.x;
-              if (swipe < -8000 || offset.x < -60) {
-                paginate(1);
-              } else if (swipe > 8000 || offset.x > 60) {
-                paginate(-1);
-              }
-            }}
-            className="absolute inset-0 h-full w-full cursor-grab active:cursor-grabbing select-none"
-          >
-            {/* Tailored Ken Burns Ambient Drift & Mobile Centering */}
-            <motion.img
-              src={activeSlide.desktopImageUrl}
-              alt={activeSlide.title || 'Bingooo Hero'}
-              className={`absolute inset-0 h-full w-full object-cover ${getImagePositionClass(activeSlide, currentSlide)}`}
-              initial={{ scale: 1 }}
-              animate={{ scale: 1.04 }}
-              transition={{ duration: 6, ease: [0.25, 0.1, 0.25, 1] }}
-              loading="eager"
-              decoding="sync"
-            />
-          </motion.div>
-        </AnimatePresence>
 
-        {/* ── Slide Indicator Dots (Visible on mobile and desktop) ── */}
-        {totalSlides > 1 && (
-          <div className="absolute bottom-6 sm:bottom-8 left-0 right-0 z-20 flex justify-center items-center gap-2 pointer-events-auto">
-            {slides.map((_, i) => (
-              <button
-                key={i}
-                onClick={() => setPage([i, i > currentSlide ? 1 : -1])}
-                aria-label={`Go to slide ${i + 1}`}
-                className={`transition-all duration-300 rounded-full ${
-                  i === currentSlide
-                    ? 'w-6 h-2 bg-[#E6321C]'
-                    : 'w-2 h-2 bg-white/60 hover:bg-white'
-                }`}
-              />
-            ))}
-          </div>
-        )}
+      {/* =========================================================
+          HERO SECTION
+      ========================================================= */}
+      <section className="relative min-h-[min(650px,calc(100vh-104px))] md:min-h-[min(650px,calc(100vh-104px))] overflow-hidden bg-[#f7eedb]">
+        <div className="container-bingooo min-h-[inherit] relative grid grid-cols-1 md:grid-cols-[43%_57%] items-center">
+          {/* Hero Copy */}
+          <div className="relative z-10 py-[65px] md:py-[70px] pr-0 md:pr-4 pl-0 md:pl-4">
+            <div className="eyebrow max-w-[130px] leading-[1.8] mb-[28px] text-[#171717]">
+              CLOTHING<br />
+              CUSTOM<br />
+              CULTURE<br />
+              YOU
+            </div>
 
-        {/* ── ONLY Custom Button Floating Cleanly Over Image ── */}
-        <div className="absolute bottom-16 sm:bottom-10 left-0 right-0 z-20 mx-auto max-w-[1360px] px-4 sm:px-8 flex justify-center sm:justify-start pointer-events-none">
-          <motion.div
-            initial={{ opacity: 0, y: 15 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2, duration: 0.4 }}
-            className="pointer-events-auto"
-          >
-            <motion.div whileHover={{ scale: 1.05, y: -2 }} whileTap={{ scale: 0.95 }}>
-              <Link
-                to="/customize"
-                className="inline-flex items-center gap-2.5 rounded-full bg-[#171717]/90 hover:bg-[#E6321C] text-white px-6 sm:px-8 py-3 sm:py-4 text-xs sm:text-sm font-bold uppercase tracking-[0.14em] shadow-2xl backdrop-blur-md border border-white/25 transition-all duration-200 group"
-              >
-                <PenTool size={15} className="text-[#E6321C] group-hover:text-white transition-colors" />
-                <span>Custom Design</span>
-                <ArrowRight size={14} className="opacity-70 group-hover:translate-x-1 group-hover:opacity-100 transition-all" />
+            <h1 className="m-0 text-[clamp(52px,13vw,105px)] md:text-[clamp(55px,7vw,105px)] font-extrabold leading-[0.87] tracking-[-0.075em] max-w-[650px] uppercase text-[#171717]">
+              <span className="block">NOT JUST</span>
+              <span className="block">CLOTHES.</span>
+              <span className="block text-[#e6321c]">A YOU.</span>
+            </h1>
+
+            <p className="my-[27px] mb-[24px] text-[11px] font-semibold tracking-[0.34em] uppercase text-[#171717]">
+              WEAR WHAT DEFINES YOU.
+            </p>
+
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-[18px] sm:gap-[28px]">
+              <Link to="/shop" className="btn btn-black w-full sm:w-auto">
+                SHOP NOW →
               </Link>
-            </motion.div>
-          </motion.div>
+
+              <Link to="/customize" className="text-link text-center sm:text-left self-start sm:self-center">
+                CREATE YOUR OWN
+              </Link>
+            </div>
+          </div>
+
+          {/* Hero Image */}
+          <div className="absolute inset-[30%_0_0_0] md:inset-[0_0_0_34%] overflow-hidden pointer-events-none -z-0 md:z-0">
+            <img
+              src="https://images.unsplash.com/photo-1529139574466-a303027c1d8b?auto=format&fit=crop&w=1800&q=85"
+              alt="Bingooo fashion campaign"
+              className="h-full w-full object-cover object-center grayscale"
+            />
+            {/* Gradient Overlay for Smooth Editorial Blend */}
+            <div className="absolute inset-0 bg-gradient-to-b from-[#f7eedb] via-[#f7eedb]/10 to-transparent md:bg-gradient-to-r md:from-[#f7eedb] md:via-[#f7eedb]/35 md:to-transparent" />
+          </div>
+
+          {/* Hero Metadata */}
+          <div className="absolute right-4 md:right-[35px] top-[30px] md:top-[80px] z-20 text-right">
+            <p className="m-0 text-[10px] font-semibold leading-[1.7] tracking-[0.18em] uppercase text-[#171717]">
+              EST. 2026
+            </p>
+            <p className="m-0 text-[10px] font-semibold leading-[1.7] tracking-[0.18em] uppercase text-[#171717]">
+              INDIA
+            </p>
+            <div className="w-[28px] h-[1px] bg-[#171717] mt-[13px] ml-auto" />
+          </div>
+
+          {/* Hero Collection Label (Hidden on mobile <800px) */}
+          <div className="hidden md:block absolute right-[35px] bottom-[45px] z-20 text-[9px] leading-[1.7] tracking-[0.18em] uppercase text-[#171717] text-right">
+            NEW<br />
+            COLLECTION<br />
+            001
+          </div>
         </div>
       </section>
 
-      {/* ── 1. Shop By Category ── */}
-      <ShopByCategory />
+      {/* =========================================================
+          CATEGORY STRIP
+      ========================================================= */}
+      <section className="bg-[#171717] text-white">
+        <div className="container-bingooo grid grid-cols-1 md:grid-cols-2">
+          {/* Category: Men */}
+          <article className="min-h-[140px] md:min-h-[165px] grid grid-cols-[90px_1fr] sm:grid-cols-[120px_1fr] gap-5 items-center p-5 sm:p-[25px] border-b md:border-b-0 md:border-r border-white/15">
+            <div className="w-[90px] h-[110px] sm:w-[120px] sm:h-[120px] overflow-hidden bg-[#252525] shrink-0">
+              <img
+                src="https://images.unsplash.com/photo-1551488831-00ddcb6c6bd3?auto=format&fit=crop&w=500&q=80"
+                alt="Men collection"
+                className="h-full w-full object-cover grayscale"
+              />
+            </div>
+            <div>
+              <h3 className="m-0 mb-[9px] text-[18px] font-bold uppercase text-white">
+                Men
+              </h3>
+              <p className="m-0 mb-[18px] text-[#c7c3bd] text-[11px] leading-[1.6] max-w-[130px]">
+                Everyday fits for every you.
+              </p>
+              <Link to="/shop?category=men" className="text-[9px] font-bold uppercase border-b border-white pb-1 inline-block hover:text-[#e6321c] hover:border-[#e6321c] transition-colors">
+                SHOP MEN →
+              </Link>
+            </div>
+          </article>
 
-      {/* ── 2. Create. Customize. Wear. (Workflow Banner) ── */}
-      <HowItWorksBanner />
+          {/* Category: Women */}
+          <article className="min-h-[140px] md:min-h-[165px] grid grid-cols-[90px_1fr] sm:grid-cols-[120px_1fr] gap-5 items-center p-5 sm:p-[25px]">
+            <div className="w-[90px] h-[110px] sm:w-[120px] sm:h-[120px] overflow-hidden bg-[#252525] shrink-0">
+              <img
+                src="https://images.unsplash.com/photo-1496747611176-843222e1e57c?auto=format&fit=crop&w=500&q=80"
+                alt="Women collection"
+                className="h-full w-full object-cover grayscale"
+              />
+            </div>
+            <div>
+              <h3 className="m-0 mb-[9px] text-[18px] font-bold uppercase text-white">
+                Women
+              </h3>
+              <p className="m-0 mb-[18px] text-[#c7c3bd] text-[11px] leading-[1.6] max-w-[130px]">
+                Style that moves with you.
+              </p>
+              <Link to="/shop?category=women" className="text-[9px] font-bold uppercase border-b border-white pb-1 inline-block hover:text-[#e6321c] hover:border-[#e6321c] transition-colors">
+                SHOP WOMEN →
+              </Link>
+            </div>
+          </article>
+        </div>
+      </section>
 
-      {/* ── 3. New Arrivals Carousel ── */}
-      <NewArrivals />
+      {/* =========================================================
+          FEATURED PRODUCTS
+      ========================================================= */}
+      <section className="py-[clamp(56px,7vw,110px)]">
+        <div className="container-bingooo">
+          {/* Header */}
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-5 mb-[36px]">
+            <div>
+              <div className="eyebrow text-[#171717]">NEW DROP</div>
+              <h2 className="m-0 mt-2 max-w-[480px] text-[clamp(38px,4.5vw,64px)] font-extrabold leading-[0.9] tracking-[-0.06em] uppercase text-[#171717]">
+                FEATURED<br />
+                COLLECTION
+              </h2>
+            </div>
 
-      {/* ── 4. Join Our Instagram Community (Reels & Posts Showcase) ── */}
-      <InstagramCommunity />
+            <div className="hidden sm:block pb-[5px]">
+              <Link to="/shop" className="text-link">
+                VIEW ALL →
+              </Link>
+            </div>
+          </div>
 
-      {/* ── 5. Loved By Our Community (Reviews Showcase) ── */}
-      <LovedByCommunity />
+          {/* Grid */}
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-[13px] sm:gap-[22px]">
+            {FEATURED_PRODUCTS.map((prod) => (
+              <article key={prod.id} className="group flex flex-col">
+                <div className="relative aspect-[4/5] overflow-hidden bg-[#ede0cc]">
+                  <button
+                    onClick={(e) => toggleWishlist(prod.id, e)}
+                    className="absolute right-3 top-3 w-[31px] h-[31px] rounded-full border border-[#ddd3c5] bg-white/85 grid place-items-center z-10 transition-transform active:scale-90 hover:bg-white"
+                    aria-label="Add to wishlist"
+                  >
+                    <span className={wishlist[prod.id] ? 'text-[#e6321c] text-sm' : 'text-[#171717] text-sm'}>
+                      {wishlist[prod.id] ? '♥' : '♡'}
+                    </span>
+                  </button>
 
-      {/* ── 6. Ready to Express Your Style (Red CTA Banner) ── */}
-      <ReadyToExpressBanner />
-    </div>
+                  <Link to={prod.link} className="block h-full w-full">
+                    <img
+                      src={prod.image}
+                      alt={prod.name}
+                      className="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.035]"
+                    />
+                  </Link>
+                </div>
+
+                <div className="pt-[13px]">
+                  <p className="m-0 mb-[5px] text-[11px] sm:text-[12px] font-semibold text-[#171717]">
+                    <Link to={prod.link} className="hover:text-[#e6321c] transition-colors">
+                      {prod.name}
+                    </Link>
+                  </p>
+                  <p className="m-0 text-[13px] sm:text-[14px] font-bold text-[#171717]">
+                    {prod.price}
+                  </p>
+
+                  <div className="flex gap-[6px] mt-3">
+                    {prod.swatches.map((swatchColor, idx) => (
+                      <span
+                        key={idx}
+                        className="w-[13px] h-[13px] rounded-full border border-[#c9c0b3]"
+                        style={{ backgroundColor: swatchColor }}
+                      />
+                    ))}
+                  </div>
+                </div>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* =========================================================
+          CUSTOM STUDIO CAMPAIGN
+      ========================================================= */}
+      <section className="grid grid-cols-1 md:grid-cols-2 min-h-[510px] bg-[#ede0cc]">
+        <div className="overflow-hidden min-h-[330px] sm:min-h-[420px] md:min-h-full">
+          <img
+            src="https://images.unsplash.com/photo-1551488831-00ddcb6c6bd3?auto=format&fit=crop&w=1600&q=85"
+            alt="Bingooo custom clothing"
+            className="h-full w-full object-cover grayscale"
+          />
+        </div>
+
+        <div className="p-[50px_24px] sm:p-[clamp(45px,7vw,100px)] flex flex-col justify-center">
+          <div className="eyebrow text-[#171717]">
+            CUSTOM STUDIO
+          </div>
+
+          <h2 className="my-[10px] mb-[18px] text-[clamp(42px,5vw,72px)] font-extrabold leading-[0.88] tracking-[-0.065em] uppercase text-[#171717]">
+            YOUR IDEA.<br />
+            OUR CANVAS.
+          </h2>
+
+          <p className="m-0 mb-[28px] text-[#6f6a63] text-[13px] leading-[1.7] max-w-[370px]">
+            Create your own design. Customize your fit.
+            Make something that feels completely yours.
+          </p>
+
+          <div className="flex flex-wrap items-center gap-3">
+            <Link to="/customize" className="btn btn-red">
+              START CREATING →
+            </Link>
+            <a
+              href={getWhatsAppUrl('Hi Bingooo, I would like to inquire about a bulk order for custom apparel.')}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn btn-black inline-flex items-center gap-2"
+            >
+              <WhatsAppIcon className="w-3.5 h-3.5 text-[#25D366]" />
+              <span>BULK ORDERS (WHATSAPP) →</span>
+            </a>
+          </div>
+        </div>
+      </section>
+
+      {/* =========================================================
+          TRUST BAR
+      ========================================================= */}
+      <section className="bg-[#f9f5ed] border-t border-b border-[#ddd3c5]">
+        <div className="container-bingooo grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
+          {/* Trust 1 */}
+          <div className="min-h-[105px] flex items-center gap-[17px] p-[20px_25px] border-b sm:border-b-0 sm:border-r border-[#ddd3c5]">
+            <div className="text-2xl shrink-0 w-[31px]">🚚</div>
+            <div>
+              <p className="m-0 mb-1 text-[10px] font-bold uppercase text-[#171717]">
+                Free Delivery
+              </p>
+              <p className="m-0 text-[#6f6a63] text-[9px]">
+                On orders above ₹999
+              </p>
+            </div>
+          </div>
+
+          {/* Trust 2 */}
+          <div className="min-h-[105px] flex items-center gap-[17px] p-[20px_25px] border-b sm:border-b-0 lg:border-r border-[#ddd3c5]">
+            <div className="text-2xl shrink-0 w-[31px]">📦</div>
+            <div>
+              <p className="m-0 mb-1 text-[10px] font-bold uppercase text-[#171717]">
+                Easy Returns
+              </p>
+              <p className="m-0 text-[#6f6a63] text-[9px]">
+                Within 15 days
+              </p>
+            </div>
+          </div>
+
+          {/* Trust 3 */}
+          <div className="min-h-[105px] flex items-center gap-[17px] p-[20px_25px] border-b sm:border-b-0 sm:border-r border-[#ddd3c5]">
+            <div className="text-2xl shrink-0 w-[31px]">✦</div>
+            <div>
+              <p className="m-0 mb-1 text-[10px] font-bold uppercase text-[#171717]">
+                Premium Quality
+              </p>
+              <p className="m-0 text-[#6f6a63] text-[9px]">
+                Made to last
+              </p>
+            </div>
+          </div>
+
+          {/* Trust 4 */}
+          <div className="min-h-[105px] flex items-center gap-[17px] p-[20px_25px]">
+            <div className="text-2xl shrink-0 w-[31px]">♙</div>
+            <div>
+              <p className="m-0 mb-1 text-[10px] font-bold uppercase text-[#171717]">
+                Secure Payment
+              </p>
+              <p className="m-0 text-[#6f6a63] text-[9px]">
+                100% safe & secure
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* =========================================================
+          SOCIAL (REAL PEOPLE. REAL FITS.)
+      ========================================================= */}
+      <section className="py-[clamp(56px,7vw,110px)]">
+        <div className="container-bingooo">
+          <div className="flex justify-between items-end mb-[25px]">
+            <div>
+              <div className="eyebrow text-[#171717]">@BINGOOO</div>
+              <h2 className="m-0 mt-[6px] text-[clamp(28px,3vw,40px)] font-extrabold tracking-[-0.05em] uppercase text-[#171717]">
+                REAL PEOPLE. REAL FITS.
+              </h2>
+            </div>
+
+            <a
+              href={BINGOOO_INSTAGRAM_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-link"
+            >
+              FOLLOW US →
+            </a>
+          </div>
+
+          <div className="grid grid-cols-3 sm:grid-cols-6 gap-1 sm:gap-[7px]">
+            {SOCIAL_IMAGES.map((src, i) => (
+              <a
+                key={i}
+                href={BINGOOO_INSTAGRAM_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="aspect-square overflow-hidden bg-[#ede0cc] group block"
+              >
+                <img
+                  src={src}
+                  alt={`Bingooo fit community ${i + 1}`}
+                  className="h-full w-full object-cover grayscale transition-transform duration-500 ease-out group-hover:scale-105"
+                />
+              </a>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* =========================================================
+          NEWSLETTER
+      ========================================================= */}
+      <section className="py-[70px] px-5 text-center bg-[#f7eedb]">
+        <div className="eyebrow text-[#171717]">
+          STAY IN THE LOOP
+        </div>
+
+        <h2 className="my-[9px] mb-2 text-[clamp(30px,4vw,52px)] font-extrabold tracking-[-0.06em] uppercase text-[#171717]">
+          GET THE NEXT DROP.
+        </h2>
+
+        <p className="m-0 mb-[25px] text-[#6f6a63] text-[12px]">
+          New drops, exclusive offers and more.
+        </p>
+
+        {subscribed ? (
+          <div className="max-w-[500px] mx-auto p-4 bg-white border border-[#ddd3c5] text-xs font-semibold text-[#171717] rounded-sm">
+            ✓ Thank you for subscribing! Check your inbox for exclusive access to Drop 02.
+          </div>
+        ) : (
+          <form onSubmit={handleSubscribe} className="max-w-[500px] mx-auto flex flex-col sm:flex-row gap-2 sm:gap-0">
+            <input
+              type="email"
+              required
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="Enter your email"
+              aria-label="Email address"
+              className="flex-1 min-w-0 h-[48px] px-4 border border-[#ddd3c5] bg-white outline-none text-[11px] text-[#171717] focus:border-[#171717] transition-colors"
+            />
+
+            <button className="btn btn-black min-w-[145px] w-full sm:w-auto" type="submit">
+              SUBSCRIBE →
+            </button>
+          </form>
+        )}
+      </section>
+    </main>
   );
 }
-
-

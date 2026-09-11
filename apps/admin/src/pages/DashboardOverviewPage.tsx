@@ -128,8 +128,8 @@ export function DashboardOverviewPage() {
         </div>
       </div>
 
-      {/* KPI Cards Grid */}
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      {/* KPI Cards Grid (1 col on <480px, 2x2 on tablet/xs, 4 on xl desktop) */}
+      <div className="grid grid-cols-1 xs:grid-cols-2 xl:grid-cols-4 gap-4">
         <StatCard
           label="Total Revenue"
           value={formatCurrency(revenue)}

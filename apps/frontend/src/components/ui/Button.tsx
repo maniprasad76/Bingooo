@@ -16,7 +16,7 @@ interface ButtonProps extends Omit<HTMLMotionProps<'button'>, 'children'> {
 
 const variantStyles: Record<ButtonVariant, string> = {
   primary:
-    'bg-[#E6321C] text-white hover:bg-[#B91F12] active:bg-[#B91F12]/90 shadow-sm',
+    'bg-[#E6321C] text-white hover:bg-[#B91F12] active:bg-[#B91F12]/90 shadow-2xs',
   secondary:
     'bg-[#EDE0CC] text-[#171717] hover:bg-[#DDD3C5] active:bg-[#DDD3C5]/90',
   outline:
@@ -28,9 +28,9 @@ const variantStyles: Record<ButtonVariant, string> = {
 };
 
 const sizeStyles: Record<ButtonSize, string> = {
-  sm: 'h-8 px-3.5 text-[11px] font-bold uppercase tracking-wider gap-1.5 rounded-[6px]',
-  md: 'h-10 px-5 text-xs sm:text-[13px] font-bold uppercase tracking-wider gap-2 rounded-[8px]',
-  lg: 'h-12 px-7 text-sm font-bold uppercase tracking-wider gap-2.5 rounded-[10px]',
+  sm: 'h-7 px-2.5 text-[11px] font-semibold gap-1.5 rounded-md',
+  md: 'h-8 px-3.5 text-xs font-semibold gap-1.5 rounded-md',
+  lg: 'h-9 px-4 text-xs sm:text-[13px] font-semibold gap-2 rounded-md',
 };
 
 const Button = forwardRef<HTMLButtonElement, ButtonProps>(
@@ -65,7 +65,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         }
         transition={{ type: 'spring', stiffness: 450, damping: 25 }}
         className={cn(
-          'inline-flex items-center justify-center font-sans font-bold uppercase tracking-[0.06em]',
+          'inline-flex items-center justify-center font-sans font-semibold tracking-wide',
           'transition-colors duration-200',
           'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#E6321C]',
           'disabled:opacity-50 disabled:pointer-events-none',

@@ -1,807 +1,728 @@
-import { useState, useMemo, useEffect } from 'react';
-import { Link, useNavigate, useParams } from 'react-router-dom';
-import { motion, useReducedMotion } from 'framer-motion';
-import { useQuery } from '@tanstack/react-query';
-import {
-  ShoppingBag,
-  ShieldCheck,
-  Truck,
-  RotateCcw,
-  Zap,
-  Shirt,
-  Sparkles,
-  LoaderCircle,
-  Bookmark,
-  ChevronRight,
-  Flame,
-  Check,
-  RefreshCw,
-  ArrowLeft,
-} from 'lucide-react';
+import { useState, useRef, useMemo, useEffect } from 'react';
 import { useCart } from '../hooks/useCart';
 import { useToast } from '../components/ui/Toast';
-import { api } from '../lib/api/client';
-import { useAuthStore } from '../store/auth';
-import {
-  GarmentCanvas,
-  type ArtworkLayer,
-  type TypographyLayer,
-} from '../components/customizer/GarmentCanvas';
-import {
-  DesignControls,
-  PRESET_ARTWORKS,
-  type GarmentProduct,
-  type ColorOption,
-} from '../components/customizer/DesignControls';
-import { MobileCustomizerBar } from '../components/customizer/MobileCustomizerBar';
+import { triggerHaptic } from '../lib/native/capacitorBridge';
 import { SEO } from '../components/common/SEO';
+import { getWhatsAppUrl, WhatsAppIcon } from '../components/ui/SocialIcons';
 
-const FALLBACK_COLORS: ColorOption[] = [
-  { name: 'Obsidian Black', hex: '#111111' },
-  { name: 'Off-White Cream', hex: '#FAF6EE' },
-  { name: 'Vintage Sand', hex: '#D4C4A8' },
-  { name: 'Washed Charcoal', hex: '#333333' },
-  { name: 'Oatmeal Beige', hex: '#E8DCC8' },
+interface GarmentType {
+  id: 'tshirt' | 'oversized' | 'hoodie';
+  name: string;
+  price: number;
+  description: string;
+}
+
+const GARMENTS: GarmentType[] = [
+  {
+    id: 'tshirt',
+    name: 'T-SHIRT',
+    price: 999,
+    description: '100% Combed Cotton Classic Crewneck',
+  },
+  {
+    id: 'oversized',
+    name: 'OVERSIZED',
+    price: 1299,
+    description: '240 GSM Heavyweight Drop-Shoulder Fit',
+  },
+  {
+    id: 'hoodie',
+    name: 'HOODIE',
+    price: 2499,
+    description: '350 GSM Brushed Fleece Pullover Hoodie',
+  },
 ];
 
-const FALLBACK_SIZES = ['S', 'M', 'L', 'XL', '2XL', '3XL'];
-
-interface SideDesign {
-  artwork: ArtworkLayer | null;
-  typography: TypographyLayer | null;
+interface ColorOption {
+  name: string;
+  hex: string;
+  textContrast: string;
 }
+
+const COLORS: ColorOption[] = [
+  { name: 'Black', hex: '#171717', textContrast: '#FFFFFF' },
+  { name: 'White', hex: '#FFFFFF', textContrast: '#171717' },
+  { name: 'Beige', hex: '#D8C8B1', textContrast: '#171717' },
+  { name: 'Red', hex: '#E6321C', textContrast: '#FFFFFF' },
+];
+
+const SIZES = ['XS', 'S', 'M', 'L', 'XL'];
+
+type Position = 'CENTER' | 'LEFT CHEST' | 'BACK';
 
 export function CustomizerPage() {
-  const shouldReduceMotion = useReducedMotion();
-  const { productSlug } = useParams<{ productSlug?: string }>();
   const { addItem, isAdding } = useCart();
   const { toast } = useToast();
-  const navigate = useNavigate();
-  const { userId } = useAuthStore();
 
-  // 1. Fetch customizable catalog products
-  const { data: customizableData, isLoading: isProductsLoading } = useQuery({
-    queryKey: ['products', 'customizable'],
-    queryFn: () => api.get<{ data: any[] }>('/products', { customizable: 'true', limit: 20 }),
-  });
+  // Customizer State
+  const [selectedGarment, setSelectedGarment] = useState<GarmentType>(GARMENTS[1]); // Default Oversized
+  const [selectedColor, setSelectedColor] = useState<ColorOption>(COLORS[0]); // Default Black
+  const [selectedSize, setSelectedSize] = useState<string>('S');
+  const [selectedPosition, setSelectedPosition] = useState<Position>('CENTER');
+  const [viewSide, setViewSide] = useState<'FRONT' | 'BACK'>('FRONT');
 
-  const products: GarmentProduct[] = useMemo(() => {
-    const raw = customizableData?.data ?? [];
-    if (raw.length > 0) return raw;
-    return [
-      {
-        id: 'prod-custom-tee',
-        title: '240 GSM Heavyweight Oversized Tee',
-        slug: 'classic-oversized-tee',
-        base_price: 1299,
-        description: '240 GSM 100% Combed Cotton with dense 1.25" ribbed collar & drop shoulders.',
-        variants: [
-          { id: 'var-tee-black-m', color: 'Obsidian Black', colorHex: '#111111', size: 'M' },
-          { id: 'var-tee-black-l', color: 'Obsidian Black', colorHex: '#111111', size: 'L' },
-          { id: 'var-tee-cream-m', color: 'Off-White Cream', colorHex: '#FAF6EE', size: 'M' },
-          { id: 'var-tee-sand-m', color: 'Vintage Sand', colorHex: '#D4C4A8', size: 'M' },
-        ],
-      },
-      {
-        id: 'prod-custom-hoodie',
-        title: '350 GSM Essential Pullover Hoodie',
-        slug: 'essential-pullover-hoodie',
-        base_price: 2499,
-        description: '350 GSM Heavyweight French Terry Fleece with kangaroo pocket.',
-        variants: [
-          { id: 'var-hoodie-black-l', color: 'Obsidian Black', colorHex: '#111111', size: 'L' },
-          { id: 'var-hoodie-charcoal-l', color: 'Washed Charcoal', colorHex: '#333333', size: 'L' },
-          { id: 'var-hoodie-sand-l', color: 'Vintage Sand', colorHex: '#D4C4A8', size: 'L' },
-        ],
-      },
-    ];
-  }, [customizableData]);
+  // Artwork & text state
+  const [uploadedImage, setUploadedImage] = useState<string | null>(null);
+  const [customText, setCustomText] = useState<string>('BINGOOO');
+  const [isSizeModalOpen, setIsSizeModalOpen] = useState<boolean>(false);
+  const [isAddedFeedback, setIsAddedFeedback] = useState<boolean>(false);
 
-  // Selected product
-  const [selectedProductId, setSelectedProductId] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
 
-  const currentProduct = useMemo(() => {
-    if (products.length === 0) return null;
-    if (productSlug) {
-      const match = products.find((p) => p.slug === productSlug);
-      if (match) return match;
-    }
-    if (selectedProductId) {
-      const match = products.find((p) => p.id === selectedProductId);
-      if (match) return match;
-    }
-    return products[0];
-  }, [products, productSlug, selectedProductId]);
-
-  const productType: 'tee' | 'hoodie' =
-    currentProduct?.slug.includes('hoodie') || currentProduct?.title.toLowerCase().includes('hoodie')
-      ? 'hoodie'
-      : 'tee';
-
-  // Available colors
-  const availableColors: ColorOption[] = useMemo(() => {
-    if (!currentProduct?.variants || currentProduct.variants.length === 0) {
-      return FALLBACK_COLORS;
-    }
-    const map = new Map<string, ColorOption>();
-    currentProduct.variants.forEach((v: any) => {
-      if (v.color && !map.has(v.color.toLowerCase())) {
-        map.set(v.color.toLowerCase(), {
-          name: v.color,
-          hex: v.colorHex || (v.color.toLowerCase().includes('cream') ? '#FAF6EE' : '#111111'),
-        });
-      }
-    });
-    return map.size > 0 ? Array.from(map.values()) : FALLBACK_COLORS;
-  }, [currentProduct]);
-
-  // Available sizes
-  const availableSizes: string[] = useMemo(() => {
-    if (!currentProduct?.variants || currentProduct.variants.length === 0) {
-      return FALLBACK_SIZES;
-    }
-    const set = new Set<string>();
-    currentProduct.variants.forEach((v: any) => {
-      if (v.size) set.add(v.size.toUpperCase());
-    });
-    return set.size > 0 ? Array.from(set) : FALLBACK_SIZES;
-  }, [currentProduct]);
-
-  const [selectedColor, setSelectedColor] = useState<ColorOption>(availableColors[0]);
-  const [selectedSize, setSelectedSize] = useState<string>(availableSizes[0] || 'L');
-  const [quantity, setQuantity] = useState(1);
-
-  // Canvas View & Options
-  const [view, setView] = useState<'front' | 'back'>('front');
-  const [showSafeZone, setShowSafeZone] = useState(true);
-  const [zoomLevel, setZoomLevel] = useState(1);
-  const [selectedLayer, setSelectedLayer] = useState<'artwork' | 'text' | null>(null);
-
-  // Independent Front & Back designs
-  const [frontDesign, setFrontDesign] = useState<SideDesign>({
-    artwork: {
-      url: PRESET_ARTWORKS[0].dataUrl,
-      scale: 1,
-      rotation: 0,
-      x: 0,
-      y: -25,
-    },
-    typography: null,
-  });
-
-  const [backDesign, setBackDesign] = useState<SideDesign>({
-    artwork: null,
-    typography: null,
-  });
-
-  const [customerNotes, setCustomerNotes] = useState('');
-  const [isSavingDesign, setIsSavingDesign] = useState(false);
-  const [autoSaveStatus, setAutoSaveStatus] = useState<'saved' | 'saving'>('saved');
-  const [lastSavedTime, setLastSavedTime] = useState<string>('Just now');
-
-  // Load draft from localStorage on mount if available
+  // When position is set to BACK, auto-switch preview to BACK view
   useEffect(() => {
-    try {
-      const draft = localStorage.getItem('bingooo_customizer_draft');
-      if (draft) {
-        const parsed = JSON.parse(draft);
-        if (parsed.frontDesign) setFrontDesign(parsed.frontDesign);
-        if (parsed.backDesign) setBackDesign(parsed.backDesign);
-        if (parsed.selectedColor) setSelectedColor(parsed.selectedColor);
-        if (parsed.selectedSize) setSelectedSize(parsed.selectedSize);
-        if (parsed.customerNotes) setCustomerNotes(parsed.customerNotes);
-      }
-    } catch {
-      // Ignore corrupted localStorage draft
-    }
-  }, []);
-
-  // Auto-save debounced sync to localStorage
-  useEffect(() => {
-    setAutoSaveStatus('saving');
-    const timer = setTimeout(() => {
-      try {
-        const draftData = {
-          frontDesign,
-          backDesign,
-          selectedColor,
-          selectedSize,
-          customerNotes,
-          updatedAt: new Date().toISOString(),
-        };
-        localStorage.setItem('bingooo_customizer_draft', JSON.stringify(draftData));
-        setAutoSaveStatus('saved');
-        setLastSavedTime(
-          new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })
-        );
-      } catch {
-        setAutoSaveStatus('saved');
-      }
-    }, 800);
-
-    return () => clearTimeout(timer);
-  }, [frontDesign, backDesign, selectedColor, selectedSize, customerNotes]);
-
-  // Active side accessor
-  const activeSideDesign = view === 'front' ? frontDesign : backDesign;
-  const setActiveSideDesign = (updater: (prev: SideDesign) => SideDesign) => {
-    if (view === 'front') {
-      setFrontDesign(updater);
+    if (selectedPosition === 'BACK') {
+      setViewSide('BACK');
     } else {
-      setBackDesign(updater);
+      setViewSide('FRONT');
     }
-  };
+  }, [selectedPosition]);
 
-  // Layer manipulations
-  const handleUpdateArtwork = (updates: Partial<ArtworkLayer>) => {
-    setActiveSideDesign((prev) => ({
-      ...prev,
-      artwork: prev.artwork
-        ? { ...prev.artwork, ...updates }
-        : ({ url: null, scale: 1, rotation: 0, x: 0, y: 0, ...updates } as ArtworkLayer),
-    }));
-  };
+  // Handle File Upload
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
 
-  const handleRemoveArtwork = () => {
-    setActiveSideDesign((prev) => ({ ...prev, artwork: null }));
-    if (selectedLayer === 'artwork') setSelectedLayer(null);
-    toast({ title: 'Artwork removed', variant: 'default' });
-  };
-
-  const handleUploadFile = async (file: File) => {
-    if (file.size > 25 * 1024 * 1024) {
+    if (file.size > 10 * 1024 * 1024) {
       toast({
         title: 'File too large',
-        description: 'Maximum upload file size is 25MB.',
+        description: 'File must be smaller than 10MB.',
         variant: 'danger',
       });
+      if (fileInputRef.current) fileInputRef.current.value = '';
       return;
     }
 
-    // Immediate preview for zero latency
-    const localUrl = URL.createObjectURL(file);
-    handleUpdateArtwork({
-      url: localUrl,
-      scale: 1,
-      rotation: 0,
-      x: 0,
-      y: 0,
-    });
-    setSelectedLayer('artwork');
-    toast({
-      title: 'Artwork loaded!',
-      description: `Placed on ${view.toUpperCase()} print area.`,
-      variant: 'success',
-    });
-
-    // Upload to backend media storage
-    try {
-      const formData = new FormData();
-      formData.append('file', file);
-      formData.append('category', 'designs');
-      formData.append('name', file.name);
-
-      const res = await api.upload<{ success: boolean; url: string }>('/media/upload', formData);
-      if (res?.url) {
-        handleUpdateArtwork({ url: res.url });
-      }
-    } catch {
-      // Local preview remains functional
-    }
-  };
-
-  const handleUpdateTypography = (updates: Partial<TypographyLayer>) => {
-    setActiveSideDesign((prev) => ({
-      ...prev,
-      typography: prev.typography
-        ? { ...prev.typography, ...updates }
-        : ({
-            text: '',
-            font: 'Manrope, sans-serif',
-            color: '#171717',
-            size: 22,
-            isBold: false,
-            isItalic: false,
-            isUppercase: true,
-            textAlign: 'center',
-            x: 0,
-            y: 50,
-            ...updates,
-          } as TypographyLayer),
-    }));
-  };
-
-  const handleRemoveTypography = () => {
-    setActiveSideDesign((prev) => ({ ...prev, typography: null }));
-    if (selectedLayer === 'text') setSelectedLayer(null);
-    toast({ title: 'Text cleared', variant: 'default' });
-  };
-
-  const handleResetPosition = () => {
-    handleUpdateArtwork({ x: 0, y: 0, scale: 1, rotation: 0 });
-    handleUpdateTypography({ x: 0, y: 50 });
-    toast({ title: 'Aligned to center', variant: 'default' });
-  };
-
-  const handleSnapPosition = (position: 'center' | 'pocket' | 'upper') => {
-    if (position === 'center') {
-      handleUpdateArtwork({ x: 0, y: 0, scale: 1 });
-    } else if (position === 'pocket') {
-      handleUpdateArtwork({ x: -45, y: -45, scale: 0.65 });
-    } else if (position === 'upper') {
-      handleUpdateArtwork({ x: 0, y: -55 });
-    }
-  };
-
-  // Pricing calculations
-  const hasFrontArtwork = Boolean(frontDesign.artwork?.url || frontDesign.typography?.text.trim());
-  const hasBackArtwork = Boolean(backDesign.artwork?.url || backDesign.typography?.text.trim());
-  const isDualSided = hasFrontArtwork && hasBackArtwork;
-  const dualSideAddon = isDualSided ? 199 : 0;
-  const basePrice = currentProduct?.base_price || 1299;
-  const unitPrice = basePrice + dualSideAddon;
-  const totalPrice = unitPrice * quantity;
-
-  // Build customization payload
-  const buildCustomizationPayload = () => {
-    return {
-      productId: currentProduct?.id,
-      productSlug: currentProduct?.slug,
-      userId: userId || undefined,
-      customerNotes: customerNotes.trim() || undefined,
-      designJson: {
-        garment: {
-          id: currentProduct?.id,
-          title: currentProduct?.title,
-          gsm: productType === 'hoodie' ? 350 : 240,
-          color: selectedColor.name,
-          colorHex: selectedColor.hex,
-          size: selectedSize,
-        },
-        front: {
-          hasDesign: hasFrontArtwork,
-          artwork: frontDesign.artwork,
-          typography: frontDesign.typography,
-        },
-        back: {
-          hasDesign: hasBackArtwork,
-          artwork: backDesign.artwork,
-          typography: backDesign.typography,
-        },
-        isDualSided,
-        totalUnitCost: unitPrice,
-      },
-      previewKey: frontDesign.artwork?.url || backDesign.artwork?.url || undefined,
-      printSpec: {
-        method: 'DTG (Direct-to-Garment)',
-        placement: isDualSided ? 'Front & Back Dual Print' : hasBackArtwork ? 'Back Print Only' : 'Front Chest Print',
-        resolutionDPI: 300,
-        garmentGSM: productType === 'hoodie' ? 350 : 240,
-        fabric: '100% Bio-Washed Combed Cotton',
-      },
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const result = e.target?.result as string;
+      setUploadedImage(result);
+      triggerHaptic('light');
+      toast({
+        title: 'Artwork uploaded',
+        description: `${file.name} placed on your garment canvas.`,
+        variant: 'success',
+      });
     };
+    reader.readAsDataURL(file);
   };
 
-  // Save Draft
-  const handleSaveDraft = async () => {
-    setIsSavingDesign(true);
-    try {
-      const payload = buildCustomizationPayload();
-      await api.post('/customizations', payload);
-      toast({
-        title: '240 GSM Design Draft Saved!',
-        description: 'You can review and re-open this in My Account > Custom Designs.',
-        variant: 'success',
-      });
-    } catch (err: any) {
-      toast({
-        title: 'Could not save draft',
-        description: err.message || 'Please try again.',
-        variant: 'danger',
-      });
-    } finally {
-      setIsSavingDesign(false);
-    }
+  const handleClearArtwork = () => {
+    setUploadedImage(null);
+    if (fileInputRef.current) fileInputRef.current.value = '';
   };
 
-  // Add to Bag
-  const handleAddToCart = async () => {
-    if (!currentProduct) {
-      toast({ title: 'Please select a garment', variant: 'danger' });
-      return;
-    }
-
-    const variant =
-      currentProduct.variants?.find((v: any) => {
-        const matchColor = !v.color || v.color.toLowerCase() === selectedColor.name.toLowerCase();
-        const matchSize = !v.size || v.size.toUpperCase() === selectedSize.toUpperCase();
-        return matchColor && matchSize;
-      }) || currentProduct.variants?.[0];
-
-    if (!variant) {
+  // Handle Add to Cart
+  const handleAddToCart = () => {
+    if (!selectedSize) {
       toast({
-        title: 'Variant unavailable',
-        description: 'Selected color and size combination is out of stock.',
+        title: 'Select a size',
+        description: 'Please pick your desired size before adding to cart.',
         variant: 'danger',
       });
       return;
     }
 
-    setIsSavingDesign(true);
+    triggerHaptic('medium');
+    const variantId = `custom-${selectedGarment.id}-${selectedColor.name.toLowerCase()}-${selectedSize.toLowerCase()}`;
+    const customId = `custom-${Date.now()}`;
 
-    try {
-      const payload = buildCustomizationPayload();
-      const savedCustomization = await api.post<any>('/customizations', payload);
+    addItem(variantId, 1, customId);
+    setIsAddedFeedback(true);
 
-      addItem(variant.id, quantity, savedCustomization.id);
-
-      toast({
-        title: 'Added to your bag!',
-        description: `240 GSM Heavyweight Tee (${selectedColor.name}, ${selectedSize})`,
-        variant: 'success',
-      });
-
-      navigate('/cart');
-    } catch (err: any) {
-      toast({
-        title: 'Could not add to bag',
-        description: err.message || 'Please try again.',
-        variant: 'danger',
-      });
-    } finally {
-      setIsSavingDesign(false);
-    }
+    setTimeout(() => {
+      setIsAddedFeedback(false);
+    }, 1800);
   };
 
-  if (isProductsLoading && products.length === 0) {
-    return (
-      <div className="flex min-h-[65vh] flex-col items-center justify-center gap-3 bg-[#FAF8F5] text-[#6F6A63]">
-        <LoaderCircle size={32} className="animate-spin text-[#E6321C]" />
-        <p className="font-sans text-sm font-semibold text-[#171717]">
-          Loading 240 GSM Atelier Studio...
-        </p>
-      </div>
-    );
-  }
+  // Close size modal on Escape
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setIsSizeModalOpen(false);
+    };
+    if (isSizeModalOpen) {
+      document.body.style.overflow = 'hidden';
+      window.addEventListener('keydown', handleKeyDown);
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [isSizeModalOpen]);
+
+  // Dynamic positioning styling for design-area
+  const designAreaStyle = useMemo(() => {
+    if (selectedPosition === 'LEFT CHEST') {
+      return {
+        top: '28%',
+        left: '40%',
+        transform: 'scale(0.65)',
+        maxWidth: '30%',
+      };
+    }
+    // CENTER & BACK
+    return {
+      top: '34%',
+      left: '50%',
+      transform: 'translateX(-50%)',
+      maxWidth: '36%',
+    };
+  }, [selectedPosition]);
 
   return (
-    <div className="w-full bg-[#FAF8F5] text-[#171717] min-h-screen pb-28 sm:pb-32">
+    <main className="bg-[#f7eedb] text-[#171717] font-sans antialiased">
       <SEO
-        title="3D Atelier Studio — Design Custom Apparel"
-        description="Design bespoke 240 GSM heavy combed cotton t-shirts and hoodies in our interactive 3D studio. Drag artwork, place custom typography, and produce one-of-a-kind streetwear."
-        keywords="custom t-shirt design, 240 gsm custom tee, bespoke streetwear India, custom DTF apparel, create your own tee"
+        title="Custom Studio — BINGOOO"
+        description="Design your custom T-shirt, oversized tee or hoodie with high-definition DTF printing. Choose colors, sizes, and upload your artwork."
+        canonical="https://bingooo.in/customize"
       />
-      <div className="max-w-[1360px] mx-auto px-4 sm:px-8 py-5 sm:py-8 space-y-6 sm:space-y-8">
-        {/* ─── Breadcrumbs & Header Strip ─── */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-[#DDD3C5]">
-          <div className="flex items-center gap-3">
-            <button
-              type="button"
-              onClick={() => navigate(-1)}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-[#DDD3C5] bg-white hover:bg-[#171717] hover:text-white text-xs font-bold text-[#171717] transition-all shadow-2xs"
-              aria-label="Go back"
-            >
-              <ArrowLeft size={14} />
-              <span>Back</span>
-            </button>
-            <nav className="flex items-center gap-2 text-xs font-sans text-[#6F6A63]">
-              <Link to="/" className="hover:text-[#E6321C]">Home</Link>
-              <ChevronRight size={12} />
-              <Link to="/shop" className="hover:text-[#E6321C]">Catalog</Link>
-              <ChevronRight size={12} />
-              <span className="text-[#171717] font-semibold">240 GSM Atelier Customizer</span>
-            </nav>
-          </div>
 
-          <div className="flex flex-wrap items-center gap-2.5">
-            {/* Auto-Save Live Status Indicator */}
-            <div
-              className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-mono font-bold uppercase tracking-wider border transition-all ${
-                autoSaveStatus === 'saving'
-                  ? 'bg-amber-50 text-amber-700 border-amber-300 animate-pulse'
-                  : 'bg-emerald-50 text-emerald-700 border-emerald-300'
-              }`}
-              title={`Draft auto-saved at ${lastSavedTime}`}
-            >
-              {autoSaveStatus === 'saving' ? (
-                <>
-                  <RefreshCw size={11} className="animate-spin text-amber-600" />
-                  <span>Auto-Saving Draft...</span>
-                </>
-              ) : (
-                <>
-                  <Check size={12} className="text-emerald-600" />
-                  <span>Draft Auto-Saved ({lastSavedTime})</span>
-                </>
-              )}
-            </div>
+      {/* =======================================================
+           PAGE INTRO
+      ======================================================= */}
+      <section className="text-center pt-[clamp(50px,7vw,90px)] px-5 pb-[45px]">
+        <div className="text-[10px] font-semibold tracking-[0.2em] uppercase text-[#171717] mb-2.5">
+          BINGOOO CUSTOM STUDIO
+        </div>
 
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#171717] text-white text-xs font-mono font-bold uppercase tracking-wider shadow-2xs">
-              <Flame size={13} className="text-[#E6321C]" />
-              240 GSM HEAVYWEIGHT BESPOKE
+        <h1 className="my-2.5 sm:mb-[15px] text-[clamp(45px,7vw,88px)] leading-[0.88] font-extrabold tracking-[-0.07em] uppercase">
+          CREATE.<br />
+          CUSTOMIZE.<br />
+          WEAR.
+        </h1>
+
+        <p className="max-w-[520px] mx-auto text-[#6f6a63] text-[13px] leading-[1.7]">
+          Start with a blank canvas. Upload your design, choose your fit and create something that's completely yours.
+        </p>
+      </section>
+
+      {/* =======================================================
+           PROGRESS STEPS
+      ======================================================= */}
+      <div className="container-bingooo">
+        <div className="max-w-[700px] mx-auto mb-[45px] flex justify-center items-center overflow-x-auto pb-1">
+          <div className="flex items-center gap-[9px] text-[9px] font-bold uppercase whitespace-nowrap">
+            <span className="w-7 h-7 rounded-full grid place-items-center bg-[#171717] text-white text-[10px]">
+              01
             </span>
-          </div>
-        </div>
-
-        {/* ─── Studio Title & Intro Strip ─── */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 text-left">
-          <div className="space-y-2">
-            <div className="flex items-center gap-2.5">
-              <span className="text-xs font-mono font-bold uppercase tracking-widest text-[#E6321C]">
-                PREMIUM ATELIER STUDIO
-              </span>
-              <div className="h-[2px] w-8 bg-[#E6321C]" />
-            </div>
-            <h1 className="font-heading font-black text-3xl sm:text-4xl lg:text-5xl text-[#171717] uppercase tracking-tight leading-none">
-              CUSTOMIZE YOUR <span className="text-[#E6321C]">240 GSM PIECE</span>
-            </h1>
-            <p className="text-xs sm:text-sm text-[#6F6A63] font-sans max-w-xl leading-relaxed">
-              Custom-milled 240 GSM heavy combed cotton. Drop-shoulder relaxed streetwear drape with an anti-sag dense collar. Drag artwork and text directly onto the garment.
-            </p>
+            CHOOSE
           </div>
 
-          <div className="flex items-center gap-4 text-xs font-sans text-[#6F6A63] bg-white border border-[#DDD3C5] px-4 py-2.5 rounded-2xl shadow-2xs">
-            <div className="flex items-center gap-1.5 text-[#171717]">
-              <Shirt size={15} className="text-[#E6321C]" />
-              <span className="font-bold">{productType === 'hoodie' ? '350 GSM Fleece' : '240 GSM Cotton'}</span>
-            </div>
-            <div className="h-3.5 w-[1px] bg-[#DDD3C5]" />
-            <div className="flex items-center gap-1.5 text-[#171717]">
-              <Sparkles size={15} className="text-[#E6321C]" />
-              <span className="font-bold">
-                {isDualSided ? 'Dual-Sided Print' : hasBackArtwork ? 'Back Print' : 'Front Chest Print'}
-              </span>
-            </div>
-          </div>
-        </div>
+          <div className="w-[30px] sm:w-[65px] h-[1px] mx-2 sm:mx-3 bg-[#ddd3c5]" />
 
-        {/* ─── Main Atelier Studio Grid ─── */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8 items-start">
-          {/* Left Column: Photorealistic Garment Canvas Stage (Sticky on Desktop) */}
-          <div className="lg:col-span-6 xl:col-span-6 w-full lg:sticky lg:top-24 space-y-4">
-            <GarmentCanvas
-              productType={productType}
-              garmentColorHex={selectedColor.hex}
-              garmentColorName={selectedColor.name}
-              view={view}
-              onToggleView={setView}
-              artwork={activeSideDesign.artwork}
-              onUpdateArtwork={handleUpdateArtwork}
-              onRemoveArtwork={handleRemoveArtwork}
-              typography={activeSideDesign.typography}
-              onUpdateTypography={handleUpdateTypography}
-              onRemoveTypography={handleRemoveTypography}
-              selectedLayer={selectedLayer}
-              onSelectLayer={setSelectedLayer}
-              showSafeZone={showSafeZone}
-              onToggleSafeZone={() => setShowSafeZone(!showSafeZone)}
-              zoomLevel={zoomLevel}
-              onToggleZoom={() => setZoomLevel(zoomLevel > 1 ? 1 : 1.2)}
-              onResetPosition={handleResetPosition}
-              onSnapPosition={handleSnapPosition}
-            />
-
-            {/* Canvas Hint */}
-            <div className="flex items-center justify-between text-[11px] font-sans text-[#6F6A63] px-3.5 py-2.5 rounded-2xl bg-white border border-[#DDD3C5]">
-              <div className="flex items-center gap-1.5">
-                <Sparkles size={13} className="text-[#E6321C]" />
-                <span>Drag your artwork or text anywhere on the 240 GSM canvas.</span>
-              </div>
-              <span className="font-mono text-[10px] uppercase font-bold text-[#171717]">
-                300 DPI DTG
-              </span>
-            </div>
+          <div className={`flex items-center gap-[9px] text-[9px] font-bold uppercase whitespace-nowrap ${uploadedImage ? 'text-[#171717]' : 'text-[#6f6a63]'}`}>
+            <span className={`w-7 h-7 rounded-full grid place-items-center text-[10px] ${uploadedImage ? 'bg-[#171717] text-white' : 'bg-[#ede0cc] text-[#171717]'}`}>
+              02
+            </span>
+            CUSTOMIZE
           </div>
 
-          {/* Right Column: Studio Workbench Controls */}
-          <div className="lg:col-span-6 xl:col-span-6 w-full space-y-6">
-            <DesignControls
-              products={products}
-              currentProduct={currentProduct}
-              onSelectProduct={(p) => {
-                setSelectedProductId(p.id);
-                if (p.variants?.[0]?.color) {
-                  setSelectedColor({
-                    name: p.variants[0].color,
-                    hex: p.variants[0].colorHex || '#111111',
-                  });
-                }
-                if (p.variants?.[0]?.size) {
-                  setSelectedSize(p.variants[0].size);
-                }
-              }}
-              availableColors={availableColors}
-              selectedColor={selectedColor}
-              onSelectColor={setSelectedColor}
-              availableSizes={availableSizes}
-              selectedSize={selectedSize}
-              onSelectSize={setSelectedSize}
-              activeView={view}
-              artwork={activeSideDesign.artwork}
-              onUpdateArtwork={handleUpdateArtwork}
-              onRemoveArtwork={handleRemoveArtwork}
-              onUploadFile={handleUploadFile}
-              typography={activeSideDesign.typography}
-              onUpdateTypography={handleUpdateTypography}
-              onRemoveTypography={handleRemoveTypography}
-              customerNotes={customerNotes}
-              onChangeCustomerNotes={setCustomerNotes}
-            />
-          </div>
-        </div>
+          <div className="w-[30px] sm:w-[65px] h-[1px] mx-2 sm:mx-3 bg-[#ddd3c5]" />
 
-        {/* ─── Bottom Trust Strip ─── */}
-        <div className="pt-8 border-t border-[#DDD3C5] grid grid-cols-2 sm:grid-cols-4 gap-6 text-left">
-          <div className="flex items-center gap-3">
-            <Truck size={26} className="text-[#E6321C] shrink-0 stroke-[1.6]" />
-            <div>
-              <div className="font-heading font-bold text-xs uppercase text-[#171717]">Free Shipping</div>
-              <div className="text-[11px] text-[#6F6A63] font-sans">On orders above ₹999</div>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-3">
-            <ShieldCheck size={26} className="text-[#E6321C] shrink-0 stroke-[1.6]" />
-            <div>
-              <div className="font-heading font-bold text-xs uppercase text-[#171717]">240 GSM Tested</div>
-              <div className="text-[11px] text-[#6F6A63] font-sans">Heavyweight & anti-sag collar</div>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-3">
-            <RotateCcw size={26} className="text-[#E6321C] shrink-0 stroke-[1.6]" />
-            <div>
-              <div className="font-heading font-bold text-xs uppercase text-[#171717]">Defect Guarantee</div>
-              <div className="text-[11px] text-[#6F6A63] font-sans">100% free reprint if flawed</div>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-3">
-            <Zap size={26} className="text-[#E6321C] shrink-0 stroke-[1.6]" />
-            <div>
-              <div className="font-heading font-bold text-xs uppercase text-[#171717]">Fast Dispatch</div>
-              <div className="text-[11px] text-[#6F6A63] font-sans">Crafted & shipped in 3-5 days</div>
-            </div>
+          <div className="flex items-center gap-[9px] text-[9px] font-bold uppercase text-[#6f6a63] whitespace-nowrap">
+            <span className="w-7 h-7 rounded-full grid place-items-center bg-[#ede0cc] text-[#171717] text-[10px]">
+              03
+            </span>
+            PREVIEW
           </div>
         </div>
       </div>
 
-      {/* ─── Desktop Sticky Atelier Summary Bar (lg+) ─── */}
-      <div className="hidden lg:block fixed bottom-0 inset-x-0 bg-white/95 backdrop-blur-md border-t border-[#DDD3C5] shadow-lg z-40 py-3 sm:py-4 px-4 sm:px-8">
-        <div className="max-w-[1360px] mx-auto flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-4">
-          {/* Left: Garment Specs Preview */}
-          <div className="flex items-center gap-3 w-full sm:w-auto justify-start">
-            <div
-              className="h-11 w-11 rounded-2xl border border-[#DDD3C5] flex items-center justify-center shrink-0 shadow-2xs"
-              style={{ backgroundColor: selectedColor.hex }}
-            >
-              <Shirt
-                size={20}
-                className={
-                  ['white', 'oatmeal', 'sandstone', 'cream', 'off-white cream', 'vintage sand'].includes(
-                    selectedColor.name.toLowerCase()
-                  )
-                    ? 'text-black/50'
-                    : 'text-white/60'
-                }
-              />
-            </div>
-            <div className="text-left">
-              <h4 className="font-sans font-bold text-xs sm:text-sm text-[#171717] line-clamp-1">
-                {currentProduct?.title || '240 GSM Heavyweight Oversized Tee'}
-              </h4>
-              <p className="text-[11px] text-[#6F6A63] font-sans">
-                {selectedColor.name} • {selectedSize} •{' '}
-                <span className="text-[#E6321C] font-semibold">
-                  {isDualSided ? 'Front & Back (+₹199)' : hasBackArtwork ? 'Back Print' : 'Front Print'}
-                </span>
-              </p>
-            </div>
+      {/* =======================================================
+           CUSTOM BUILDER
+      ======================================================= */}
+      <section className="container-bingooo grid grid-cols-1 lg:grid-cols-[1fr_420px] gap-[30px] items-start pb-[100px]">
+
+        {/* ── PREVIEW PANEL ── */}
+        <div className="min-h-[460px] sm:min-h-[580px] lg:min-h-[690px] p-5 sm:p-[35px] bg-[#ede0cc] border border-[#ddd3c5] relative flex items-center justify-center overflow-hidden">
+          <div className="absolute top-[18px] left-5 text-[9px] font-bold tracking-[0.16em] uppercase">
+            LIVE PREVIEW
           </div>
 
-          {/* Right: Pricing, Stepper & Action CTAs */}
-          <div className="flex items-center justify-between sm:justify-end gap-3 sm:gap-5 w-full sm:w-auto">
-            {/* Price Display */}
-            <div className="text-left sm:text-right">
-              <span className="text-[10px] text-[#6F6A63] block font-sans uppercase tracking-wider">
-                Total Price
-              </span>
-              <span className="font-heading font-black text-lg sm:text-xl text-[#171717]">
-                ₹{totalPrice}
-              </span>
-            </div>
-
-            {/* Quantity Stepper */}
-            <div className="flex items-center rounded-xl border border-[#DDD3C5] bg-white px-1 py-0.5">
-              <button
-                type="button"
-                onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                className="h-7 w-7 flex items-center justify-center text-[#6F6A63] hover:text-[#171717] font-bold text-sm"
-                aria-label="Decrease quantity"
-              >
-                -
-              </button>
-              <span className="w-6 text-center text-xs font-sans font-bold text-[#171717]">
-                {quantity}
-              </span>
-              <button
-                type="button"
-                onClick={() => setQuantity(quantity + 1)}
-                className="h-7 w-7 flex items-center justify-center text-[#6F6A63] hover:text-[#171717] font-bold text-sm"
-                aria-label="Increase quantity"
-              >
-                +
-              </button>
-            </div>
-
-            {/* Save Draft Action */}
+          <div className="absolute top-[18px] right-5 flex items-center gap-2">
             <button
               type="button"
-              disabled={isSavingDesign}
-              onClick={handleSaveDraft}
-              className="hidden md:inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl border border-[#DDD3C5] bg-white hover:border-[#171717] text-[#171717] font-sans font-bold text-xs uppercase tracking-wider transition-colors disabled:opacity-50"
+              onClick={() => {
+                triggerHaptic('light');
+                setViewSide(viewSide === 'FRONT' ? 'BACK' : 'FRONT');
+              }}
+              className="text-[9px] font-bold tracking-[0.1em] text-[#6f6a63] hover:text-[#171717] transition-colors border-b border-dashed border-[#6f6a63]"
             >
-              <Bookmark size={14} />
-              <span>Save Draft</span>
+              {viewSide} VIEW ↻
             </button>
+          </div>
 
-            {/* Primary ADD TO BAG Action */}
-            <motion.button
-              type="button"
-              disabled={isSavingDesign || isAdding}
-              onClick={handleAddToCart}
-              whileHover={shouldReduceMotion ? undefined : { scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              className="flex-1 sm:flex-none px-6 sm:px-8 py-2.5 sm:py-3 rounded-xl bg-[#E6321C] hover:bg-[#B91F12] text-white font-sans font-bold text-xs uppercase tracking-wider transition-colors shadow-sm flex items-center justify-center gap-2 disabled:opacity-60"
+          {/* Realistic Garment Mockup Vector */}
+          <div className="relative w-[min(85%,540px)] aspect-[0.86] flex items-center justify-center select-none">
+            {/* Sleeves */}
+            <div
+              className="absolute w-[28%] h-[28%] top-[16%] left-[4%] transition-colors duration-300"
+              style={{
+                backgroundColor: selectedColor.hex,
+                transform: 'rotate(22deg) skewY(-8deg)',
+                boxShadow: selectedColor.hex === '#FFFFFF' ? 'inset 0 0 0 1px #ddd3c5' : undefined,
+              }}
+            />
+            <div
+              className="absolute w-[28%] h-[28%] top-[16%] right-[4%] transition-colors duration-300"
+              style={{
+                backgroundColor: selectedColor.hex,
+                transform: 'rotate(-22deg) skewY(8deg)',
+                boxShadow: selectedColor.hex === '#FFFFFF' ? 'inset 0 0 0 1px #ddd3c5' : undefined,
+              }}
+            />
+
+            {/* Torso Body */}
+            <div
+              className="absolute w-[63%] h-[70%] top-[15%] rounded-t-[7px] rounded-b-[18px] transition-colors duration-300"
+              style={{
+                backgroundColor: selectedColor.hex,
+                boxShadow: selectedColor.hex === '#FFFFFF'
+                  ? '0 25px 40px rgba(0,0,0,0.08), inset 0 0 0 1px #ddd3c5'
+                  : '0 25px 40px rgba(0,0,0,0.13)',
+              }}
             >
-              {isSavingDesign ? (
-                <LoaderCircle size={15} className="animate-spin" />
-              ) : (
-                <ShoppingBag size={15} />
+              {/* Collar Notch */}
+              <div
+                className="absolute w-[35%] h-[15%] left-[32.5%] -top-[6%] rounded-full transition-colors duration-300"
+                style={{
+                  backgroundColor: selectedColor.hex,
+                  boxShadow: selectedColor.hex === '#FFFFFF' ? 'inset 0 0 0 1px #ddd3c5' : undefined,
+                }}
+              />
+
+              {/* Hoodie Pocket Simulation if Hoodie selected */}
+              {selectedGarment.id === 'hoodie' && viewSide === 'FRONT' && (
+                <div
+                  className="absolute bottom-[8%] left-[16%] right-[16%] h-[24%] rounded-[6px] border border-black/10 opacity-70"
+                  style={{
+                    backgroundColor: selectedColor.hex,
+                    filter: 'brightness(0.96)',
+                  }}
+                />
               )}
-              <span>{isSavingDesign ? 'SAVING ARTWORK...' : 'ADD TO BAG'}</span>
-            </motion.button>
+            </div>
+
+            {/* Design Printable Area */}
+            <div
+              className="absolute z-10 flex flex-col justify-center items-center text-center transition-all duration-300"
+              style={{
+                ...designAreaStyle,
+                color: selectedColor.textContrast,
+              }}
+            >
+              {uploadedImage ? (
+                <div className="relative group">
+                  <img
+                    src={uploadedImage}
+                    alt="Uploaded custom artwork"
+                    className="max-w-full max-h-[140px] sm:max-h-[180px] object-contain drop-shadow-md"
+                  />
+                  <button
+                    type="button"
+                    onClick={handleClearArtwork}
+                    className="absolute -top-2 -right-2 w-5 h-5 bg-[#171717] text-white rounded-full text-[10px] font-bold flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                    title="Remove artwork"
+                  >
+                    ×
+                  </button>
+                </div>
+              ) : (
+                <div className="text-[18px] sm:text-[22px] font-extrabold tracking-[-0.05em] uppercase px-2 py-1 select-none">
+                  {customText || 'BINGOOO'}
+                </div>
+              )}
+            </div>
           </div>
         </div>
-      </div>
 
-      {/* ─── Mobile Atelier Bottom Bar & Drawer (< lg) ─── */}
-      <MobileCustomizerBar
-        products={products}
-        currentProduct={currentProduct}
-        onSelectProduct={(p) => {
-          setSelectedProductId(p.id);
-          if (p.variants?.[0]?.color) {
-            setSelectedColor({
-              name: p.variants[0].color,
-              hex: p.variants[0].colorHex || '#111111',
-            });
-          }
-          if (p.variants?.[0]?.size) {
-            setSelectedSize(p.variants[0].size);
-          }
-        }}
-        availableColors={availableColors}
-        selectedColor={selectedColor}
-        onSelectColor={setSelectedColor}
-        availableSizes={availableSizes}
-        selectedSize={selectedSize}
-        onSelectSize={setSelectedSize}
-        activeView={view}
-        artwork={activeSideDesign.artwork}
-        onUpdateArtwork={handleUpdateArtwork}
-        onRemoveArtwork={handleRemoveArtwork}
-        onUploadFile={handleUploadFile}
-        typography={activeSideDesign.typography}
-        onUpdateTypography={handleUpdateTypography}
-        onRemoveTypography={handleRemoveTypography}
-        basePrice={basePrice}
-        dualSidedFee={dualSideAddon}
-        totalPrice={totalPrice}
-        isDualSided={isDualSided}
-        onAddToCart={handleAddToCart}
-        isAddingToCart={isSavingDesign || isAdding}
-      />
-    </div>
+        {/* ── CONTROLS PANEL ── */}
+        <aside className="bg-white border border-[#ddd3c5] rounded-[12px] p-5 sm:p-[25px]">
+
+          {/* 01 / Choose Product */}
+          <div className="pb-[25px] mb-[25px] border-b border-[#ddd3c5]">
+            <div className="flex justify-between items-center mb-[13px] text-[11px] font-bold uppercase">
+              <span>01 / Choose Product</span>
+            </div>
+
+            <div className="grid grid-cols-3 gap-2">
+              {GARMENTS.map((garment) => (
+                <button
+                  key={garment.id}
+                  type="button"
+                  onClick={() => {
+                    triggerHaptic('light');
+                    setSelectedGarment(garment);
+                  }}
+                  className={`border bg-[#f7eedb] p-2 sm:p-2.5 text-center transition-all cursor-pointer ${
+                    selectedGarment.id === garment.id
+                      ? 'border-2 border-[#171717]'
+                      : 'border-[#ddd3c5] hover:border-[#171717]'
+                  }`}
+                >
+                  <div className="h-[70px] sm:h-[90px] flex justify-center items-center">
+                    {garment.id === 'tshirt' && (
+                      <div className="mini-shirt bg-[#181818] before:bg-[#181818]" />
+                    )}
+                    {garment.id === 'oversized' && (
+                      <div className="mini-shirt bg-[#e7dcc9] before:bg-[#e7dcc9]" />
+                    )}
+                    {garment.id === 'hoodie' && (
+                      <div className="mini-hoodie" />
+                    )}
+                  </div>
+                  <div className="text-[10px] font-bold tracking-[0.05em] uppercase mt-1">
+                    {garment.name}
+                  </div>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* 02 / Add Your Design */}
+          <div className="pb-[25px] mb-[25px] border-b border-[#ddd3c5]">
+            <div className="flex justify-between items-center mb-[13px] text-[11px] font-bold uppercase">
+              <span>02 / Add Your Design</span>
+              <span className="text-[#6f6a63] text-[10px]">PNG / JPG</span>
+            </div>
+
+            <div className="border border-dashed border-[#bdb3a4] bg-[#faf7f0] p-5 sm:p-[25px_15px] text-center transition-colors hover:border-[#171717]">
+              <div className="text-[25px] mb-[9px] leading-none">
+                ↑
+              </div>
+              <strong className="block mb-[5px] text-[11px] font-bold">
+                {uploadedImage ? 'Artwork loaded on canvas' : 'Upload your artwork'}
+              </strong>
+              <span className="text-[#6f6a63] text-[9px]">
+                PNG, JPG or WEBP · Max 10MB
+              </span>
+              <br />
+
+              <div className="flex items-center justify-center gap-2 mt-[14px]">
+                <button
+                  type="button"
+                  onClick={() => fileInputRef.current?.click()}
+                  className="min-h-[40px] px-[18px] border-0 bg-[#171717] text-white text-[9px] font-bold uppercase hover:bg-black transition-colors"
+                >
+                  {uploadedImage ? 'REPLACE FILE' : 'CHOOSE FILE'}
+                </button>
+
+                {uploadedImage && (
+                  <button
+                    type="button"
+                    onClick={handleClearArtwork}
+                    className="min-h-[40px] px-3 border border-[#ddd3c5] bg-white text-[#171717] text-[9px] font-bold uppercase hover:border-[#171717] transition-colors"
+                  >
+                    REMOVE
+                  </button>
+                )}
+              </div>
+
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/png,image/jpeg,image/webp"
+                onChange={handleFileChange}
+                className="hidden"
+              />
+
+              {!uploadedImage && (
+                <div className="mt-3 pt-3 border-t border-[#ddd3c5]/60 text-left">
+                  <label className="block text-[9px] font-bold text-[#6f6a63] uppercase mb-1">
+                    Or Enter Text:
+                  </label>
+                  <input
+                    type="text"
+                    value={customText}
+                    onChange={(e) => setCustomText(e.target.value.toUpperCase())}
+                    placeholder="E.G. BINGOOO"
+                    maxLength={15}
+                    className="w-full h-8 px-2.5 bg-white border border-[#ddd3c5] text-[10px] font-bold uppercase outline-none focus:border-[#171717]"
+                  />
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* 03 / Garment Color */}
+          <div className="pb-[25px] mb-[25px] border-b border-[#ddd3c5]">
+            <div className="flex justify-between items-center mb-[13px] text-[11px] font-bold uppercase">
+              <span>03 / Garment Color</span>
+              <span className="text-[#6f6a63] text-[10px] font-normal">{selectedColor.name}</span>
+            </div>
+
+            <div className="flex gap-[10px]">
+              {COLORS.map((color) => (
+                <button
+                  key={color.name}
+                  type="button"
+                  onClick={() => {
+                    triggerHaptic('light');
+                    setSelectedColor(color);
+                  }}
+                  className={`w-8 h-8 rounded-full border-2 border-transparent transition-all cursor-pointer ${
+                    selectedColor.name === color.name
+                      ? 'shadow-[0_0_0_2px_#f7eedb,0_0_0_3px_#171717]'
+                      : 'hover:scale-105'
+                  }`}
+                  style={{
+                    backgroundColor: color.hex,
+                    border: color.hex === '#FFFFFF' ? '1px solid #cfc7bb' : 'none',
+                  }}
+                  aria-label={color.name}
+                />
+              ))}
+            </div>
+          </div>
+
+          {/* 04 / Size */}
+          <div className="pb-[25px] mb-[25px] border-b border-[#ddd3c5]">
+            <div className="flex justify-between items-center mb-[13px] text-[11px] font-bold uppercase">
+              <span>04 / Size</span>
+              <button
+                type="button"
+                onClick={() => setIsSizeModalOpen(true)}
+                className="text-[9px] font-bold underline underline-offset-2 hover:text-[#e6321c] transition-colors"
+              >
+                SIZE GUIDE
+              </button>
+            </div>
+
+            <div className="grid grid-cols-5 gap-1.5">
+              {SIZES.map((size) => (
+                <button
+                  key={size}
+                  type="button"
+                  onClick={() => {
+                    triggerHaptic('light');
+                    setSelectedSize(size);
+                  }}
+                  className={`min-h-[42px] border text-[10px] font-semibold transition-all cursor-pointer ${
+                    selectedSize === size
+                      ? 'bg-[#171717] text-white border-[#171717]'
+                      : 'border-[#ddd3c5] bg-transparent hover:border-[#171717]'
+                  }`}
+                >
+                  {size}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* 05 / Design Position */}
+          <div className="pb-[25px] mb-[25px] border-b border-[#ddd3c5]">
+            <div className="flex justify-between items-center mb-[13px] text-[11px] font-bold uppercase">
+              <span>05 / Design Position</span>
+            </div>
+
+            <div className="grid grid-cols-3 gap-1.5">
+              {(['CENTER', 'LEFT CHEST', 'BACK'] as Position[]).map((pos) => (
+                <button
+                  key={pos}
+                  type="button"
+                  onClick={() => {
+                    triggerHaptic('light');
+                    setSelectedPosition(pos);
+                  }}
+                  className={`min-h-[38px] border text-[9px] font-semibold uppercase transition-all cursor-pointer ${
+                    selectedPosition === pos
+                      ? 'bg-[#171717] text-white border-[#171717]'
+                      : 'border-[#ddd3c5] bg-transparent hover:border-[#171717]'
+                  }`}
+                >
+                  {pos}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Price Box */}
+          <div className="pb-[25px] mb-[25px] border-b-0">
+            <div className="p-[15px] bg-[#f7eedb] flex justify-between items-center">
+              <div>
+                <div className="text-[10px] font-semibold uppercase">
+                  YOUR CUSTOM {selectedGarment.name}
+                </div>
+                <div className="text-[#6f6a63] text-[9px] mt-1">
+                  Includes custom printing
+                </div>
+              </div>
+              <div className="text-[21px] font-extrabold">
+                ₹{selectedGarment.price.toLocaleString('en-IN')}
+              </div>
+            </div>
+          </div>
+
+          {/* Add to Cart Button */}
+          <button
+            type="button"
+            onClick={handleAddToCart}
+            disabled={isAdding}
+            className="w-full min-h-[54px] border-0 rounded-[7px] bg-[#e6321c] text-white text-[11px] font-bold uppercase hover:bg-[#b91f12] active:scale-[0.99] transition-all cursor-pointer disabled:opacity-50"
+          >
+            {isAddedFeedback ? 'ADDED TO CART ✓' : 'ADD CUSTOM DESIGN TO CART →'}
+          </button>
+
+          {/* Bulk Orders WhatsApp Typography Callout */}
+          <div className="mt-4 pt-4 border-t border-[#ddd3c5] text-center">
+            <p className="text-[10px] font-semibold text-[#6f6a63] uppercase tracking-wider mb-1">
+              Ordering for college, team or brand?
+            </p>
+            <a
+              href={getWhatsAppUrl('Hi Bingooo, I would like to inquire about a bulk/wholesale order for custom apparel.')}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-[11px] font-extrabold uppercase tracking-wide text-[#171717] hover:text-[#e6321c] inline-flex items-center gap-1.5 transition-colors"
+            >
+              <WhatsAppIcon className="w-3.5 h-3.5 text-[#25D366]" />
+              <span>Need Bulk Quantities? Chat on WhatsApp →</span>
+            </a>
+          </div>
+        </aside>
+      </section>
+
+      {/* =======================================================
+           HOW IT WORKS SECTION
+      ======================================================= */}
+      <section className="py-20 bg-[#171717] text-white">
+        <div className="container-bingooo">
+          <div className="text-center mb-[45px]">
+            <div className="text-[10px] font-semibold tracking-[0.2em] uppercase text-[#6f6a63] mb-2.5">
+              HOW IT WORKS
+            </div>
+            <h2 className="mt-2.5 text-[clamp(36px,5vw,60px)] leading-[0.9] font-extrabold tracking-[-0.065em] uppercase text-white">
+              YOUR IDEA.<br />
+              YOUR CLOTHES.
+            </h2>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-[1px] bg-[#333333]">
+            <article className="p-[35px] bg-[#171717]">
+              <div className="text-[#e6321c] font-mono text-[12px] font-bold">
+                01
+              </div>
+              <h3 className="my-4 mb-2 text-[17px] font-bold text-white uppercase">
+                Choose your canvas.
+              </h3>
+              <p className="m-0 text-[#aaaaaa] text-[11px] leading-[1.7]">
+                Pick your T-shirt, oversized tee or hoodie and choose your preferred color.
+              </p>
+            </article>
+
+            <article className="p-[35px] bg-[#171717]">
+              <div className="text-[#e6321c] font-mono text-[12px] font-bold">
+                02
+              </div>
+              <h3 className="my-4 mb-2 text-[17px] font-bold text-white uppercase">
+                Make it yours.
+              </h3>
+              <p className="m-0 text-[#aaaaaa] text-[11px] leading-[1.7]">
+                Upload your artwork and decide exactly where you want your design printed.
+              </p>
+            </article>
+
+            <article className="p-[35px] bg-[#171717]">
+              <div className="text-[#e6321c] font-mono text-[12px] font-bold">
+                03
+              </div>
+              <h3 className="my-4 mb-2 text-[17px] font-bold text-white uppercase">
+                Preview & wear.
+              </h3>
+              <p className="m-0 text-[#aaaaaa] text-[11px] leading-[1.7]">
+                Check your design, select your size and add your custom piece to the cart.
+              </p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      {/* =======================================================
+           SIZE CHART MODAL
+      ======================================================= */}
+      {isSizeModalOpen && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          className="fixed inset-0 z-[100] flex items-center justify-center p-5 bg-black/60 backdrop-blur-xs"
+          onClick={() => setIsSizeModalOpen(false)}
+        >
+          <div
+            className="w-[min(760px,100%)] max-h-[90vh] overflow-y-auto bg-[#f7eedb] p-[30px] shadow-2xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex justify-between items-center mb-[25px]">
+              <h2 className="m-0 text-[28px] font-extrabold tracking-[-0.04em] uppercase">
+                Size Chart
+              </h2>
+              <button
+                type="button"
+                onClick={() => setIsSizeModalOpen(false)}
+                className="w-[35px] h-[35px] border border-[#ddd3c5] bg-transparent text-[18px] flex items-center justify-center hover:bg-[#171717] hover:text-white transition-colors cursor-pointer"
+                aria-label="Close modal"
+              >
+                ×
+              </button>
+            </div>
+
+            <div className="overflow-x-auto">
+              <table className="w-full min-w-[550px] border-collapse bg-[#f7eedb]">
+                <thead>
+                  <tr>
+                    <th className="p-3.5 border border-[#ddd3c5] bg-[#171717] text-white text-left text-[11px] font-bold uppercase">
+                      Size
+                    </th>
+                    <th className="p-3.5 border border-[#ddd3c5] bg-[#171717] text-white text-left text-[11px] font-bold uppercase">
+                      Chest
+                    </th>
+                    <th className="p-3.5 border border-[#ddd3c5] bg-[#171717] text-white text-left text-[11px] font-bold uppercase">
+                      Shoulder
+                    </th>
+                    <th className="p-3.5 border border-[#ddd3c5] bg-[#171717] text-white text-left text-[11px] font-bold uppercase">
+                      Length
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td className="p-3.5 border border-[#ddd3c5] text-[11px] font-semibold">XS</td>
+                    <td className="p-3.5 border border-[#ddd3c5] text-[11px]">96 cm</td>
+                    <td className="p-3.5 border border-[#ddd3c5] text-[11px]">42 cm</td>
+                    <td className="p-3.5 border border-[#ddd3c5] text-[11px]">66 cm</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3.5 border border-[#ddd3c5] text-[11px] font-semibold">S</td>
+                    <td className="p-3.5 border border-[#ddd3c5] text-[11px]">102 cm</td>
+                    <td className="p-3.5 border border-[#ddd3c5] text-[11px]">44 cm</td>
+                    <td className="p-3.5 border border-[#ddd3c5] text-[11px]">68 cm</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3.5 border border-[#ddd3c5] text-[11px] font-semibold">M</td>
+                    <td className="p-3.5 border border-[#ddd3c5] text-[11px]">108 cm</td>
+                    <td className="p-3.5 border border-[#ddd3c5] text-[11px]">46 cm</td>
+                    <td className="p-3.5 border border-[#ddd3c5] text-[11px]">70 cm</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3.5 border border-[#ddd3c5] text-[11px] font-semibold">L</td>
+                    <td className="p-3.5 border border-[#ddd3c5] text-[11px]">114 cm</td>
+                    <td className="p-3.5 border border-[#ddd3c5] text-[11px]">48 cm</td>
+                    <td className="p-3.5 border border-[#ddd3c5] text-[11px]">72 cm</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3.5 border border-[#ddd3c5] text-[11px] font-semibold">XL</td>
+                    <td className="p-3.5 border border-[#ddd3c5] text-[11px]">120 cm</td>
+                    <td className="p-3.5 border border-[#ddd3c5] text-[11px]">50 cm</td>
+                    <td className="p-3.5 border border-[#ddd3c5] text-[11px]">74 cm</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      )}
+    </main>
   );
 }
+
+export default CustomizerPage;

@@ -1,302 +1,354 @@
-import { Award, PenTool, Heart, Calendar, Shirt, Star, Eye, ShoppingBag, ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { motion } from 'framer-motion';
 import { SEO } from '../components/common/SEO';
+import { triggerHaptic } from '../lib/native/capacitorBridge';
 
 export function AboutPage() {
   return (
-    <div className="w-full bg-[#FAF8F5] text-[#171717]">
+    <main className="bg-[#f7eedb] text-[#171717] font-sans antialiased">
       <SEO
-        title="About Us — The Bingooo Story & Atelier"
-        description="Learn about Bingooo Men's Wear: 240–280 GSM heavyweight combed cotton, architectural silhouettes, and bespoke self-expression crafted in Srikakulam."
+        title="About Us — BINGOOO"
+        description="BINGOOO — Not just clothes. A you. Discover our story, our values and the culture behind the brand."
+        canonical="https://bingooo.in/about"
       />
-      {/* ─── 1. ABOUT US HERO ─── */}
-      <section className="max-w-[1360px] mx-auto px-4 sm:px-8 py-10 sm:py-16">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
-          {/* Left Column */}
-          <motion.div
-            initial={{ opacity: 0, y: 24 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-            className="lg:col-span-6 flex flex-col justify-center text-left"
-          >
-            <div className="relative inline-block self-start">
-              <h1 className="font-heading font-extrabold text-4xl sm:text-5xl lg:text-6xl text-[#171717] uppercase tracking-tight">
-                ABOUT US
-              </h1>
-              <span className="absolute -bottom-2 left-0 w-16 h-[3px] bg-[#E6321C]" />
-            </div>
 
-            <h2 className="mt-6 font-heading font-bold text-xl sm:text-2xl text-[#171717] leading-snug">
-              We don't just make clothes,<br className="hidden sm:inline" />
-              we help you create your identity.
-            </h2>
-
-            <p className="mt-4 text-[#6F6A63] text-sm sm:text-base font-sans leading-relaxed max-w-xl">
-              Bingooo is more than just a menswear brand. It's a space for self-expression, creativity
-              and individuality. From everyday basics to custom creations — we bring your ideas to life
-              with premium quality and style.
-            </p>
-
-            {/* 3 Circular Feature Badges */}
-            <div className="mt-8 grid grid-cols-1 sm:grid-cols-3 gap-6 pt-6 border-t border-[#DDD3C5]/60">
-              {/* Badge 1 */}
-              <div className="flex flex-col items-start">
-                <div className="h-12 w-12 rounded-full bg-[#FDF0EE] text-[#E6321C] flex items-center justify-center mb-3">
-                  <Award size={24} className="stroke-[1.8]" />
-                </div>
-                <h4 className="font-heading font-bold text-sm uppercase tracking-wider text-[#171717]">
-                  Premium Quality
-                </h4>
-                <p className="mt-1 text-xs text-[#6F6A63] font-sans leading-relaxed">
-                  Best fabrics & prints you can trust.
-                </p>
-              </div>
-
-              {/* Badge 2 */}
-              <div className="flex flex-col items-start">
-                <div className="h-12 w-12 rounded-full bg-[#FDF0EE] text-[#E6321C] flex items-center justify-center mb-3">
-                  <PenTool size={22} className="stroke-[1.8]" />
-                </div>
-                <h4 className="font-heading font-bold text-sm uppercase tracking-wider text-[#171717]">
-                  Made for You
-                </h4>
-                <p className="mt-1 text-xs text-[#6F6A63] font-sans leading-relaxed">
-                  Customize it your way. Make it unique.
-                </p>
-              </div>
-
-              {/* Badge 3 */}
-              <div className="flex flex-col items-start">
-                <div className="h-12 w-12 rounded-full bg-[#FDF0EE] text-[#E6321C] flex items-center justify-center mb-3">
-                  <Heart size={22} className="stroke-[1.8]" />
-                </div>
-                <h4 className="font-heading font-bold text-sm uppercase tracking-wider text-[#171717]">
-                  Made with Passion
-                </h4>
-                <p className="mt-1 text-xs text-[#6F6A63] font-sans leading-relaxed">
-                  Crafted with care, delivered with love.
-                </p>
-              </div>
-            </div>
-          </motion.div>
-
-          {/* Right Column: Hero Visual Container (Ready for Admin Upload) */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.96 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}
-            className="lg:col-span-6 flex justify-center lg:justify-end"
-          >
-            <div className="relative w-full aspect-[4/3] sm:aspect-[14/11] overflow-hidden rounded-2xl bg-[#EDE0CC] border border-[#DDD3C5] shadow-sm flex items-center justify-center">
-              <div className="absolute inset-0 flex flex-col items-center justify-center p-8 text-center select-none bg-gradient-to-tr from-[#E6D9C5] to-[#F7EEDB]">
-                <span className="text-xs font-mono font-bold tracking-[0.2em] uppercase text-[#E6321C] mb-2">
-                  BINGOOO IDENTITY
-                </span>
-                <span className="font-heading text-3xl sm:text-4xl font-extrabold tracking-tight text-[#171717] uppercase">
-                  CREATE YOUR OWN
-                </span>
-                <p className="mt-3 text-xl sm:text-2xl font-script text-[#6F6A63] max-w-md leading-relaxed">
-                  "Wear what feels like you. Expressive streetwear tailored for modern individuality."
-                </p>
-                <div className="mt-5 inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/80 border border-[#DDD3C5] text-[11px] font-bold tracking-wider uppercase text-[#171717]">
-                  <span>Bingooo Men's Wear</span>
-                </div>
-              </div>
-            </div>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* ─── 2. OUR JOURNEY SECTION ─── */}
-      <section className="max-w-[1360px] mx-auto px-4 sm:px-8 py-10 sm:py-14 border-t border-[#DDD3C5]/60">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
-          {/* Left Column: Story & Stats */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5 }}
-            className="lg:col-span-6 flex flex-col justify-center text-left"
-          >
-            <div className="relative inline-block self-start mb-5">
-              <h2 className="font-heading font-bold text-2xl sm:text-3xl text-[#171717] uppercase tracking-wider">
-                OUR JOURNEY
-              </h2>
-              <span className="absolute -bottom-1.5 left-0 w-12 h-[2.5px] bg-[#E6321C]" />
-            </div>
-
-            <p className="text-sm text-[#6F6A63] font-sans leading-relaxed">
-              Bingooo started with a simple idea — everyone deserves clothes that feel like them.
-              We noticed that style is not one-size-fits-all, and personalization is the future.
-            </p>
-
-            <p className="mt-4 text-sm text-[#6F6A63] font-sans leading-relaxed">
-              So we built Bingooo, a brand where you can choose, customize, and create your own
-              style without limits.
-            </p>
-
-            {/* 3 Stats in a Row */}
-            <div className="mt-8 grid grid-cols-3 gap-4 pt-6 border-t border-[#DDD3C5]/60">
-              <div className="flex flex-col items-start">
-                <Calendar size={22} className="text-[#E6321C] mb-2" />
-                <span className="font-heading font-black text-2xl sm:text-3xl text-[#171717]">
-                  2024
-                </span>
-                <span className="mt-0.5 text-xs text-[#6F6A63] font-sans">
-                  Founded
-                </span>
-              </div>
-
-              <div className="flex flex-col items-start">
-                <Shirt size={22} className="text-[#E6321C] mb-2" />
-                <span className="font-heading font-black text-2xl sm:text-3xl text-[#171717]">
-                  5000+
-                </span>
-                <span className="mt-0.5 text-xs text-[#6F6A63] font-sans">
-                  Happy Customers
-                </span>
-              </div>
-
-              <div className="flex flex-col items-start">
-                <Star size={22} className="text-[#E6321C] mb-2" />
-                <span className="font-heading font-black text-2xl sm:text-3xl text-[#171717]">
-                  100+
-                </span>
-                <span className="mt-0.5 text-xs text-[#6F6A63] font-sans">
-                  Unique Designs
-                </span>
-              </div>
-            </div>
-          </motion.div>
-
-          {/* Right Column: Workshop / Studio Frame */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.96 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5, delay: 0.15 }}
-            className="lg:col-span-6 flex justify-center lg:justify-end"
-          >
-            <div className="relative w-full aspect-[16/10] overflow-hidden rounded-2xl bg-[#EDE0CC] border border-[#DDD3C5] shadow-sm flex items-center justify-center">
-              <div className="absolute inset-0 flex flex-col items-center justify-center p-8 text-center select-none bg-gradient-to-tr from-[#E6D9C5] to-[#F7EEDB]">
-                <span className="font-heading text-3xl sm:text-4xl font-extrabold tracking-tight text-[#E6321C] uppercase">
-                  BINGOOO STUDIO
-                </span>
-                <span className="mt-2 text-xs font-sans text-[#6F6A63] max-w-xs">
-                  Design Lab • Custom Print Production • Garment Studio
-                </span>
-                <div className="mt-4 px-3 py-1 rounded-md bg-white/70 border border-[#DDD3C5] text-[10px] font-bold uppercase tracking-wider text-[#171717]">
-                  Crafted in Srikakulam, India
-                </div>
-              </div>
-            </div>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* ─── 3. OUR PROCESS SECTION ─── */}
-      <section className="max-w-[1360px] mx-auto px-4 sm:px-8 py-12 sm:py-16 border-t border-[#DDD3C5]/60">
-        <div className="text-center mb-10 sm:mb-14">
-          <div className="relative inline-block">
-            <h2 className="font-heading font-bold text-2xl sm:text-3xl text-[#171717] uppercase tracking-wider">
-              OUR PROCESS
-            </h2>
-            <span className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-12 h-[2.5px] bg-[#E6321C]" />
+      {/* =======================================================
+           HERO
+      ======================================================= */}
+      <section className="min-h-[600px] lg:min-h-[650px] grid grid-cols-1 lg:grid-cols-[45%_55%] bg-[#f7eedb]">
+        <div className="flex flex-col justify-center py-[65px] px-6 sm:px-10 lg:py-[clamp(50px,8vw,110px)] lg:px-[clamp(25px,6vw,90px)]">
+          <div className="text-[10px] font-semibold tracking-[0.2em] uppercase text-[#171717] mb-3">
+            BINGOOO / OUR STORY
           </div>
-        </div>
 
-        {/* 4 Process Steps connected by dashed line */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 relative">
-          {[
-            { step: '1. CHOOSE', desc: 'Pick your favorite product from our collection.', icon: Shirt },
-            { step: '2. CUSTOMIZE', desc: 'Add your designs, text, or logos.', icon: PenTool },
-            { step: '3. PREVIEW', desc: 'See your design live in our 2D studio.', icon: Eye },
-            { step: '4. WE DELIVER', desc: 'We print with care and deliver to your doorstep.', icon: ShoppingBag },
-          ].map((item, i) => {
-            const Icon = item.icon;
-            return (
-              <motion.div
-                key={i}
-                whileHover={{ y: -5 }}
-                transition={{ type: 'spring', stiffness: 350, damping: 22 }}
-                className="flex flex-col items-center text-center p-4 rounded-xl hover:bg-white/60 transition-colors"
-              >
-                <div className="h-16 w-16 rounded-full bg-[#FDF0EE] text-[#E6321C] flex items-center justify-center mb-4 shadow-xs">
-                  <Icon size={26} className="stroke-[1.8]" />
-                </div>
-                <h3 className="font-heading font-bold text-base uppercase tracking-wider text-[#171717]">
-                  {item.step}
-                </h3>
-                <p className="mt-1.5 text-xs text-[#6F6A63] font-sans max-w-[200px] leading-relaxed">
-                  {item.desc}
-                </p>
-              </motion.div>
-            );
-          })}
-        </div>
-      </section>
+          <h1 className="my-3 mb-6 text-[clamp(52px,7vw,105px)] font-extrabold leading-[0.84] tracking-[-0.075em] uppercase">
+            <span className="block">NOT JUST</span>
+            <span className="block">CLOTHES.</span>
+            <span className="block text-[#e6321c]">A YOU.</span>
+          </h1>
 
-      {/* ─── 4. MADE FOR EVERY YOU LOOKBOOK ─── */}
-      <section className="max-w-[1360px] mx-auto px-4 sm:px-8 py-10 sm:py-16 border-t border-[#DDD3C5]/60">
-        <div className="text-center mb-8 sm:mb-10">
-          <div className="relative inline-block">
-            <h2 className="font-heading font-bold text-2xl sm:text-3xl text-[#171717] uppercase tracking-wider">
-              MADE FOR EVERY YOU
-            </h2>
-            <span className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-16 h-[2.5px] bg-[#E6321C]" />
-          </div>
-        </div>
+          <p className="max-w-[440px] m-0 mb-[30px] text-[#6f6a63] text-[13px] leading-[1.8]">
+            BINGOOO exists for people who believe clothing should say something about who they are. Not louder. Just more personal.
+          </p>
 
-        {/* 5 Garment Cards in a Row */}
-        <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 sm:gap-4">
-          {[
-            { id: 1, label: 'HOODIES', sub: 'Heavyweight Fleece', href: '/shop?category=hoodies' },
-            { id: 2, label: 'PACKAGING', sub: 'Bespoke Unboxing', href: '/about' },
-            { id: 3, label: 'CHAOS PRINT', sub: 'Streetwear Graphic', href: '/shop' },
-            { id: 4, label: 'EMBROIDERY', sub: 'Precision Stitch', href: '/customize' },
-            { id: 5, label: 'OVERSIZED', sub: 'Signature Fit', href: '/shop?category=t-shirts' },
-          ].map((item, i) => (
-            <Link
-              key={item.id}
-              to={item.href}
-              className="contents"
+          <div>
+            <a
+              href="#story"
+              onClick={() => triggerHaptic('light')}
+              className="inline-flex items-center justify-center min-h-[48px] px-[23px] rounded-[7px] bg-[#171717] text-white text-[10px] font-bold uppercase tracking-wider hover:bg-black hover:-translate-y-0.5 transition-all cursor-pointer"
             >
-              <motion.div
-                initial={{ opacity: 0, y: 16 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.08, duration: 0.4 }}
-                whileHover={{ scale: 1.02 }}
-                className="group relative aspect-[3/4] sm:aspect-[4/5] last:col-span-2 sm:last:col-span-1 overflow-hidden rounded-xl bg-[#EDE0CC] border border-[#DDD3C5] shadow-xs flex flex-col justify-end p-4 text-left transition-all hover:shadow-md cursor-pointer"
-              >
-                <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/25 to-transparent z-10" />
-                <div className="relative z-20 text-white">
-                  <span className="font-heading font-bold text-sm sm:text-base uppercase tracking-wider group-hover:text-[#F39C12] transition-colors">
-                    {item.label}
-                  </span>
-                  <p className="text-[11px] font-sans text-white/80">
-                    {item.sub}
-                  </p>
-                </div>
-              </motion.div>
-            </Link>
-          ))}
+              OUR STORY ↓
+            </a>
+          </div>
         </div>
 
-        {/* Call to action at bottom */}
-        <div className="mt-12 text-center">
-          <Link
-            to="/shop"
-            className="inline-flex items-center gap-2 px-8 py-3.5 rounded-[8px] bg-[#E6321C] hover:bg-[#B91F12] text-white font-sans font-bold text-xs uppercase tracking-wider transition-all shadow-sm"
-          >
-            <span>EXPLORE THE COLLECTION</span>
-            <ArrowRight size={14} />
-          </Link>
+        <div className="h-[400px] sm:h-[500px] lg:h-auto overflow-hidden">
+          <img
+            src="https://images.unsplash.com/photo-1529139574466-a303027c1d8b?auto=format&fit=crop&w=1600&q=90"
+            alt="Bingooo fashion editorial"
+            className="w-full h-full object-cover grayscale"
+          />
         </div>
       </section>
-    </div>
+
+      {/* =======================================================
+           STATEMENT
+      ======================================================= */}
+      <section className="py-[clamp(75px,10vw,145px)] px-5 bg-[#171717] text-white text-center">
+        <div className="text-[10px] font-semibold tracking-[0.2em] uppercase text-[#aaaaaa] mb-4">
+          WHAT WE BELIEVE
+        </div>
+
+        <h2 className="max-w-[1000px] mx-auto m-0 text-[clamp(40px,7vw,88px)] leading-[0.9] font-extrabold tracking-[-0.07em] uppercase text-white">
+          CLOTHES AREN'T<br />
+          JUST WHAT YOU <span className="text-[#e6321c]">WEAR.</span><br />
+          THEY'RE HOW<br />
+          YOU <span className="text-[#e6321c]">EXPRESS.</span>
+        </h2>
+      </section>
+
+      {/* =======================================================
+           STORY
+      ======================================================= */}
+      <section className="py-[clamp(70px,9vw,120px)]" id="story">
+        <div className="container-bingooo grid grid-cols-1 lg:grid-cols-[0.9fr_1.1fr] gap-[clamp(50px,9vw,140px)] items-center">
+          <div className="aspect-[4/5] overflow-hidden bg-[#ede0cc] max-w-[600px] mx-auto lg:mx-0 w-full">
+            <img
+              src="https://images.unsplash.com/photo-1551488831-00ddcb6c6bd3?auto=format&fit=crop&w=1200&q=90"
+              alt="Bingooo clothing story"
+              className="w-full h-full object-cover grayscale"
+            />
+          </div>
+
+          <div>
+            <div className="text-[10px] font-semibold tracking-[0.2em] uppercase text-[#6f6a63] mb-2.5">
+              THE BEGINNING
+            </div>
+
+            <h2 className="my-2.5 mb-6 text-[clamp(40px,5vw,70px)] leading-[0.88] font-extrabold tracking-[-0.065em] uppercase">
+              BUILT<br />
+              FOR<br />
+              <span className="text-[#e6321c]">YOU.</span>
+            </h2>
+
+            <p className="max-w-[600px] m-0 mb-[18px] text-[#6f6a63] text-[13px] leading-[1.85]">
+              BINGOOO started with a simple idea: clothing shouldn't feel like something everyone else is wearing.
+            </p>
+
+            <p className="max-w-[600px] m-0 mb-[18px] text-[#6f6a63] text-[13px] leading-[1.85]">
+              We wanted to create a space where everyday clothing meets individuality — where people can discover pieces, create their own designs and wear something that actually feels like them.
+            </p>
+
+            <p className="max-w-[600px] m-0 mb-[18px] text-[#6f6a63] text-[13px] leading-[1.85]">
+              From everyday essentials to custom creations, everything we make starts with the same question: <strong>"Does this feel like you?"</strong>
+            </p>
+
+            <div className="mt-[30px] text-[10px] font-bold tracking-[0.15em] uppercase font-mono text-[#171717]">
+              BINGOOO / EST. 2026 / INDIA
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* =======================================================
+           NUMBERS
+      ======================================================= */}
+      <section className="pb-[110px]">
+        <div className="container-bingooo">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 border-t border-b border-[#ddd3c5]">
+            <div className="p-[35px_25px] border-b sm:border-b-0 sm:border-r border-[#ddd3c5]">
+              <div className="text-[clamp(35px,4vw,58px)] font-extrabold tracking-[-0.06em]">
+                2026
+              </div>
+              <div className="mt-[7px] text-[#6f6a63] text-[9px] font-semibold uppercase tracking-[0.12em]">
+                Founded
+              </div>
+            </div>
+
+            <div className="p-[35px_25px] border-b sm:border-b-0 lg:border-r border-[#ddd3c5]">
+              <div className="text-[clamp(35px,4vw,58px)] font-extrabold tracking-[-0.06em]">
+                001
+              </div>
+              <div className="mt-[7px] text-[#6f6a63] text-[9px] font-semibold uppercase tracking-[0.12em]">
+                First Collection
+              </div>
+            </div>
+
+            <div className="p-[35px_25px] border-b sm:border-b-0 sm:border-r border-[#ddd3c5]">
+              <div className="text-[clamp(35px,4vw,58px)] font-extrabold tracking-[-0.06em]">
+                ∞
+              </div>
+              <div className="mt-[7px] text-[#6f6a63] text-[9px] font-semibold uppercase tracking-[0.12em]">
+                Ways To Express
+              </div>
+            </div>
+
+            <div className="p-[35px_25px]">
+              <div className="text-[clamp(35px,4vw,58px)] font-extrabold tracking-[-0.06em] text-[#e6321c]">
+                YOU
+              </div>
+              <div className="mt-[7px] text-[#6f6a63] text-[9px] font-semibold uppercase tracking-[0.12em]">
+                The Reason
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* =======================================================
+           BELIEFS (VALUES)
+      ======================================================= */}
+      <section className="py-[100px] bg-[#ede0cc]">
+        <div className="container-bingooo">
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-[45px] gap-4">
+            <div>
+              <div className="text-[10px] font-semibold tracking-[0.2em] uppercase text-[#6f6a63] mb-2">
+                OUR VALUES
+              </div>
+
+              <h2 className="m-0 text-[clamp(40px,5vw,68px)] leading-[0.88] font-extrabold tracking-[-0.065em] uppercase">
+                WHAT WE<br />
+                STAND FOR.
+              </h2>
+            </div>
+
+            <p className="max-w-[330px] m-0 text-[#6f6a63] text-[11px] leading-[1.7]">
+              Three simple ideas guide every piece, product and experience we create.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-[1px] bg-[#ddd3c5]">
+            <article className="min-h-[300px] p-[35px] bg-[#f7eedb] flex flex-col justify-between">
+              <div>
+                <div className="text-[#e6321c] font-mono text-[11px] font-bold">
+                  01
+                </div>
+                <h3 className="mt-[50px] mb-3 text-[20px] font-extrabold tracking-[-0.03em] uppercase">
+                  Individuality
+                </h3>
+              </div>
+              <p className="max-w-[300px] m-0 text-[#6f6a63] text-[11px] leading-[1.7]">
+                There is no single way to dress. Your style belongs to you. We create pieces that give you room to make them your own.
+              </p>
+            </article>
+
+            <article className="min-h-[300px] p-[35px] bg-[#f7eedb] flex flex-col justify-between">
+              <div>
+                <div className="text-[#e6321c] font-mono text-[11px] font-bold">
+                  02
+                </div>
+                <h3 className="mt-[50px] mb-3 text-[20px] font-extrabold tracking-[-0.03em] uppercase">
+                  Quality
+                </h3>
+              </div>
+              <p className="max-w-[300px] m-0 text-[#6f6a63] text-[11px] leading-[1.7]">
+                Good design means nothing without good construction. We focus on materials, fit, comfort and details that last.
+              </p>
+            </article>
+
+            <article className="min-h-[300px] p-[35px] bg-[#f7eedb] flex flex-col justify-between">
+              <div>
+                <div className="text-[#e6321c] font-mono text-[11px] font-bold">
+                  03
+                </div>
+                <h3 className="mt-[50px] mb-3 text-[20px] font-extrabold tracking-[-0.03em] uppercase">
+                  Community
+                </h3>
+              </div>
+              <p className="max-w-[300px] m-0 text-[#6f6a63] text-[11px] leading-[1.7]">
+                BINGOOO isn't just a clothing brand. It's a collection of people, ideas, stories and personalities.
+              </p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      {/* =======================================================
+           CUSTOM ATELIER SPLIT
+      ======================================================= */}
+      <section className="grid grid-cols-1 lg:grid-cols-[55%_45%] min-h-[550px] lg:min-h-[600px]">
+        <div className="min-h-[380px] lg:min-h-full overflow-hidden">
+          <img
+            src="https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&w=1500&q=90"
+            alt="Custom Bingooo clothing"
+            className="w-full h-full object-cover grayscale"
+          />
+        </div>
+
+        <div className="flex flex-col justify-center p-[45px_24px] sm:p-[clamp(45px,7vw,100px)] bg-[#171717] text-white">
+          <div className="text-[10px] font-semibold tracking-[0.2em] uppercase text-[#e6321c] mb-3">
+            CUSTOM STUDIO
+          </div>
+
+          <h2 className="my-3 mb-5 text-[clamp(40px,5vw,70px)] font-extrabold leading-[0.88] tracking-[-0.065em] uppercase text-white">
+            YOUR IDEA.<br />
+            YOUR CANVAS.
+          </h2>
+
+          <p className="max-w-[410px] m-0 mb-[30px] text-[#aaa7a1] text-[12px] leading-[1.8]">
+            We believe your favourite piece of clothing doesn't always exist yet. That's why we built BINGOOO Custom. Upload your artwork, choose your garment, customize it and make something completely yours.
+          </p>
+
+          <div>
+            <Link
+              to="/customize"
+              onClick={() => triggerHaptic('medium')}
+              className="inline-flex items-center justify-center min-h-[48px] px-[23px] rounded-[7px] bg-[#e6321c] text-white text-[10px] font-bold uppercase tracking-wider hover:bg-[#b91f12] hover:-translate-y-0.5 transition-all"
+            >
+              CREATE YOUR OWN →
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* =======================================================
+           COMMUNITY GRID
+      ======================================================= */}
+      <section className="py-[110px]">
+        <div className="container-bingooo">
+          <div className="text-center mb-[45px]">
+            <div className="text-[10px] font-semibold tracking-[0.2em] uppercase text-[#6f6a63] mb-2.5">
+              THE BINGOOO COMMUNITY
+            </div>
+
+            <h2 className="my-2.5 mb-[15px] text-[clamp(40px,6vw,75px)] font-extrabold leading-[0.88] tracking-[-0.07em] uppercase">
+              PEOPLE.<br />
+              THREADS.<br />
+              STORIES.
+            </h2>
+
+            <p className="max-w-[470px] mx-auto text-[#6f6a63] text-[12px] leading-[1.7]">
+              The best part of BINGOOO isn't what we make. It's the people who make it theirs.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+            {[
+              'https://images.unsplash.com/photo-1529139574466-a303027c1d8b?auto=format&fit=crop&w=700&q=85',
+              'https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?auto=format&fit=crop&w=700&q=85',
+              'https://images.unsplash.com/photo-1556821840-3a63f95609a7?auto=format&fit=crop&w=700&q=85',
+              'https://images.unsplash.com/photo-1583743814966-8936f37f7996?auto=format&fit=crop&w=700&q=85',
+            ].map((imgSrc, i) => (
+              <div key={i} className="aspect-square overflow-hidden bg-[#ede0cc]">
+                <img
+                  src={imgSrc}
+                  alt={`Bingooo Community ${i + 1}`}
+                  loading="lazy"
+                  className="w-full h-full object-cover grayscale hover:scale-[1.04] transition-transform duration-500 ease-out"
+                />
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* =======================================================
+           MANIFESTO
+      ======================================================= */}
+      <section className="py-[110px] px-5 bg-[#f7eedb] border-t border-[#ddd3c5]">
+        <div className="max-w-[1100px] mx-auto text-center">
+          <div className="text-[10px] font-semibold tracking-[0.2em] uppercase text-[#6f6a63] mb-2.5">
+            THE BINGOOO MANIFESTO
+          </div>
+
+          <h2 className="my-2.5 mb-[35px] text-[clamp(42px,6vw,80px)] leading-[0.9] font-extrabold tracking-[-0.07em] uppercase">
+            WEAR WHAT<br />
+            <span className="text-[#e6321c]">DEFINES</span><br />
+            YOU.
+          </h2>
+
+          <p className="max-w-[650px] mx-auto text-[#6f6a63] text-[13px] leading-[1.8]">
+            Don't dress for everyone else. Find your fit. Make your statement. Change your mind. Try something different. Be comfortable. Be weird. Be simple. Be loud. Be you.
+          </p>
+        </div>
+      </section>
+
+      {/* =======================================================
+           FINAL CTA
+      ======================================================= */}
+      <section className="py-[100px] px-5 bg-[#e6321c] text-white text-center">
+        <div className="text-[10px] font-semibold tracking-[0.2em] uppercase text-white/80 mb-2">
+          READY?
+        </div>
+
+        <h2 className="my-2 mb-[25px] text-[clamp(45px,7vw,90px)] leading-[0.85] font-extrabold tracking-[-0.07em] uppercase text-white">
+          FIND YOUR<br />
+          BINGOOO.
+        </h2>
+
+        <p className="max-w-[450px] mx-auto mb-[30px] text-white/90 text-[12px] leading-[1.7]">
+          Explore the collection or create something that is completely yours.
+        </p>
+
+        <Link
+          to="/shop"
+          onClick={() => triggerHaptic('medium')}
+          className="inline-flex items-center justify-center min-h-[48px] px-[23px] rounded-[7px] bg-[#171717] text-white text-[10px] font-bold uppercase tracking-wider hover:bg-black hover:-translate-y-0.5 transition-all"
+        >
+          SHOP THE COLLECTION →
+        </Link>
+      </section>
+    </main>
   );
 }
+
+export default AboutPage;

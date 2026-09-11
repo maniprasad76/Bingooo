@@ -1,8 +1,9 @@
-import { useState, useEffect, useRef, type FormEvent } from 'react';
+import { useState, useEffect, type FormEvent } from 'react';
 import { Modal } from '../ui/Modal';
 import { titleToSlug } from '../../lib/utils';
-import { Check, Sparkles, UploadCloud, Image as ImageIcon, LoaderCircle, Trash2 } from 'lucide-react';
+import { Check, Sparkles, Image as ImageIcon, LoaderCircle, Trash2 } from 'lucide-react';
 import { api } from '../../lib/api/client';
+import { ImageUploadDropzone } from '../ui/ImageUploadDropzone';
 
 export interface ProductFormValues {
   title: string;
@@ -71,28 +72,6 @@ export function ProductEditorModal({
     setForm((prev) => ({ ...prev, [key]: value }));
   };
 
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const [isUploading, setIsUploading] = useState(false);
-
-  const handleUploadImage = async (file: File) => {
-    if (!file) return;
-    const formData = new FormData();
-    formData.append('file', file);
-    formData.append('category', 'products');
-    formData.append('name', file.name);
-
-    setIsUploading(true);
-    try {
-      const res = await api.upload<{ success: boolean; url: string }>('/media/upload', formData);
-      update('imageUrl', res.url);
-    } catch (err: any) {
-      alert(err.message || 'Upload failed');
-    } finally {
-      setIsUploading(false);
-      if (fileInputRef.current) fileInputRef.current.value = '';
-    }
-  };
-
   const handleTitleChange = (val: string) => {
     update('title', val);
     if (!isEditing) {
@@ -121,70 +100,15 @@ export function ProductEditorModal({
       maxWidth="3xl"
     >
       <form onSubmit={handleSubmit} className="space-y-4">
-        {/* Hidden File Input */}
-        <input
-          ref={fileInputRef}
-          type="file"
-          accept="image/jpeg,image/png,image/webp,image/svg+xml"
-          className="hidden"
-          onChange={(e) => {
-            const f = e.target.files?.[0];
-            if (f) handleUploadImage(f);
-          }}
+        {/* Garment Image Upload Dropzone */}
+        <ImageUploadDropzone
+          value={form.imageUrl || ''}
+          onChange={(url) => update('imageUrl', url)}
+          label="Garment Photography"
+          helperText="Drag & drop garment photo here or click to browse (PNG, JPG, WEBP)"
+          category="products"
+          aspectRatio="auto"
         />
-
-        {/* Garment Image Upload & Preview */}
-        <div className="rounded-2xl border border-border bg-[#FDF9F4] p-4">
-          <label className="block text-xs font-bold text-muted mb-2">
-            Garment Photo
-          </label>
-          <div className="flex items-center gap-4">
-            <div className="relative h-20 w-20 flex-shrink-0 overflow-hidden rounded-xl border border-border bg-[#EDE0CC] flex items-center justify-center">
-              {form.imageUrl ? (
-                <img
-                  src={form.imageUrl}
-                  alt="Product preview"
-                  className="h-full w-full object-cover"
-                />
-              ) : (
-                <ImageIcon size={24} className="text-muted/60" />
-              )}
-            </div>
-
-            <div className="flex-1 space-y-2">
-              <div className="flex items-center gap-2">
-                <button
-                  type="button"
-                  onClick={() => fileInputRef.current?.click()}
-                  disabled={isUploading}
-                  className="btn-secondary text-xs py-1.5 px-3 flex items-center gap-1.5"
-                >
-                  {isUploading ? (
-                    <LoaderCircle size={14} className="animate-spin" />
-                  ) : (
-                    <UploadCloud size={14} />
-                  )}
-                  {isUploading ? 'Uploading...' : form.imageUrl ? 'Change Photo' : 'Upload Photo'}
-                </button>
-                {form.imageUrl && (
-                  <button
-                    type="button"
-                    onClick={() => update('imageUrl', '')}
-                    className="text-xs text-danger hover:underline font-bold"
-                  >
-                    Remove
-                  </button>
-                )}
-              </div>
-              <input
-                value={form.imageUrl || ''}
-                onChange={(e) => update('imageUrl', e.target.value)}
-                placeholder="Or paste photo URL..."
-                className="input-admin text-xs py-1.5"
-              />
-            </div>
-          </div>
-        </div>
 
         {/* Identity & Basic Info */}
         {/* Basic Information */}

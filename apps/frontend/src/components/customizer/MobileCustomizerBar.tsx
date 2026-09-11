@@ -381,9 +381,9 @@ export function MobileCustomizerBar({
                       setActiveTab(null);
                     }}
                     disabled={isAddingToCart}
-                    className="w-full py-3.5 rounded-2xl bg-[#E6321C] text-white font-heading font-extrabold uppercase text-xs tracking-wider flex items-center justify-center gap-2 shadow-lg shadow-[#E6321C]/25 hover:bg-[#C42815] transition-all disabled:opacity-50"
+                    className="w-full py-2.5 rounded-lg bg-[#E6321C] text-white font-sans font-semibold uppercase text-xs tracking-wide flex items-center justify-center gap-2 shadow-xs hover:bg-[#C42815] transition-all disabled:opacity-50"
                   >
-                    <ShoppingBag size={16} />
+                    <ShoppingBag size={15} />
                     <span>{isAddingToCart ? 'ADDING TO BAG...' : `ADD TO BAG • ₹${totalPrice}`}</span>
                   </button>
                 </div>

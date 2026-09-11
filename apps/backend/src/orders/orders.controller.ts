@@ -3,6 +3,7 @@ import {
   Get,
   Post,
   Patch,
+  Delete,
   Param,
   Body,
   Query,
@@ -98,6 +99,15 @@ export class OrdersController {
       body.trackingNumber,
       body.carrier,
     );
+  }
+
+  @Delete(':id')
+  @UseGuards(AuthGuard, RolesGuard)
+  @Permissions('orders.manage')
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Delete order permanently (Admin only)' })
+  deleteOrder(@Param('id') id: string) {
+    return this.ordersService.deleteOrder(id);
   }
 }
 

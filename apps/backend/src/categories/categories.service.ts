@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
 import { v4 as uuidv4 } from 'uuid';
-import { db } from '../common/database/store';
+import { db, saveDb } from '../common/database/store';
 
 @Injectable()
 export class CategoriesService {
@@ -30,6 +30,7 @@ export class CategoriesService {
       created_at: new Date().toISOString(), updated_at: new Date().toISOString(),
     };
     db.categories.push(cat);
+    saveDb();
     return cat;
   }
 
@@ -37,6 +38,7 @@ export class CategoriesService {
     const idx = db.categories.findIndex((c) => c.id === id);
     if (idx === -1) throw new NotFoundException({ code: 'CATEGORY_NOT_FOUND', message: 'Category not found' });
     db.categories[idx] = { ...db.categories[idx], ...data, updated_at: new Date().toISOString() };
+    saveDb();
     return db.categories[idx];
   }
 
@@ -44,5 +46,7 @@ export class CategoriesService {
     const idx = db.categories.findIndex((c) => c.id === id);
     if (idx === -1) throw new NotFoundException({ code: 'CATEGORY_NOT_FOUND', message: 'Category not found' });
     db.categories.splice(idx, 1);
+    saveDb();
   }
 }
+

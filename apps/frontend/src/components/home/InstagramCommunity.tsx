@@ -122,12 +122,12 @@ export function InstagramCommunity() {
               href={instagramUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center justify-center gap-2.5 px-6 py-3.5 rounded-xl bg-gradient-to-r from-[#E6321C] via-[#D82B17] to-[#B91F12] text-white font-extrabold text-xs sm:text-sm tracking-wide uppercase shadow-md hover:shadow-lg hover:brightness-110 active:scale-[0.98] transition-all duration-200 group"
+              className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-[#E6321C] hover:bg-[#B91F12] text-white font-semibold text-xs tracking-wide uppercase shadow-xs active:scale-[0.98] transition-all duration-200 group"
               aria-label="Follow Bingooo on Instagram"
             >
-              <Instagram className="w-4 h-4 transition-transform group-hover:scale-110" />
+              <Instagram className="w-3.5 h-3.5 transition-transform group-hover:scale-110" />
               <span>Follow @bingooo.co</span>
-              <ExternalLink className="w-3.5 h-3.5 opacity-80 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+              <ExternalLink className="w-3 h-3 opacity-80 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
             </a>
           </div>
         </div>

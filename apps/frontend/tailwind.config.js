@@ -2,8 +2,22 @@
 export default {
   content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
   theme: {
+    screens: {
+      'xs': '480px',
+      'sm': '640px',
+      'md': '768px',
+      'lg': '1024px',
+      'xl': '1280px',
+      '2xl': '1536px',
+    },
     extend: {
       colors: {
+        // ── Direct Design Tokens from Reference HTML ──
+        red: '#e6321c',
+        'deep-red': '#b91f12',
+        cream: '#f7eedb',
+        beige: '#ede0cc',
+        black: '#171717',
         // ── Bingooo Brand Palette (from design.md) ──
         brand: {
           red: '#E6321C',
@@ -56,11 +70,15 @@ export default {
       },
       fontFamily: {
         sans: ['Manrope', 'system-ui', '-apple-system', 'sans-serif'],
-        display: ['Outfit', 'sans-serif'],
-        heading: ['Outfit', 'sans-serif'],
-        outfit: ['Outfit', 'sans-serif'],
+        mono: ['"IBM Plex Mono"', 'monospace'],
+        display: ['Manrope', 'sans-serif'],
+        heading: ['Manrope', 'sans-serif'],
+        manrope: ['Manrope', 'sans-serif'],
       },
       fontSize: {
+        'display-xl': ['3.25rem', { lineHeight: '1.1', fontWeight: '800' }],
+        'display-lg': ['2.25rem', { lineHeight: '1.15', fontWeight: '800' }],
+        'display': ['2rem', { lineHeight: '1.2', fontWeight: '800' }],
         'hero': ['3.5rem', { lineHeight: '1.1', fontWeight: '800' }],
         'hero-sm': ['2.5rem', { lineHeight: '1.15', fontWeight: '800' }],
         'page': ['2rem', { lineHeight: '1.2', fontWeight: '700' }],

@@ -53,11 +53,23 @@ export async function initAuth(): Promise<void> {
         useAuthStore.getState().setAuth(data.session.user.id, {
           id: data.session.user.id,
           email: data.session.user.email || '',
-          fullName: data.session.user.user_metadata?.full_name,
+          fullName: data.session.user.user_metadata?.full_name || data.session.user.user_metadata?.name,
         });
       } else {
         useAuthStore.getState().setAuth(null);
       }
+
+      // Listen for OAuth callbacks or token refresh
+      supabase.auth.onAuthStateChange((_event, session) => {
+        if (session) {
+          localStorage.setItem(authStorageKey, session.access_token);
+          useAuthStore.getState().setAuth(session.user.id, {
+            id: session.user.id,
+            email: session.user.email || '',
+            fullName: session.user.user_metadata?.full_name || session.user.user_metadata?.name,
+          });
+        }
+      });
     } catch {
       useAuthStore.getState().setAuth(null);
     }
@@ -144,6 +156,60 @@ export async function signUp(
   }
 }
 
+/** Sign in with OAuth provider (Google, Facebook) */
+export async function signInWithProvider(
+  provider: 'google' | 'facebook',
+  redirectTo?: string,
+): Promise<void> {
+  const targetUrl = redirectTo || `${window.location.origin}/account`;
+
+  if (supabase) {
+    const { data, error } = await supabase.auth.signInWithOAuth({
+      provider,
+      options: {
+        redirectTo: targetUrl,
+      },
+    });
+    if (error) throw error;
+    if (data?.url) {
+      window.location.href = data.url;
+    }
+    return;
+  }
+
+  throw new Error(`${provider === 'google' ? 'Google' : 'Facebook'} authentication requires Supabase configuration.`);
+}
+
+/** Request password reset email */
+export async function requestPasswordReset(email: string): Promise<void> {
+  try {
+    await api.post('/auth/forgot-password', { email });
+  } catch (err) {
+    if (supabase) {
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/reset-password`,
+      });
+      if (error) throw error;
+      return;
+    }
+    throw err;
+  }
+}
+
+/** Reset password with new password */
+export async function confirmPasswordReset(email: string, newPassword: string): Promise<void> {
+  try {
+    await api.post('/auth/reset-password', { email, newPassword });
+  } catch (err) {
+    if (supabase) {
+      const { error } = await supabase.auth.updateUser({ password: newPassword });
+      if (error) throw error;
+      return;
+    }
+    throw err;
+  }
+}
+
 /** Sign out */
 export async function signOut(): Promise<void> {
   try {
@@ -155,7 +221,21 @@ export async function signOut(): Promise<void> {
   }
 }
 
+/** Quick dev admin login bypass for local development */
+export function loginAsDevAdmin(): void {
+  localStorage.setItem(authStorageKey, 'bingooo-dev-admin');
+  useAuthStore.getState().setAuth('usr-admin-1', {
+    id: 'usr-admin-1',
+    email: 'basaprasaduu@gmail.com',
+    fullName: 'Mani Prasad.',
+    phone: '+91 7981737817',
+    role: 'SUPER_ADMIN',
+  });
+}
+
 /** Get current session token for API calls */
 export function getSessionToken(): string | null {
   return localStorage.getItem(authStorageKey);
 }
+
+

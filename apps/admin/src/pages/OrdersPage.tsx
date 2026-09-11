@@ -12,6 +12,7 @@ import {
   MapPin,
   Clock,
   Package,
+  Trash2,
 } from 'lucide-react';
 import { api } from '../lib/api/client';
 import { formatCurrency, formatDate } from '../lib/utils';
@@ -75,6 +76,29 @@ export function OrdersPage() {
       toast({ title: 'Update failed', description: err.message, variant: 'danger' });
     },
   });
+
+  const deleteOrderMutation = useMutation({
+    mutationFn: (id: string) => api.delete(`/orders/${id}`),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin', 'orders'] });
+      queryClient.invalidateQueries({ queryKey: ['admin', 'dashboard'] });
+      toast({ title: 'Order deleted permanently', variant: 'success' });
+      setSelectedOrder(null);
+    },
+    onError: (err: Error) => {
+      toast({ title: 'Could not delete order', description: err.message, variant: 'danger' });
+    },
+  });
+
+  const handleDeleteOrder = (order: OrderItem) => {
+    if (
+      window.confirm(
+        `Are you sure you want to permanently delete Order #${order.order_number}? This action cannot be undone.`,
+      )
+    ) {
+      deleteOrderMutation.mutate(order.id);
+    }
+  };
 
   const filtered = useMemo(() => {
     return orders.filter((o) => {
@@ -241,7 +265,7 @@ export function OrdersPage() {
                     </td>
 
                     <td className="p-4 text-right">
-                      <div className="flex items-center justify-end gap-2">
+                      <div className="flex items-center justify-end gap-1.5">
                         <button
                           onClick={() => setSelectedOrder(order)}
                           className="inline-flex items-center gap-1 rounded-lg border border-border bg-white px-2.5 py-1 text-xs font-bold text-ink shadow-xs transition-colors hover:border-brand-red hover:text-brand-red"
@@ -255,6 +279,15 @@ export function OrdersPage() {
                         >
                           Details →
                         </a>
+                        <button
+                          onClick={() => handleDeleteOrder(order)}
+                          disabled={deleteOrderMutation.isPending}
+                          className="inline-flex items-center justify-center rounded-lg border border-border bg-white p-1.5 text-xs font-bold text-muted hover:border-danger hover:bg-danger/10 hover:text-danger transition-colors"
+                          title={`Delete Order #${order.order_number}`}
+                          aria-label={`Delete order ${order.order_number}`}
+                        >
+                          <Trash2 size={14} />
+                        </button>
                       </div>
                     </td>
                   </tr>
@@ -365,6 +398,34 @@ export function OrdersPage() {
                 <option value="delivered">Delivered</option>
                 <option value="cancelled">Cancelled</option>
               </select>
+            </div>
+
+            {/* Modal Actions Footer */}
+            <div className="border-t border-border pt-4 flex items-center justify-between">
+              <button
+                type="button"
+                onClick={() => handleDeleteOrder(selectedOrder)}
+                disabled={deleteOrderMutation.isPending}
+                className="inline-flex items-center gap-1.5 rounded-xl border border-danger/30 bg-danger/5 px-3 py-2 text-xs font-bold text-danger hover:bg-danger hover:text-white transition-colors"
+              >
+                <Trash2 size={14} /> Delete Order
+              </button>
+
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => setSelectedOrder(null)}
+                  className="btn-secondary text-xs"
+                >
+                  Close
+                </button>
+                <a
+                  href={`/orders/${selectedOrder.id}`}
+                  className="btn-primary text-xs"
+                >
+                  Open Full Details →
+                </a>
+              </div>
             </div>
           </div>
         </Modal>

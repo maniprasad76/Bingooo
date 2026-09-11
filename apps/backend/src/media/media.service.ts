@@ -2,6 +2,8 @@ import { Injectable, BadRequestException, NotFoundException } from '@nestjs/comm
 import { v4 as uuidv4 } from 'uuid';
 import * as fs from 'fs';
 import * as path from 'path';
+import { db, saveDb } from '../common/database/store';
+
 
 @Injectable()
 export class MediaService {
@@ -188,15 +190,17 @@ export class MediaService {
       db.media_assets = [];
     }
     db.media_assets.unshift(asset);
+    saveDb();
     return asset;
   }
 
   deleteAsset(id: string) {
-    const { db } = require('../common/database/store');
     if (!db.media_assets) db.media_assets = [];
     db.media_assets = db.media_assets.filter((a: any) => a.id !== id);
+    saveDb();
     return { success: true, id };
   }
 }
+
 
 

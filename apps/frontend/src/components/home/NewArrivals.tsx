@@ -72,7 +72,7 @@ export function NewArrivals() {
   // If backend returns products, map them; otherwise use defaults
   const apiProducts = productsQuery.data?.data;
   const items: NewArrivalItem[] =
-    apiProducts && apiProducts.length > 0
+    productsQuery.isSuccess && Array.isArray(apiProducts)
       ? apiProducts.map((p: any) => ({
           id: p.id,
           title: p.title,
@@ -87,6 +87,7 @@ export function NewArrivals() {
           moreColorsCount: Math.max(0, (p.variants?.length || 0) - 4),
         }))
       : DEFAULT_NEW_ARRIVALS;
+
 
   const scroll = (direction: 'left' | 'right') => {
     if (scrollRef.current) {

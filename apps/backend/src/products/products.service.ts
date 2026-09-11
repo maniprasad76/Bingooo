@@ -1,7 +1,8 @@
 import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
 import { v4 as uuidv4 } from 'uuid';
-import { db } from '../common/database/store';
+import { db, saveDb } from '../common/database/store';
 import { ProductQueryDto, CreateProductDto, UpdateProductDto, CreateVariantDto } from './dto/product.dto';
+
 
 @Injectable()
 export class ProductsService {
@@ -78,13 +79,22 @@ export class ProductsService {
 
     // Search
     if (query.search) {
-      const term = query.search.toLowerCase();
-      items = items.filter(
-        (p) =>
-          p.title.toLowerCase().includes(term) ||
-          (p.description && p.description.toLowerCase().includes(term)),
-      );
+      const term = query.search.toLowerCase().trim();
+      const matchedCategoryIds = db.categories
+        .filter((c) => c.name.toLowerCase().includes(term) || c.slug.toLowerCase().includes(term))
+        .map((c) => c.id);
+
+      items = items.filter((p) => {
+        const titleMatch = p.title.toLowerCase().includes(term);
+        const descMatch = p.description && p.description.toLowerCase().includes(term);
+        const slugMatch = p.slug && p.slug.toLowerCase().includes(term);
+        const catMatch = matchedCategoryIds.includes(p.category_id);
+        const fabricMatch = (p as any).fabric && String((p as any).fabric).toLowerCase().includes(term);
+        const tagsMatch = Array.isArray((p as any).tags) && (p as any).tags.some((t: string) => String(t).toLowerCase().includes(term));
+        return titleMatch || descMatch || slugMatch || catMatch || fabricMatch || tagsMatch;
+      });
     }
+
 
     // Sort
     switch (query.sort) {
@@ -199,6 +209,7 @@ export class ProductsService {
       });
     }
 
+    saveDb();
     return this.enrichProduct(product);
   }
 
@@ -262,6 +273,7 @@ export class ProductsService {
       });
     }
 
+    saveDb();
     return this.enrichProduct(updated);
   }
 
@@ -278,6 +290,7 @@ export class ProductsService {
       is_primary: isPrimary,
     };
     db.product_images.push(image);
+    saveDb();
     return image;
   }
 
@@ -290,6 +303,7 @@ export class ProductsService {
     db.product_variants = db.product_variants.filter((v) => v.product_id !== id);
     db.product_images = db.product_images.filter((i) => i.product_id !== id);
     db.product_collections = db.product_collections.filter((pc) => pc.product_id !== id);
+    saveDb();
   }
 
   /** Add variant to product */
@@ -315,8 +329,10 @@ export class ProductsService {
     };
 
     db.product_variants.push(variant);
+    saveDb();
     return variant;
   }
+
 
   /** Get available filter values for a set of products */
   getFilters(categorySlug?: string) {

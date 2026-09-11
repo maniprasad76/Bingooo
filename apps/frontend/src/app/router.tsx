@@ -5,6 +5,8 @@ import { RouteErrorBoundary } from '../components/common/RouteErrorBoundary';
 import { HomePage } from '../pages/HomePage';
 import { LoginPage } from '../pages/LoginPage';
 import { SignupPage } from '../pages/SignupPage';
+import { ForgotPasswordPage } from '../pages/ForgotPasswordPage';
+import { ResetPasswordPage } from '../pages/ResetPasswordPage';
 import { lazyPage } from './lazyPage';
 
 // ─── Lazy-loaded route components (code-splitting for faster first paint) ───
@@ -21,6 +23,8 @@ const WishlistPage = lazyPage(() => import('../pages/WishlistPage'), 'WishlistPa
 const SavedDesignsPage = lazyPage(() => import('../pages/SavedDesignsPage'), 'SavedDesignsPage');
 const AddressesPage = lazyPage(() => import('../pages/AddressesPage'), 'AddressesPage');
 const AdminDashboardPage = lazyPage(() => import('../pages/AdminDashboardPage'), 'AdminDashboardPage');
+const AdminLoginPage = lazyPage(() => import('../pages/AdminLoginPage'), 'AdminLoginPage');
+const SearchPage = lazyPage(() => import('../pages/SearchPage'), 'SearchPage');
 const PoliciesPage = lazyPage(() => import('../pages/PoliciesPage'), 'PoliciesPage');
 const ContactPage = lazyPage(() => import('../pages/ContactPage'), 'ContactPage');
 const AboutPage = lazyPage(() => import('../pages/AboutPage'), 'AboutPage');
@@ -33,9 +37,6 @@ const CancellationPolicyPage = lazyPage(() => import('../pages/CancellationPolic
 const SizeGuidePage = lazyPage(() => import('../pages/SizeGuidePage'), 'SizeGuidePage');
 const RecentlyViewedPage = lazyPage(() => import('../pages/RecentlyViewedPage'), 'RecentlyViewedPage');
 const TrackOrderPage = lazyPage(() => import('../pages/TrackOrderPage'), 'TrackOrderPage');
-const DtfPrintingPage = lazyPage(() => import('../pages/DtfPrintingPage'), 'DtfPrintingPage');
-const BulkOrdersPage = lazyPage(() => import('../pages/BulkOrdersPage'), 'BulkOrdersPage');
-const FabricGuidePage = lazyPage(() => import('../pages/FabricGuidePage'), 'FabricGuidePage');
 const ArtworkGuidelinesPage = lazyPage(() => import('../pages/ArtworkGuidelinesPage'), 'ArtworkGuidelinesPage');
 const NotFoundPage = lazyPage(() => import('../pages/NotFoundPage'), 'NotFoundPage');
 
@@ -77,6 +78,7 @@ export const router = createBrowserRouter([
       // Custom Atelier
       { path: 'customize', element: <CustomizerPage /> },
       { path: 'customize/:productSlug', element: <CustomizerPage /> },
+      { path: 'custom', element: <Navigate to="/customize" replace /> },
 
       // Shopping Bag & Checkout
       { path: 'cart', element: <CartPage /> },
@@ -87,22 +89,28 @@ export const router = createBrowserRouter([
       { path: 'payment/failure', element: <OrderSuccessPage /> },
 
       // Search & Discovery
-      { path: 'search', element: <ShopPage /> },
+      { path: 'search', element: <SearchPage /> },
       { path: 'recently-viewed', element: <RecentlyViewedPage /> },
+
+      // Wishlist
+      { path: 'wishlist', element: <WishlistPage /> },
+      { path: 'account/wishlist', element: <WishlistPage /> },
 
       // User Account (Protected)
       { path: 'account', element: <RequireAuth><AccountPage /></RequireAuth> },
       { path: 'account/orders', element: <RequireAuth><OrdersPage /></RequireAuth> },
       { path: 'account/orders/:orderNumber', element: <RequireAuth><OrderDetailPage /></RequireAuth> },
-      { path: 'account/wishlist', element: <RequireAuth><WishlistPage /></RequireAuth> },
-      { path: 'wishlist', element: <Navigate to="/account/wishlist" replace /> },
       { path: 'account/recently-viewed', element: <RecentlyViewedPage /> },
       { path: 'account/designs', element: <RequireAuth><SavedDesignsPage /></RequireAuth> },
       { path: 'account/addresses', element: <RequireAuth><AddressesPage /></RequireAuth> },
 
       // Auth
       { path: 'login', element: <LoginPage /> },
+      { path: 'signin', element: <Navigate to="/login" replace /> },
       { path: 'signup', element: <SignupPage /> },
+      { path: 'register', element: <Navigate to="/signup" replace /> },
+      { path: 'forgot-password', element: <ForgotPasswordPage /> },
+      { path: 'reset-password', element: <ResetPasswordPage /> },
 
       // Customer Care & Direct Links
       { path: 'contact', element: <ContactPage /> },
@@ -127,10 +135,10 @@ export const router = createBrowserRouter([
       { path: 'size-guide', element: <SizeGuidePage /> },
 
       // Services & Textile Engineering Guides
-      { path: 'dtf-printing', element: <DtfPrintingPage /> },
-      { path: 'bulk-orders', element: <BulkOrdersPage /> },
-      { path: 'fabric-guide', element: <FabricGuidePage /> },
-      { path: 'fabric-specifications', element: <Navigate to="/fabric-guide" replace /> },
+      { path: 'bulk-orders', element: <Navigate to="/contact" replace /> },
+      { path: 'dtf-printing', element: <Navigate to="/customize" replace /> },
+      { path: 'fabric-guide', element: <Navigate to="/about" replace /> },
+      { path: 'fabric-specifications', element: <Navigate to="/about" replace /> },
       { path: 'artwork-guidelines', element: <ArtworkGuidelinesPage /> },
 
       // Redundant / Demo routes redirected to clean destinations
@@ -138,6 +146,7 @@ export const router = createBrowserRouter([
       { path: 'empty-state', element: <Navigate to="/" replace /> },
 
       // Admin Portal
+      { path: 'admin/login', element: <AdminLoginPage /> },
       { path: 'admin', element: <AdminDashboardPage /> },
       { path: 'admin/*', element: <AdminDashboardPage /> },
 

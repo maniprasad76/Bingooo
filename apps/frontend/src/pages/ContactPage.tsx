@@ -1,537 +1,571 @@
 import { useState } from 'react';
-import { motion, useReducedMotion } from 'framer-motion';
-import {
-  Phone,
-  Mail,
-  MapPin,
-  Send,
-  Headphones,
-  ShieldCheck,
-  Truck,
-  Heart,
-  ArrowRight,
-  Shirt,
-  CheckCircle2,
-  AlertCircle,
-} from 'lucide-react';
-import { useToast } from '../components/ui/Toast';
+import { Link } from 'react-router-dom';
 import { SEO } from '../components/common/SEO';
-import {
-  WhatsAppIcon,
-  InstagramIcon,
-  BINGOOO_INSTAGRAM_URL,
-  getWhatsAppUrl,
-} from '../components/ui/SocialIcons';
+import { useToast } from '../components/ui/Toast';
+import { triggerHaptic } from '../lib/native/capacitorBridge';
 
 export function ContactPage() {
-  const shouldReduceMotion = useReducedMotion();
   const { toast } = useToast();
-  const [submitting, setSubmitting] = useState(false);
-  const [statusState, setStatusState] = useState<{ type: 'idle' | 'success' | 'error'; message: string }>({
-    type: 'idle',
-    message: '',
-  });
+
   const [formData, setFormData] = useState({
-    fullName: '',
+    name: '',
     email: '',
     phone: '',
+    order: '',
     subject: '',
     message: '',
   });
-  const [newsletterEmail, setNewsletterEmail] = useState('');
+
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [submitting, setSubmitting] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
+
+  const validate = () => {
+    const errs: Record<string, string> = {};
+    if (!formData.name.trim()) {
+      errs.name = 'Please enter your name.';
+    }
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!formData.email.trim() || !emailRegex.test(formData.email.trim())) {
+      errs.email = 'Please enter a valid email address.';
+    }
+    const phoneRegex = /^[+]?[(]?[0-9]{1,4}[)]?[-\s./0-9]{6,15}$/;
+    if (formData.phone.trim() && !phoneRegex.test(formData.phone.trim())) {
+      errs.phone = 'Please enter a valid phone number.';
+    }
+    if (!formData.subject) {
+      errs.subject = 'Please select a subject.';
+    }
+    if (!formData.message.trim()) {
+      errs.message = 'Please enter your message.';
+    }
+    setErrors(errs);
+    return Object.keys(errs).length === 0;
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.fullName.trim() || !formData.email.trim() || !formData.message.trim()) {
-      setStatusState({
-        type: 'error',
-        message: 'Please complete your Name, Email, and Message before submitting.',
-      });
-      return;
-    }
-    if (!formData.email.includes('@')) {
-      setStatusState({
-        type: 'error',
-        message: 'Please enter a valid email address.',
-      });
+    if (!validate()) {
+      triggerHaptic('warning');
       return;
     }
 
     setSubmitting(true);
-    setStatusState({ type: 'idle', message: '' });
+    triggerHaptic('medium');
 
     setTimeout(() => {
       setSubmitting(false);
-      setStatusState({
-        type: 'success',
-        message: 'Message dispatched successfully! A tailor from our Srikakulam desk will respond within 24 hours.',
-      });
+      setSubmitted(true);
       toast({
-        title: 'Message sent successfully!',
-        description: "Thank you for reaching out. We'll get back to you within 24 hours.",
+        title: 'Message dispatched successfully',
+        description: "Thanks for reaching out — our team will get back to you within 24 hours.",
         variant: 'success',
       });
-      setFormData({ fullName: '', email: '', phone: '', subject: '', message: '' });
-    }, 400);
-  };
+      setFormData({
+        name: '',
+        email: '',
+        phone: '',
+        order: '',
+        subject: '',
+        message: '',
+      });
+      setErrors({});
 
-  const handleNewsletter = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!newsletterEmail.trim()) return;
-    toast({
-      title: 'Subscribed to Bingooo Loop!',
-      description: 'You will receive our latest drop updates and exclusive member offers.',
-      variant: 'success',
-    });
-    setNewsletterEmail('');
+      setTimeout(() => {
+        setSubmitted(false);
+      }, 6000);
+    }, 800);
   };
 
   return (
-    <div className="w-full bg-[#FAF8F5] text-[#171717] min-h-screen">
+    <main className="bg-[#f7eedb] text-[#171717] font-sans antialiased min-h-screen">
       <SEO
-        title="Contact Us"
-        description="Get in touch with the Bingooo team. Reach our Srikakulam atelier for orders, custom apparel printing inquiries, and sizing assistance."
+        title="Contact Us | BINGOOO Men's Wear"
+        description="Get in touch with Bingooo for orders, sizing, shipping, returns, and custom apparel design inquiries."
+        canonical="https://bingooo.in/contact"
       />
-      <div className="max-w-[1360px] mx-auto px-4 sm:px-8 py-10 sm:py-14 space-y-14">
-        {/* ─── Top Section: Contact Info & Form (Exact Image 3) ─── */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-start">
-          {/* Left Column: Information (5 cols) */}
-          <div className="lg:col-span-5 text-left space-y-6">
-            <div className="relative inline-block">
-              <h1 className="font-heading font-black text-4xl sm:text-5xl text-[#171717] uppercase tracking-tight">
-                CONTACT US
-              </h1>
-              <span className="absolute -bottom-2 left-0 w-16 h-[3px] bg-[#E6321C]" />
+
+      {/* =======================================================
+           HERO
+      ======================================================= */}
+      <section className="py-[60px] sm:py-[90px] lg:pb-[100px]">
+        <div className="container-bingooo grid grid-cols-1 lg:grid-cols-[1.1fr_0.9fr] gap-10 lg:gap-[70px] items-center">
+          <div>
+            <div className="flex items-center gap-2.5 text-[11px] font-extrabold tracking-[0.14em] uppercase text-[#e6321c] mb-6 before:content-[''] before:w-7 before:h-[2px] before:bg-[#e6321c]">
+              Get in touch
             </div>
 
-            <h2 className="mt-4 font-script text-3xl sm:text-4xl text-[#E6321C]">
-              We'd love to hear from you!
+            <h1 className="m-0 max-w-[700px] text-[clamp(48px,7vw,92px)] leading-[0.92] tracking-[-0.065em] font-extrabold uppercase">
+              LET'S<br />
+              <span className="text-[#e6321c]">TALK.</span>
+            </h1>
+
+            <p className="max-w-[540px] mt-[30px] mb-0 text-[#6f6a63] text-[15px] sm:text-[17px] leading-[1.8]">
+              Have a question about your order, your fit, your delivery, or your next custom design? We're here to help.
+            </p>
+
+            <div className="flex items-center gap-[25px] mt-[35px] flex-wrap">
+              <div className="flex items-center gap-[9px] text-[12px] font-bold">
+                <span className="w-[7px] h-[7px] bg-[#e6321c] rounded-full" />
+                Customer Support
+              </div>
+
+              <div className="flex items-center gap-[9px] text-[12px] font-bold">
+                <span className="w-[7px] h-[7px] bg-[#e6321c] rounded-full" />
+                Custom Design
+              </div>
+            </div>
+          </div>
+
+          <div className="h-[380px] sm:h-[480px] lg:h-[570px] overflow-hidden bg-[#ede0cc] relative">
+            <img
+              src="https://images.unsplash.com/photo-1529139574466-a303027c1d8b?auto=format&fit=crop&w=1000&q=85"
+              alt="Bingooo fashion support editorial"
+              className="w-full h-full object-cover grayscale"
+            />
+            <div className="absolute bottom-5 left-5 bg-white px-[15px] py-3 text-[10px] font-extrabold tracking-[0.1em] uppercase text-[#171717] shadow-sm">
+              Bingooo / Support
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* =======================================================
+           CONTACT OPTIONS (4 CARDS)
+      ======================================================= */}
+      <section className="bg-[#171717] text-white py-[65px] sm:py-[75px]">
+        <div className="container-bingooo">
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10">
+            <h2 className="m-0 text-[34px] sm:text-[42px] leading-none tracking-[-0.05em] uppercase text-white">
+              HOW CAN WE<br />HELP?
             </h2>
 
-            <p className="text-xs sm:text-sm text-[#6F6A63] font-sans leading-relaxed">
-              Have a question, suggestion, or just want to say hello? Fill out the form or reach
-              out to us using the details below.
+            <p className="max-w-[400px] m-0 text-[#aaaaaa] text-[13px] sm:text-[14px] leading-[1.7]">
+              Whether you're checking an order, choosing your size, or planning a custom piece, choose the quickest way to reach us.
             </p>
-
-            {/* 4 Contact Cards */}
-            <div className="space-y-4 pt-4">
-              {/* Phone Card */}
-              <motion.div
-                whileHover={shouldReduceMotion ? undefined : { y: -3, boxShadow: '0 8px 24px -6px rgba(0, 0, 0, 0.08)' }}
-                transition={{ type: 'spring', stiffness: 400, damping: 25 }}
-                className="flex items-start gap-4 p-4 rounded-xl border border-[#DDD3C5] bg-white shadow-xs transition-colors hover:border-[#E6321C]/40"
-              >
-                <div className="h-11 w-11 rounded-full bg-[#FDF0EE] text-[#E6321C] flex items-center justify-center shrink-0">
-                  <Phone size={20} className="stroke-[1.8]" />
-                </div>
-                <div>
-                  <h4 className="font-heading font-bold text-xs uppercase tracking-wider text-[#171717]">
-                    PHONE
-                  </h4>
-                  <a
-                    href="tel:+917981787317"
-                    className="font-sans font-bold text-sm text-[#171717] hover:text-[#E6321C] transition-colors block mt-0.5"
-                  >
-                    +91 79817 87317
-                  </a>
-                  <p className="text-[11px] text-[#6F6A63] font-sans mt-0.5">
-                    Mon – Sat, 10:00 AM – 8:00 PM
-                  </p>
-                </div>
-              </motion.div>
-
-              {/* Email Card */}
-              <motion.div
-                whileHover={shouldReduceMotion ? undefined : { y: -3, boxShadow: '0 8px 24px -6px rgba(0, 0, 0, 0.08)' }}
-                transition={{ type: 'spring', stiffness: 400, damping: 25 }}
-                className="flex items-start gap-4 p-4 rounded-xl border border-[#DDD3C5] bg-white shadow-xs transition-colors hover:border-[#E6321C]/40"
-              >
-                <div className="h-11 w-11 rounded-full bg-[#FDF0EE] text-[#E6321C] flex items-center justify-center shrink-0">
-                  <Mail size={20} className="stroke-[1.8]" />
-                </div>
-                <div>
-                  <h4 className="font-heading font-bold text-xs uppercase tracking-wider text-[#171717]">
-                    EMAIL
-                  </h4>
-                  <a
-                    href="mailto:hello@bingooo.in"
-                    className="font-sans font-bold text-sm text-[#171717] hover:text-[#E6321C] transition-colors block mt-0.5"
-                  >
-                    hello@bingooo.in
-                  </a>
-                  <p className="text-[11px] text-[#6F6A63] font-sans mt-0.5">
-                    We reply within 24 hours
-                  </p>
-                </div>
-              </motion.div>
-
-              {/* Store Address Card */}
-              <motion.div
-                whileHover={shouldReduceMotion ? undefined : { y: -3, boxShadow: '0 8px 24px -6px rgba(0, 0, 0, 0.08)' }}
-                transition={{ type: 'spring', stiffness: 400, damping: 25 }}
-                className="flex items-start gap-4 p-4 rounded-xl border border-[#DDD3C5] bg-white shadow-xs transition-colors hover:border-[#E6321C]/40"
-              >
-                <div className="h-11 w-11 rounded-full bg-[#FDF0EE] text-[#E6321C] flex items-center justify-center shrink-0">
-                  <MapPin size={20} className="stroke-[1.8]" />
-                </div>
-                <div>
-                  <h4 className="font-heading font-bold text-xs uppercase tracking-wider text-[#171717]">
-                    STORE ADDRESS
-                  </h4>
-                  <p className="font-sans font-bold text-sm text-[#171717] mt-0.5">
-                    Bingooo Mens Wear
-                  </p>
-                  <p className="text-[11px] text-[#6F6A63] font-sans mt-0.5 leading-relaxed">
-                    Bypass Junction, Srikakulam,<br />
-                    Andhra Pradesh – 532001, India
-                  </p>
-                </div>
-              </motion.div>
-
-              {/* WhatsApp Card */}
-              <motion.div
-                whileHover={shouldReduceMotion ? undefined : { y: -3, boxShadow: '0 8px 24px -6px rgba(0, 0, 0, 0.08)' }}
-                transition={{ type: 'spring', stiffness: 400, damping: 25 }}
-                className="flex items-start gap-4 p-4 rounded-xl border border-[#DDD3C5] bg-white shadow-xs transition-colors hover:border-[#25D366]/60"
-              >
-                <div className="h-11 w-11 rounded-full bg-[#E7FCE8] text-[#25D366] flex items-center justify-center shrink-0">
-                  <WhatsAppIcon className="w-5 h-5" />
-                </div>
-                <div>
-                  <h4 className="font-heading font-bold text-xs uppercase tracking-wider text-[#171717]">
-                    WHATSAPP
-                  </h4>
-                  <a
-                    href={getWhatsAppUrl('Hi Bingooo, I would like to inquire about orders or custom apparel.')}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="font-sans font-bold text-sm text-[#171717] hover:text-[#25D366] transition-colors block mt-0.5"
-                  >
-                    +91 79817 87317
-                  </a>
-                  <p className="text-[11px] text-[#6F6A63] font-sans mt-0.5">
-                    Instant chat support on WhatsApp
-                  </p>
-                </div>
-              </motion.div>
-
-              {/* Instagram Card */}
-              <motion.div
-                whileHover={shouldReduceMotion ? undefined : { y: -3, boxShadow: '0 8px 24px -6px rgba(0, 0, 0, 0.08)' }}
-                transition={{ type: 'spring', stiffness: 400, damping: 25 }}
-                className="flex items-start gap-4 p-4 rounded-xl border border-[#DDD3C5] bg-white shadow-xs transition-colors hover:border-[#E1306C]/60"
-              >
-                <div className="h-11 w-11 rounded-full bg-[#FDEEF2] text-[#E1306C] flex items-center justify-center shrink-0">
-                  <InstagramIcon className="w-5 h-5" />
-                </div>
-                <div>
-                  <h4 className="font-heading font-bold text-xs uppercase tracking-wider text-[#171717]">
-                    INSTAGRAM
-                  </h4>
-                  <a
-                    href={BINGOOO_INSTAGRAM_URL}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="font-sans font-bold text-sm text-[#171717] hover:text-[#E1306C] transition-colors block mt-0.5"
-                  >
-                    @bingooo.sklm
-                  </a>
-                  <p className="text-[11px] text-[#6F6A63] font-sans mt-0.5">
-                    Follow drops, styling tips & behind-the-scenes
-                  </p>
-                </div>
-              </motion.div>
-            </div>
           </div>
 
-
-          {/* Right Column: Message Form (7 cols) */}
-          <div className="lg:col-span-7">
-            <div className="rounded-2xl border border-[#DDD3C5] bg-white p-6 sm:p-10 shadow-sm text-left">
-              <h3 className="font-heading font-extrabold text-lg uppercase tracking-wider text-[#171717] mb-6">
-                SEND US A MESSAGE
-              </h3>
-
-              <form onSubmit={handleSubmit} className="space-y-4">
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div>
-                    <input
-                      type="text"
-                      required
-                      placeholder="Full Name"
-                      aria-label="Full Name"
-                      autoComplete="name"
-                      value={formData.fullName}
-                      onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
-                      className="w-full h-12 rounded-xl border border-[#DDD3C5] bg-white px-4 text-xs font-sans text-[#171717] placeholder:text-[#6F6A63] focus:border-[#E6321C] focus:outline-none"
-                    />
-                  </div>
-                  <div>
-                    <input
-                      type="email"
-                      required
-                      placeholder="Email Address"
-                      aria-label="Email Address"
-                      autoComplete="email"
-                      value={formData.email}
-                      onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                      className="w-full h-12 rounded-xl border border-[#DDD3C5] bg-white px-4 text-xs font-sans text-[#171717] placeholder:text-[#6F6A63] focus:border-[#E6321C] focus:outline-none"
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <input
-                    type="tel"
-                    placeholder="Phone Number"
-                    aria-label="Phone Number"
-                    autoComplete="tel"
-                    value={formData.phone}
-                    onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                    className="w-full h-12 rounded-xl border border-[#DDD3C5] bg-white px-4 text-xs font-sans text-[#171717] placeholder:text-[#6F6A63] focus:border-[#E6321C] focus:outline-none"
-                  />
-                </div>
-
-                <div>
-                  <input
-                    type="text"
-                    required
-                    placeholder="Subject"
-                    aria-label="Subject"
-                    value={formData.subject}
-                    onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
-                    className="w-full h-12 rounded-xl border border-[#DDD3C5] bg-white px-4 text-xs font-sans text-[#171717] placeholder:text-[#6F6A63] focus:border-[#E6321C] focus:outline-none"
-                  />
-                </div>
-
-                <div>
-                  <textarea
-                    required
-                    rows={6}
-                    placeholder="Your Message"
-                    aria-label="Your Message"
-                    value={formData.message}
-                    onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                    className="w-full rounded-xl border border-[#DDD3C5] bg-white p-4 text-xs font-sans text-[#171717] placeholder:text-[#6F6A63] focus:border-[#E6321C] focus:outline-none resize-none"
-                  />
-                </div>
-
-                {/* Inline Status Message Banner */}
-                {statusState.type !== 'idle' && (
-                  <motion.div
-                    role="status"
-                    aria-live="polite"
-                    initial={{ opacity: 0, y: -6 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className={`p-3.5 rounded-xl text-xs font-sans flex items-start gap-2.5 ${
-                      statusState.type === 'success'
-                        ? 'bg-[#E7FCE8] text-[#1E7E34] border border-[#25D366]/30'
-                        : 'bg-[#FDF0EE] text-[#B91F12] border border-[#E6321C]/30'
-                    }`}
-                  >
-                    {statusState.type === 'success' ? (
-                      <CheckCircle2 size={16} className="text-[#25D366] shrink-0 mt-0.5" />
-                    ) : (
-                      <AlertCircle size={16} className="text-[#E6321C] shrink-0 mt-0.5" />
-                    )}
-                    <span className="leading-relaxed font-semibold">{statusState.message}</span>
-                  </motion.div>
-                )}
-
-                <motion.button
-                  type="submit"
-                  disabled={submitting}
-                  whileTap={{ scale: 0.98 }}
-                  whileHover={{ scale: 1.01 }}
-                  className="w-full flex items-center justify-center gap-2 py-4 rounded-xl bg-[#E6321C] hover:bg-[#B91F12] text-white font-sans font-bold text-xs uppercase tracking-wider transition-colors shadow-sm"
-                >
-                  <Send size={15} />
-                  <span>{submitting ? 'SENDING...' : 'SEND MESSAGE'}</span>
-                </motion.button>
-              </form>
-            </div>
-          </div>
-        </div>
-
-        {/* ─── 4 Support Pillars (Exact Image 3) ─── */}
-        <div className="rounded-2xl border border-[#DDD3C5] bg-white p-6 sm:p-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 text-left shadow-xs">
-          <motion.div
-            whileHover={shouldReduceMotion ? undefined : { y: -2 }}
-            className="flex items-start gap-3.5 transition-transform"
-          >
-            <Headphones size={26} className="text-[#E6321C] shrink-0 stroke-[1.8] mt-0.5" />
-            <div>
-              <h4 className="font-heading font-bold text-xs uppercase tracking-wider text-[#171717]">
-                QUICK SUPPORT
-              </h4>
-              <p className="mt-1 text-xs text-[#6F6A63] font-sans">
-                We're here to help you anytime.
-              </p>
-            </div>
-          </motion.div>
-
-          <motion.div
-            whileHover={shouldReduceMotion ? undefined : { y: -2 }}
-            className="flex items-start gap-3.5 transition-transform"
-          >
-            <ShieldCheck size={26} className="text-[#E6321C] shrink-0 stroke-[1.8] mt-0.5" />
-            <div>
-              <h4 className="font-heading font-bold text-xs uppercase tracking-wider text-[#171717]">
-                RELIABLE SERVICE
-              </h4>
-              <p className="mt-1 text-xs text-[#6F6A63] font-sans">
-                Your satisfaction is our priority.
-              </p>
-            </div>
-          </motion.div>
-
-          <motion.div
-            whileHover={shouldReduceMotion ? undefined : { y: -2 }}
-            className="flex items-start gap-3.5 transition-transform"
-          >
-            <Truck size={26} className="text-[#E6321C] shrink-0 stroke-[1.8] mt-0.5" />
-            <div>
-              <h4 className="font-heading font-bold text-xs uppercase tracking-wider text-[#171717]">
-                FAST RESPONSE
-              </h4>
-              <p className="mt-1 text-xs text-[#6F6A63] font-sans">
-                We respond to all queries quickly.
-              </p>
-            </div>
-          </motion.div>
-
-          <motion.div
-            whileHover={shouldReduceMotion ? undefined : { y: -2 }}
-            className="flex items-start gap-3.5 transition-transform"
-          >
-            <Heart size={26} className="text-[#E6321C] shrink-0 stroke-[1.8] mt-0.5" />
-            <div>
-              <h4 className="font-heading font-bold text-xs uppercase tracking-wider text-[#171717]">
-                WE CARE
-              </h4>
-              <p className="mt-1 text-xs text-[#6F6A63] font-sans">
-                Customer happiness drives everything we do.
-              </p>
-            </div>
-          </motion.div>
-        </div>
-
-        {/* ─── VISIT OUR STORE SECTION (Exact Image 3) ─── */}
-        <div className="pt-4 grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
-          {/* Left Column (5 cols) */}
-          <div className="lg:col-span-5 text-left space-y-4">
-            <div className="relative inline-block mb-1">
-              <h2 className="font-heading font-bold text-2xl sm:text-3xl text-[#171717] uppercase tracking-wider">
-                VISIT OUR STORE
-              </h2>
-              <span className="absolute -bottom-1.5 left-0 w-12 h-[2.5px] bg-[#E6321C]" />
-            </div>
-
-            <p className="text-xs sm:text-sm text-[#6F6A63] font-sans leading-relaxed">
-              Come say hi! We love meeting our amazing customers in person.
-            </p>
-
-            <div className="pt-2 flex items-start gap-3">
-              <MapPin size={22} className="text-[#E6321C] shrink-0 mt-0.5" />
-              <div>
-                <span className="font-sans font-bold text-sm text-[#171717] block">
-                  Bingooo Mens Wear
-                </span>
-                <span className="text-xs text-[#6F6A63] font-sans leading-relaxed">
-                  Bypass Junction, Srikakulam,<br />
-                  Andhra Pradesh – 532001, India
-                </span>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 border-t border-l border-[#333333]">
+            {/* Option 01 */}
+            <div className="min-h-[220px] p-7 border-r border-b border-[#333333] flex flex-col hover:bg-[#222222] transition-colors group">
+              <div className="text-[10px] text-[#777777] font-mono font-bold mb-8">
+                01
               </div>
+              <div className="w-[38px] h-[38px] border border-[#555555] grid place-items-center mb-5 text-[#e6321c]">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" className="w-[18px] h-[18px]">
+                  <path d="M4 5h16v12H4z" />
+                  <path d="m4 6 8 6 8-6" />
+                </svg>
+              </div>
+              <h3 className="text-[17px] font-bold uppercase tracking-[-0.02em] mb-2 text-white">
+                Email
+              </h3>
+              <p className="text-[#999999] text-[12px] leading-[1.7] mb-auto">
+                Send us your question and our atelier desk will get back to you within 24 hours.
+              </p>
+              <a
+                href="mailto:hello@bingooo.in"
+                onClick={() => triggerHaptic('light')}
+                className="mt-6 text-[#e6321c] text-[11px] font-extrabold tracking-[0.06em] uppercase group-hover:translate-x-1 transition-transform inline-block"
+              >
+                Email us →
+              </a>
             </div>
 
-            <div className="pt-3">
-              <motion.a
-                href="https://maps.google.com/?q=Bypass+Junction+Srikakulam+Andhra+Pradesh"
+            {/* Option 02 */}
+            <div className="min-h-[220px] p-7 border-r border-b border-[#333333] flex flex-col hover:bg-[#222222] transition-colors group">
+              <div className="text-[10px] text-[#777777] font-mono font-bold mb-8">
+                02
+              </div>
+              <div className="w-[38px] h-[38px] border border-[#555555] grid place-items-center mb-5 text-[#e6321c]">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" className="w-[18px] h-[18px]">
+                  <path d="M20 11.5a8 8 0 0 1-8 8 8.7 8.7 0 0 1-3.5-.7L4 20l1.2-4A8 8 0 1 1 20 11.5Z" />
+                  <path d="M9 10.5c.7 1.4 1.6 2.3 3 3" />
+                </svg>
+              </div>
+              <h3 className="text-[17px] font-bold uppercase tracking-[-0.02em] mb-2 text-white">
+                WhatsApp
+              </h3>
+              <p className="text-[#999999] text-[12px] leading-[1.7] mb-auto">
+                Chat with Bingooo on WhatsApp for swift support, delivery check, and custom fits.
+              </p>
+              <a
+                href="https://wa.me/919390246684?text=Hi%20Bingooo,%20I%20need%20assistance"
                 target="_blank"
                 rel="noopener noreferrer"
-                whileHover={{ scale: 1.02, x: 2 }}
-                whileTap={{ scale: 0.98 }}
-                className="inline-flex items-center gap-2 px-6 py-3 rounded-lg border border-[#E6321C] text-[#E6321C] hover:bg-[#FDF0EE] font-sans font-bold text-xs uppercase tracking-wider transition-colors"
+                onClick={() => triggerHaptic('light')}
+                className="mt-6 text-[#e6321c] text-[11px] font-extrabold tracking-[0.06em] uppercase group-hover:translate-x-1 transition-transform inline-block"
               >
-                <span>GET DIRECTIONS</span>
-                <ArrowRight size={14} />
-              </motion.a>
+                Chat with us →
+              </a>
             </div>
-          </div>
 
-          {/* Right Column: Srikakulam Store Map Frame (7 cols) */}
-          <div className="lg:col-span-7">
-            <div className="relative w-full aspect-[16/9] rounded-2xl overflow-hidden border border-[#DDD3C5] bg-[#EAE2D5] shadow-xs flex items-center justify-center p-4">
-              {/* Simulated Map Background */}
-              <div className="absolute inset-0 bg-[#F4EFE6] opacity-90">
-                {/* Roads */}
-                <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 h-8 bg-[#E6DCCF] border-y border-[#DDD2C2]" />
-                <div className="absolute inset-y-0 left-1/3 w-8 bg-[#E6DCCF] border-x border-[#DDD2C2]" />
-                <div className="absolute inset-y-0 left-2/3 w-6 bg-[#F9EB9A] border-x border-[#E0D283]" />
+            {/* Option 03 */}
+            <div className="min-h-[220px] p-7 border-r border-b border-[#333333] flex flex-col hover:bg-[#222222] transition-colors group">
+              <div className="text-[10px] text-[#777777] font-mono font-bold mb-8">
+                03
               </div>
-
-              {/* Map Marker Pin */}
-              <motion.div
-                animate={shouldReduceMotion ? undefined : { y: [0, -8, 0] }}
-                transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
-                className="relative z-10 flex flex-col items-center cursor-pointer"
+              <div className="w-[38px] h-[38px] border border-[#555555] grid place-items-center mb-5 text-[#e6321c]">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" className="w-[18px] h-[18px]">
+                  <circle cx="12" cy="12" r="8" />
+                  <path d="M12 8v4l3 2" />
+                </svg>
+              </div>
+              <h3 className="text-[17px] font-bold uppercase tracking-[-0.02em] mb-2 text-white">
+                Order Support
+              </h3>
+              <p className="text-[#999999] text-[12px] leading-[1.7] mb-auto">
+                Track your package, verify dispatch status, or initiate hassle-free returns.
+              </p>
+              <Link
+                to="/track-order"
+                onClick={() => triggerHaptic('light')}
+                className="mt-6 text-[#e6321c] text-[11px] font-extrabold tracking-[0.06em] uppercase group-hover:translate-x-1 transition-transform inline-block"
               >
-                <div className="px-3 py-1.5 rounded-lg bg-[#E6321C] text-white font-heading font-bold text-xs uppercase tracking-wider shadow-md flex items-center gap-1.5">
-                  <MapPin size={14} className="fill-white" />
-                  <span>Bingooo Mens Wear</span>
-                </div>
-                <div className="w-2.5 h-2.5 bg-[#E6321C] rotate-45 -mt-1 shadow-sm" />
-              </motion.div>
+                Track an order →
+              </Link>
+            </div>
 
-              {/* Map Landmark Labels */}
-              <div className="absolute top-4 left-6 text-[10px] font-sans text-[#6F6A63] bg-white/70 px-2 py-0.5 rounded border border-[#DDD3C5]">
-                Bypass Rd
+            {/* Option 04 */}
+            <div className="min-h-[220px] p-7 border-r border-b border-[#333333] flex flex-col hover:bg-[#222222] transition-colors group">
+              <div className="text-[10px] text-[#777777] font-mono font-bold mb-8">
+                04
               </div>
-              <div className="absolute bottom-4 right-6 text-[10px] font-sans text-[#6F6A63] bg-white/70 px-2 py-0.5 rounded border border-[#DDD3C5]">
-                Srikakulam Bypass Junction
+              <div className="w-[38px] h-[38px] border border-[#555555] grid place-items-center mb-5 text-[#e6321c]">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" className="w-[18px] h-[18px]">
+                  <path d="M6 4h12v16H6z" />
+                  <path d="M9 8h6M9 12h6M9 16h3" />
+                </svg>
               </div>
+              <h3 className="text-[17px] font-bold uppercase tracking-[-0.02em] mb-2 text-white">
+                Custom Design
+              </h3>
+              <p className="text-[#999999] text-[12px] leading-[1.7] mb-auto">
+                Have a unique idea? Turn it into a wearable piece with our Custom Studio.
+              </p>
+              <Link
+                to="/customize"
+                onClick={() => triggerHaptic('light')}
+                className="mt-6 text-[#e6321c] text-[11px] font-extrabold tracking-[0.06em] uppercase group-hover:translate-x-1 transition-transform inline-block"
+              >
+                Start creating →
+              </Link>
             </div>
           </div>
         </div>
+      </section>
 
-        {/* ─── STAY IN THE LOOP Newsletter Banner (Exact Image 3) ─── */}
-        <div className="rounded-2xl bg-[#F7EEDB] border border-[#DDD3C5] p-6 sm:p-8 flex flex-col md:flex-row items-center justify-between gap-6 shadow-xs">
-          <div className="flex items-center gap-4 text-left">
-            <div className="h-14 w-14 rounded-full bg-white/80 border border-[#DDD3C5] flex items-center justify-center text-[#E6321C] shrink-0 shadow-xs">
-              <Shirt size={28} className="stroke-[1.8]" />
+      {/* =======================================================
+           CONTACT FORM & INFO SECTION
+      ======================================================= */}
+      <section className="py-[65px] sm:py-[100px]">
+        <div className="container-bingooo grid grid-cols-1 lg:grid-cols-[0.75fr_1.25fr] gap-10 lg:gap-20 items-start">
+          {/* Info Column */}
+          <div>
+            <div className="flex items-center gap-2.5 text-[11px] font-extrabold tracking-[0.14em] uppercase text-[#e6321c] mb-6 before:content-[''] before:w-7 before:h-[2px] before:bg-[#e6321c]">
+              Contact Bingooo
             </div>
-            <div>
-              <h3 className="font-heading font-extrabold text-xl uppercase tracking-wider text-[#171717]">
-                STAY IN THE LOOP
-              </h3>
-              <p className="mt-0.5 text-xs text-[#6F6A63] font-sans">
-                Get updates on new drops, exclusive offers, and style inspiration.
+
+            <h2 className="m-0 text-[34px] sm:text-[42px] leading-tight tracking-[-0.055em] font-extrabold uppercase">
+              YOUR<br />
+              QUESTION.<br />
+              <span className="text-[#e6321c]">OUR PEOPLE.</span>
+            </h2>
+
+            <p className="mt-[22px] text-[#6f6a63] text-[14px] leading-[1.8] max-w-[420px]">
+              Tell us what you need help with. Give us as much useful information as possible and our customer care specialists will take it from there.
+            </p>
+
+            <div className="mt-10 border-t border-[#ddd3c5]">
+              <div className="py-5 border-b border-[#ddd3c5]">
+                <div className="text-[10px] font-extrabold text-[#e6321c] tracking-[0.12em] uppercase mb-1.5">
+                  Email
+                </div>
+                <div className="text-[14px] font-semibold">hello@bingooo.in</div>
+                <div className="text-[12px] text-[#6f6a63] mt-1">For general enquiries & collaborations</div>
+              </div>
+
+              <div className="py-5 border-b border-[#ddd3c5]">
+                <div className="text-[10px] font-extrabold text-[#e6321c] tracking-[0.12em] uppercase mb-1.5">
+                  Support
+                </div>
+                <div className="text-[14px] font-semibold">support@bingooo.in</div>
+                <div className="text-[12px] text-[#6f6a63] mt-1">Orders, returns & product sizing assistance</div>
+              </div>
+
+              <div className="py-5 border-b border-[#ddd3c5]">
+                <div className="text-[10px] font-extrabold text-[#e6321c] tracking-[0.12em] uppercase mb-1.5">
+                  Location
+                </div>
+                <div className="text-[14px] font-semibold">Srikakulam, Andhra Pradesh, India</div>
+                <div className="text-[12px] text-[#6f6a63] mt-1">Bingooo Men's Wear Atelier</div>
+              </div>
+            </div>
+          </div>
+
+          {/* Form Area */}
+          <div className="bg-white border border-[#ddd3c5] p-6 sm:p-[42px] shadow-xs">
+            <h2 className="m-0 mb-8 text-[28px] sm:text-[36px] font-extrabold tracking-[-0.055em] uppercase">
+              SEND A MESSAGE.
+            </h2>
+
+            {submitted && (
+              <div className="mb-6 p-4 border border-[#238636]/30 bg-[#238636]/10 text-[#238636] text-[12px] font-bold rounded-[6px]">
+                ✓ MESSAGE SENT. Thanks for reaching out — our team will get back to you soon.
+              </div>
+            )}
+
+            <form onSubmit={handleSubmit} noValidate className="grid grid-cols-1 sm:grid-cols-2 gap-[22px]">
+              {/* Full Name */}
+              <div className="flex flex-col gap-2">
+                <label htmlFor="name" className="text-[11px] font-extrabold uppercase tracking-[0.08em]">
+                  Full Name *
+                </label>
+                <input
+                  id="name"
+                  type="text"
+                  placeholder="Your name"
+                  value={formData.name}
+                  onChange={(e) => {
+                    setFormData({ ...formData, name: e.target.value });
+                    if (errors.name) setErrors({ ...errors, name: '' });
+                  }}
+                  className={`h-12 w-full border bg-[#f7eedb] text-[#171717] rounded-[10px] outline-none px-4 text-[13px] transition-all focus:border-[#e6321c] focus:ring-2 focus:ring-[#e6321c]/15 ${
+                    errors.name ? 'border-[#c62828]' : 'border-[#ddd3c5]'
+                  }`}
+                />
+                {errors.name && (
+                  <span className="text-[11px] text-[#c62828] font-semibold">{errors.name}</span>
+                )}
+              </div>
+
+              {/* Email */}
+              <div className="flex flex-col gap-2">
+                <label htmlFor="email" className="text-[11px] font-extrabold uppercase tracking-[0.08em]">
+                  Email *
+                </label>
+                <input
+                  id="email"
+                  type="email"
+                  placeholder="you@example.com"
+                  value={formData.email}
+                  onChange={(e) => {
+                    setFormData({ ...formData, email: e.target.value });
+                    if (errors.email) setErrors({ ...errors, email: '' });
+                  }}
+                  className={`h-12 w-full border bg-[#f7eedb] text-[#171717] rounded-[10px] outline-none px-4 text-[13px] transition-all focus:border-[#e6321c] focus:ring-2 focus:ring-[#e6321c]/15 ${
+                    errors.email ? 'border-[#c62828]' : 'border-[#ddd3c5]'
+                  }`}
+                />
+                {errors.email && (
+                  <span className="text-[11px] text-[#c62828] font-semibold">{errors.email}</span>
+                )}
+              </div>
+
+              {/* Phone */}
+              <div className="flex flex-col gap-2">
+                <label htmlFor="phone" className="text-[11px] font-extrabold uppercase tracking-[0.08em]">
+                  Phone Number
+                </label>
+                <input
+                  id="phone"
+                  type="tel"
+                  placeholder="+91 XXXXX XXXXX"
+                  value={formData.phone}
+                  onChange={(e) => {
+                    setFormData({ ...formData, phone: e.target.value });
+                    if (errors.phone) setErrors({ ...errors, phone: '' });
+                  }}
+                  className={`h-12 w-full border bg-[#f7eedb] text-[#171717] rounded-[10px] outline-none px-4 text-[13px] transition-all focus:border-[#e6321c] focus:ring-2 focus:ring-[#e6321c]/15 ${
+                    errors.phone ? 'border-[#c62828]' : 'border-[#ddd3c5]'
+                  }`}
+                />
+                {errors.phone && (
+                  <span className="text-[11px] text-[#c62828] font-semibold">{errors.phone}</span>
+                )}
+              </div>
+
+              {/* Order Number */}
+              <div className="flex flex-col gap-2">
+                <label htmlFor="order" className="text-[11px] font-extrabold uppercase tracking-[0.08em]">
+                  Order Number
+                </label>
+                <input
+                  id="order"
+                  type="text"
+                  placeholder="Optional (e.g. BNG-1042)"
+                  value={formData.order}
+                  onChange={(e) => setFormData({ ...formData, order: e.target.value })}
+                  className="h-12 w-full border border-[#ddd3c5] bg-[#f7eedb] text-[#171717] rounded-[10px] outline-none px-4 text-[13px] transition-all focus:border-[#e6321c] focus:ring-2 focus:ring-[#e6321c]/15"
+                />
+              </div>
+
+              {/* Subject */}
+              <div className="sm:col-span-2 flex flex-col gap-2">
+                <label htmlFor="subject" className="text-[11px] font-extrabold uppercase tracking-[0.08em]">
+                  Subject *
+                </label>
+                <select
+                  id="subject"
+                  value={formData.subject}
+                  onChange={(e) => {
+                    setFormData({ ...formData, subject: e.target.value });
+                    if (errors.subject) setErrors({ ...errors, subject: '' });
+                  }}
+                  className={`h-12 w-full border bg-[#f7eedb] text-[#171717] rounded-[10px] outline-none px-4 text-[13px] transition-all focus:border-[#e6321c] focus:ring-2 focus:ring-[#e6321c]/15 cursor-pointer ${
+                    errors.subject ? 'border-[#c62828]' : 'border-[#ddd3c5]'
+                  }`}
+                >
+                  <option value="">Select a subject</option>
+                  <option value="Order Support">Order Support</option>
+                  <option value="Product Question">Product Question</option>
+                  <option value="Size & Fit">Size & Fit</option>
+                  <option value="Shipping & Delivery">Shipping & Delivery</option>
+                  <option value="Returns & Refunds">Returns & Refunds</option>
+                  <option value="Custom Design">Custom Design</option>
+                  <option value="Payment">Payment</option>
+                  <option value="Other">Other</option>
+                </select>
+                {errors.subject && (
+                  <span className="text-[11px] text-[#c62828] font-semibold">{errors.subject}</span>
+                )}
+              </div>
+
+              {/* Message */}
+              <div className="sm:col-span-2 flex flex-col gap-2">
+                <label htmlFor="message" className="text-[11px] font-extrabold uppercase tracking-[0.08em]">
+                  Message *
+                </label>
+                <textarea
+                  id="message"
+                  rows={5}
+                  placeholder="Tell us how we can help..."
+                  value={formData.message}
+                  onChange={(e) => {
+                    setFormData({ ...formData, message: e.target.value });
+                    if (errors.message) setErrors({ ...errors, message: '' });
+                  }}
+                  className={`w-full min-h-[140px] border bg-[#f7eedb] text-[#171717] rounded-[10px] outline-none p-4 text-[13px] transition-all focus:border-[#e6321c] focus:ring-2 focus:ring-[#e6321c]/15 ${
+                    errors.message ? 'border-[#c62828]' : 'border-[#ddd3c5]'
+                  }`}
+                />
+                {errors.message && (
+                  <span className="text-[11px] text-[#c62828] font-semibold">{errors.message}</span>
+                )}
+              </div>
+
+              {/* Submit Row */}
+              <div className="sm:col-span-2 flex flex-col sm:flex-row sm:items-center justify-between gap-4 mt-2">
+                <div className="text-[#6f6a63] text-[11px] leading-relaxed max-w-[300px]">
+                  Your information is used only to respond to your enquiry.
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={submitting}
+                  className="h-12 px-7 bg-[#e6321c] text-white text-[12px] font-extrabold uppercase tracking-[0.04em] rounded-[10px] hover:bg-[#b91f12] active:scale-[0.99] transition-all cursor-pointer disabled:opacity-60 whitespace-nowrap"
+                >
+                  {submitting ? 'Sending...' : 'Send Message →'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </section>
+
+      {/* =======================================================
+           FAQ SECTION
+      ======================================================= */}
+      <section className="py-20 bg-[#ede0cc]">
+        <div className="container-bingooo flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+          <div>
+            <div className="flex items-center gap-2.5 text-[11px] font-extrabold tracking-[0.14em] uppercase text-[#e6321c] mb-4 before:content-[''] before:w-7 before:h-[2px] before:bg-[#e6321c]">
+              Need a quick answer?
+            </div>
+
+            <h2 className="m-0 text-[36px] sm:text-[44px] leading-[0.95] tracking-[-0.055em] font-extrabold uppercase">
+              YOU MIGHT<br />FIND IT HERE.
+            </h2>
+
+            <p className="mt-3.5 mb-0 text-[#6f6a63] text-[14px]">
+              Check our frequently asked questions for quick answers on orders, shipping, sizing, and custom printing.
+            </p>
+          </div>
+
+          <Link
+            to="/faq"
+            onClick={() => triggerHaptic('light')}
+            className="inline-flex items-center justify-center h-12 px-7 border border-[#171717] bg-transparent text-[#171717] rounded-[10px] text-[11px] font-extrabold uppercase tracking-[0.05em] hover:bg-[#171717] hover:text-white transition-all whitespace-nowrap"
+          >
+            View FAQ →
+          </Link>
+        </div>
+      </section>
+
+      {/* =======================================================
+           CUSTOM DESIGN CTA
+      ======================================================= */}
+      <section className="py-[70px] sm:py-[100px]">
+        <div className="container-bingooo">
+          <div className="bg-[#171717] text-white p-8 sm:p-14 lg:p-[65px] grid grid-cols-1 lg:grid-cols-[1fr_auto] items-center gap-8 lg:gap-12 relative overflow-hidden">
+            {/* Subtle background monogram */}
+            <div className="absolute right-[-40px] bottom-[-100px] text-[350px] font-extrabold leading-none text-white/[0.025] select-none pointer-events-none">
+              B
+            </div>
+
+            <div className="relative z-10">
+              <div className="text-[#e6321c] text-[10px] font-extrabold tracking-[0.15em] uppercase mb-4">
+                Custom Design Studio
+              </div>
+
+              <h2 className="m-0 text-[clamp(36px,5vw,64px)] leading-[0.92] tracking-[-0.06em] font-extrabold uppercase text-white">
+                YOUR IDEA.<br />YOUR GARMENT.
+              </h2>
+
+              <p className="mt-5 mb-0 text-[#999999] text-[14px] leading-[1.8] max-w-[560px]">
+                Have something specific in mind? Upload your artwork, customize your garment and create something that feels completely yours.
               </p>
             </div>
+
+            <Link
+              to="/customize"
+              onClick={() => triggerHaptic('medium')}
+              className="relative z-10 inline-flex items-center justify-center h-[50px] px-[26px] bg-[#e6321c] text-white rounded-[10px] text-[11px] font-extrabold uppercase tracking-[0.05em] hover:bg-[#b91f12] transition-colors whitespace-nowrap"
+            >
+              Create Your Design →
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* =======================================================
+           FINAL CTA BANNER
+      ======================================================= */}
+      <section className="bg-[#e6321c] text-white py-[75px] sm:py-[100px] text-center px-5">
+        <div className="container-bingooo">
+          <div className="text-[10px] font-extrabold tracking-[0.15em] uppercase text-white/80 mb-5">
+            BINGOOO MEN'S WEAR
           </div>
 
-          <form onSubmit={handleNewsletter} className="w-full md:w-auto flex items-center gap-2 max-w-md">
-            <input
-              type="email"
-              required
-              placeholder="Enter your email"
-              aria-label="Email for drop updates"
-              autoComplete="email"
-              value={newsletterEmail}
-              onChange={(e) => setNewsletterEmail(e.target.value)}
-              className="flex-1 sm:w-72 h-12 rounded-xl border border-[#DDD3C5] bg-white px-4 text-xs font-sans text-[#171717] placeholder:text-[#6F6A63] focus:border-[#E6321C] focus:outline-none shadow-xs"
-            />
-            <motion.button
-              type="submit"
-              whileTap={{ scale: 0.97 }}
-              whileHover={{ scale: 1.02 }}
-              className="h-12 px-6 rounded-xl bg-[#E6321C] hover:bg-[#B91F12] text-white font-sans font-bold text-xs uppercase tracking-wider transition-colors shadow-sm shrink-0"
-            >
-              SUBSCRIBE
-            </motion.button>
-          </form>
+          <h2 className="m-0 text-[clamp(46px,8vw,100px)] leading-[0.88] tracking-[-0.07em] font-extrabold uppercase text-white">
+            WEAR WHAT<br />DEFINES YOU.
+          </h2>
+
+          <p className="max-w-[500px] mx-auto mt-6 mb-8 text-[14px] leading-[1.7] text-white/85">
+            Premium fits. Your vibe. Your idea. Discover the collection or create something of your own.
+          </p>
+
+          <Link
+            to="/shop"
+            onClick={() => triggerHaptic('medium')}
+            className="inline-flex items-center justify-center h-12 px-7 bg-white text-[#171717] rounded-[10px] text-[11px] font-extrabold uppercase tracking-[0.05em] hover:bg-[#171717] hover:text-white transition-all shadow-sm"
+          >
+            Shop Men's Wear →
+          </Link>
         </div>
-      </div>
-    </div>
+      </section>
+    </main>
   );
 }
+
+export default ContactPage;

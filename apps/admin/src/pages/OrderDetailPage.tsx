@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import {
   ArrowLeft,
@@ -15,6 +15,7 @@ import {
   AlertCircle,
   LoaderCircle,
   Send,
+  Trash2,
 } from 'lucide-react';
 import { api } from '../lib/api/client';
 import { formatCurrency, formatDate } from '../lib/utils';
@@ -156,6 +157,31 @@ export function OrderDetailPage() {
     },
   });
 
+  const navigate = useNavigate();
+
+  const deleteOrderMutation = useMutation({
+    mutationFn: () => api.delete(`/orders/${order?.id || id}`),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin', 'orders'] });
+      queryClient.invalidateQueries({ queryKey: ['admin', 'dashboard'] });
+      toast({ title: 'Order deleted permanently', variant: 'success' });
+      navigate('/orders');
+    },
+    onError: (err: Error) => {
+      toast({ title: 'Delete failed', description: err.message, variant: 'danger' });
+    },
+  });
+
+  const handleDelete = () => {
+    if (
+      window.confirm(
+        `Are you sure you want to delete Order #${order?.order_number || id}? This cannot be undone.`,
+      )
+    ) {
+      deleteOrderMutation.mutate();
+    }
+  };
+
   if (isLoading) {
     return (
       <div className="flex min-h-[400px] items-center justify-center gap-3 text-muted">
@@ -242,6 +268,15 @@ export function OrderDetailPage() {
             <option value="delivered">Delivered</option>
             <option value="cancelled">Cancelled</option>
           </select>
+          <button
+            type="button"
+            onClick={handleDelete}
+            disabled={deleteOrderMutation.isPending}
+            className="inline-flex items-center gap-1.5 rounded-xl border border-danger/30 bg-danger/5 px-3 py-2 text-xs font-bold text-danger hover:bg-danger hover:text-white transition-colors"
+            title="Delete this order permanently"
+          >
+            <Trash2 size={15} /> Delete Order
+          </button>
         </div>
       </div>
 

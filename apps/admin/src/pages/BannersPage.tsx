@@ -14,6 +14,8 @@ import {
 import { api } from '../lib/api/client';
 import { Modal } from '../components/ui/Modal';
 import { useToast } from '../components/ui/Toast';
+import { ImageUploadDropzone } from '../components/ui/ImageUploadDropzone';
+import { resolveImageUrl } from '../lib/utils';
 
 export interface BannerItem {
   id: string;
@@ -273,15 +275,20 @@ export function BannersPage() {
     toast({ title: 'Banner visibility toggled', variant: 'success' });
   };
 
-  const handleDelete = (id: string, bannerTitle: string) => {
+  const handleDelete = async (id: string, bannerTitle: string) => {
     if (!window.confirm(`Are you sure you want to delete banner "${bannerTitle}"?`)) {
       return;
     }
-    const updated = banners.filter((b) => b.id !== id);
-    saveToStorageAndState(updated);
-    api.delete(`/banners/${id}`).catch(() => {});
-    toast({ title: `Banner "${bannerTitle}" deleted`, variant: 'success' });
+    try {
+      await api.delete(`/banners/${id}`);
+      const updated = banners.filter((b) => b.id !== id);
+      saveToStorageAndState(updated);
+      toast({ title: `Banner "${bannerTitle}" deleted`, variant: 'success' });
+    } catch (err: any) {
+      toast({ title: 'Could not delete banner', description: err.message, variant: 'danger' });
+    }
   };
+
 
   const resetToDefaults = () => {
     if (window.confirm('Reset all hero banners to the 5 official Bingooo images?')) {
@@ -378,8 +385,9 @@ export function BannersPage() {
                 </div>
                 <div className="relative aspect-[3/2] max-h-[280px] w-full overflow-hidden rounded-xl border border-border bg-[#F0E7DF]">
                   <img
-                    src={banner.desktopImageUrl}
+                    src={resolveImageUrl(banner.desktopImageUrl)}
                     alt={banner.title}
+                    crossOrigin="anonymous"
                     className="h-full w-full object-cover"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent p-4 flex flex-col justify-end text-white">
@@ -398,8 +406,9 @@ export function BannersPage() {
                 </div>
                 <div className="relative aspect-[4/5] max-h-[280px] w-full overflow-hidden rounded-xl border border-border bg-[#F0E7DF]">
                   <img
-                    src={banner.mobileImageUrl}
+                    src={resolveImageUrl(banner.mobileImageUrl)}
                     alt={banner.title}
+                    crossOrigin="anonymous"
                     className="h-full w-full object-cover"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent p-3 flex flex-col justify-end text-white">
@@ -540,41 +549,17 @@ export function BannersPage() {
             </div>
 
             <div className="sm:col-span-2">
-              <label className="block text-xs font-bold text-muted">
-                Image URL (or select preset above)
-                <input
-                  required
-                  value={desktopImage}
-                  onChange={(e) => {
-                    setDesktopImage(e.target.value);
-                    if (!mobileImage) setMobileImage(e.target.value);
-                  }}
-                  placeholder="/hero-banner.png or https://..."
-                  className="input-admin mt-1 font-mono text-xs"
-                />
-              </label>
-            </div>
-
-            <div className="sm:col-span-2">
-              <label className="block text-xs font-bold text-muted">
-                Or Upload Local Image:
-                <div className="mt-1 flex items-center gap-3">
-                  <label className="cursor-pointer inline-flex items-center gap-2 rounded-lg border border-border bg-white px-3 py-2 text-xs font-bold text-ink hover:border-brand-red">
-                    <UploadCloud size={16} /> Choose File
-                    <input
-                      type="file"
-                      accept="image/*"
-                      onChange={handleFileUpload}
-                      className="hidden"
-                    />
-                  </label>
-                  {desktopImage && (
-                    <span className="text-xs text-muted truncate max-w-[300px]">
-                      Selected: {desktopImage.slice(0, 45)}...
-                    </span>
-                  )}
-                </div>
-              </label>
+              <ImageUploadDropzone
+                value={desktopImage}
+                onChange={(url) => {
+                  setDesktopImage(url);
+                  if (!mobileImage || mobileImage === desktopImage) setMobileImage(url);
+                }}
+                label="Banner Graphic / Hero Visual"
+                helperText="Drag & drop banner image here or click to browse (PNG, JPG, WEBP up to 25MB)"
+                category="banners"
+                aspectRatio="banner"
+              />
             </div>
 
             <div className="sm:col-span-2 flex items-center pt-2">

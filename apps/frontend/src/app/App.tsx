@@ -8,12 +8,13 @@ import { router } from './router';
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      staleTime: 1000 * 60, // 1 minute
+      staleTime: 1000 * 5, // 5 seconds for snappy updates from admin changes
       retry: 1,
-      refetchOnWindowFocus: false,
+      refetchOnWindowFocus: true,
     },
   },
 });
+
 
 export function App() {
   useEffect(() => {

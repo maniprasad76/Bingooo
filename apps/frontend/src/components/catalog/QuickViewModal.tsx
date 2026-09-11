@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Sparkles, ShoppingBag, Check, ArrowRight, ShieldCheck, Truck } from 'lucide-react';
 import { Link } from 'react-router-dom';
@@ -31,6 +31,28 @@ export function QuickViewModal({ product, isOpen, onClose }: QuickViewModalProps
 
   const [selectedColorHex, setSelectedColorHex] = useState('#121318');
   const [selectedSize, setSelectedSize] = useState('L');
+
+  // Handle Escape key and body scroll lock
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+      const handleKeyDown = (e: KeyboardEvent) => {
+        if (e.key === 'Escape') {
+          onClose();
+        }
+      };
+      window.addEventListener('keydown', handleKeyDown);
+      return () => {
+        document.body.style.overflow = '';
+        window.removeEventListener('keydown', handleKeyDown);
+      };
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isOpen, onClose]);
 
   if (!product) return null;
 
@@ -201,9 +223,9 @@ export function QuickViewModal({ product, isOpen, onClose }: QuickViewModalProps
                         <button
                           key={sz}
                           onClick={() => setSelectedSize(sz)}
-                          className={`h-10 rounded-lg text-caption font-bold font-mono transition-all ${
+                          className={`h-8 rounded-md text-caption font-semibold font-mono transition-all ${
                             selectedSize === sz
-                              ? 'bg-ink text-white shadow-md'
+                              ? 'bg-ink text-white shadow-xs'
                               : 'bg-paper text-ink border border-border hover:border-ink'
                           }`}
                         >

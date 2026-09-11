@@ -136,18 +136,18 @@ export function GarmentCanvas({
   };
 
   return (
-    <div className="relative w-full rounded-3xl border border-[#DDD3C5] bg-[#FAF8F5] p-4 sm:p-7 flex flex-col items-center justify-between select-none shadow-sm overflow-hidden">
+    <div className="relative w-full rounded-3xl border border-[#DDD3C5] bg-[#FAF8F5] p-3 sm:p-7 flex flex-col items-center justify-between select-none shadow-sm overflow-hidden">
       {/* Subtle Studio Backdrop Ambient Spotlight */}
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_35%,_rgba(255,255,255,0.9)_0%,_rgba(247,238,219,0.35)_60%,_rgba(237,224,204,0.5)_100%)] pointer-events-none" />
 
       {/* ─── Top Studio Navigation Bar ─── */}
-      <div className="w-full flex items-center justify-between gap-3 pb-3 border-b border-[#DDD3C5]/70 relative z-20">
+      <div className="w-full flex items-center justify-between gap-2 sm:gap-3 pb-3 border-b border-[#DDD3C5]/70 relative z-20">
         {/* Floating Perspective Toggle Pill */}
         <div className="flex items-center rounded-2xl bg-white/90 backdrop-blur-md border border-[#DDD3C5] p-1 shadow-xs">
           <button
             type="button"
             onClick={() => onToggleView('front')}
-            className={`relative px-4 sm:px-5 py-1.5 rounded-xl text-xs font-sans font-bold uppercase tracking-wider transition-all ${
+            className={`relative px-3 sm:px-5 py-1.5 rounded-xl text-xs font-sans font-bold uppercase tracking-wider transition-all ${
               view === 'front' ? 'text-white' : 'text-[#171717] hover:text-[#E6321C]'
             }`}
           >
@@ -165,7 +165,7 @@ export function GarmentCanvas({
           <button
             type="button"
             onClick={() => onToggleView('back')}
-            className={`relative px-4 sm:px-5 py-1.5 rounded-xl text-xs font-sans font-bold uppercase tracking-wider transition-all ${
+            className={`relative px-3 sm:px-5 py-1.5 rounded-xl text-xs font-sans font-bold uppercase tracking-wider transition-all ${
               view === 'back' ? 'text-white' : 'text-[#171717] hover:text-[#E6321C]'
             }`}
           >

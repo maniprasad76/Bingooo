@@ -2,9 +2,9 @@ import { useQuery } from '@tanstack/react-query';
 import { api } from '../lib/api/client';
 import {
   FALLBACK_PRODUCTS,
-  FALLBACK_CATEGORIES,
   FALLBACK_FILTERS,
 } from '../data/fallbackProducts';
+
 
 export interface ProductQueryParams {
   categorySlug?: string;
@@ -48,14 +48,20 @@ function filterFallbackProducts(params: ProductQueryParams) {
   }
 
   if (params.search) {
-    const q = params.search.toLowerCase();
+    const q = params.search.toLowerCase().trim();
     list = list.filter(
       (p) =>
         p.title.toLowerCase().includes(q) ||
         p.description.toLowerCase().includes(q) ||
+        p.slug.toLowerCase().includes(q) ||
+        p.category?.name?.toLowerCase().includes(q) ||
+        p.category?.slug?.toLowerCase().includes(q) ||
+        (p.fit_silhouette && p.fit_silhouette.toLowerCase().includes(q)) ||
+        (p.fabric_gsm && `${p.fabric_gsm}`.includes(q)) ||
         p.tags?.some((t) => t.toLowerCase().includes(q))
     );
   }
+
 
   if (params.customizable !== undefined) {
     list = list.filter((p) => p.customizationEnabled === params.customizable);
@@ -99,13 +105,14 @@ export function useProducts(params: ProductQueryParams = {}) {
     queryFn: async () => {
       try {
         const res = await api.get<any>('/products', params);
-        if (res && Array.isArray(res.data) && res.data.length > 0) {
+        if (res && Array.isArray(res.data)) {
           return res;
         }
       } catch (err) {
         console.warn('[Products] API fetch failed, serving atelier fallback catalog:', err);
+        return filterFallbackProducts(params);
       }
-      return filterFallbackProducts(params);
+      return { data: [], meta: { total: 0, page: 1, limit: 12, totalPages: 1 } };
     },
   });
 }
@@ -119,11 +126,11 @@ export function useProduct(slug?: string) {
         if (res && (res.id || res.slug)) {
           return res;
         }
-      } catch (err) {
-        console.warn(`[Product] API fetch for ${slug} failed, serving atelier fallback:`, err);
+      } catch (err: any) {
+        // Product was deleted or not found on server
+        return null;
       }
-      const match = FALLBACK_PRODUCTS.find((p) => p.slug === slug);
-      return match || FALLBACK_PRODUCTS[0];
+      return null;
     },
     enabled: !!slug,
   });
@@ -135,9 +142,11 @@ export function useCategories() {
     queryFn: async () => {
       try {
         const res = await api.get<any[]>('/categories');
-        if (Array.isArray(res) && res.length > 0) return res;
-      } catch {}
-      return FALLBACK_CATEGORIES;
+        if (Array.isArray(res)) return res;
+      } catch (err) {
+        console.warn('[Categories] API fetch failed:', err);
+      }
+      return [];
     },
   });
 }
@@ -148,16 +157,12 @@ export function useCollections() {
     queryFn: async () => {
       try {
         const res = await api.get<any[]>('/collections');
-        if (Array.isArray(res) && res.length > 0) return res;
+        if (Array.isArray(res)) return res;
       } catch {}
-      return [
-        { id: 'col-1', name: 'Atelier Essentials', slug: 'atelier-essentials' },
-        { id: 'col-2', name: 'Monsoon Heavyweight', slug: 'monsoon-heavyweight' },
-        { id: 'col-3', name: 'Graphic Drop 01', slug: 'graphic-drop-01' },
-      ];
     },
   });
 }
+
 
 export function useProductFilters(categorySlug?: string) {
   return useQuery({

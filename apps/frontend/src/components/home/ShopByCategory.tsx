@@ -2,6 +2,7 @@ import { useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, ChevronRight, ChevronLeft, Shirt } from 'lucide-react';
 import { useCategories } from '../../hooks/useProducts';
+import { resolveImageUrl } from '../../lib/utils';
 
 export interface CategoryCardData {
   id: string;
@@ -57,7 +58,7 @@ export function ShopByCategory() {
   // Merge API categories with default mock list to guarantee the 6 items are present
   // while allowing custom names/images uploaded via admin panel
   const categories: CategoryCardData[] =
-    apiCategories.length > 0
+    categoriesQuery.isSuccess
       ? apiCategories.map((c: any) => ({
           id: c.id,
           name: c.name?.toUpperCase() || 'CATEGORY',
@@ -65,6 +66,7 @@ export function ShopByCategory() {
           imageUrl: c.imageUrl || c.image_url || c.image_key || '',
         }))
       : DEFAULT_CATEGORIES;
+
 
   const scroll = (direction: 'left' | 'right') => {
     if (scrollRef.current) {
@@ -110,8 +112,9 @@ export function ShopByCategory() {
               <div className="relative w-28 h-28 sm:w-36 sm:h-36 md:w-40 md:h-40 rounded-full overflow-hidden bg-[#EDE0CC]/40 border-2 border-[#DDD3C5]/60 shadow-sm flex items-center justify-center transition-all duration-300 group-hover:scale-105 group-hover:border-[#E6321C]/60 group-hover:shadow-md">
                 {category.imageUrl ? (
                   <img
-                    src={category.imageUrl}
+                    src={resolveImageUrl(category.imageUrl)}
                     alt={category.name}
+                    crossOrigin="anonymous"
                     className="w-full h-full object-cover object-center transition-transform duration-500 group-hover:scale-110"
                     onError={(e) => {
                       // Fallback gracefully if image fails to load

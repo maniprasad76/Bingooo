@@ -117,20 +117,20 @@ export function ProductCard({
             </div>
 
             {/* Top-Right Quick View & Wishlist Buttons */}
-            <div className="absolute top-2 right-2 sm:top-3.5 sm:right-3.5 flex flex-col gap-1.5 sm:gap-2 z-10">
+            <div className="absolute top-2 right-2 sm:top-3 sm:right-3 flex flex-col gap-1.5 z-10">
               <motion.button
                 whileHover={{ scale: 1.15 }}
                 whileTap={{ scale: 0.88 }}
                 onClick={handleWishlistToggle}
                 aria-label={inWishlist ? 'Remove from wishlist' : 'Save to wishlist'}
-                className="flex h-7 w-7 sm:h-9 sm:w-9 items-center justify-center rounded-full bg-white/90 shadow-sm backdrop-blur-md text-ink hover:text-brand-red"
+                className="flex h-7 w-7 sm:h-8 sm:w-8 items-center justify-center rounded-full bg-white/90 shadow-2xs backdrop-blur-md text-ink hover:text-brand-red"
               >
                 <motion.div
                   animate={inWishlist ? { scale: [1, 1.35, 1] } : { scale: 1 }}
                   transition={{ duration: 0.3 }}
                 >
                   <Heart
-                    size={14}
+                    size={13}
                     className={`transition-colors ${
                       inWishlist ? 'fill-brand-red text-brand-red' : 'text-muted hover:text-brand-red'
                     }`}
@@ -143,21 +143,21 @@ export function ProductCard({
                 whileTap={{ scale: 0.88 }}
                 onClick={handleQuickView}
                 aria-label="Quick preview"
-                className="hidden sm:flex h-9 w-9 items-center justify-center rounded-full bg-white/90 shadow-sm backdrop-blur-md opacity-0 translate-x-2 transition-all duration-300 group-hover:opacity-100 group-hover:translate-x-0 text-ink hover:text-brand-red"
+                className="hidden sm:flex h-8 w-8 items-center justify-center rounded-full bg-white/90 shadow-2xs backdrop-blur-md opacity-0 translate-x-2 transition-all duration-300 group-hover:opacity-100 group-hover:translate-x-0 text-ink hover:text-brand-red"
               >
-                <Eye size={16} />
+                <Eye size={14} />
               </motion.button>
             </div>
 
             {/* Bottom Floating Quick Actions on Hover (Desktop only) */}
-            <div className="hidden sm:flex absolute inset-x-4 bottom-4 z-10 gap-2 opacity-0 translate-y-3 transition-all duration-300 ease-out group-hover:opacity-100 group-hover:translate-y-0">
+            <div className="hidden sm:flex absolute inset-x-3.5 bottom-3.5 z-10 gap-1.5 opacity-0 translate-y-2 transition-all duration-300 ease-out group-hover:opacity-100 group-hover:translate-y-0">
               {customizationEnabled ? (
                 <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.97 }} className="flex-1 flex">
                   <Link
                     to={`/customize/${slug}`}
-                    className="w-full flex items-center justify-center gap-1.5 rounded-xl bg-[#171717] text-white py-2.5 text-xs font-sans font-bold uppercase tracking-wider shadow-lg hover:bg-[#E6321C] transition-colors"
+                    className="w-full flex items-center justify-center gap-1.5 rounded-lg bg-[#171717] text-white py-2 text-[11px] font-sans font-semibold uppercase tracking-wide shadow-md hover:bg-[#E6321C] transition-colors"
                   >
-                    <Sparkles size={13} />
+                    <Sparkles size={12} />
                     Design Studio
                   </Link>
                 </motion.div>
@@ -166,9 +166,9 @@ export function ProductCard({
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.97 }}
                   onClick={handleQuickAdd}
-                  className="flex-1 flex items-center justify-center gap-1.5 rounded-xl bg-[#171717] text-white py-2.5 text-xs font-sans font-bold uppercase tracking-wider shadow-lg hover:bg-[#E6321C] transition-colors"
+                  className="flex-1 flex items-center justify-center gap-1.5 rounded-lg bg-[#171717] text-white py-2 text-[11px] font-sans font-semibold uppercase tracking-wide shadow-md hover:bg-[#E6321C] transition-colors"
                 >
-                  <ShoppingBag size={13} />
+                  <ShoppingBag size={12} />
                   Quick Bag
                 </motion.button>
               )}
@@ -176,7 +176,7 @@ export function ProductCard({
           </div>
 
           {/* Product Meta & Color Swatches */}
-          <div className="p-3 sm:p-4 lg:p-5 flex flex-1 flex-col justify-between bg-white">
+          <div className="p-2.5 sm:p-4 lg:p-5 flex flex-1 flex-col justify-between bg-white">
             <div>
               <div className="flex items-center justify-between mb-1">
                 {category && (
@@ -184,7 +184,7 @@ export function ProductCard({
                     {category.name}
                   </span>
                 )}
-                <span className="text-[9px] sm:text-[10px] font-sans font-semibold text-[#6F6A63]/80">
+                <span className="text-[9px] sm:text-[10px] font-sans font-semibold text-[#6F6A63]/80 shrink-0">
                   220 GSM
                 </span>
               </div>
@@ -195,12 +195,12 @@ export function ProductCard({
                 </h3>
               </Link>
               {/* Scarcity / Essential Indicator */}
-              <div className="mt-1 flex items-center gap-1.5 text-[9px] sm:text-[10px] text-[#B91F12] font-semibold">
-                <span className="relative flex h-1.5 w-1.5">
+              <div className="mt-1 flex items-center gap-1.5 text-[9px] sm:text-[10px] text-[#B91F12] font-semibold truncate">
+                <span className="relative flex h-1.5 w-1.5 shrink-0">
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#E6321C] opacity-75"></span>
                   <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-[#E6321C]"></span>
                 </span>
-                <span>Essential • Few Left</span>
+                <span className="truncate">Essential • Few Left</span>
               </div>
             </div>
 

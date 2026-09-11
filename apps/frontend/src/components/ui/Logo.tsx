@@ -34,37 +34,37 @@ const typographySizes: Record<
   }
 > = {
   xs: {
-    text: 'text-xl',
+    text: 'text-xl tracking-[-0.07em]',
     sub: 'text-[6.5px]',
     subMargin: 'mt-0.5',
     subTracking: 'tracking-[0.15em]',
   },
   sm: {
-    text: 'text-2xl',
+    text: 'text-2xl tracking-[-0.07em]',
     sub: 'text-[7.5px]',
     subMargin: 'mt-0.5 sm:mt-1',
     subTracking: 'tracking-[0.15em]',
   },
   md: {
-    text: 'text-2xl sm:text-[28px]',
+    text: 'text-[clamp(25px,2.4vw,34px)] tracking-[-0.07em]',
     sub: 'text-[7.5px] sm:text-[9px]',
     subMargin: 'mt-0.5 sm:mt-1',
     subTracking: 'tracking-[0.16em]',
   },
   lg: {
-    text: 'text-3xl sm:text-4xl lg:text-[42px]',
+    text: 'text-3xl sm:text-4xl lg:text-[42px] tracking-[-0.07em]',
     sub: 'text-[9.5px] sm:text-[11.5px] lg:text-[12.5px]',
     subMargin: 'mt-1 sm:mt-1.5',
     subTracking: 'tracking-[0.16em]',
   },
   xl: {
-    text: 'text-4xl sm:text-5xl lg:text-6xl',
+    text: 'text-4xl sm:text-5xl lg:text-6xl tracking-[-0.07em]',
     sub: 'text-xs sm:text-[14px] lg:text-[16px]',
     subMargin: 'mt-1.5 sm:mt-2',
     subTracking: 'tracking-[0.17em]',
   },
   custom: {
-    text: 'text-2xl sm:text-3xl',
+    text: 'text-2xl sm:text-3xl tracking-[-0.07em]',
     sub: 'text-[8px] sm:text-[9px]',
     subMargin: 'mt-1',
     subTracking: 'tracking-[0.16em]',
@@ -128,7 +128,7 @@ export function Logo({
     >
       <div
         className={cn(
-          'font-heading font-black tracking-tighter uppercase leading-none',
+          'font-sans font-extrabold uppercase leading-none',
           config.text,
           textColor
         )}

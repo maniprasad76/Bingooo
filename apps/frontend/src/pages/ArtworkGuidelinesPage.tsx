@@ -91,9 +91,9 @@ export function ArtworkGuidelinesPage() {
 
             <Link
               to="/customize"
-              className="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl bg-[#E6321C] hover:bg-[#B91F12] text-white text-xs font-bold uppercase tracking-wider transition-colors shadow-xs shrink-0 self-start lg:self-auto"
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-[#E6321C] hover:bg-[#B91F12] text-white text-xs font-semibold uppercase tracking-wide transition-colors shadow-xs shrink-0 self-start lg:self-auto"
             >
-              <Sparkles size={15} />
+              <Sparkles size={14} />
               <span>Open 3D Studio & Upload</span>
             </Link>
           </div>

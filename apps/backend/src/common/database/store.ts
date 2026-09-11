@@ -4,6 +4,12 @@
 // ─────────────────────────────────────────────────────────
 
 import { v4 as uuidv4 } from 'uuid';
+import * as fs from 'fs';
+import * as path from 'path';
+
+const DATA_DIR = path.resolve(process.cwd(), 'data');
+const STORE_FILE = path.join(DATA_DIR, 'store.json');
+
 
 // ── Seed data matching supabase/seed.sql ────────────────
 
@@ -962,3 +968,30 @@ export const db = {
     },
   ] as any[],
 };
+
+export function saveDb() {
+  try {
+    if (!fs.existsSync(DATA_DIR)) {
+      fs.mkdirSync(DATA_DIR, { recursive: true });
+    }
+    fs.writeFileSync(STORE_FILE, JSON.stringify(db, null, 2), 'utf-8');
+  } catch (err) {
+    console.error('[Database] Failed to save store to disk:', err);
+  }
+}
+
+// Load persisted state from disk if available, otherwise initialize file
+try {
+  if (fs.existsSync(STORE_FILE)) {
+    const raw = fs.readFileSync(STORE_FILE, 'utf-8');
+    const parsed = JSON.parse(raw);
+    if (parsed && typeof parsed === 'object') {
+      Object.assign(db, parsed);
+    }
+  } else {
+    saveDb();
+  }
+} catch (err) {
+  console.error('[Database] Could not load persisted store.json, using in-memory seed:', err);
+}
+

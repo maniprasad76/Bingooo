@@ -4,7 +4,9 @@ import { Navbar } from './Navbar';
 import { MobileNav } from './MobileNav';
 import { Footer } from './Footer';
 import { CartDrawer } from '../cart/CartDrawer';
+import { SmartSearchModal } from '../search/SmartSearchModal';
 import { SocialFab } from '../ui/SocialFab';
+
 import { OfflineBanner } from '../common/OfflineBanner';
 import { ScrollProgressBar } from '../common/ScrollProgressBar';
 import { ScrollToTop } from '../common/ScrollToTop';
@@ -57,6 +59,7 @@ export function PageLayout() {
       <Footer />
       <MobileNav />
       <CartDrawer />
+      <SmartSearchModal />
       <SocialFab />
 
       {/* ─── PWA Mobile Installation Prompt (Web only) ─── */}

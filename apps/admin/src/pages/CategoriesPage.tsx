@@ -12,9 +12,10 @@ import {
   ArrowUpDown,
 } from 'lucide-react';
 import { api } from '../lib/api/client';
-import { titleToSlug } from '../lib/utils';
+import { titleToSlug, resolveImageUrl } from '../lib/utils';
 import { useToast } from '../components/ui/Toast';
 import { Modal } from '../components/ui/Modal';
+import { ImageUploadDropzone } from '../components/ui/ImageUploadDropzone';
 
 interface CategoryItem {
   id: string;
@@ -204,8 +205,9 @@ export function CategoriesPage() {
                 <div className="relative aspect-[16/9] w-full overflow-hidden bg-[#EDE0CC]">
                   {cat.imageUrl ? (
                     <img
-                      src={cat.imageUrl}
+                      src={resolveImageUrl(cat.imageUrl)}
                       alt={cat.name}
+                      crossOrigin="anonymous"
                       className="h-full w-full object-cover"
                     />
                   ) : (
@@ -311,17 +313,14 @@ export function CategoriesPage() {
             </div>
           </div>
 
-          <div>
-            <label className="block text-xs font-bold text-muted">
-              Header / Lookbook Image URL
-              <input
-                value={imageUrl}
-                onChange={(e) => setImageUrl(e.target.value)}
-                placeholder="https://images.unsplash.com/..."
-                className="input-admin mt-1 text-xs"
-              />
-            </label>
-          </div>
+          <ImageUploadDropzone
+            value={imageUrl}
+            onChange={setImageUrl}
+            label="Category Cover / Lookbook Image"
+            helperText="Drag & drop your category photo here or click to browse (PNG, JPG, WEBP up to 25MB)"
+            category="lookbook"
+            aspectRatio="wide"
+          />
 
           <div>
             <label className="block text-xs font-bold text-muted">

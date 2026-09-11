@@ -1,6 +1,7 @@
 import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { v4 as uuidv4 } from 'uuid';
-import { db } from '../common/database/store';
+import { db, saveDb } from '../common/database/store';
+
 
 @Injectable()
 export class CouponsService {
@@ -62,6 +63,7 @@ export class CouponsService {
       updated_at: new Date().toISOString(),
     };
     db.coupons.push(coupon);
+    saveDb();
     return coupon;
   }
 
@@ -70,6 +72,7 @@ export class CouponsService {
     if (!coupon) throw new NotFoundException({ code: 'COUPON_NOT_FOUND', message: 'Coupon not found' });
     coupon.is_active = !coupon.is_active;
     coupon.updated_at = new Date().toISOString();
+    saveDb();
     return coupon;
   }
 
@@ -77,7 +80,9 @@ export class CouponsService {
     const index = db.coupons.findIndex((c) => c.id === id);
     if (index === -1) throw new NotFoundException({ code: 'COUPON_NOT_FOUND', message: 'Coupon not found' });
     db.coupons.splice(index, 1);
+    saveDb();
     return { success: true, id };
   }
 }
+
 

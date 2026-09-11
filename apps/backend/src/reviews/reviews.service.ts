@@ -1,6 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { v4 as uuidv4 } from 'uuid';
-import { db } from '../common/database/store';
+import { db, saveDb } from '../common/database/store';
+
 
 @Injectable()
 export class ReviewsService {
@@ -107,12 +108,15 @@ export class ReviewsService {
     }
     review.status = status;
     review.updated_at = new Date().toISOString();
+    saveDb();
     return review;
   }
 
   /** Admin: delete review */
   delete(id: string) {
     db.reviews = db.reviews.filter((r) => r.id !== id);
+    saveDb();
     return { success: true, id };
   }
 }
+

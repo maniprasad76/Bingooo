@@ -17,6 +17,7 @@ import {
 } from 'lucide-react';
 import { useToast } from '../components/ui/Toast';
 import { api } from '../lib/api/client';
+import { ImageUploadDropzone } from '../components/ui/ImageUploadDropzone';
 
 export function SettingsPage() {
   const { toast } = useToast();
@@ -642,16 +643,14 @@ export function SettingsPage() {
                 </label>
               </div>
 
-              <div>
-                <label className="block text-xs font-bold text-muted">
-                  Open Graph Social Share Image URL
-                  <input
-                    value={ogImageUrl}
-                    onChange={(e) => setOgImageUrl(e.target.value)}
-                    className="input-admin mt-1 text-xs"
-                  />
-                </label>
-              </div>
+              <ImageUploadDropzone
+                value={ogImageUrl}
+                onChange={setOgImageUrl}
+                label="Open Graph Social Share Image"
+                helperText="Drag & drop 1200x630 social share preview image or click to browse"
+                category="banners"
+                aspectRatio="wide"
+              />
             </div>
           </div>
         )}

@@ -20,6 +20,8 @@ export {
   EmailIcon,
   YouTubeIcon,
   XTwitterIcon,
+  GoogleIcon,
+  FacebookIcon,
   BINGOOO_PHONE_DISPLAY,
   BINGOOO_PHONE_RAW,
   BINGOOO_EMAIL_SUPPORT,
@@ -27,3 +29,4 @@ export {
   BINGOOO_INSTAGRAM_URL,
   getWhatsAppUrl,
 } from './SocialIcons';
+

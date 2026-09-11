@@ -1,837 +1,289 @@
-# Bingooo --- Complete Design System & UI/UX Specification
+# BINGOOO — Complete Design System & UI/UX Specification
 
-**Product:** Bingooo Men's Wear\
-**Core promise:** **Wear what feels like you.**\
-**Secondary message:** **Create. Customize. Wear.**
+> **Product:** BINGOOO Men's Wear (bingooo.in)  
+> **Brand Slogan:** **Wear What Defines You.**  
+> **Mission Statement:** **Clothing. Custom. Culture. You.**  
+> **Version:** 2.0 (Latest — Unified with Home Page Minimalist Architecture)
 
-## 1. Design North Star
+---
 
-Bingooo must feel like a real premium men's fashion brand, not a generic
-ecommerce template. Every customer and admin screen must use one shared
-design system.
+## 1. Design North Star & Brand Aesthetic
 
-Brand personality: modern, confident, youthful, premium, expressive,
-minimal, streetwear-inspired.
+Bingooo is an elevated Indian menswear and custom apparel label built on **warm minimalism, editorial fashion photography, and streetwear confidence**. It rejects generic, cluttered ecommerce templates in favor of a timeless, high-fashion editorial presence.
 
-Principles: - Product first - Warm minimalism - Bingooo red used
-strategically - Editorial photography - Clear Shop and Custom Design
-journeys - Consistency over novelty - Mobile-first responsive UX -
-Accessible controls - No AI-slop aesthetics
+### Core Aesthetic Pillars
+- **Warm Minimalism:** Organic, warm cream canvas (`#F7EEDB`) and soft beige (`#EDE0CC`) rather than sterile hospital-white or generic grey.
+- **Strategic Red Accent:** Signature Bingooo Red (`#E6321C`) is used strictly with surgical precision — on the logo period dot, the focal headline phrase (`A YOU.`), active tabs, primary CTAs, and prices. Red is **never** used as a noisy full-screen background wash.
+- **Editorial Photography:** High-contrast grayscale or desaturated campaign imagery with gentle gradient blends into the cream background.
+- **Strong Brutalist-Inspired Typography:** Extra-bold uppercase headlines in **Manrope** with tight tracking (`-0.06em` to `-0.075em`) and condensed line heights (`0.72` to `0.90`).
+- **No AI-Slop:** Clean lines, authentic product shots, minimal rounded corners (`2px` to `6px`), tactile borders, and zero gaudy neon gradients or generic dropshadows.
 
-## 2. Brand Identity
+---
 
-Use the supplied Bingooo logo as the source of truth. Never distort,
-stretch, recolor, redraw, or replace it.
+## 2. Brand Identity & Logo Specification
 
-Primary logo: Bingooo + MEN'S WEAR.\
-Secondary mark: stylized B.
+### Primary Wordmark
+The Bingooo brand identity is defined by the bold geometric wordmark featuring the signature **Red Dot**:
 
-Use the primary logo in the desktop header and packaging. Use the B mark
-for favicon, app icon and compact product branding.
+$$\mathbf{BINGOOO\color{#E6321C}.}$$
 
-## 3. Color System
+```tsx
+/* Exact JSX Implementation */
+<Link
+  to="/"
+  className="text-[clamp(25px,2.4vw,34px)] leading-none font-extrabold tracking-[-0.07em] whitespace-nowrap text-[#171717]"
+  aria-label="BINGOOO."
+>
+  BINGOOO<span className="text-[#E6321C]">.</span>
+</Link>
+```
 
-  Token        Hex         Usage
-  ------------ ----------- ------------------------------------------
-  Brand Red    `#E6321C`   Primary CTA, active state, price, accent
-  Deep Red     `#B91F12`   Hover, pressed and strong red surfaces
-  Warm Cream   `#F7EEDB`   Main page background
-  Soft Beige   `#EDE0CC`   Secondary surfaces
-  Charcoal     `#171717`   Primary text and dark sections
-  White        `#FFFFFF`   Cards and forms
-  Muted Text   `#6F6A63`   Secondary text
-  Border       `#DDD3C5`   Borders and dividers
+### Logo Rules
+1. **The Red Period:** The dot following "BINGOOO" is **always** `#E6321C` (Brand Red).
+2. **Wordmark Color:** The letters `BINGOOO` are `#171717` on light backgrounds (`#F7EEDB`, `#EDE0CC`, `#FFFFFF`) and `#FFFFFF` on dark backgrounds (`#171717`).
+3. **Typography:** Set in **Manrope**, weight **800 (ExtraBold)**, uppercase, with tracking set to **`-0.07em`** (tight).
+4. **Never Alter:** Never recolor the letters to red, never remove the red dot, never stretch, skew, outline, or add drop shadows to the wordmark.
+5. **Secondary Icon Mark:** Stylized solid **B** monogram used strictly for app icons, favicons (`/favicon.png`), and compact brand tags.
 
-Semantic colors should be restrained: success `#238636`, warning
-`#B7791F`, error `#C62828`, info `#2563A6`.
+---
 
-Red should be an accent, not the dominant background.
+## 3. Minimalist Color Palette
 
-## 4. Typography
+The Bingooo color palette is simple, restrained, and authentic:
 
-Primary typeface: **Inter**. Fallback: system-ui, sans-serif.
+| Token | Hex Value | Role & Usage |
+| :--- | :--- | :--- |
+| **Warm Cream** | `#F7EEDB` | **Primary Canvas / Background** for storefront pages, hero sections, and editorial backgrounds. |
+| **Soft Beige** | `#EDE0CC` | **Secondary Surfaces:** Campaign promo cards, product card image backdrops, drawer panels, and secondary badges. |
+| **Charcoal Black** | `#171717` | **Primary Text & Dark Sections:** Primary headings, body copy, header navigation, primary buttons (`.btn-black`), and the dark Category Strip & Footer. |
+| **Brand Red** | `#E6321C` | **Accent & Focal Action:** Logo period dot, `A YOU.` punchline, active category filters, primary red CTAs, sale tags, and wishlist heart. |
+| **Deep Red** | `#B91F12` | **Hover & Active State:** Hover color for red buttons, links, and focused elements. |
+| **Pure White** | `#FFFFFF` | **Card & Form Surfaces:** Search inputs, newsletter inputs, wishlist buttons, and modal dialogs. |
+| **Muted Grey** | `#6F6A63` | **Secondary Copy:** Subtitles, product descriptions, breadcrumbs, timestamp tags, and helper copy. |
+| **Warm Border** | `#DDD3C5` | **Dividers & Structural Rules:** Clean 1px border rules between grid items, table rows, and trust bars. |
 
-  Style          Desktop   Mobile   Weight
-  ------------ --------- -------- --------
-  Display XL        64px     40px      800
-  Display           52px     36px      800
-  H1                42px     32px      700
-  H2                32px     26px      700
-  H3                24px     21px      650
-  H4                20px     18px      600
-  Body Large        18px     17px      400
-  Body              16px     15px      400
-  Small             14px     13px      400
-  Label             13px     12px      600
-  Price             20px     18px      700
+### Semantic Colors
+- **Success:** `#238636` (Order placed, verified stock, green status)
+- **Warning:** `#B7791F` (Low stock alert, pending verification)
+- **Error:** `#C62828` (Form validation failure, payment declined)
 
-Do not change fonts between pages or between storefront and admin.
+---
 
-## 5. Spacing
+## 4. Typography Hierarchy
 
-Use an 8px spacing system:
+**Primary Font Family:** `Manrope, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif`  
+**Secondary Monospace (for codes, SKUs & counters):** `IBM Plex Mono, monospace`
 
-`4, 8, 12, 16, 24, 32, 40, 48, 64, 80, 96, 128px`.
+```css
+/* Google Fonts Import */
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@500;600&display=swap');
+```
 
-## 6. Layout
+### Typographic Scale
 
-Desktop maximum content width: 1280--1440px, preferred 1320px.
+| Role | Font Weight | Size Scale | Tracking | Line Height | Usage Example |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| **Giant Display** | 800 (ExtraBold) | `clamp(55px, 13vw, 105px)` | `-0.075em` | `0.85` | Homepage Hero: `NOT JUST CLOTHES. A YOU.` |
+| **Section H1 / H2** | 800 (ExtraBold) | `clamp(36px, 5vw, 64px)` | `-0.06em` | `0.90` | `FEATURED COLLECTION`, `YOUR IDEA. OUR CANVAS.` |
+| **Card / Subhead** | 700 (Bold) | `18px – 24px` | `-0.03em` | `1.1` | Category Strip titles (`MEN`, `WOMEN`), FAQ questions |
+| **Eyebrow / Kicker**| 800 (ExtraBold) | `9px – 11px` | `+0.18em` to `+0.34em` | `1.7` | `CLOTHING CUSTOM CULTURE YOU`, `NEW DROP`, `EST. 2026` |
+| **Body Primary** | 500 / 600 | `13px – 14px` | `normal` | `1.6` | Product descriptions, campaign body copy |
+| **Body Secondary**| 400 / 500 | `11px – 12px` | `normal` | `1.5` | Footnotes, support details, accordion answers |
+| **Caption / Meta** | 700 / 800 | `9px – 10px` | `+0.1em` | `1.4` | Badges, size swatches, trust bar subtitles |
 
-Desktop padding: 32--48px.\
-Tablet padding: 24px.\
-Mobile padding: 16--20px.
+---
 
-Product grids: - Desktop: 4 columns - Tablet: 2--3 columns - Mobile: 2
-columns where appropriate
+## 5. Home Page Architecture & Section Blueprint
 
-Use a 12-column editorial grid for marketing sections.
+The Home Page (`HomePage.tsx`) serves as the design master blueprint for the entire Bingooo storefront:
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│ 1. TOP ANNOUNCEMENT BAR                                     │
+│    FREE DELIVERY ON ORDERS ABOVE ₹999  | TRACK | APP | HELP │
+├─────────────────────────────────────────────────────────────┤
+│ 2. GLOBAL NAVBAR                                            │
+│    [MEN WOMEN CUSTOM COLLECTIONS ABOUT]  BINGOOO. [SEARCH]  │
+├─────────────────────────────────────────────────────────────┤
+│ 3. HERO SECTION (Split Grid)                                │
+│    Left: Eyebrow + NOT JUST CLOTHES. A YOU. + Shop CTA      │
+│    Right: Grayscale Editorial Campaign Blend + EST. 2026    │
+├─────────────────────────────────────────────────────────────┤
+│ 4. CATEGORY STRIP (Solid #171717)                           │
+│    [ MEN ] ───────────────────────── [ WOMEN ] (thumbnails) │
+├─────────────────────────────────────────────────────────────┤
+│ 5. FEATURED COLLECTION (4-Col Grid)                         │
+│    Clean 4:5 Cards + Wishlist Pill + Swatches + Price       │
+├─────────────────────────────────────────────────────────────┤
+│ 6. CUSTOM STUDIO CAMPAIGN (Split Beige #EDE0CC)             │
+│    Artisan Photo | YOUR IDEA. OUR CANVAS. | START CREATING  │
+├─────────────────────────────────────────────────────────────┤
+│ 7. TRUST & VALUE BAR (4-Col Divider Grid)                   │
+│    Free Delivery | Easy Returns | Premium Quality | Payment │
+├─────────────────────────────────────────────────────────────┤
+│ 8. SOCIAL PROOF & COMMUNITY (@BINGOOO)                      │
+│    REAL PEOPLE. REAL FITS. + 6 UGC Instagram Fit Photos     │
+├─────────────────────────────────────────────────────────────┤
+│ 9. NEWSLETTER SUBSCRIPTION (Minimalist)                     │
+│    GET THE NEXT DROP. + Clean Input + SUBSCRIBE →           │
+├─────────────────────────────────────────────────────────────┤
+│ 10. GLOBAL FOOTER (Solid #171717)                           │
+│     BINGOOO. | Links | Atelier Coordinates | Copyright      │
+└─────────────────────────────────────────────────────────────┘
+```
+
+### Detailed Section Specs
+
+#### 1. Hero Section
+- **Background:** `#F7EEDB`
+- **Left Copy Box:**
+  - 4-line stacked uppercase eyebrow: `CLOTHING / CUSTOM / CULTURE / YOU` with `text-[#171717]` and tracking `0.18em`.
+  - Massive 3-line headline:
+    - Line 1: `NOT JUST`
+    - Line 2: `CLOTHES.`
+    - Line 3: `<span className="text-[#E6321C]">A YOU.</span>`
+  - Subtitle: `WEAR WHAT DEFINES YOU.` (`11px`, `tracking-[0.34em]`, `font-semibold`).
+  - Action buttons: `.btn-black` (`SHOP NOW →`) paired with clean `.text-link` (`CREATE YOUR OWN`).
+- **Right Image Overlay:**
+  - High-fashion campaign model photo in pure grayscale.
+  - Smooth editorial gradient overlay (`from-[#F7EEDB] via-[#F7EEDB]/20 to-transparent`) creating a seamless fade into the cream canvas.
+  - Editorial coordinates tag in top right: `EST. 2026 / INDIA` with a `28px` fine divider line.
+
+#### 2. Dark Category Strip
+- **Background:** `#171717` (Deep Charcoal Black), text `#FFFFFF`.
+- **Layout:** 2-column responsive grid (`grid-cols-1 md:grid-cols-2`) with `1px` border (`border-white/15`).
+- **Cards:** Includes a `120x120px` grayscale thumbnail, uppercase heading (`MEN`, `WOMEN`), subline (`Everyday fits for every you` / `Style that moves with you`), and an underlined white link that hovers to `#E6321C`.
+
+#### 3. Featured Products Grid
+- **Aspect Ratio:** `4/5` clean portrait aspect ratio for product photography.
+- **Card Background:** Soft beige `#EDE0CC`.
+- **Floating Wishlist Button:** Circular white button (`31x31px`), border `#DDD3C5`, toggles solid `#E6321C` heart (`♥`).
+- **Details:** Product name (`12px`, font-semibold), price (`14px`, font-bold, `#171717`), and miniature circular color swatches (`13x13px`, border `#DDD3C5`).
+
+#### 4. Custom Studio Campaign
+- **Background:** Soft beige `#EDE0CC`.
+- **Layout:** 50/50 split banner.
+- **Content:** Tailoring / printmaking workshop photo + Headline: `YOUR IDEA. OUR CANVAS.` + Primary Red Button: `START CREATING →` (`.btn-red`).
+
+#### 5. Minimalist Trust Bar
+- **Background:** `#F9F5ED` with `1px` border top and bottom (`#DDD3C5`).
+- **Items:** 4 columns with subtle monochrome glyphs/SVGs:
+  1. *Free Delivery* — On orders above ₹999
+  2. *Easy Returns* — Within 15 days
+  3. *Premium Quality* — Made to last
+  4. *Secure Payment* — 100% safe & secure
+
+#### 6. Social Community (@BINGOOO)
+- **Headline:** `REAL PEOPLE. REAL FITS.`
+- **Grid:** 6 square tiles showing real customers in Bingooo apparel, grayscale by default, zooming smoothly on hover (`hover:scale-105`).
+
+#### 7. Newsletter Section
+- **Background:** Warm cream `#F7EEDB`.
+- **Form:** Ultra-minimalist inline form (`48px` height) with white input, 1px border `#DDD3C5`, and solid black `.btn-black` (`SUBSCRIBE →`).
+
+---
+
+## 6. UI Components & Reusable Styles
+
+All pages must reuse these canonical button and element tokens defined in `index.css`:
+
+### Buttons
+
+```css
+/* 1. Primary Solid Black Button */
+.btn-black {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 48px;
+  padding: 0 28px;
+  background-color: #171717;
+  color: #FFFFFF;
+  font-family: 'Manrope', sans-serif;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  border-radius: 2px;
+  border: 1px solid #171717;
+  transition: all 0.2s ease;
+}
+.btn-black:hover {
+  background-color: #E6321C;
+  border-color: #E6321C;
+  color: #FFFFFF;
+}
+
+/* 2. Brand Red Action Button */
+.btn-red {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 48px;
+  padding: 0 28px;
+  background-color: #E6321C;
+  color: #FFFFFF;
+  font-family: 'Manrope', sans-serif;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  border-radius: 2px;
+  border: 1px solid #E6321C;
+  transition: all 0.2s ease;
+}
+.btn-red:hover {
+  background-color: #B91F12;
+  border-color: #B91F12;
+}
+
+/* 3. Minimalist Text Link */
+.text-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: 'Manrope', sans-serif;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #171717;
+  border-bottom: 1px solid #171717;
+  padding-bottom: 2px;
+  transition: all 0.2s ease;
+}
+.text-link:hover {
+  color: #E6321C;
+  border-color: #E6321C;
+}
+```
+
+### Form Inputs & Search Fields
+- **Background:** `#FFFFFF` or `rgba(255, 255, 255, 0.35)` on cream surfaces.
+- **Border:** `1px solid #DDD3C5`.
+- **Focus State:** `border-color: #171717` or `outline: 2px solid #E6321C`.
+- **Corner Radius:** `2px` (sharp, architectural).
+- **Placeholder:** `#8C867E`.
+
+---
 
 ## 7. Responsive Breakpoints
 
--   Mobile: `<640px`
--   Tablet: `640–1023px`
--   Desktop: `1024–1279px`
--   Wide: `>=1280px`
-
-Mobile must use dedicated layouts, not simply compressed desktop
-layouts.
-
-## 8. Radius, Borders and Shadows
-
-Radius: - Small: 6px - Medium: 10px - Large: 14px - XL: 18px - Pill:
-999px only where appropriate
-
-Default border: `1px solid #DDD3C5`.
-
-Focus ring: `2px solid #E6321C`.
-
-Use subtle elevation only. Avoid dramatic shadows.
-
-## 9. Buttons
-
-Primary: Bingooo red, white text, 10px radius, 44--48px minimum height,
-600 weight.
-
-Secondary: transparent/white surface, red border and red text.
-
-Tertiary: text action.
-
-Every button supports default, hover, focus, pressed, disabled and
-loading states.
-
-## 10. Forms
-
-All inputs, selects, checkboxes, radios and textareas use one consistent
-component system.
-
-States: - default - focused - filled - error - disabled - loading
-
-Errors appear directly below the relevant field.
-
-## 11. Iconography
-
-Use one consistent professional line-icon family with 1.5--2px stroke.
-
-Core icons: search, user, heart, cart, menu, close, chevron, filter,
-sort, home, categories, upload, edit, eye, package, truck, shield,
-payment, support and settings.
-
-## 12. Photography
-
-Photography must feel editorial, natural, premium and contemporary.
-
-Preferred environments: - warm architecture - textured beige walls -
-minimal studios - clean urban locations - natural sunlight - directional
-shadows - subtle red accents
-
-Use realistic garment texture and natural poses. Avoid obvious AI
-artifacts.
-
-Hero images must reserve negative space for HTML copy. Important website
-text must never be baked into images.
-
-Product images must use consistent aspect ratio, lighting, crop and
-background family.
-
-## 13. Global Header
-
-Desktop:
-
-`Bingooo Logo | Home | Shop | Custom Design | Categories | About Us | Contact | Search | Account | Wishlist | Cart`
-
-Use a cream/white surface and red active state.
-
-Mobile:
-
-`Menu | Bingooo | Search | Cart`
-
-## 14. Hamburger Drawer
-
-Mobile drawer includes: 1. Home 2. Shop 3. Custom Design 4. Categories
-5. Wishlist 6. Cart 7. My Account 8. My Orders 9. My Designs 10. About
-Us 11. Contact Us 12. FAQ 13. Privacy Policy 14. Terms & Conditions 15.
-Logout when authenticated
-
-Include support and social links.
-
-## 15. Footer
-
-Columns: - Shop - Customer Care - My Account - Legal - Contact
-
-Include Bingooo brand statement, social icons and business contact
-information.
-
-## 16. Customer Routes
-
-``` text
-/
-/landing
-/shop
-/search
-/category/:slug
-/product/:slug
-/custom
-/custom/design
-/cart
-/wishlist
-/checkout
-/checkout/payment
-/order-success/:id
-/login
-/register
-/forgot-password
-/reset-password
-/verify-otp
-/account
-/account/orders
-/account/orders/:id
-/account/orders/:id/track
-/account/orders/:id/review
-/account/designs
-/account/addresses
-/about
-/contact
-/faq
-/shipping-policy
-/returns-refunds
-/cancellation-policy
-/privacy-policy
-/terms
-/404
-```
-
-## 17. Homepage / Landing Page
-
-Sections: 1. Hero 2. Trust strip 3. Shop by Category 4. Create.
-Customize. Wear. 5. New Arrivals 6. Best Sellers 7. Why Bingooo? 8.
-Brand Story 9. Community Reviews 10. Promotional CTA 11. Newsletter 12.
-Footer
-
-Hero copy: **Wear what feels like you.**
-
-CTAs: **Shop Men's Wear** **Create Your Design**
-
-The hero must communicate clothing + personality + customization.
-
-## 18. Shop
-
-Include: - breadcrumbs - page title - category shortcuts - filters -
-sort - grid/list toggle - product grid - pagination/infinite loading -
-mobile filter drawer
-
-Filters: - category - size - color - price - availability - collection
-
-## 19. Search
-
-Route: `/search?q=...`
-
-Show query, result count, suggestions, filters, sorting and products.
-
-No-result state must offer a useful next action.
-
-## 20. Category
-
-Route: `/category/:slug`.
-
-Use the same shop system with a category-specific editorial
-introduction.
-
-## 21. Product Card
-
-Anatomy:
-
-``` text
-Image
-Badge + Wishlist
-Product name
-Fabric/GSM
-Price
-Color swatches
-```
-
-States: default, hover, loading, sale, bestseller, new, out-of-stock.
-
-## 22. Product Details
-
-Desktop: gallery left, purchase panel right.\
-Mobile: gallery first and sticky purchase action.
-
-Include: - image gallery - zoom - title - rating - price - sale price -
-size - size guide - color - quantity - wishlist - Add to Cart - Buy
-Now - delivery estimate - COD/partial COD - fabric - GSM - description -
-specifications - reviews - related products
-
-## 23. Custom Design
-
-This is a core Bingooo differentiator.
-
-Workflow:
-
-`Choose Product → Choose Color → Upload → Position/Scale/Rotate → Select Print Area → Preview → Validate → Add to Cart`
-
-Controls: - upload - drag - resize - rotate - delete - undo/redo -
-front/back - print area - zoom - reset
-
-Validate file type, size and dimensions.
-
-Show a realistic garment preview whenever possible.
-
-## 24. My Designs
-
-Route: `/account/designs`.
-
-Users can view, rename, edit, reuse and delete designs.
-
-Actions: - Edit - Use Design - Delete
-
-## 25. Cart
-
-Show products, variants, quantity, price, remove/save actions and order
-summary.
-
-Summary: - subtotal - discount - shipping - applicable COD/handling -
-total
-
-Primary CTA: Proceed to Checkout.
-
-## 26. Wishlist
-
-Show saved products, availability, price, Add to Cart and remove.
-
-## 27. Checkout
-
-Progressive sections: 1. Contact 2. Address 3. Delivery 4. Payment 5.
-Review
-
-Payment methods can include Razorpay-supported methods, COD and partial
-COD.
-
-Never expose secret payment credentials in the browser.
-
-## 28. Payment States
-
-Provide: - processing - success - failed - cancelled
-
-Failed payment must offer retry and payment-method change.
-
-## 29. Order Success
-
-Route: `/order-success/:id`.
-
-Show success, order number, payment status, amount, delivery estimate,
-address summary, Track Order, Continue Shopping and View Order.
-
-## 30. Order Tracking
-
-Timeline:
-
-`Order Placed → Confirmed → Processing → Shipped → Out for Delivery → Delivered`
-
-Completed/current states use red; future states remain neutral.
-
-## 31. Account
-
-Sections: - Profile - Orders - Wishlist - My Designs - Addresses -
-Payment preferences - Security - Logout
-
-## 32. Addresses
-
-Fields: - full name - phone - address - city - state - postal code -
-landmark - address type - default
-
-Actions: add, edit, delete, set default.
-
-## 33. Reviews
-
-Customer can submit: - rating - optional title - text - product images
-
-## 34. About
-
-Tell the Bingooo story through editorial sections covering: - why
-Bingooo exists - men's fashion philosophy - customization - quality -
-self-expression - future vision
-
-## 35. Contact
-
-Include contact form, WhatsApp/support CTA, support information and FAQ
-link.
-
-## 36. FAQ and Legal
-
-Required: - FAQ - Shipping Policy - Returns & Refunds - Cancellation
-Policy - Privacy Policy - Terms & Conditions
-
-Use simple readable layouts with the same header/footer.
-
-## 37. Admin Design
-
-Admin should feel like Bingooo but prioritize information density.
-
-Use cream backgrounds, white cards, charcoal text, red actions, compact
-tables and the same Inter typography.
-
-Never use a generic blue/purple SaaS dashboard.
-
-## 38. Admin Routes
-
-``` text
-/admin/login
-/admin
-/admin/products
-/admin/products/new
-/admin/products/:id/edit
-/admin/categories
-/admin/inventory
-/admin/orders
-/admin/orders/:id
-/admin/custom-orders
-/admin/custom-requirements
-/admin/uploads
-/admin/banners
-/admin/coupons
-/admin/discounts
-/admin/payments
-/admin/returns
-/admin/customers
-/admin/customers/:id
-/admin/reviews
-/admin/users
-/admin/roles
-/admin/notifications
-/admin/analytics
-/admin/audit-logs
-/admin/settings
-/admin/profile
-```
-
-## 39. Admin Dashboard
-
-Stats: - revenue - orders - customers - average order value - custom
-orders
-
-Also show sales chart, order status, low stock, recent orders, recent
-activity and quick actions.
-
-## 40. Admin Products
-
-Table: - image - product - SKU - category - price - stock - status -
-updated - actions
-
-Actions: view, edit, duplicate, archive/delete.
-
-## 41. Add/Edit Product
-
-Fields: - name - slug - description - category - subcategory - SKU -
-price - sale price - cost - inventory - sizes - colors - fabric - GSM -
-images - tags - featured/bestseller/new - SEO title - SEO description -
-status
-
-## 42. Inventory
-
-Show SKU, product, variant, current stock, reserved, available,
-low-stock threshold and status.
-
-Actions: adjust stock, history, bulk update.
-
-## 43. Categories
-
-Manage name, slug, image, description, ordering and active state.
-
-## 44. Orders
-
-Filters: - order number - customer - date - status - payment -
-fulfillment
-
-Statuses: Pending, Confirmed, Processing, Shipped, Out for Delivery,
-Delivered, Cancelled, Returned, Refunded.
-
-## 45. Custom Orders
-
-Show customer, order, garment, size, color, quantity, artwork, preview,
-placement, production status, payment status, shipping status and notes.
-
-Actions: approve, reject, request changes, download artwork, update
-production status.
-
-## 46. Custom Requirements
-
-Statuses: - New - Reviewing - Awaiting Customer - Approved - Rejected -
-Converted to Order
-
-Manage uploaded files, requirements, estimates and internal notes.
-
-## 47. Uploads
-
-Media library for: - product images - customer uploads - custom
-designs - banners
-
-Provide search, filtering, preview and secure file actions.
-
-## 48. Banners
-
-Manage: - desktop image - mobile image - title - subtitle - CTA - target
-URL - priority - start/end date - active state
-
-## 49. Coupons
-
-Manage code, type, value, minimum order, maximum discount, usage limit,
-per-user limit, dates, eligible products/categories and active state.
-
-## 50. Discounts
-
-Manage product/category discounts, value, schedule, priority,
-stackability and status.
-
-## 51. Payments
-
-Show: - transaction ID - Razorpay payment ID - order ID - customer -
-amount - method - status - refund status - timestamp
-
-Statuses: Created, Pending, Paid, Failed, Refunded, Partially Refunded.
-
-## 52. Returns & Refunds
-
-Workflow:
-
-`Request → Review → Approve/Reject → Pickup/Return → Inspect → Refund → Complete`
-
-## 53. Customers
-
-Show customer, contact, order count, total spent, last order, status and
-creation date.
-
-Customer detail: - profile - addresses - orders - payments - custom
-orders - reviews - activity
-
-## 54. Reviews Admin
-
-Moderation: - pending - approved - rejected
-
-Actions: - approve - reject - remove
-
-## 55. Users & Roles
-
-Roles: - Super Admin - Admin - Product Manager - Order Manager -
-Customer Support
-
-Use granular backend-enforced permissions.
-
-Examples: `products.read`, `products.create`, `products.update`,
-`products.delete`, `orders.read`, `orders.update`, `payments.read`,
-`refunds.manage`, `users.manage`, `roles.manage`, `settings.manage`.
-
-## 56. Notifications
-
-Support order, payment, custom design and stock events. Channels may
-include in-app, email and WhatsApp/SMS where integrated.
-
-## 57. Analytics
-
-Show: - sales - revenue - orders - average order value - top products -
-category performance - custom-order performance - customer growth
-
-## 58. Audit Logs
-
-Record admin, action, resource, resource ID, timestamp and relevant
-metadata for sensitive operations.
-
-## 59. Settings
-
-Sections: - Store - Commerce - Shipping - COD - Partial COD - Payments -
-Notifications - Storage - SEO
-
-Settings must be permission protected.
-
-## 60. Admin Profile
-
-Include name, email, avatar, password/security, sessions and logout.
-
-## 61. Reusable Components
-
-Build once and reuse everywhere:
-
--   Header
--   Mobile Header
--   Footer
--   Navigation
--   Search
--   ProductCard
--   ProductGrid
--   ProductGallery
--   PriceDisplay
--   Rating
--   WishlistButton
--   QuantitySelector
--   SizeSelector
--   ColorSelector
--   FilterSidebar
--   MobileFilterDrawer
--   Breadcrumb
--   Button
--   Input
--   Select
--   Checkbox
--   Radio
--   Modal
--   Drawer
--   Toast
--   Badge
--   Tabs
--   Accordion
--   Pagination
--   EmptyState
--   LoadingState
--   ErrorState
--   ConfirmationDialog
--   ImageUploader
--   FileUploader
--   DataTable
--   AdminSidebar
--   AdminHeader
--   StatusBadge
--   StatCard
--   OrderTimeline
--   AddressCard
--   CouponInput
-
-## 62. Loading, Empty and Error States
-
-Every asynchronous page requires loading, empty, error and success
-states.
-
-Use skeletons that match final component dimensions.
-
-Never show raw stack traces.
-
-## 63. System States
-
-Design: - 404 - 500 - offline/network error - payment failed - payment
-cancelled - session expired - out of stock - empty cart - empty
-wishlist - empty orders - empty designs - empty search - no products -
-no customers - no reviews
-
-## 64. Accessibility
-
-Target WCAG 2.2 AA where practical.
-
-Requirements: - semantic HTML - keyboard navigation - visible focus -
-labels - alt text - sufficient contrast - logical headings - accessible
-dialogs/drawers - Escape support - screen-reader names - reduced-motion
-support - no color-only status communication
-
-## 65. Motion
-
-Use restrained motion: - 150--250ms micro interactions - 250--400ms
-drawers/modals - subtle image hover scale - gentle state transitions
-
-Respect `prefers-reduced-motion`.
-
-## 66. SEO
-
-Every public page should support: - title - meta description - canonical
-URL - Open Graph metadata - social image - descriptive image alt text
-
-Product pages should expose appropriate structured product metadata.
-
-## 67. Performance
-
-Prioritize: - optimized responsive images - lazy loading below fold -
-modern image formats - reserved image dimensions - minimized layout
-shift - code splitting - separate admin/public bundles where
-appropriate - caching catalog data
-
-## 68. Technical Integration
-
-Frontend: React + TypeScript.
-
-Backend: NestJS + TypeScript + REST APIs.
-
-Database: Supabase PostgreSQL.
-
-Authentication: Supabase Auth with backend authorization/RBAC.
-
-Storage: Cloudflare R2.
-
-Payments: Razorpay with server-side verification and verified webhooks.
-
-Security: - no secrets in frontend - environment variables - server-side
-validation - secure upload handling - MIME and size validation - signed
-URLs when required - webhook verification - authorization guards - rate
-limiting where appropriate - audit logging
-
-## 69. Core Data Entities
-
-``` text
-users
-roles
-permissions
-user_roles
-products
-product_images
-product_variants
-categories
-inventory
-inventory_transactions
-carts
-cart_items
-wishlists
-wishlist_items
-addresses
-orders
-order_items
-payments
-refunds
-coupons
-discounts
-custom_designs
-custom_orders
-custom_requirements
-uploads
-banners
-reviews
-notifications
-audit_logs
-```
-
-## 70. Customer Journeys
-
-Standard:
-
-`Landing → Discover → Shop/Category → Product → Cart → Checkout → Payment → Order Success → Track Order → Review`
-
-Customization:
-
-`Landing → Custom Design → Choose Garment → Upload → Customize → Preview → Cart → Checkout → Order`
-
-Brand story:
-
-`Discover → Create → Customize → Preview → Wear`
-
-## 71. Content Rules
-
-Preferred language: - Wear what feels like you. - Create. Customize.
-Wear. - Premium fits. Your vibe. - Made for your style. - Your idea.
-Your garment.
-
-Avoid generic ecommerce filler, fake urgency, fake reviews and
-unsupported claims.
-
-Product copy should state useful facts such as fabric, GSM, fit, care,
-sizing, print details and delivery.
-
-## 72. Trust Signals
-
-Use only verified business claims, such as: - Premium Quality - Custom
-Printing - Secure Payments - 3--7 Day Delivery - COD / Partial COD -
-Easy Support / Returns
-
-## 73. Mobile Rules
-
-Mobile navigation uses hamburger drawer.
-
-Shop uses filter/sort drawers.
-
-Product pages use sticky purchase actions.
-
-Checkout uses stacked sections and collapsible summary.
-
-Product grids may use two columns.
-
-No horizontal overflow.
-
-## 74. Design Token Architecture
-
-Centralize tokens:
-
-``` text
-colors.brand.red
-colors.brand.redDark
-colors.surface.cream
-colors.surface.beige
-colors.surface.white
-colors.text.primary
-colors.text.muted
-colors.border.default
-
-font.family.sans
-font.size.display
-font.size.h1
-font.size.body
-font.weight.regular
-font.weight.medium
-font.weight.semibold
-font.weight.bold
-
-space.*
-radius.*
-shadow.*
-breakpoint.*
-```
-
-No page should create its own visual system.
-
-## 75. Final Consistency Rules
-
-Non-negotiable: - one typography system - one color system - one button
-system - one form system - one card system - one icon family - one
-spacing system - one radius system - one responsive breakpoint system -
-one product-card system - one navigation system
-
-Do not create independent page-specific visual languages.
-
-## 76. Acceptance Criteria
-
-Visual: - all pages use Bingooo palette - all pages use Inter - shared
-spacing/radius/buttons - correct logo usage - consistent photography
-
-UX: - primary CTAs work - forms validate - async actions have loading
-states - collections have empty states - failures have recovery - mobile
-navigation works - checkout is usable on mobile
-
-Technical: - secrets remain server-side - backend enforces
-authorization - uploads are validated - R2 assets are secure - Razorpay
-verification is server-side - webhooks are verified - sensitive admin
-actions are audited
-
-## 77. Final Brand Experience
-
-Bingooo is a premium men's fashion brand where customers discover
-clothing, express their identity and create their own designs.
-
-The experience should communicate:
-
-**SEE IT → WANT IT → MAKE IT YOURS → BUY IT → WEAR IT**
-
-The visual identity is:
-
-**Warm cream + beige + charcoal + Bingooo red + Inter + editorial
-photography + restrained modern UI.**
-
-The product identity is:
-
-**Men's Wear + Customization + Personal Expression.**
-
-The single most important implementation rule is:
-
-> Build one Bingooo Design System and make every page consume that
-> system.
+| Breakpoint | Width | Layout Adjustments |
+| :--- | :--- | :--- |
+| **Desktop** | `> 1024px` | Full split grids, 4-column product grids, sidebars intact. |
+| **Tablet** | `768px – 1023px` | 2-column product grids, category sidebar tightens to 220px, 2-column service strip. |
+| **Mobile** | `< 767px` | 1-column layouts, category filters become horizontal scrollable strips (`overflow-x: auto`), hero scales down with clamp, fixed mobile bottom navigation bar (`68px`). |
+
+---
+
+## 8. Anti-Slop Rules & Quality Checklist
+
+Before shipping any page, verify:
+- [x] Background is warm cream `#F7EEDB` or soft beige `#EDE0CC` (no generic cold white `#F8FAFC`).
+- [x] Logo uses `BINGOOO<span className="text-[#E6321C]">.</span>` with font-extrabold and tight letter spacing.
+- [x] Headings use **Manrope**, tight tracking (`-0.06em`), and uppercase styling.
+- [x] Red is an accent and never the whole background.
+- [x] Campaign images use grayscale or warm desaturated tone for editorial elegance.
+- [x] Buttons follow `.btn-black` (hover red) or `.btn-red` (hover deep red).
+- [x] Zero build warnings or unused variables (`tsc -b`).

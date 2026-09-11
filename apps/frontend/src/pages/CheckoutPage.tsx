@@ -389,12 +389,39 @@ export function CheckoutPage() {
       />
       <h1 className="sr-only">Secure Checkout</h1>
       <div className="container-page">
-        <div className="mb-6 flex items-center justify-between border-b border-border pb-4">
+        <div className="mb-4 sm:mb-6 flex items-center justify-between border-b border-border pb-4">
           <Logo variant="red" size="md" />
           <div className="flex items-center gap-2 text-caption text-muted">
             <Lock size={14} className="text-accent" />
-            <span>256-Bit SSL Encrypted</span>
+            <span className="text-xs">256-Bit SSL Encrypted</span>
           </div>
+        </div>
+
+        {/* Responsive Checkout Stepper: Desktop / Tablet */}
+        <nav aria-label="Checkout Progress" className="hidden sm:flex items-center justify-center gap-4 py-3 mb-6 border-b border-border/80">
+          <div className="flex items-center gap-2 text-xs font-bold text-ink">
+            <span className="flex h-5 w-5 items-center justify-center rounded-full bg-[#238636]/15 text-[#238636] text-[10px] font-bold">✓</span>
+            <span>1. BAG</span>
+          </div>
+          <span className="h-px w-8 bg-border" />
+          <div className="flex items-center gap-2 text-xs font-bold text-accent">
+            <span className="flex h-5 w-5 items-center justify-center rounded-full bg-accent text-white text-[10px] font-bold shadow-xs">2</span>
+            <span>2. SHIPPING &amp; PAYMENT</span>
+          </div>
+          <span className="h-px w-8 bg-border" />
+          <div className="flex items-center gap-2 text-xs font-semibold text-muted/60">
+            <span className="flex h-5 w-5 items-center justify-center rounded-full bg-border/60 text-muted text-[10px] font-bold">3</span>
+            <span>3. CONFIRMATION</span>
+          </div>
+        </nav>
+
+        {/* Responsive Checkout Stepper: Compact Mobile (<640px) */}
+        <div className="sm:hidden mb-4 py-2 px-3 rounded-lg bg-white border border-border flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <span className="flex h-5 w-5 items-center justify-center rounded-full bg-accent text-white text-[10px] font-bold shadow-xs">2</span>
+            <span className="text-[11px] font-bold text-ink uppercase tracking-wider">Step 2 of 3: Shipping &amp; Payment</span>
+          </div>
+          <span className="text-[10px] font-mono font-semibold text-muted">NEXT: CONFIRM</span>
         </div>
 
         {/* Mobile Collapsible Order Summary Accordion (lg:hidden) */}

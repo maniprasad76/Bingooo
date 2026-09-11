@@ -5,9 +5,7 @@ import {
   User,
   Heart,
   ShoppingBag,
-  Menu,
   X,
-  Truck,
   Sparkles,
   Package,
   ChevronRight,
@@ -29,11 +27,11 @@ import { WhatsAppIcon, getWhatsAppUrl } from '../ui/SocialIcons';
 import { triggerHaptic } from '../../lib/native/capacitorBridge';
 
 const navLinks = [
-  { label: 'HOME', href: '/' },
-  { label: 'SHOP', href: '/shop' },
-  { label: 'CUSTOM', href: '/customize' },
-  { label: 'ABOUT US', href: '/about' },
-  { label: 'CONTACT US', href: '/contact' },
+  { label: 'Men', href: '/shop?category=men' },
+  { label: 'Women', href: '/shop?category=women' },
+  { label: 'Custom', href: '/customize' },
+  { label: 'Collections', href: '/shop' },
+  { label: 'About', href: '/about' },
 ];
 
 const categoryShortcuts = [
@@ -48,7 +46,9 @@ export function Navbar() {
   const mobileMenuOpen = useUIStore((s) => s.mobileMenuOpen);
   const openMobileMenu = useUIStore((s) => s.openMobileMenu);
   const closeMobileMenu = useUIStore((s) => s.closeMobileMenu);
+  const openSearchModal = useUIStore((s) => s.openSearchModal);
   const location = useLocation();
+
   const itemCount = useCartStore((s) => s.itemCount);
   const openCartDrawer = useCartStore((s) => s.openDrawer);
   const { isAuthenticated, user, logout } = useAuthStore();
@@ -69,17 +69,27 @@ export function Navbar() {
   }, [location.pathname, location.search, closeMobileMenu]);
 
 
-  // Lock body scroll when mobile menu is open
+  // Lock body scroll and close on Escape when mobile menu is open
   useEffect(() => {
     if (mobileMenuOpen) {
       document.body.style.overflow = 'hidden';
+      const handleKeyDown = (e: KeyboardEvent) => {
+        if (e.key === 'Escape') {
+          closeMobileMenu();
+        }
+      };
+      window.addEventListener('keydown', handleKeyDown);
+      return () => {
+        document.body.style.overflow = '';
+        window.removeEventListener('keydown', handleKeyDown);
+      };
     } else {
       document.body.style.overflow = '';
     }
     return () => {
       document.body.style.overflow = '';
     };
-  }, [mobileMenuOpen]);
+  }, [mobileMenuOpen, closeMobileMenu]);
 
   return (
     <header
@@ -90,131 +100,120 @@ export function Navbar() {
           : 'shadow-2xs bg-[#FAF8F5]'
       )}
     >
-      {/* ─── Slim Announcement Bar ─── */}
-      <div
-        className={cn(
-          'w-full bg-[#F7EEDB] border-b border-[#DDD3C5] font-heading text-[10px] sm:text-xs tracking-[0.12em] font-bold text-[#171717] uppercase flex items-center justify-between transition-all duration-300 overflow-hidden',
-          isScrolled ? 'max-h-0 py-0 opacity-0 border-none' : 'max-h-12 py-1.5 px-4 opacity-100'
-        )}
-      >
-        <div className="flex items-center gap-1.5 mx-auto sm:mx-0">
-          <Truck size={13} className="text-[#E6321C] shrink-0" />
-          <span>
-            <strong className="text-[#E6321C] font-extrabold">FREE</strong> SHIPPING ON ORDERS ABOVE ₹999
-          </span>
+      {/* ─── Top Bar ─── */}
+      <div className="min-h-[28px] bg-[#171717] text-white flex items-center justify-between px-4 sm:px-8 text-[9px] font-semibold tracking-[0.08em] uppercase select-none">
+        <div>FREE DELIVERY ON ORDERS ABOVE ₹999</div>
+
+        <div className="hidden sm:flex items-center gap-[22px]">
+          <a
+            href={getWhatsAppUrl('Hi Bingooo, I would like to inquire about a bulk order for custom apparel.')}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hover:text-[#25D366] text-[#F7EEDB] transition-colors inline-flex items-center gap-1.5 font-bold"
+          >
+            <WhatsAppIcon className="w-3 h-3 text-[#25D366]" />
+            <span>BULK ORDERS (WHATSAPP)</span>
+          </a>
+          <Link to="/track-order" className="hover:text-[#E6321C] transition-colors">TRACK ORDER</Link>
+          <Link to="/faq" className="hover:text-[#E6321C] transition-colors">HELP</Link>
         </div>
-        <a
-          href="tel:+917981787317"
-          className="hidden sm:inline-flex items-center gap-1.5 text-[#171717] hover:text-[#E6321C] transition-colors"
-          aria-label="Call Bingooo Atelier"
-        >
-          <Phone size={12} className="text-[#E6321C]" />
-          <span>ATELIER: +91 79817 87317</span>
-        </a>
       </div>
 
-      {/* ─── Main Header Navigation ─── */}
-      <nav
-        className={cn(
-          'w-full border-b border-[#DDD3C5] transition-all duration-300',
-          isScrolled ? 'bg-[#FAF8F5]/95 backdrop-blur-md' : 'bg-[#FAF8F5]'
-        )}
-      >
-        <div
-          className={cn(
-            'max-w-[1360px] mx-auto px-4 sm:px-8 flex items-center justify-between gap-3 sm:gap-4 transition-all duration-300',
-            isScrolled ? 'h-13 sm:h-14 lg:h-15' : 'h-14 sm:h-16 lg:h-17'
-          )}
-        >
-          {/* Left: Brand Logo */}
-          <Link to="/" className="flex items-center gap-2 shrink-0 py-1 group" aria-label="Bingooo Home">
-            <Logo variant="red" size="sm" className="sm:hidden transition-transform duration-200 group-hover:scale-105" />
-            <Logo variant="red" size="md" className="hidden sm:inline-flex transition-transform duration-200 group-hover:scale-105" />
-          </Link>
-
-          {/* Center: Desktop Navigation */}
-          <ul className="hidden items-center gap-6 lg:gap-8 md:flex">
+      {/* ─── Header ─── */}
+      <nav className="h-[64px] md:h-[76px] bg-[#F7EEDB] border-b border-[#DDD3C5] flex items-center relative z-40">
+        <div className="w-[min(calc(100%-32px),1440px)] md:w-[min(calc(100%-48px),1440px)] mx-auto grid grid-cols-[auto_1fr_auto] md:grid-cols-[1fr_auto_1fr] items-center gap-4 md:gap-[30px]">
+          {/* Left: Navigation links */}
+          <div className="hidden md:flex items-center gap-[27px]">
             {navLinks.map((link) => {
-              const isActive =
-                location.pathname === link.href ||
-                (link.href.includes('?') && location.search === link.href.split('?')[1]);
+              const isActive = location.pathname === link.href || (link.href.includes('?') && location.search === link.href.split('?')[1]);
               return (
-                <li key={link.label}>
-                  <Link
-                    to={link.href}
-                    className={cn(
-                      'relative py-1 font-heading text-xs lg:text-sm font-bold tracking-[0.06em] uppercase transition-colors duration-200',
-                      isActive ? 'text-[#E6321C]' : 'text-[#171717] hover:text-[#E6321C]'
-                    )}
-                  >
-                    {link.label}
-                    {isActive && (
-                      <motion.span
-                        layoutId="nav-underline"
-                        className="absolute inset-x-0 -bottom-1 h-0.5 bg-[#E6321C]"
-                      />
-                    )}
-                  </Link>
-                </li>
+                <Link
+                  key={link.label}
+                  to={link.href}
+                  className={cn(
+                    'text-[11px] font-semibold uppercase transition-colors tracking-normal',
+                    isActive ? 'text-[#E6321C]' : 'text-[#171717] hover:text-[#E6321C]'
+                  )}
+                >
+                  {link.label}
+                </Link>
               );
             })}
-          </ul>
+          </div>
 
-          {/* Right: Utility Icons & Cart */}
-          <div className="flex items-center gap-1 sm:gap-2">
-            <IconButton href="/shop" label="Search">
-              <Search size={18} className="stroke-[1.8]" />
-            </IconButton>
+          {/* Center: Logo */}
+          <Link
+            to="/"
+            className="text-[clamp(25px,2.4vw,34px)] leading-none font-extrabold tracking-[-0.07em] whitespace-nowrap justify-self-center text-[#171717]"
+            aria-label="BINGOOO."
+          >
+            BINGOOO<span className="text-[#E6321C]">.</span>
+          </Link>
 
-            {/* Desktop Only: Account & Wishlist */}
-            <IconButton href="/account" label="Account" className="hidden sm:flex">
-              <User size={18} className="stroke-[1.8]" />
-            </IconButton>
+          {/* Right: Actions */}
+          <div className="flex items-center justify-end gap-3 sm:gap-5">
+            <button
+              onClick={() => {
+                triggerHaptic('light');
+                openSearchModal();
+              }}
+              className="hidden sm:inline-flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-normal text-[#171717] hover:text-[#E6321C] transition-colors cursor-pointer"
+              aria-label="Search"
+            >
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" className="w-[17px] h-[17px] stroke-[1.5]">
+                <circle cx="11" cy="11" r="7" />
+                <path d="m20 20-4-4" />
+              </svg>
+              <span>Search</span>
+            </button>
 
-            <IconButton href="/account/wishlist" label="Wishlist" className="hidden sm:flex">
-              <Heart size={18} className="stroke-[1.8]" />
-            </IconButton>
+            <Link
+              to={isAuthenticated ? '/account' : '/login'}
+              className="hidden sm:inline-flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-normal text-[#171717] hover:text-[#E6321C] transition-colors"
+              aria-label="Login"
+            >
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" className="w-[17px] h-[17px] stroke-[1.5]">
+                <circle cx="12" cy="8" r="4" />
+                <path d="M4 21c.8-4.2 3.4-6 8-6s7.2 1.8 8 6" />
+              </svg>
+              <span>{isAuthenticated ? 'Account' : 'Login'}</span>
+            </Link>
 
-            {/* Cart Drawer Trigger - Visible on tablet/desktop, hidden on mobile */}
-            <motion.button
-              whileTap={{ scale: 0.92 }}
-              whileHover={{ scale: 1.04 }}
+            <Link
+              to="/account/wishlist"
+              className="hidden sm:inline-flex items-center gap-1 text-[10px] font-semibold uppercase tracking-normal text-[#171717] hover:text-[#E6321C] transition-colors"
+              aria-label="Wishlist"
+            >
+              <span className="text-sm leading-none">♡</span>
+              <span>Wishlist</span>
+            </Link>
+
+            <button
               onClick={() => {
                 triggerHaptic('light');
                 openCartDrawer();
               }}
-              className="relative hidden sm:flex h-9 w-9 sm:h-10 sm:w-10 items-center justify-center rounded-lg text-[#171717] hover:text-[#E6321C] transition-colors"
-              aria-label="Open Shopping Bag"
+              className="inline-flex items-center gap-1 text-[10px] font-semibold uppercase tracking-normal text-[#171717] hover:text-[#E6321C] transition-colors cursor-pointer"
+              aria-label="Cart"
             >
-              <ShoppingBag size={19} className="stroke-[1.8]" />
-              <AnimatePresence>
-                {itemCount > 0 && (
-                  <motion.span
-                    key={itemCount}
-                    initial={{ scale: 0.5, opacity: 0 }}
-                    animate={{ scale: [1.3, 1], opacity: 1 }}
-                    exit={{ scale: 0, opacity: 0 }}
-                    transition={{ type: 'spring', stiffness: 500, damping: 22 }}
-                    className="absolute -right-0.5 -top-0.5 flex h-4 min-w-4 px-1 items-center justify-center rounded-full bg-[#E6321C] text-[9px] font-bold text-white shadow-xs"
-                  >
-                    {itemCount}
-                  </motion.span>
-                )}
-              </AnimatePresence>
-            </motion.button>
+              <span className="text-base leading-none">🛍</span>
+              <span className="hidden sm:inline">Cart</span>
+              <span>({itemCount})</span>
+            </button>
 
-            {/* Mobile Menu Toggle */}
-            <motion.button
-              whileTap={{ scale: 0.92 }}
+            {/* Menu toggle */}
+            <button
               onClick={() => {
                 triggerHaptic('light');
                 openMobileMenu();
               }}
-              className="flex h-9 w-9 sm:h-10 sm:w-10 items-center justify-center rounded-lg text-[#171717] hover:text-[#E6321C] transition-colors md:hidden"
-              aria-label="Open navigation menu"
+              className="md:hidden p-2 text-[#171717] hover:text-[#E6321C] transition-colors cursor-pointer"
+              aria-label="Open menu"
             >
-              <Menu size={20} />
-            </motion.button>
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                <path d="M4 7h16M4 12h16M4 17h16" />
+              </svg>
+            </button>
           </div>
         </div>
       </nav>
@@ -259,14 +258,23 @@ export function Navbar() {
               {/* Drawer Content */}
               <div className="flex-1 px-4 py-4 space-y-5 overflow-y-auto text-left">
                 {/* Search Quick Bar */}
-                <Link
-                  to="/shop"
-                  onClick={closeMobileMenu}
-                  className="flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl bg-white border border-[#DDD3C5] text-xs text-[#6F6A63] font-sans shadow-2xs"
+                <button
+                  type="button"
+                  onClick={() => {
+                    closeMobileMenu();
+                    openSearchModal();
+                  }}
+                  className="w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl bg-white border border-[#DDD3C5] text-xs text-[#6F6A63] font-sans shadow-2xs hover:border-[#E6321C] transition-colors text-left"
                 >
-                  <Search size={15} className="text-[#E6321C]" />
-                  <span>Search tees, hoodies, fits...</span>
-                </Link>
+                  <div className="flex items-center gap-2.5">
+                    <Search size={15} className="text-[#E6321C]" />
+                    <span>Search tees, hoodies, fits...</span>
+                  </div>
+                  <span className="text-[10px] font-mono font-bold text-[#171717]/60 bg-[#F7EEDB] px-1.5 py-0.5 rounded border border-[#DDD3C5]">
+                    ⌘K
+                  </span>
+                </button>
+
 
                 {/* Primary Action Buttons */}
                 <div className="grid grid-cols-2 gap-2.5">
@@ -411,6 +419,27 @@ export function Navbar() {
                   </button>
                 </div>
 
+                {/* Bulk Orders WhatsApp Mobile Card */}
+                <div className="pt-2 pb-2">
+                  <a
+                    href={getWhatsAppUrl('Hi Bingooo, I would like to inquire about a bulk order for custom apparel.')}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={closeMobileMenu}
+                    className="flex items-center justify-between p-3.5 bg-[#171717] text-white rounded-none border-l-4 border-[#E6321C] transition-all hover:bg-black"
+                  >
+                    <div>
+                      <div className="text-[9px] font-extrabold uppercase tracking-[0.2em] text-[#E6321C] mb-0.5">
+                        WHOLESALE & MERCH
+                      </div>
+                      <div className="text-xs font-black uppercase tracking-wider text-white">
+                        Bulk Orders (WhatsApp) →
+                      </div>
+                    </div>
+                    <WhatsAppIcon className="w-5 h-5 text-[#25D366] shrink-0" />
+                  </a>
+                </div>
+
                 {/* Customer Care & Policies */}
                 <div className="space-y-1 pb-2">
                   <span className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#6F6A63] block px-2 mb-1.5 font-mono">
@@ -481,29 +510,3 @@ export function Navbar() {
   );
 }
 
-function IconButton({
-  href,
-  label,
-  className,
-  children,
-}: {
-  href: string;
-  label: string;
-  className?: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <motion.div whileHover={{ scale: 1.08 }} whileTap={{ scale: 0.92 }} className="flex items-center justify-center">
-      <Link
-        to={href}
-        className={cn(
-          'flex h-9 w-9 sm:h-10 sm:w-10 items-center justify-center rounded-lg text-[#171717] hover:text-[#E6321C] transition-colors',
-          className
-        )}
-        aria-label={label}
-      >
-        {children}
-      </Link>
-    </motion.div>
-  );
-}

@@ -1,79 +1,7 @@
-import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowUp, ArrowRight, Check, Phone } from 'lucide-react';
-import { Logo } from '../ui/Logo';
-import {
-  WhatsAppIcon,
-  InstagramIcon,
-  EmailIcon,
-  YouTubeIcon,
-  XTwitterIcon,
-  BINGOOO_PHONE_DISPLAY,
-  BINGOOO_EMAIL_SUPPORT,
-  BINGOOO_INSTAGRAM_URL,
-  getWhatsAppUrl,
-} from '../ui/SocialIcons';
-
-interface FooterColumn {
-  title: string;
-  links: { label: string; to: string; isExternal?: boolean }[];
-}
-
-const FOOTER_COLUMNS: FooterColumn[] = [
-  {
-    title: 'Shop',
-    links: [
-      { label: 'Oversized Tees', to: '/category/t-shirts' },
-      { label: 'Heavyweight Hoodies', to: '/category/hoodies' },
-      { label: 'Denim and Pants', to: '/category/jeans' },
-      { label: 'Casual Shirts', to: '/category/shirts' },
-      { label: 'New Arrivals', to: '/shop?sort=newest' },
-      { label: 'All Garments', to: '/shop' },
-    ],
-  },
-  {
-    title: 'Custom Studio',
-    links: [
-      { label: '3D Design Lab', to: '/customize' },
-      { label: 'DTF Printing', to: '/dtf-printing' },
-      { label: 'Bulk Orders', to: '/bulk-orders' },
-      { label: 'Fabric Specifications', to: '/fabric-guide' },
-      { label: 'Artwork Guidelines', to: '/artwork-guidelines' },
-    ],
-  },
-  {
-    title: 'Customer Care',
-    links: [
-      { label: 'Track Order', to: '/track-order' },
-      { label: 'Shipping Policy', to: '/shipping-policy' },
-      { label: 'Size and Fit Guide', to: '/size-guide' },
-      { label: 'Contact Support', to: '/contact' },
-      { label: 'FAQ', to: '/faq' },
-    ],
-  },
-  {
-    title: 'Direct Connect',
-    links: [
-      { label: `WhatsApp: ${BINGOOO_PHONE_DISPLAY}`, to: getWhatsAppUrl('Hi Bingooo, I would like to inquire about an order.'), isExternal: true },
-      { label: `Email: ${BINGOOO_EMAIL_SUPPORT}`, to: `mailto:${BINGOOO_EMAIL_SUPPORT}`, isExternal: true },
-      { label: 'Instagram: @bingooo.sklm', to: BINGOOO_INSTAGRAM_URL, isExternal: true },
-      { label: 'About Atelier', to: '/about' },
-      { label: 'Terms of Service', to: '/terms' },
-      { label: 'Privacy Policy', to: '/privacy-policy' },
-    ],
-  },
-];
+import { getWhatsAppUrl, BINGOOO_INSTAGRAM_URL, WhatsAppIcon } from '../ui/SocialIcons';
 
 export function Footer() {
-  const [email, setEmail] = useState('');
-  const [isSubscribed, setIsSubscribed] = useState(false);
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!email.trim() || !email.includes('@')) return;
-    setIsSubscribed(true);
-  };
-
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -82,207 +10,197 @@ export function Footer() {
     <footer
       role="contentinfo"
       aria-label="Bingooo Footer"
-      className="w-full bg-[#121212] text-[#DDD3C5] font-sans border-t border-white/10"
+      className="bg-[#171717] text-white pt-[60px] sm:pt-[72px] pb-[25px] font-sans"
     >
-      <div className="max-w-[1360px] mx-auto px-6 sm:px-10 lg:px-12 py-16 sm:py-20">
-        
-        {/* ─── Top Section: Logo & Clean Drop Subscription & Socials ─── */}
-        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-8 pb-14 border-b border-white/10">
-          <div className="space-y-4 max-w-md">
+      <div className="w-[min(calc(100%-32px),1440px)] md:w-[min(calc(100%-48px),1440px)] mx-auto">
+        {/* ─── Bulk Order Typography Banner (Chat on WhatsApp) ─── */}
+        <div className="border-b border-white/10 pb-8 sm:pb-10 mb-10 sm:mb-12 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+          <div className="max-w-2xl">
+            <div className="text-[10px] font-extrabold tracking-[0.24em] uppercase text-[#E6321C] mb-2 flex items-center gap-2">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#E6321C]" />
+              <span>CUSTOM TEAMS, MERCH & WHOLESALE APPAREL</span>
+            </div>
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black uppercase tracking-tight text-white leading-none">
+              PLANNING A BULK ORDER? <span className="text-[#F7EEDB]">CHAT ON WHATSAPP.</span>
+            </h2>
+            <p className="text-[#aaa7a1] text-xs sm:text-[13px] mt-2 leading-relaxed">
+              Wholesale custom manufacturing for college fests, corporate teams & streetwear brands. Direct factory pricing, free mockups & priority delivery.
+            </p>
+          </div>
+
+          <a
+            href={getWhatsAppUrl('Hi Bingooo, I would like to inquire about a bulk order for custom apparel.')}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2.5 px-6 py-3.5 bg-[#F7EEDB] text-[#171717] font-bold text-xs tracking-[0.14em] uppercase hover:bg-[#E6321C] hover:text-white transition-all shrink-0 border border-transparent shadow-sm select-none"
+          >
+            <WhatsAppIcon className="w-4 h-4 text-[#25D366]" />
+            <span>CHAT ON WHATSAPP →</span>
+          </a>
+        </div>
+
+        {/* ─── 5-Column Grid ─── */}
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-[1.7fr_1fr_1fr_1fr_1fr] gap-[35px_25px] md:gap-[45px]">
+          {/* Brand */}
+          <div className="col-span-2 md:col-span-3 lg:col-span-1">
             <Link
               to="/"
-              aria-label="Bingooo Home"
-              className="inline-block focus-visible:ring-2 focus-visible:ring-[#E6321C] focus-visible:outline-none rounded"
+              onClick={scrollToTop}
+              className="text-[31px] font-extrabold tracking-[-0.07em] leading-none inline-block text-white"
+              aria-label="BINGOOO."
             >
-              <Logo variant="white" size="lg" />
+              BINGOOO<span className="text-[#E6321C]">.</span>
             </Link>
-            <p className="text-sm text-[#DDD3C5]/70 leading-relaxed">
-              Contemporary Indian menswear crafted with 240 to 280 GSM heavyweight cotton. Wear what feels like you.
+
+            <p className="text-[#aaa7a1] text-[11px] my-[14px] mb-[25px]">
+              Wear what defines you.
             </p>
 
-            {/* Social Icons Row */}
-            <div className="flex items-center gap-3 pt-2" aria-label="Bingooo Social Channels">
-              <a
-                href={getWhatsAppUrl('Hi Bingooo, I would like to chat about your menswear.')}
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="Chat on WhatsApp"
-                className="w-9 h-9 rounded-full bg-white/5 border border-white/10 hover:border-[#25D366] hover:bg-[#25D366] text-[#DDD3C5] hover:text-white flex items-center justify-center transition-all duration-200 focus-visible:ring-2 focus-visible:ring-[#25D366] focus-visible:outline-none"
-              >
-                <WhatsAppIcon className="w-4 h-4" />
-              </a>
+            <div className="flex items-center gap-[13px]">
               <a
                 href={BINGOOO_INSTAGRAM_URL}
                 target="_blank"
                 rel="noopener noreferrer"
-                aria-label="Follow on Instagram"
-                className="w-9 h-9 rounded-full bg-white/5 border border-white/10 hover:border-[#E1306C] hover:bg-[#E1306C] text-[#DDD3C5] hover:text-white flex items-center justify-center transition-all duration-200 focus-visible:ring-2 focus-visible:ring-[#E1306C] focus-visible:outline-none"
+                aria-label="Instagram"
+                className="w-[30px] h-[30px] border border-[#444] rounded-full grid place-items-center text-[10px] text-white hover:bg-[#E6321C] hover:border-[#E6321C] transition-colors"
               >
-                <InstagramIcon className="w-4 h-4" />
-              </a>
-              <a
-                href={`mailto:${BINGOOO_EMAIL_SUPPORT}`}
-                aria-label="Email support"
-                className="w-9 h-9 rounded-full bg-white/5 border border-white/10 hover:border-[#E6321C] hover:bg-[#E6321C] text-[#DDD3C5] hover:text-white flex items-center justify-center transition-all duration-200 focus-visible:ring-2 focus-visible:ring-[#E6321C] focus-visible:outline-none"
-              >
-                <EmailIcon className="w-4 h-4" />
-              </a>
-              <a
-                href={`tel:+917981787317`}
-                aria-label="Call store"
-                className="w-9 h-9 rounded-full bg-white/5 border border-white/10 hover:border-white hover:bg-white hover:text-[#171717] text-[#DDD3C5] flex items-center justify-center transition-all duration-200 focus-visible:ring-2 focus-visible:ring-white focus-visible:outline-none"
-              >
-                <Phone className="w-4 h-4" />
+                IG
               </a>
               <a
                 href="https://youtube.com"
                 target="_blank"
                 rel="noopener noreferrer"
-                aria-label="Bingooo YouTube"
-                className="w-9 h-9 rounded-full bg-white/5 border border-white/10 hover:border-[#FF0000] hover:bg-[#FF0000] text-[#DDD3C5] hover:text-white flex items-center justify-center transition-all duration-200 focus-visible:ring-2 focus-visible:ring-[#FF0000] focus-visible:outline-none"
+                aria-label="YouTube"
+                className="w-[30px] h-[30px] border border-[#444] rounded-full grid place-items-center text-[10px] text-white hover:bg-[#E6321C] hover:border-[#E6321C] transition-colors"
               >
-                <YouTubeIcon className="w-4 h-4" />
+                YT
               </a>
               <a
-                href="https://twitter.com"
+                href="https://pinterest.com"
                 target="_blank"
                 rel="noopener noreferrer"
-                aria-label="Bingooo X (Twitter)"
-                className="w-9 h-9 rounded-full bg-white/5 border border-white/10 hover:border-white hover:bg-white hover:text-[#171717] text-[#DDD3C5] flex items-center justify-center transition-all duration-200 focus-visible:ring-2 focus-visible:ring-white focus-visible:outline-none"
+                aria-label="Pinterest"
+                className="w-[30px] h-[30px] border border-[#444] rounded-full grid place-items-center text-[10px] text-white hover:bg-[#E6321C] hover:border-[#E6321C] transition-colors"
               >
-                <XTwitterIcon className="w-4 h-4" />
+                P
+              </a>
+              <a
+                href={getWhatsAppUrl('Hi Bingooo, I would like to chat about your menswear.')}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="WhatsApp"
+                className="w-[30px] h-[30px] border border-[#444] rounded-full grid place-items-center text-[10px] text-white hover:bg-[#E6321C] hover:border-[#E6321C] transition-colors"
+              >
+                WA
               </a>
             </div>
           </div>
 
-          {/* Simple Drop Newsletter Form */}
-          <div className="w-full lg:max-w-md">
-            {isSubscribed ? (
-              <div
-                aria-live="polite"
-                className="flex items-center gap-3 p-3.5 rounded-lg bg-white/5 border border-white/10 text-xs text-white"
+          {/* Shop */}
+          <div>
+            <h3 className="mb-[17px] text-[10px] tracking-[0.15em] uppercase font-bold text-white">
+              Shop
+            </h3>
+            <div className="space-y-[11px] text-[10px]">
+              <Link to="/shop?category=men" className="block text-[#aaa7a1] hover:text-white transition-colors">
+                Men
+              </Link>
+              <Link to="/shop?category=women" className="block text-[#aaa7a1] hover:text-white transition-colors">
+                Women
+              </Link>
+              <Link to="/customize" className="block text-[#aaa7a1] hover:text-white transition-colors">
+                Custom
+              </Link>
+              <Link to="/shop" className="block text-[#aaa7a1] hover:text-white transition-colors">
+                Collections
+              </Link>
+              <a
+                href={getWhatsAppUrl('Hi Bingooo, I would like to inquire about a bulk order for custom apparel.')}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block text-[#F7EEDB] hover:text-[#25D366] transition-colors font-semibold"
               >
-                <Check className="w-4 h-4 text-[#238636] shrink-0" aria-hidden="true" />
-                <span>You are subscribed. Use code <strong className="font-mono text-[#E6321C]">BINGOOO10</strong> for 10% off.</span>
-              </div>
-            ) : (
-              <form onSubmit={handleSubmit} className="flex gap-2">
-                <label htmlFor="simple-footer-email" className="sr-only">
-                  Email for drop updates
-                </label>
-                <input
-                  id="simple-footer-email"
-                  name="email"
-                  type="email"
-                  autoComplete="email"
-                  spellCheck={false}
-                  required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="Enter your email for drop alerts…"
-                  className="flex-1 px-4 py-2.5 rounded-lg bg-white/5 border border-white/15 text-white placeholder-[#DDD3C5]/40 text-sm focus-visible:ring-2 focus-visible:ring-[#E6321C] focus-visible:outline-none transition-colors"
-                />
-                <button
-                  type="submit"
-                  aria-label="Subscribe"
-                  className="px-5 py-2.5 rounded-lg bg-[#E6321C] hover:bg-[#B91F12] text-white font-medium text-xs uppercase tracking-wider font-heading transition-colors shrink-0 flex items-center gap-1.5 focus-visible:ring-2 focus-visible:ring-white focus-visible:outline-none"
-                >
-                  <span>Join</span>
-                  <ArrowRight className="w-3.5 h-3.5" aria-hidden="true" />
-                </button>
-              </form>
-            )}
+                Bulk Orders (WA) ↗
+              </a>
+            </div>
+          </div>
+
+          {/* Help */}
+          <div>
+            <h3 className="mb-[17px] text-[10px] tracking-[0.15em] uppercase font-bold text-white">
+              Help
+            </h3>
+            <div className="space-y-[11px] text-[10px]">
+              <Link to="/track-order" className="block text-[#aaa7a1] hover:text-white transition-colors">
+                Track Order
+              </Link>
+              <Link to="/shipping-policy" className="block text-[#aaa7a1] hover:text-white transition-colors">
+                Shipping
+              </Link>
+              <Link to="/returns-refunds" className="block text-[#aaa7a1] hover:text-white transition-colors">
+                Returns
+              </Link>
+              <Link to="/size-guide" className="block text-[#aaa7a1] hover:text-white transition-colors">
+                Size Guide
+              </Link>
+              <Link to="/faq" className="block text-[#aaa7a1] hover:text-white transition-colors">
+                FAQs
+              </Link>
+            </div>
+          </div>
+
+          {/* About */}
+          <div>
+            <h3 className="mb-[17px] text-[10px] tracking-[0.15em] uppercase font-bold text-white">
+              About
+            </h3>
+            <div className="space-y-[11px] text-[10px]">
+              <Link to="/about" className="block text-[#aaa7a1] hover:text-white transition-colors">
+                Our Story
+              </Link>
+              <Link to="/about" className="block text-[#aaa7a1] hover:text-white transition-colors">
+                Sustainability
+              </Link>
+              <Link to="/about" className="block text-[#aaa7a1] hover:text-white transition-colors">
+                Careers
+              </Link>
+              <Link to="/about" className="block text-[#aaa7a1] hover:text-white transition-colors">
+                Press
+              </Link>
+              <Link to="/contact" className="block text-[#aaa7a1] hover:text-white transition-colors">
+                Contact
+              </Link>
+            </div>
+          </div>
+
+          {/* Message (Hidden on mobile <800px per reference CSS) */}
+          <div className="hidden lg:block self-start text-[10px] font-semibold tracking-[0.18em] leading-[1.7] uppercase text-white after:content-[''] after:block after:w-[28px] after:h-[1px] after:bg-white after:mt-[14px]">
+            CLOTHES<br />
+            IDEAS<br />
+            PEOPLE<br />
+            CULTURE<br />
+            YOU
           </div>
         </div>
 
-        {/* ─── Middle Section: 4 Spacious, Non-Wrapping Nav Columns ─── */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-8 sm:gap-10 py-14 border-b border-white/10">
-          {FOOTER_COLUMNS.map((col) => (
-            <div key={col.title} className="space-y-4">
-              <h3 className="text-xs font-bold uppercase tracking-wider text-white font-heading">
-                {col.title}
-              </h3>
-              <ul className="space-y-3" role="list">
-                {col.links.map((link) => (
-                  <li key={link.label}>
-                    {link.isExternal || link.to.startsWith('http') || link.to.startsWith('mailto:') ? (
-                      <a
-                        href={link.to}
-                        target={link.to.startsWith('http') ? '_blank' : undefined}
-                        rel={link.to.startsWith('http') ? 'noopener noreferrer' : undefined}
-                        className="text-sm text-[#DDD3C5]/70 hover:text-white transition-colors duration-150 block truncate focus-visible:ring-2 focus-visible:ring-[#E6321C] focus-visible:outline-none rounded"
-                      >
-                        {link.label}
-                      </a>
-                    ) : (
-                      <Link
-                        to={link.to}
-                        className="text-sm text-[#DDD3C5]/70 hover:text-white transition-colors duration-150 block truncate focus-visible:ring-2 focus-visible:ring-[#E6321C] focus-visible:outline-none rounded"
-                      >
-                        {link.label}
-                      </Link>
-                    )}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
-        </div>
+        {/* ─── Bottom Bar ─── */}
+        <div className="mt-[55px] pt-[20px] border-t border-[#363636] flex flex-col sm:flex-row justify-between gap-[20px] text-[#85827d] text-[9px]">
+          <div>
+            © 2026 Bingooo. All rights reserved.
+          </div>
 
-
-
-        {/* ─── Massive Bingooo Brand Typography Statement ─── */}
-        <div className="pt-14 sm:pt-20 pb-8 sm:pb-12 border-b border-white/10 overflow-hidden select-none">
-          <div className="relative flex flex-col items-center justify-center text-center">
-            <Link
-              to="/"
-              onClick={scrollToTop}
-              aria-label="Bingooo Home"
-              className="w-full font-heading font-black text-[clamp(3.8rem,16.5vw,13.5rem)] leading-[0.82] tracking-tighter uppercase text-white/10 hover:text-white/25 transition-colors duration-300 select-none block text-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#E6321C] rounded-xl"
-            >
-              BINGOOO<span className="text-[#E6321C]/80">.</span>
+          <div className="flex flex-wrap gap-[22px]">
+            <Link to="/terms" className="hover:text-white transition-colors">
+              Terms of Service
             </Link>
-            <div className="mt-4 sm:mt-6 flex flex-wrap items-center justify-center gap-3 sm:gap-6 text-[10px] sm:text-xs font-mono uppercase tracking-[0.25em] text-[#DDD3C5]/50">
-              <span>Wear What Feels Like You</span>
-              <span className="text-white/20" aria-hidden="true">&bull;</span>
-              <span>240–280 GSM Heavyweight</span>
-              <span className="text-white/20" aria-hidden="true">&bull;</span>
-              <span>Srikakulam Atelier</span>
-            </div>
+            <Link to="/privacy-policy" className="hover:text-white transition-colors">
+              Privacy Policy
+            </Link>
+            <Link to="/cancellation-policy" className="hover:text-white transition-colors">
+              Refund Policy
+            </Link>
           </div>
         </div>
-
-        {/* ─── Bottom Section: Clean Copyright & Top Link ─── */}
-        <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-[#DDD3C5]/60">
-          <div className="flex flex-wrap items-center justify-center sm:justify-start gap-x-4 gap-y-2">
-            <p>&copy; {new Date().getFullYear()} Bingooo Men&apos;s Wear. All rights reserved.</p>
-            <span className="hidden sm:inline text-white/20" aria-hidden="true">•</span>
-            <span>Srikakulam, Andhra Pradesh</span>
-            <span className="hidden sm:inline text-white/20" aria-hidden="true">•</span>
-            <p>
-              Developed by{' '}
-              <a
-                href="https://instagram.com/___mani___76"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="font-medium text-white hover:text-[#E6321C] transition-colors focus-visible:ring-2 focus-visible:ring-[#E6321C] focus-visible:outline-none rounded"
-              >
-                ___mani___76
-              </a>
-            </p>
-          </div>
-
-          <button
-            type="button"
-            onClick={scrollToTop}
-            aria-label="Back to top"
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/5 hover:bg-white/10 text-white transition-colors text-xs font-medium focus-visible:ring-2 focus-visible:ring-[#E6321C] focus-visible:outline-none"
-          >
-            <span>Back to top</span>
-            <ArrowUp className="w-3.5 h-3.5" aria-hidden="true" />
-          </button>
-        </div>
-
       </div>
     </footer>
   );

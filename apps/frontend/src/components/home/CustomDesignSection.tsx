@@ -14,6 +14,7 @@ import {
   RotateCcw,
   Headphones,
   Check,
+  Heart,
 } from 'lucide-react';
 
 const swatches = [
@@ -261,11 +262,11 @@ export function CustomDesignSection() {
                   />
                 </div>
 
-                {/* Bottom Pill: Looks perfect! ❤️ */}
+                {/* Bottom Pill: Looks perfect! */}
                 <div className="flex items-center justify-center pt-1">
                   <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white border border-[#DDD3C5] shadow-xs text-xs font-semibold text-[#171717] group-hover:border-[#E6321C] transition-colors">
                     <span>Looks perfect!</span>
-                    <span className="text-[#E6321C]">❤️</span>
+                    <Heart className="w-3.5 h-3.5 fill-[#E6321C] text-[#E6321C]" />
                   </div>
                 </div>
               </Link>

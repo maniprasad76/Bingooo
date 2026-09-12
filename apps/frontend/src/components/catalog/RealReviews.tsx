@@ -202,8 +202,9 @@ export function RealReviews({
               <span className="text-[11px] font-heading font-extrabold uppercase tracking-[0.2em] text-[#238636]">
                 100% Verified Customer Reviews
               </span>
-              <span className="text-[#DDD3C5]">·</span>
-              <span className="text-xs font-bold text-[#171717]">4.9 ★ (128+ Ratings)</span>
+              <span className="text-xs font-bold text-[#171717] inline-flex items-center gap-1">
+                4.9 <Star className="w-3 h-3 fill-[#E6321C] text-[#E6321C]" /> (128+ Ratings)
+              </span>
             </div>
 
             <h2 className="text-2xl sm:text-4xl font-heading font-black uppercase text-[#171717] tracking-tight">

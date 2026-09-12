@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { CheckCircle2 } from 'lucide-react';
 import { SEO } from '../components/common/SEO';
 import { useToast } from '../components/ui/Toast';
 import { triggerHaptic } from '../lib/native/capacitorBridge';
@@ -310,8 +311,9 @@ export function ContactPage() {
             </h2>
 
             {submitted && (
-              <div className="mb-6 p-4 border border-[#238636]/30 bg-[#238636]/10 text-[#238636] text-[12px] font-bold rounded-[6px]">
-                ✓ MESSAGE SENT. Thanks for reaching out — our team will get back to you soon.
+              <div className="mb-6 p-4 border border-[#238636]/30 bg-[#238636]/10 text-[#238636] text-[12px] font-bold rounded-[6px] flex items-center gap-2">
+                <CheckCircle2 className="w-4 h-4 text-[#238636] shrink-0" />
+                <span>MESSAGE SENT. Thanks for reaching out — our team will get back to you soon.</span>
               </div>
             )}
 

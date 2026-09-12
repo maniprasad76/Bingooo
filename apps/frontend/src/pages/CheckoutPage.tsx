@@ -16,7 +16,8 @@ import {
   ShoppingBag,
   CheckCircle2,
   AlertCircle,
-  Zap
+  Zap,
+  Check,
 } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { useCart } from '../hooks/useCart';
@@ -400,7 +401,9 @@ export function CheckoutPage() {
         {/* Responsive Checkout Stepper: Desktop / Tablet */}
         <nav aria-label="Checkout Progress" className="hidden sm:flex items-center justify-center gap-4 py-3 mb-6 border-b border-border/80">
           <div className="flex items-center gap-2 text-xs font-bold text-ink">
-            <span className="flex h-5 w-5 items-center justify-center rounded-full bg-[#238636]/15 text-[#238636] text-[10px] font-bold">✓</span>
+            <span className="flex h-5 w-5 items-center justify-center rounded-full bg-[#238636]/15 text-[#238636]">
+              <Check size={12} strokeWidth={2.5} />
+            </span>
             <span>1. BAG</span>
           </div>
           <span className="h-px w-8 bg-border" />
@@ -903,8 +906,9 @@ export function CheckoutPage() {
                         Size: {item.variant?.size} • Qty: {item.quantity}
                       </span>
                       {item.customization && (
-                        <span className="inline-block mt-0.5 text-[10px] font-bold text-accent uppercase">
-                          ★ Custom Artwork
+                        <span className="inline-flex items-center gap-1 mt-0.5 text-[10px] font-bold text-accent uppercase">
+                          <Sparkles size={10} />
+                          <span>Custom Artwork</span>
                         </span>
                       )}
                       <div className="text-caption font-bold text-ink mt-1">

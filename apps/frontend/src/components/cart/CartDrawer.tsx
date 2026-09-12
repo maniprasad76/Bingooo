@@ -1,5 +1,5 @@
 import { Link, useNavigate } from 'react-router-dom';
-import { Minus, Plus, X } from 'lucide-react';
+import { Minus, Plus, X, Sparkles } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Drawer } from '../ui/Drawer';
 import { useCartStore } from '../../store/cart';
@@ -63,7 +63,10 @@ export function CartDrawer() {
           <div className="flex items-center justify-between text-[11px] font-bold text-[#171717] mb-1.5">
             <span>
               {subtotal >= freeShippingThreshold ? (
-                <span className="text-[#238636]">🎉 FREE shipping unlocked!</span>
+                <span className="text-[#238636] inline-flex items-center gap-1.5">
+                  <Sparkles className="w-3.5 h-3.5 text-[#238636]" />
+                  <span>FREE shipping unlocked!</span>
+                </span>
               ) : (
                 <span>
                   Add <strong className="text-[#E6321C] font-mono">₹{remainingForFree.toLocaleString('en-IN')}</strong> for FREE delivery

@@ -266,8 +266,9 @@ export function OrderSuccessPage() {
                   Payment confirmed. Fabric lot assigned and reserved in studio.
                 </p>
               </div>
-              <span className="text-[9px] font-mono font-bold text-[#238636] uppercase tracking-wider mt-4">
-                ✓ Completed Just Now
+              <span className="text-[9px] font-mono font-bold text-[#238636] uppercase tracking-wider mt-4 inline-flex items-center gap-1">
+                <Check size={12} strokeWidth={2.5} />
+                <span>Completed Just Now</span>
               </span>
             </div>
 
@@ -404,8 +405,9 @@ export function OrderSuccessPage() {
 
                       <div className="mt-3 flex items-center justify-between text-xs border-t border-[#DDD3C5]/40 pt-2 text-[#6F6A63]">
                         <span className="font-mono text-[11px]">QTY: {item.quantity}</span>
-                        <span className="text-[#238636] font-mono text-[10px] font-bold uppercase tracking-wider">
-                          ✓ 100% Bio-Washed Combed Cotton
+                        <span className="text-[#238636] font-mono text-[10px] font-bold uppercase tracking-wider inline-flex items-center gap-1">
+                          <Check size={11} strokeWidth={2.5} />
+                          <span>100% Bio-Washed Combed Cotton</span>
                         </span>
                       </div>
                     </div>

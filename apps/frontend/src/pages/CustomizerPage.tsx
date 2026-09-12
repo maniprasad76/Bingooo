@@ -1,4 +1,5 @@
 import { useState, useRef, useMemo, useEffect } from 'react';
+import { Check, ArrowRight } from 'lucide-react';
 import { useCart } from '../hooks/useCart';
 import { useToast } from '../components/ui/Toast';
 import { triggerHaptic } from '../lib/native/capacitorBridge';
@@ -560,9 +561,19 @@ export function CustomizerPage() {
             type="button"
             onClick={handleAddToCart}
             disabled={isAdding}
-            className="w-full min-h-[54px] border-0 rounded-[7px] bg-[#e6321c] text-white text-[11px] font-bold uppercase hover:bg-[#b91f12] active:scale-[0.99] transition-all cursor-pointer disabled:opacity-50"
+            className="w-full min-h-[54px] border-0 rounded-[7px] bg-[#e6321c] text-white text-[11px] font-bold uppercase hover:bg-[#b91f12] active:scale-[0.99] transition-all cursor-pointer disabled:opacity-50 flex items-center justify-center gap-2"
           >
-            {isAddedFeedback ? 'ADDED TO CART ✓' : 'ADD CUSTOM DESIGN TO CART →'}
+            {isAddedFeedback ? (
+              <>
+                <span>ADDED TO CART</span>
+                <Check className="w-4 h-4" />
+              </>
+            ) : (
+              <>
+                <span>ADD CUSTOM DESIGN TO CART</span>
+                <ArrowRight className="w-4 h-4" />
+              </>
+            )}
           </button>
 
           {/* Bulk Orders WhatsApp Typography Callout */}

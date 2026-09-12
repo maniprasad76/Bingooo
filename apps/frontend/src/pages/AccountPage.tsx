@@ -1006,8 +1006,17 @@ export function AccountPage() {
                               <h4 className="font-extrabold text-sm text-[#171717] uppercase tracking-tight">
                                 {rev.product_title || 'Garment Craftsmanship Review'}
                               </h4>
-                              <div className="flex items-center text-[#B7791F] text-xs">
-                                {'★'.repeat(rev.rating)}{'☆'.repeat(5 - rev.rating)}
+                              <div className="flex items-center gap-0.5 text-[#B7791F]">
+                                {[1, 2, 3, 4, 5].map((starIdx) => (
+                                  <Star
+                                    key={starIdx}
+                                    className={`w-3 h-3 ${
+                                      starIdx <= (rev.rating || 5)
+                                        ? 'fill-[#B7791F] text-[#B7791F]'
+                                        : 'text-[#DDD3C5]'
+                                    }`}
+                                  />
+                                ))}
                               </div>
                             </div>
                             {rev.title && <p className="text-xs font-bold text-[#171717]">{rev.title}</p>}

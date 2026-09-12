@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { Heart, Truck, Package, Sparkles, ShieldCheck, CheckCircle2 } from 'lucide-react';
 import { SEO } from '../components/common/SEO';
 import { generateOrganizationSchema, generateWebSiteSchema } from '../lib/seo/schema';
 import { BINGOOO_INSTAGRAM_URL, getWhatsAppUrl, WhatsAppIcon } from '../components/ui/SocialIcons';
@@ -235,9 +236,10 @@ export function HomePage() {
                     className="absolute right-3 top-3 w-[31px] h-[31px] rounded-full border border-[#ddd3c5] bg-white/85 grid place-items-center z-10 transition-transform active:scale-90 hover:bg-white"
                     aria-label="Add to wishlist"
                   >
-                    <span className={wishlist[prod.id] ? 'text-[#e6321c] text-sm' : 'text-[#171717] text-sm'}>
-                      {wishlist[prod.id] ? '♥' : '♡'}
-                    </span>
+                    <Heart
+                      size={14}
+                      className={wishlist[prod.id] ? 'fill-[#e6321c] text-[#e6321c]' : 'text-[#171717]'}
+                    />
                   </button>
 
                   <Link to={prod.link} className="block h-full w-full">
@@ -326,7 +328,9 @@ export function HomePage() {
         <div className="container-bingooo grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
           {/* Trust 1 */}
           <div className="min-h-[105px] flex items-center gap-[17px] p-[20px_25px] border-b sm:border-b-0 sm:border-r border-[#ddd3c5]">
-            <div className="text-2xl shrink-0 w-[31px]">🚚</div>
+            <div className="w-[38px] h-[38px] rounded-[2px] bg-[#EDE0CC] flex items-center justify-center shrink-0">
+              <Truck className="w-5 h-5 text-[#171717]" />
+            </div>
             <div>
               <p className="m-0 mb-1 text-[10px] font-bold uppercase text-[#171717]">
                 Free Delivery
@@ -339,7 +343,9 @@ export function HomePage() {
 
           {/* Trust 2 */}
           <div className="min-h-[105px] flex items-center gap-[17px] p-[20px_25px] border-b sm:border-b-0 lg:border-r border-[#ddd3c5]">
-            <div className="text-2xl shrink-0 w-[31px]">📦</div>
+            <div className="w-[38px] h-[38px] rounded-[2px] bg-[#EDE0CC] flex items-center justify-center shrink-0">
+              <Package className="w-5 h-5 text-[#171717]" />
+            </div>
             <div>
               <p className="m-0 mb-1 text-[10px] font-bold uppercase text-[#171717]">
                 Easy Returns
@@ -352,7 +358,9 @@ export function HomePage() {
 
           {/* Trust 3 */}
           <div className="min-h-[105px] flex items-center gap-[17px] p-[20px_25px] border-b sm:border-b-0 sm:border-r border-[#ddd3c5]">
-            <div className="text-2xl shrink-0 w-[31px]">✦</div>
+            <div className="w-[38px] h-[38px] rounded-[2px] bg-[#EDE0CC] flex items-center justify-center shrink-0">
+              <Sparkles className="w-5 h-5 text-[#E6321C]" />
+            </div>
             <div>
               <p className="m-0 mb-1 text-[10px] font-bold uppercase text-[#171717]">
                 Premium Quality
@@ -365,7 +373,9 @@ export function HomePage() {
 
           {/* Trust 4 */}
           <div className="min-h-[105px] flex items-center gap-[17px] p-[20px_25px]">
-            <div className="text-2xl shrink-0 w-[31px]">♙</div>
+            <div className="w-[38px] h-[38px] rounded-[2px] bg-[#EDE0CC] flex items-center justify-center shrink-0">
+              <ShieldCheck className="w-5 h-5 text-[#171717]" />
+            </div>
             <div>
               <p className="m-0 mb-1 text-[10px] font-bold uppercase text-[#171717]">
                 Secure Payment
@@ -438,8 +448,9 @@ export function HomePage() {
         </p>
 
         {subscribed ? (
-          <div className="max-w-[500px] mx-auto p-4 bg-white border border-[#ddd3c5] text-xs font-semibold text-[#171717] rounded-sm">
-            ✓ Thank you for subscribing! Check your inbox for exclusive access to Drop 02.
+          <div className="max-w-[500px] mx-auto p-4 bg-white border border-[#ddd3c5] text-xs font-semibold text-[#171717] rounded-sm flex items-center justify-center gap-2">
+            <CheckCircle2 className="w-4 h-4 text-[#238636] shrink-0" />
+            <span>Thank you for subscribing! Check your inbox for exclusive access to Drop 02.</span>
           </div>
         ) : (
           <form onSubmit={handleSubscribe} className="max-w-[500px] mx-auto flex flex-col sm:flex-row gap-2 sm:gap-0">

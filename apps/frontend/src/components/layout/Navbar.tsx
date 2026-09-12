@@ -13,6 +13,8 @@ import {
   Eye,
   ArrowRight,
   Ruler,
+  Truck,
+  ShieldCheck,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '../../lib/utils';
@@ -40,10 +42,10 @@ const categoryShortcuts = [
 ];
 
 const drawerTrustItems = [
-  { icon: '🚚', title: 'Free Delivery', sub: 'Above ₹999' },
-  { icon: '📦', title: '15-Day Exchange', sub: 'Doorstep pickup' },
-  { icon: '✦', title: '240+ GSM Luxury', sub: 'Heavyweight cotton' },
-  { icon: '♙', title: '100% Secure', sub: 'UPI & Cards' },
+  { icon: Truck, title: 'Free Delivery', sub: 'Above ₹999' },
+  { icon: Package, title: '15-Day Exchange', sub: 'Doorstep pickup' },
+  { icon: Sparkles, title: '240+ GSM Luxury', sub: 'Heavyweight cotton' },
+  { icon: ShieldCheck, title: '100% Secure', sub: 'UPI & Cards' },
 ];
 
 export function Navbar() {
@@ -186,10 +188,10 @@ export function Navbar() {
 
             <Link
               to="/account/wishlist"
-              className="hidden sm:inline-flex items-center gap-1 text-[10px] font-semibold uppercase tracking-normal text-[#171717] hover:text-[#E6321C] transition-colors"
+              className="hidden sm:inline-flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-normal text-[#171717] hover:text-[#E6321C] transition-colors"
               aria-label="Wishlist"
             >
-              <span className="text-sm leading-none">♡</span>
+              <Heart className="w-3.5 h-3.5" />
               <span>Wishlist</span>
             </Link>
 
@@ -198,10 +200,10 @@ export function Navbar() {
                 triggerHaptic('light');
                 openCartDrawer();
               }}
-              className="inline-flex items-center gap-1 text-[10px] font-semibold uppercase tracking-normal text-[#171717] hover:text-[#E6321C] transition-colors cursor-pointer"
+              className="inline-flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-normal text-[#171717] hover:text-[#E6321C] transition-colors cursor-pointer"
               aria-label="Cart"
             >
-              <span className="text-base leading-none">🛍</span>
+              <ShoppingBag className="w-3.5 h-3.5" />
               <span className="hidden sm:inline">Cart</span>
               <span>({itemCount})</span>
             </button>
@@ -495,7 +497,6 @@ export function Navbar() {
                         <Heart size={14} className="text-[#E6321C]" />
                         <span>Wishlist</span>
                       </div>
-                      <span className="text-[10px] font-mono text-[#6F6A63]">♡</span>
                     </Link>
                     <button
                       type="button"
@@ -556,15 +557,18 @@ export function Navbar() {
 
                 {/* ─── Homepage-Inspired Micro Trust Grid ─── */}
                 <div className="p-2.5 rounded-md bg-[#F7EEDB] border border-[#DDD3C5] grid grid-cols-2 gap-2">
-                  {drawerTrustItems.map((item) => (
-                    <div key={item.title} className="flex items-center gap-1.5">
-                      <span className="text-base">{item.icon}</span>
-                      <div>
-                        <p className="text-[10px] font-bold uppercase text-[#171717] leading-tight m-0">{item.title}</p>
-                        <p className="text-[8px] text-[#6F6A63] leading-tight m-0">{item.sub}</p>
+                  {drawerTrustItems.map((item) => {
+                    const IconComp = item.icon;
+                    return (
+                      <div key={item.title} className="flex items-center gap-2">
+                        <IconComp size={15} className="text-[#E6321C] shrink-0" />
+                        <div>
+                          <p className="text-[10px] font-bold uppercase text-[#171717] leading-tight m-0">{item.title}</p>
+                          <p className="text-[8px] text-[#6F6A63] leading-tight m-0">{item.sub}</p>
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
 
                 {/* Customer Care Links */}

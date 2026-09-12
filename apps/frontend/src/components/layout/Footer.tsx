@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { ArrowUpRight } from 'lucide-react';
 import { getWhatsAppUrl, BINGOOO_INSTAGRAM_URL, WhatsAppIcon } from '../ui/SocialIcons';
 
 export function Footer() {
@@ -118,9 +119,10 @@ export function Footer() {
                 href={getWhatsAppUrl('Hi Bingooo, I would like to inquire about a bulk order for custom apparel.')}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="block text-[#F7EEDB] hover:text-[#25D366] transition-colors font-semibold"
+                className="inline-flex items-center gap-1 text-[#F7EEDB] hover:text-[#25D366] transition-colors font-semibold"
               >
-                Bulk Orders (WA) ↗
+                <span>Bulk Orders (WA)</span>
+                <ArrowUpRight size={12} />
               </a>
             </div>
           </div>

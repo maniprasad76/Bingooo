@@ -28,7 +28,7 @@ const INSTAGRAM_ITEMS: InstagramPost[] = [
     views: '142K',
     likes: '12.8K',
     comments: '342',
-    caption: 'Behind the seams: Custom 240 GSM heavy combed cotton boxy cut drape test 🧵',
+    caption: 'Behind the seams: Custom 240 GSM heavy combed cotton boxy cut drape test',
     tag: '#StreetwearIndia',
   },
   {
@@ -38,7 +38,7 @@ const INSTAGRAM_ITEMS: InstagramPost[] = [
     views: '98.5K',
     likes: '9.4K',
     comments: '218',
-    caption: 'Tokyo Cyber Vector Drop: Precision 1200 DPI DTF heatpress process in atelier 🔥',
+    caption: 'Tokyo Cyber Vector Drop: Precision 1200 DPI DTF heatpress process in atelier',
     tag: '#CustomApparel',
   },
   {
@@ -48,7 +48,7 @@ const INSTAGRAM_ITEMS: InstagramPost[] = [
     views: '215K',
     likes: '19.6K',
     comments: '584',
-    caption: 'How to style oversized tees: 3 minimalist street fits with relaxed silhouettes 👟',
+    caption: 'How to style oversized tees: 3 minimalist street fits with relaxed silhouettes',
     tag: '#OOTDMen',
   },
   {
@@ -57,7 +57,7 @@ const INSTAGRAM_ITEMS: InstagramPost[] = [
     image: '/hero-banner-4.jpg',
     likes: '8.2K',
     comments: '195',
-    caption: 'Atelier Drop 04: Pure natural linen and heavyweight fleece lookbook 🖤',
+    caption: 'Atelier Drop 04: Pure natural linen and heavyweight fleece lookbook',
     tag: '#BingoooAtelier',
   },
   {
@@ -67,7 +67,7 @@ const INSTAGRAM_ITEMS: InstagramPost[] = [
     views: '178K',
     likes: '15.1K',
     comments: '412',
-    caption: 'Wash & durability test: 30 washes, zero cracking, zero color fade guarantee ⚡',
+    caption: 'Wash & durability test: 30 washes, zero cracking, zero color fade guarantee',
     tag: '#HeavyweightCotton',
   },
   {
@@ -76,7 +76,7 @@ const INSTAGRAM_ITEMS: InstagramPost[] = [
     image: '/custom/tshirt-step-3-black.png',
     likes: '6.7K',
     comments: '164',
-    caption: 'Worn by the community: Bespoke graphic print designed via 3D Customizer ✨',
+    caption: 'Worn by the community: Bespoke graphic print designed via 3D Customizer',
     tag: '#CustomStreetwear',
   },
 ];

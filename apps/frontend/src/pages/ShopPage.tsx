@@ -1,5 +1,6 @@
 import { useState, useMemo, useEffect } from 'react';
 import { Link, useSearchParams, useParams } from 'react-router-dom';
+import { Heart, Check, Star } from 'lucide-react';
 import { SEO } from '../components/common/SEO';
 import { useProducts } from '../hooks/useProducts';
 import { useCart } from '../hooks/useCart';
@@ -592,7 +593,7 @@ export function ShopPage() {
                         prev.includes(cat.slug) ? prev.filter((c) => c !== cat.slug) : [...prev, cat.slug]
                       );
                     }}
-                    className="appearance-none w-[15px] h-[15px] border border-[#ddd3c5] bg-white checked:bg-[#171717] checked:border-[#171717] relative checked:after:content-['✓'] checked:after:text-white checked:after:text-[9px] checked:after:absolute checked:after:inset-0 checked:after:grid checked:after:place-items-center"
+                    className="appearance-none w-[15px] h-[15px] border border-[#ddd3c5] bg-white checked:bg-[#171717] checked:border-[#171717] relative checked:after:content-[''] checked:after:w-[4px] checked:after:h-[8px] checked:after:border-r-[1.5px] checked:after:border-b-[1.5px] checked:after:border-white checked:after:rotate-45 checked:after:block checked:after:mx-auto checked:after:mt-[1px]"
                   />
                   {cat.label}
                 </label>
@@ -616,7 +617,7 @@ export function ShopPage() {
                         prev.includes(size) ? prev.filter((s) => s !== size) : [...prev, size]
                       );
                     }}
-                    className="appearance-none w-[15px] h-[15px] border border-[#ddd3c5] bg-white checked:bg-[#171717] checked:border-[#171717] relative checked:after:content-['✓'] checked:after:text-white checked:after:text-[9px] checked:after:absolute checked:after:inset-0 checked:after:grid checked:after:place-items-center"
+                    className="appearance-none w-[15px] h-[15px] border border-[#ddd3c5] bg-white checked:bg-[#171717] checked:border-[#171717] relative checked:after:content-[''] checked:after:w-[4px] checked:after:h-[8px] checked:after:border-r-[1.5px] checked:after:border-b-[1.5px] checked:after:border-white checked:after:rotate-45 checked:after:block checked:after:mx-auto checked:after:mt-[1px]"
                   />
                   {size}
                 </label>
@@ -693,7 +694,7 @@ export function ShopPage() {
                   type="checkbox"
                   checked={inStockOnly}
                   onChange={(e) => setInStockOnly(e.target.checked)}
-                  className="appearance-none w-[15px] h-[15px] border border-[#ddd3c5] bg-white checked:bg-[#171717] checked:border-[#171717] relative checked:after:content-['✓'] checked:after:text-white checked:after:text-[9px] checked:after:absolute checked:after:inset-0 checked:after:grid checked:after:place-items-center"
+                  className="appearance-none w-[15px] h-[15px] border border-[#ddd3c5] bg-white checked:bg-[#171717] checked:border-[#171717] relative checked:after:content-[''] checked:after:w-[4px] checked:after:h-[8px] checked:after:border-r-[1.5px] checked:after:border-b-[1.5px] checked:after:border-white checked:after:rotate-45 checked:after:block checked:after:mx-auto checked:after:mt-[1px]"
                 />
                 In stock
               </label>
@@ -703,7 +704,7 @@ export function ShopPage() {
                   type="checkbox"
                   checked={newArrivalsOnly}
                   onChange={(e) => setNewArrivalsOnly(e.target.checked)}
-                  className="appearance-none w-[15px] h-[15px] border border-[#ddd3c5] bg-white checked:bg-[#171717] checked:border-[#171717] relative checked:after:content-['✓'] checked:after:text-white checked:after:text-[9px] checked:after:absolute checked:after:inset-0 checked:after:grid checked:after:place-items-center"
+                  className="appearance-none w-[15px] h-[15px] border border-[#ddd3c5] bg-white checked:bg-[#171717] checked:border-[#171717] relative checked:after:content-[''] checked:after:w-[4px] checked:after:h-[8px] checked:after:border-r-[1.5px] checked:after:border-b-[1.5px] checked:after:border-white checked:after:rotate-45 checked:after:block checked:after:mx-auto checked:after:mt-[1px]"
                 />
                 New arrivals
               </label>
@@ -762,7 +763,10 @@ export function ShopPage() {
                           }`}
                           aria-label={inWishlist ? 'Remove from wishlist' : 'Add to wishlist'}
                         >
-                          {inWishlist ? '♥' : '♡'}
+                          <Heart
+                            size={14}
+                            className={inWishlist ? 'fill-[#e6321c] text-[#e6321c]' : 'text-current'}
+                          />
                         </button>
 
                         {/* Image Link */}
@@ -779,9 +783,16 @@ export function ShopPage() {
                         <button
                           type="button"
                           onClick={() => handleQuickAdd(product)}
-                          className="hidden sm:block absolute left-3 right-3 bottom-3 h-[45px] border-0 bg-[#171717]/95 text-white text-[9px] font-bold tracking-[0.06em] uppercase translate-y-[65px] group-hover:translate-y-0 transition-transform duration-200 cursor-pointer"
+                          className="hidden sm:flex items-center justify-center gap-1.5 absolute left-3 right-3 bottom-3 h-[45px] border-0 bg-[#171717]/95 text-white text-[9px] font-bold tracking-[0.06em] uppercase translate-y-[65px] group-hover:translate-y-0 transition-transform duration-200 cursor-pointer"
                         >
-                          {isQuickAdded ? 'ADDED ✓' : 'QUICK ADD'}
+                          {isQuickAdded ? (
+                            <>
+                              <span>ADDED</span>
+                              <Check size={12} />
+                            </>
+                          ) : (
+                            'QUICK ADD'
+                          )}
                         </button>
                       </div>
 
@@ -799,9 +810,15 @@ export function ShopPage() {
 
                         {/* Rating */}
                         <div className="flex items-center gap-[7px] mb-[7px]">
-                          <span className="text-[10px] tracking-[1px] text-[#171717]">
-                            {'★'.repeat(product.rating)}{'☆'.repeat(5 - product.rating)}
-                          </span>
+                          <div className="flex items-center gap-0.5 text-[#171717]">
+                            {[1, 2, 3, 4, 5].map((s) => (
+                              <Star
+                                key={s}
+                                size={10}
+                                className={s <= product.rating ? 'fill-[#171717] text-[#171717]' : 'text-[#ddd3c5]'}
+                              />
+                            ))}
+                          </div>
                           <span className="text-[#6f6a63] text-[9px]">
                             {product.reviewsCount}
                           </span>

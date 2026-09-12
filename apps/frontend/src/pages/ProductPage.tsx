@@ -1,5 +1,6 @@
 import { useState, useMemo, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
+import { Heart, Star, Check, CheckCircle2, Lock, Truck, RotateCcw } from 'lucide-react';
 import { useProduct } from '../hooks/useProducts';
 import { useCart } from '../hooks/useCart';
 import { useWishlist, useIsInWishlist } from '../hooks/useWishlist';
@@ -48,12 +49,22 @@ const DEFAULT_RELATED = [
   },
 ];
 
-const REVIEWS_DATA = [
+interface ReviewItem {
+  id: string;
+  name: string;
+  verified: boolean;
+  rating: number;
+  title: string;
+  body: string;
+  date: string;
+}
+
+const REVIEWS_DATA: ReviewItem[] = [
   {
     id: 'rev-1',
     name: 'Rahul K.',
     verified: true,
-    stars: '★★★★★',
+    rating: 5,
     title: 'Really clean fit.',
     body: 'The fabric feels premium and the relaxed fit is exactly what I wanted. Logo is subtle and looks great.',
     date: '12 Aug 2026',
@@ -62,7 +73,7 @@ const REVIEWS_DATA = [
     id: 'rev-2',
     name: 'Arjun M.',
     verified: true,
-    stars: '★★★★★',
+    rating: 5,
     title: 'Better than expected.',
     body: 'Very comfortable for everyday wear. Ordered my normal size and the fit was perfect.',
     date: '04 Aug 2026',
@@ -71,7 +82,7 @@ const REVIEWS_DATA = [
     id: 'rev-3',
     name: 'Vishal R.',
     verified: true,
-    stars: '★★★★☆',
+    rating: 4,
     title: 'Love the quality.',
     body: 'Good material and clean construction. Would definitely try another Bingooo collection.',
     date: '29 Jul 2026',
@@ -137,9 +148,9 @@ export function ProductPage() {
   const [isSizeModalOpen, setIsSizeModalOpen] = useState(false);
 
   // Reviews submission state
-  const [reviewsList, setReviewsList] = useState(REVIEWS_DATA);
+  const [reviewsList, setReviewsList] = useState<ReviewItem[]>(REVIEWS_DATA);
   const [reviewName, setReviewName] = useState('');
-  const [reviewRating, setReviewRating] = useState('★★★★★');
+  const [reviewRating, setReviewRating] = useState('5');
   const [reviewTitle, setReviewTitle] = useState('');
   const [reviewBody, setReviewBody] = useState('');
   const [reviewSubmitted, setReviewSubmitted] = useState(false);
@@ -206,11 +217,11 @@ export function ProductPage() {
       return;
     }
 
-    const newRev = {
+    const newRev: ReviewItem = {
       id: `rev-${Date.now()}`,
       name: reviewName.trim(),
       verified: true,
-      stars: reviewRating,
+      rating: parseInt(reviewRating, 10) || 5,
       title: reviewTitle.trim(),
       body: reviewBody.trim(),
       date: 'Today',
@@ -309,14 +320,14 @@ export function ProductPage() {
               <button
                 type="button"
                 onClick={handleToggleWishlist}
-                className={`w-[38px] h-[38px] border border-[#ddd3c5] rounded-full grid place-items-center text-[19px] transition-colors ${
+                className={`w-[38px] h-[38px] border border-[#ddd3c5] rounded-full grid place-items-center transition-colors ${
                   inWishlist
                     ? 'bg-[#171717] text-[#e6321c] border-[#171717]'
                     : 'bg-transparent text-[#171717] hover:bg-[#171717] hover:text-white'
                 }`}
                 aria-label="Add to wishlist"
               >
-                {inWishlist ? '♥' : '♡'}
+                <Heart size={16} className={inWishlist ? 'fill-[#e6321c] text-[#e6321c]' : 'text-current'} />
               </button>
             </div>
 
@@ -327,9 +338,11 @@ export function ProductPage() {
 
             {/* Rating */}
             <div className="flex items-center gap-[10px] my-5">
-              <span className="text-[14px] tracking-[2px] text-[#171717]">
-                ★★★★★
-              </span>
+              <div className="flex items-center gap-0.5 text-[#171717]">
+                {[1, 2, 3, 4, 5].map((s) => (
+                  <Star key={s} size={14} className="fill-[#171717] text-[#171717]" />
+                ))}
+              </div>
               <a href="#reviews" className="text-[11px] underline underline-offset-[3px] text-[#171717] hover:text-[#e6321c] transition-colors">
                 4.8 · {reviewsList.length} reviews
               </a>
@@ -473,7 +486,16 @@ export function ProductPage() {
                 onClick={handleAddToCart}
                 className="btn btn-black h-[52px] w-full"
               >
-                {isAddedFeedback ? 'ADDED ✓' : isAdding ? 'ADDING…' : 'ADD TO CART'}
+                {isAddedFeedback ? (
+                  <span className="inline-flex items-center gap-1.5">
+                    <span>ADDED</span>
+                    <Check size={14} />
+                  </span>
+                ) : isAdding ? (
+                  'ADDING…'
+                ) : (
+                  'ADD TO CART'
+                )}
               </button>
             </div>
 
@@ -492,7 +514,10 @@ export function ProductPage() {
                 onClick={handleToggleWishlist}
                 className="btn btn-black h-[52px] w-full"
               >
-                {inWishlist ? '♥ SAVED' : '♡ SAVE'}
+                <span className="inline-flex items-center gap-1.5">
+                  <Heart size={14} className={inWishlist ? 'fill-white text-white' : 'text-current'} />
+                  <span>{inWishlist ? 'SAVED' : 'SAVE'}</span>
+                </span>
               </button>
             </div>
 
@@ -533,29 +558,29 @@ export function ProductPage() {
             {/* Benefits */}
             <div className="mt-[25px] grid gap-[11px]">
               <div className="flex items-center gap-3 text-[10px] text-[#171717]">
-                <div className="w-[25px] h-[25px] border border-[#ddd3c5] grid place-items-center text-[11px] shrink-0">
-                  ✓
+                <div className="w-[25px] h-[25px] border border-[#ddd3c5] grid place-items-center shrink-0">
+                  <Check size={13} className="text-[#171717]" />
                 </div>
                 <span>Premium cotton fabric</span>
               </div>
 
               <div className="flex items-center gap-3 text-[10px] text-[#171717]">
-                <div className="w-[25px] h-[25px] border border-[#ddd3c5] grid place-items-center text-[11px] shrink-0">
-                  ↻
+                <div className="w-[25px] h-[25px] border border-[#ddd3c5] grid place-items-center shrink-0">
+                  <RotateCcw size={13} className="text-[#171717]" />
                 </div>
                 <span>Easy 15-day returns</span>
               </div>
 
               <div className="flex items-center gap-3 text-[10px] text-[#171717]">
-                <div className="w-[25px] h-[25px] border border-[#ddd3c5] grid place-items-center text-[11px] shrink-0">
-                  🔒
+                <div className="w-[25px] h-[25px] border border-[#ddd3c5] grid place-items-center shrink-0">
+                  <Lock size={13} className="text-[#171717]" />
                 </div>
                 <span>Secure payments</span>
               </div>
 
               <div className="flex items-center gap-3 text-[10px] text-[#171717]">
-                <div className="w-[25px] h-[25px] border border-[#ddd3c5] grid place-items-center text-[11px] shrink-0">
-                  🚚
+                <div className="w-[25px] h-[25px] border border-[#ddd3c5] grid place-items-center shrink-0">
+                  <Truck size={13} className="text-[#171717]" />
                 </div>
                 <span>Fast delivery across India</span>
               </div>
@@ -722,8 +747,10 @@ export function ProductPage() {
                 4.8
               </div>
               <div>
-                <div className="text-[14px] tracking-[2px] text-[#171717]">
-                  ★★★★★
+                <div className="flex items-center gap-0.5 text-[#171717]">
+                  {[1, 2, 3, 4, 5].map((s) => (
+                    <Star key={s} size={14} className="fill-[#171717] text-[#171717]" />
+                  ))}
                 </div>
                 <small className="text-[#6f6a63] text-[10px]">
                   Based on {reviewsList.length * 42} reviews
@@ -735,7 +762,7 @@ export function ProductPage() {
           {/* Rating Breakdown */}
           <div className="max-w-[480px] mb-[50px]">
             <div className="grid grid-cols-[50px_1fr_40px] items-center gap-[10px] mb-[9px] text-[10px] text-[#171717]">
-              <span>5 ★</span>
+              <span className="inline-flex items-center gap-1">5 <Star size={10} className="fill-[#171717] text-[#171717]" /></span>
               <div className="rating-track">
                 <div className="rating-fill w-[78%]" />
               </div>
@@ -743,7 +770,7 @@ export function ProductPage() {
             </div>
 
             <div className="grid grid-cols-[50px_1fr_40px] items-center gap-[10px] mb-[9px] text-[10px] text-[#171717]">
-              <span>4 ★</span>
+              <span className="inline-flex items-center gap-1">4 <Star size={10} className="fill-[#171717] text-[#171717]" /></span>
               <div className="rating-track">
                 <div className="rating-fill w-[14%]" />
               </div>
@@ -751,7 +778,7 @@ export function ProductPage() {
             </div>
 
             <div className="grid grid-cols-[50px_1fr_40px] items-center gap-[10px] mb-[9px] text-[10px] text-[#171717]">
-              <span>3 ★</span>
+              <span className="inline-flex items-center gap-1">3 <Star size={10} className="fill-[#171717] text-[#171717]" /></span>
               <div className="rating-track">
                 <div className="rating-fill w-[5%]" />
               </div>
@@ -759,7 +786,7 @@ export function ProductPage() {
             </div>
 
             <div className="grid grid-cols-[50px_1fr_40px] items-center gap-[10px] mb-[9px] text-[10px] text-[#171717]">
-              <span>2 ★</span>
+              <span className="inline-flex items-center gap-1">2 <Star size={10} className="fill-[#171717] text-[#171717]" /></span>
               <div className="rating-track">
                 <div className="rating-fill w-[2%]" />
               </div>
@@ -767,7 +794,7 @@ export function ProductPage() {
             </div>
 
             <div className="grid grid-cols-[50px_1fr_40px] items-center gap-[10px] mb-[9px] text-[10px] text-[#171717]">
-              <span>1 ★</span>
+              <span className="inline-flex items-center gap-1">1 <Star size={10} className="fill-[#171717] text-[#171717]" /></span>
               <div className="rating-track">
                 <div className="rating-fill w-[1%]" />
               </div>
@@ -784,14 +811,21 @@ export function ProductPage() {
                     {rev.name}
                   </div>
                   {rev.verified && (
-                    <div className="text-[#238636] text-[8px] font-bold uppercase tracking-wider">
-                      ✓ Verified
+                    <div className="text-[#238636] text-[8px] font-bold uppercase tracking-wider flex items-center gap-1">
+                      <CheckCircle2 size={11} />
+                      <span>Verified</span>
                     </div>
                   )}
                 </div>
 
-                <div className="mb-[13px] text-[11px] tracking-[2px] text-[#171717]">
-                  {rev.stars}
+                <div className="flex items-center gap-0.5 mb-[13px] text-[#171717]">
+                  {[1, 2, 3, 4, 5].map((s) => (
+                    <Star
+                      key={s}
+                      size={12}
+                      className={s <= rev.rating ? 'fill-[#171717] text-[#171717]' : 'text-[#ddd3c5]'}
+                    />
+                  ))}
                 </div>
 
                 <h3 className="m-0 mb-2 text-[13px] font-bold text-[#171717]">
@@ -816,8 +850,9 @@ export function ProductPage() {
             </h3>
 
             {reviewSubmitted ? (
-              <div className="p-4 bg-white border border-[#ddd3c5] text-xs font-semibold text-[#171717]">
-                ✓ Thank you! Your review has been submitted and posted.
+              <div className="p-4 bg-white border border-[#ddd3c5] text-xs font-semibold text-[#171717] flex items-center gap-2">
+                <CheckCircle2 className="w-4 h-4 text-[#238636] shrink-0" />
+                <span>Thank you! Your review has been submitted and posted.</span>
               </div>
             ) : (
               <form onSubmit={handleReviewSubmit} className="grid gap-3 max-w-[700px]">
@@ -835,11 +870,11 @@ export function ProductPage() {
                   onChange={(e) => setReviewRating(e.target.value)}
                   className="w-full border border-[#ddd3c5] bg-white p-[13px] outline-none text-[11px] text-[#171717] focus:border-[#171717]"
                 >
-                  <option value="★★★★★">★★★★★ (5 Stars - Excellent)</option>
-                  <option value="★★★★☆">★★★★☆ (4 Stars - Great)</option>
-                  <option value="★★★☆☆">★★★☆☆ (3 Stars - Average)</option>
-                  <option value="★★☆☆☆">★★☆☆☆ (2 Stars - Below Average)</option>
-                  <option value="★☆☆☆☆">★☆☆☆☆ (1 Star - Poor)</option>
+                  <option value="5">5 Stars — Excellent</option>
+                  <option value="4">4 Stars — Great</option>
+                  <option value="3">3 Stars — Average</option>
+                  <option value="2">2 Stars — Below Average</option>
+                  <option value="1">1 Star — Poor</option>
                 </select>
 
                 <input
@@ -1005,7 +1040,14 @@ export function ProductPage() {
           onClick={handleAddToCart}
           className="btn btn-black h-[46px] w-full text-[10px]"
         >
-          {isAddedFeedback ? 'ADDED ✓' : 'ADD TO CART'}
+          {isAddedFeedback ? (
+            <span className="inline-flex items-center gap-1">
+              <span>ADDED</span>
+              <Check size={12} />
+            </span>
+          ) : (
+            'ADD TO CART'
+          )}
         </button>
 
         <button

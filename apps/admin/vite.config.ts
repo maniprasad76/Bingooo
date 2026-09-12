@@ -8,7 +8,7 @@ const rootNodeModules = path.resolve(__dirname, '../../node_modules');
 
 export default defineConfig({
   plugins: [react()],
-  envPrefix: ['VITE_', 'NEXT_PUBLIC_'],
+  envPrefix: ['VITE_'],
   resolve: {
     alias: {
       '@': path.resolve(__dirname, 'src'),
@@ -22,11 +22,8 @@ export default defineConfig({
     include: ['react', 'react-dom', 'react-dom/client', 'react/jsx-runtime', 'react/jsx-dev-runtime'],
   },
   server: {
+    host: true,
     port: 5174,
-    hmr: {
-      host: 'localhost',
-      port: 5174,
-    },
     proxy: {
       '/api': {
         target: 'http://localhost:3000',

@@ -1,5 +1,5 @@
 import { Suspense, useEffect } from 'react';
-import { Outlet, useLocation, useNavigate } from 'react-router-dom';
+import { Outlet, useNavigate } from 'react-router-dom';
 import { Navbar } from './Navbar';
 import { MobileNav } from './MobileNav';
 import { Footer } from './Footer';
@@ -16,9 +16,7 @@ import { initCapacitorBridge, registerNavigator, registerOverlayCloser, isNative
 import { useCartStore } from '../../store/cart';
 
 export function PageLayout() {
-  const location = useLocation();
   const navigate = useNavigate();
-  const isAdminRoute = location.pathname.startsWith('/admin');
 
   useEffect(() => {
     initCapacitorBridge();
@@ -31,10 +29,6 @@ export function PageLayout() {
       return false;
     });
   }, [navigate]);
-
-  if (isAdminRoute) {
-    return <Outlet />;
-  }
 
   return (
     <div className="flex min-h-screen flex-col overflow-x-hidden w-full max-w-full relative">

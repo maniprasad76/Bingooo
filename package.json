@@ -8,7 +8,8 @@
     "packages/*"
   ],
   "scripts": {
-    "dev": "concurrently -n \"backend,frontend,admin\" -c \"blue,green,magenta\" \"npm run dev:api\" \"npm run dev:frontend\" \"npm run dev:admin\"",
+    "dev": "concurrently -n \"backend,frontend\" -c \"blue,green\" \"npm run dev:api\" \"npm run dev:frontend\"",
+    "dev:all": "concurrently -n \"api,frontend,admin\" -c \"blue,green,magenta\" \"npm run dev:api\" \"npm run dev:frontend\" \"npm run dev:admin\"",
     "dev:frontend": "npm run dev -w apps/frontend",
     "dev:web": "npm run dev -w apps/frontend",
     "dev:admin": "npm run dev -w apps/admin",
@@ -23,7 +24,6 @@
     "build": "npm run build --workspaces --if-present",
     "lint": "npm run lint --workspaces --if-present",
     "typecheck": "npm run typecheck --workspaces --if-present",
-    "typecheck:admin": "npm run typecheck -w apps/admin",
     "clean": "npm run clean --workspaces --if-present"
   },
   "engines": {

@@ -17,13 +17,10 @@ const CartPage = lazyPage(() => import('../pages/CartPage'), 'CartPage');
 const CheckoutPage = lazyPage(() => import('../pages/CheckoutPage'), 'CheckoutPage');
 const OrderSuccessPage = lazyPage(() => import('../pages/OrderSuccessPage'), 'OrderSuccessPage');
 const AccountPage = lazyPage(() => import('../pages/AccountPage'), 'AccountPage');
-const OrdersPage = lazyPage(() => import('../pages/OrdersPage'), 'OrdersPage');
 const OrderDetailPage = lazyPage(() => import('../pages/OrderDetailPage'), 'OrderDetailPage');
 const WishlistPage = lazyPage(() => import('../pages/WishlistPage'), 'WishlistPage');
 const SavedDesignsPage = lazyPage(() => import('../pages/SavedDesignsPage'), 'SavedDesignsPage');
 const AddressesPage = lazyPage(() => import('../pages/AddressesPage'), 'AddressesPage');
-const AdminDashboardPage = lazyPage(() => import('../pages/AdminDashboardPage'), 'AdminDashboardPage');
-const AdminLoginPage = lazyPage(() => import('../pages/AdminLoginPage'), 'AdminLoginPage');
 const SearchPage = lazyPage(() => import('../pages/SearchPage'), 'SearchPage');
 const PoliciesPage = lazyPage(() => import('../pages/PoliciesPage'), 'PoliciesPage');
 const ContactPage = lazyPage(() => import('../pages/ContactPage'), 'ContactPage');
@@ -98,7 +95,7 @@ export const router = createBrowserRouter([
 
       // User Account (Protected)
       { path: 'account', element: <RequireAuth><AccountPage /></RequireAuth> },
-      { path: 'account/orders', element: <RequireAuth><OrdersPage /></RequireAuth> },
+      { path: 'account/orders', element: <RequireAuth><AccountPage /></RequireAuth> },
       { path: 'account/orders/:orderNumber', element: <RequireAuth><OrderDetailPage /></RequireAuth> },
       { path: 'account/recently-viewed', element: <RecentlyViewedPage /> },
       { path: 'account/designs', element: <RequireAuth><SavedDesignsPage /></RequireAuth> },
@@ -141,14 +138,7 @@ export const router = createBrowserRouter([
       { path: 'fabric-specifications', element: <Navigate to="/about" replace /> },
       { path: 'artwork-guidelines', element: <ArtworkGuidelinesPage /> },
 
-      // Redundant / Demo routes redirected to clean destinations
-      { path: 'empty', element: <Navigate to="/" replace /> },
-      { path: 'empty-state', element: <Navigate to="/" replace /> },
 
-      // Admin Portal
-      { path: 'admin/login', element: <AdminLoginPage /> },
-      { path: 'admin', element: <AdminDashboardPage /> },
-      { path: 'admin/*', element: <AdminDashboardPage /> },
 
       // Catch-all 404
       { path: '*', element: <NotFoundPage /> },

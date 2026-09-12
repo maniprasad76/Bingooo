@@ -155,47 +155,47 @@ export function HomePage() {
       {/* =========================================================
           CATEGORY STRIP
       ========================================================= */}
-      <section className="bg-[#171717] text-white">
-        <div className="container-bingooo grid grid-cols-1 md:grid-cols-2">
+      <section className="mt-6 sm:mt-10 md:mt-14 bg-[#171717] text-white">
+        <div className="container-bingooo grid grid-cols-2">
           {/* Category: Men */}
-          <article className="min-h-[140px] md:min-h-[165px] grid grid-cols-[90px_1fr] sm:grid-cols-[120px_1fr] gap-5 items-center p-5 sm:p-[25px] border-b md:border-b-0 md:border-r border-white/15">
-            <div className="w-[90px] h-[110px] sm:w-[120px] sm:h-[120px] overflow-hidden bg-[#252525] shrink-0">
+          <article className="min-h-[140px] md:min-h-[165px] flex flex-col sm:grid sm:grid-cols-[90px_1fr] md:grid-cols-[120px_1fr] gap-3 sm:gap-5 items-start sm:items-center p-3 sm:p-5 md:p-[25px] border-r border-white/15">
+            <Link to="/shop?category=men" className="w-full aspect-[4/3] sm:w-[90px] sm:h-[110px] md:w-[120px] md:h-[120px] overflow-hidden bg-[#252525] shrink-0 block group">
               <img
                 src="https://images.unsplash.com/photo-1551488831-00ddcb6c6bd3?auto=format&fit=crop&w=500&q=80"
                 alt="Men collection"
-                className="h-full w-full object-cover grayscale"
+                className="h-full w-full object-cover grayscale group-hover:scale-105 transition-transform duration-300"
               />
-            </div>
-            <div>
-              <h3 className="m-0 mb-[9px] text-[18px] font-bold uppercase text-white">
+            </Link>
+            <div className="w-full">
+              <h3 className="m-0 mb-1 sm:mb-[9px] text-sm sm:text-[18px] font-bold uppercase text-white tracking-tight">
                 Men
               </h3>
-              <p className="m-0 mb-[18px] text-[#c7c3bd] text-[11px] leading-[1.6] max-w-[130px]">
+              <p className="m-0 mb-2 sm:mb-[18px] text-[#c7c3bd] text-[10px] sm:text-[11px] leading-snug sm:leading-[1.6] max-w-[150px]">
                 Everyday fits for every you.
               </p>
-              <Link to="/shop?category=men" className="text-[9px] font-bold uppercase border-b border-white pb-1 inline-block hover:text-[#e6321c] hover:border-[#e6321c] transition-colors">
+              <Link to="/shop?category=men" className="text-[9px] font-bold uppercase border-b border-white pb-0.5 sm:pb-1 inline-block hover:text-[#e6321c] hover:border-[#e6321c] transition-colors whitespace-nowrap">
                 SHOP MEN →
               </Link>
             </div>
           </article>
 
           {/* Category: Women */}
-          <article className="min-h-[140px] md:min-h-[165px] grid grid-cols-[90px_1fr] sm:grid-cols-[120px_1fr] gap-5 items-center p-5 sm:p-[25px]">
-            <div className="w-[90px] h-[110px] sm:w-[120px] sm:h-[120px] overflow-hidden bg-[#252525] shrink-0">
+          <article className="min-h-[140px] md:min-h-[165px] flex flex-col sm:grid sm:grid-cols-[90px_1fr] md:grid-cols-[120px_1fr] gap-3 sm:gap-5 items-start sm:items-center p-3 sm:p-5 md:p-[25px]">
+            <Link to="/shop?category=women" className="w-full aspect-[4/3] sm:w-[90px] sm:h-[110px] md:w-[120px] md:h-[120px] overflow-hidden bg-[#252525] shrink-0 block group">
               <img
                 src="https://images.unsplash.com/photo-1496747611176-843222e1e57c?auto=format&fit=crop&w=500&q=80"
                 alt="Women collection"
-                className="h-full w-full object-cover grayscale"
+                className="h-full w-full object-cover grayscale group-hover:scale-105 transition-transform duration-300"
               />
-            </div>
-            <div>
-              <h3 className="m-0 mb-[9px] text-[18px] font-bold uppercase text-white">
+            </Link>
+            <div className="w-full">
+              <h3 className="m-0 mb-1 sm:mb-[9px] text-sm sm:text-[18px] font-bold uppercase text-white tracking-tight">
                 Women
               </h3>
-              <p className="m-0 mb-[18px] text-[#c7c3bd] text-[11px] leading-[1.6] max-w-[130px]">
+              <p className="m-0 mb-2 sm:mb-[18px] text-[#c7c3bd] text-[10px] sm:text-[11px] leading-snug sm:leading-[1.6] max-w-[150px]">
                 Style that moves with you.
               </p>
-              <Link to="/shop?category=women" className="text-[9px] font-bold uppercase border-b border-white pb-1 inline-block hover:text-[#e6321c] hover:border-[#e6321c] transition-colors">
+              <Link to="/shop?category=women" className="text-[9px] font-bold uppercase border-b border-white pb-0.5 sm:pb-1 inline-block hover:text-[#e6321c] hover:border-[#e6321c] transition-colors whitespace-nowrap">
                 SHOP WOMEN →
               </Link>
             </div>

@@ -1,156 +1,326 @@
 import { Link } from 'react-router-dom';
-import { motion, useReducedMotion } from 'framer-motion';
-import { ShieldAlert, CheckCircle2, Scale } from 'lucide-react';
 import { SEO } from '../components/common/SEO';
+import { triggerHaptic } from '../lib/native/capacitorBridge';
 
 export function TermsPage() {
-  const shouldReduceMotion = useReducedMotion();
-
   return (
-    <div className="w-full bg-[#FAF8F5] text-[#171717] min-h-screen py-10 sm:py-16 font-sans">
+    <main className="bg-[#f7eedb] text-[#171717] font-sans antialiased">
       <SEO
-        title="Terms of Service"
-        description="Review the terms and conditions governing the purchase of apparel, custom printing guidelines, and website usage at Bingooo."
+        title="Terms of Service — BINGOOO"
+        description="Review the terms and conditions governing apparel purchases, custom printing atelier guidelines, and website usage at Bingooo."
+        canonical="https://bingooo.in/terms"
       />
-      <div className="max-w-[1000px] mx-auto px-4 sm:px-8 space-y-12">
-        
-        {/* ─── Breadcrumbs & Header ─── */}
-        <div className="space-y-4 text-left border-b border-[#DDD3C5] pb-8">
-          <div className="flex items-center gap-2 text-xs font-mono text-[#6F6A63] uppercase tracking-wider">
-            <Link to="/" className="hover:text-[#E6321C] transition-colors">Home</Link>
-            <span>/</span>
-            <span className="text-[#171717] font-bold">Legal</span>
-            <span>/</span>
-            <span className="text-[#171717]">Terms of Service</span>
+
+      {/* =======================================================
+           HERO SECTION (Matching AboutPage & HomePage Layout)
+      ======================================================= */}
+      <section className="min-h-[600px] lg:min-h-[650px] grid grid-cols-1 lg:grid-cols-[45%_55%] bg-[#f7eedb]">
+        <div className="flex flex-col justify-center py-[65px] px-6 sm:px-10 lg:py-[clamp(50px,8vw,110px)] lg:px-[clamp(25px,6vw,90px)]">
+          <div className="text-[10px] font-semibold tracking-[0.2em] uppercase text-[#171717] mb-3">
+            BINGOOO / TERMS OF SERVICE
           </div>
 
-          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight text-[#171717] font-heading">
-            Terms of Service
+          <h1 className="my-3 mb-6 text-[clamp(52px,7vw,105px)] font-extrabold leading-[0.84] tracking-[-0.075em] uppercase">
+            <span className="block">HONEST TERMS.</span>
+            <span className="block">MUTUAL RESPECT.</span>
+            <span className="block text-[#e6321c]">ATELIER CODE.</span>
           </h1>
 
-          <p className="text-xs sm:text-sm text-[#6F6A63] font-mono">
-            Effective Date: September 2026 • Governing Law: Andhra Pradesh, India
+          <p className="max-w-[440px] m-0 mb-[30px] text-[#6f6a63] text-[13px] leading-[1.8]">
+            Clear, transparent standards governing your custom garments, doorstep deliveries, intellectual property, and your relationship with Bingooo.
           </p>
+
+          <div>
+            <a
+              href="#terms-clauses"
+              onClick={() => triggerHaptic('light')}
+              className="inline-flex items-center justify-center min-h-[48px] px-[23px] rounded-[7px] bg-[#171717] text-white text-[10px] font-bold uppercase tracking-wider hover:bg-black hover:-translate-y-0.5 transition-all cursor-pointer"
+            >
+              READ TERMS ↓
+            </a>
+          </div>
         </div>
 
-        {/* ─── Key Summary Grid ─── */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <motion.div
-            whileHover={shouldReduceMotion ? undefined : { y: -3, boxShadow: '0 8px 24px -6px rgba(0, 0, 0, 0.08)' }}
-            className="p-4 rounded-xl bg-white border border-[#DDD3C5] space-y-2 transition-colors shadow-2xs"
-          >
-            <div className="w-8 h-8 rounded-lg bg-[#E6321C]/10 text-[#E6321C] flex items-center justify-center">
-              <CheckCircle2 className="w-4 h-4" aria-hidden="true" />
+        <div className="h-[400px] sm:h-[500px] lg:h-auto overflow-hidden">
+          <img
+            src="https://images.unsplash.com/photo-1556821840-3a63f95609a7?auto=format&fit=crop&w=1600&q=90"
+            alt="Bingooo terms and craftsmanship"
+            className="w-full h-full object-cover grayscale"
+          />
+        </div>
+      </section>
+
+      {/* =======================================================
+           STATEMENT BANNER (Dark Full-Width Punchline)
+      ======================================================= */}
+      <section className="py-[clamp(75px,10vw,145px)] px-5 bg-[#171717] text-white text-center">
+        <div className="text-[10px] font-semibold tracking-[0.2em] uppercase text-[#aaaaaa] mb-4">
+          OUR CODE OF CONDUCT
+        </div>
+
+        <h2 className="max-w-[1000px] mx-auto m-0 text-[clamp(40px,7vw,88px)] leading-[0.9] font-extrabold tracking-[-0.07em] uppercase text-white">
+          CRAFTED WITH <span className="text-[#e6321c]">INTEGRITY.</span><br />
+          TAILORED WITH <span className="text-[#e6321c]">PASSION.</span><br />
+          GOVERNED BY TRUST.
+        </h2>
+      </section>
+
+      {/* =======================================================
+           CORE PILLARS (Three Highlights on Beige Canvas)
+      ======================================================= */}
+      <section className="py-[100px] bg-[#ede0cc]">
+        <div className="container-bingooo">
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-[45px] gap-4">
+            <div>
+              <div className="text-[10px] font-semibold tracking-[0.2em] uppercase text-[#6f6a63] mb-2">
+                CORE PRINCIPLES
+              </div>
+
+              <h2 className="m-0 text-[clamp(40px,5vw,68px)] leading-[0.88] font-extrabold tracking-[-0.065em] uppercase">
+                THE THREE<br />
+                STANDARDS.
+              </h2>
             </div>
-            <h3 className="text-xs font-bold uppercase tracking-wide text-[#171717] font-heading">Authentic Products</h3>
-            <p className="text-xs text-[#6F6A63] leading-relaxed">
-              Every garment sold on Bingooo is manufactured with certified 240+ GSM cotton fabrics and genuine DTF prints.
-            </p>
-          </motion.div>
 
-          <motion.div
-            whileHover={shouldReduceMotion ? undefined : { y: -3, boxShadow: '0 8px 24px -6px rgba(0, 0, 0, 0.08)' }}
-            className="p-4 rounded-xl bg-white border border-[#DDD3C5] space-y-2 transition-colors shadow-2xs"
-          >
-            <div className="w-8 h-8 rounded-lg bg-[#171717]/10 text-[#171717] flex items-center justify-center">
-              <ShieldAlert className="w-4 h-4" aria-hidden="true" />
+            <p className="max-w-[330px] m-0 text-[#6f6a63] text-[11px] leading-[1.7]">
+              Three foundational rules protecting your purchases, your custom creations, and our textile atelier.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-[1px] bg-[#ddd3c5]">
+            <article className="min-h-[300px] p-[35px] bg-[#f7eedb] flex flex-col justify-between">
+              <div>
+                <div className="text-[#e6321c] font-mono text-[11px] font-bold">
+                  01
+                </div>
+                <h3 className="mt-[50px] mb-3 text-[20px] font-extrabold tracking-[-0.03em] uppercase">
+                  Authentic 240+ GSM
+                </h3>
+              </div>
+              <p className="max-w-[300px] m-0 text-[#6f6a63] text-[11px] leading-[1.7]">
+                Every item is manufactured with certified 240+ GSM heavyweight combed cotton, custom double-stitched collars, and archival DTF print finishes.
+              </p>
+            </article>
+
+            <article className="min-h-[300px] p-[35px] bg-[#f7eedb] flex flex-col justify-between">
+              <div>
+                <div className="text-[#e6321c] font-mono text-[11px] font-bold">
+                  02
+                </div>
+                <h3 className="mt-[50px] mb-3 text-[20px] font-extrabold tracking-[-0.03em] uppercase">
+                  Artwork Ownership
+                </h3>
+              </div>
+              <p className="max-w-[300px] m-0 text-[#6f6a63] text-[11px] leading-[1.7]">
+                You retain 100% intellectual property rights to all custom graphics uploaded in our studio. We print on-demand solely for your private order.
+              </p>
+            </article>
+
+            <article className="min-h-[300px] p-[35px] bg-[#f7eedb] flex flex-col justify-between">
+              <div>
+                <div className="text-[#e6321c] font-mono text-[11px] font-bold">
+                  03
+                </div>
+                <h3 className="mt-[50px] mb-3 text-[20px] font-extrabold tracking-[-0.03em] uppercase">
+                  Indian Jurisdiction
+                </h3>
+              </div>
+              <p className="max-w-[300px] m-0 text-[#6f6a63] text-[11px] leading-[1.7]">
+                All transactions, GST invoicing, doorstep return pickups, and payment settlements are governed under the laws of the Republic of India and Srikakulam.
+              </p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      {/* =======================================================
+           CUSTOM STUDIO CLAUSE SPLIT BANNER
+      ======================================================= */}
+      <section className="grid grid-cols-1 lg:grid-cols-[55%_45%] min-h-[550px] lg:min-h-[600px]">
+        <div className="min-h-[380px] lg:min-h-full overflow-hidden">
+          <img
+            src="https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?auto=format&fit=crop&w=1500&q=90"
+            alt="Bingooo Studio terms"
+            className="w-full h-full object-cover grayscale"
+          />
+        </div>
+
+        <div className="flex flex-col justify-center p-[45px_24px] sm:p-[clamp(45px,7vw,100px)] bg-[#171717] text-white">
+          <div className="text-[10px] font-semibold tracking-[0.2em] uppercase text-[#e6321c] mb-3">
+            ON-DEMAND CUSTOM PRINTING
+          </div>
+
+          <h2 className="my-3 mb-5 text-[clamp(40px,5vw,70px)] font-extrabold leading-[0.88] tracking-[-0.065em] uppercase text-white">
+            YOUR DESIGNS.<br />
+            OUR CANVAS.
+          </h2>
+
+          <p className="max-w-[410px] m-0 mb-[30px] text-[#aaa7a1] text-[12px] leading-[1.8]">
+            When you create custom garments in our atelier studio, you represent that you hold the legal copyright or license to the design. We strictly prohibit hateful, infringing, or defamatory imagery.
+          </p>
+
+          <div>
+            <Link
+              to="/customize"
+              onClick={() => triggerHaptic('medium')}
+              className="inline-flex items-center justify-center min-h-[48px] px-[23px] rounded-[7px] bg-[#e6321c] text-white text-[10px] font-bold uppercase tracking-wider hover:bg-[#b91f12] hover:-translate-y-0.5 transition-all"
+            >
+              CUSTOM STUDIO GUIDELINES →
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* =======================================================
+           DETAILED TERMS CLAUSES (Editorial Typography)
+      ======================================================= */}
+      <section className="py-[100px] sm:py-[120px]" id="terms-clauses">
+        <div className="container-bingooo max-w-[1000px] mx-auto">
+          <div className="text-center mb-[60px]">
+            <div className="text-[10px] font-semibold tracking-[0.2em] uppercase text-[#6f6a63] mb-2.5">
+              LEGAL SPECIFICATIONS
             </div>
-            <h3 className="text-xs font-bold uppercase tracking-wide text-[#171717] font-heading">Artwork Ownership</h3>
-            <p className="text-xs text-[#6F6A63] leading-relaxed">
-              By uploading artwork for custom printing, you represent that you hold the legal copyright or license to print the design.
+            <h2 className="my-2.5 text-[clamp(35px,5vw,65px)] font-extrabold leading-[0.9] tracking-[-0.06em] uppercase">
+              TERMS OF SERVICE
+            </h2>
+            <p className="text-[11px] font-mono text-[#6f6a63] mt-3">
+              Effective Date: September 2026 • Governing Law: Andhra Pradesh, India
             </p>
-          </motion.div>
+          </div>
 
-          <motion.div
-            whileHover={shouldReduceMotion ? undefined : { y: -3, boxShadow: '0 8px 24px -6px rgba(0, 0, 0, 0.08)' }}
-            className="p-4 rounded-xl bg-white border border-[#DDD3C5] space-y-2 transition-colors shadow-2xs"
-          >
-            <div className="w-8 h-8 rounded-lg bg-[#238636]/10 text-[#238636] flex items-center justify-center">
-              <Scale className="w-4 h-4" aria-hidden="true" />
-            </div>
-            <h3 className="text-xs font-bold uppercase tracking-wide text-[#171717] font-heading">Indian Jurisdiction</h3>
-            <p className="text-xs text-[#6F6A63] leading-relaxed">
-              All transactions, agreements, and disputes are governed under the laws of the Republic of India and Srikakulam jurisdiction.
-            </p>
-          </motion.div>
+          <div className="divide-y divide-[#ddd3c5] border-t border-b border-[#ddd3c5]">
+            {/* Clause 1 */}
+            <article className="py-10 grid grid-cols-1 md:grid-cols-[240px_1fr] gap-6 items-start">
+              <div className="font-mono text-[11px] font-bold uppercase text-[#171717] tracking-wider">
+                01. ACCEPTANCE & SCOPE
+              </div>
+              <div className="space-y-3 text-[13px] leading-[1.8] text-[#6f6a63]">
+                <p>
+                  By accessing, browsing, registering on, or purchasing from <strong className="text-[#171717]">Bingooo Men&apos;s Wear</strong> (bingooo.in), you agree to be bound by these Terms of Service, along with our Privacy Policy, Shipping Policy, and Cancellation Guidelines.
+                </p>
+                <p>
+                  If you do not agree with any provision stated herein, please refrain from transacting on this platform. We reserve the right to revise terms periodically in alignment with statutory updates.
+                </p>
+              </div>
+            </article>
+
+            {/* Clause 2 */}
+            <article className="py-10 grid grid-cols-1 md:grid-cols-[240px_1fr] gap-6 items-start">
+              <div className="font-mono text-[11px] font-bold uppercase text-[#171717] tracking-wider">
+                02. ACCOUNT INTEGRITY
+              </div>
+              <div className="space-y-3 text-[13px] leading-[1.8] text-[#6f6a63]">
+                <p>
+                  You are solely responsible for maintaining the confidentiality of your account credentials, password, and session access on your devices.
+                </p>
+                <p>
+                  Bingooo cannot be held liable for unauthorized orders or actions occurring through accounts where user-side credentials were compromised or shared.
+                </p>
+              </div>
+            </article>
+
+            {/* Clause 3 */}
+            <article className="py-10 grid grid-cols-1 md:grid-cols-[240px_1fr] gap-6 items-start">
+              <div className="font-mono text-[11px] font-bold uppercase text-[#171717] tracking-wider">
+                03. PRICING & GST COMPLIANCE
+              </div>
+              <div className="space-y-3 text-[13px] leading-[1.8] text-[#6f6a63]">
+                <p>
+                  All prices displayed on the storefront are quoted in Indian Rupees (INR) and are inclusive of applicable Goods and Services Tax (GST).
+                </p>
+                <p>
+                  For Cash on Delivery (COD) orders, a nominal ₹79 partial advance commitment may be required to confirm courier dispatch and prevent fraudulent or prank addresses.
+                </p>
+              </div>
+            </article>
+
+            {/* Clause 4 */}
+            <article className="py-10 grid grid-cols-1 md:grid-cols-[240px_1fr] gap-6 items-start">
+              <div className="font-mono text-[11px] font-bold uppercase text-[#171717] tracking-wider">
+                04. CUSTOM ATELIER PRINTING
+              </div>
+              <div className="space-y-3 text-[13px] leading-[1.8] text-[#6f6a63]">
+                <p>
+                  Our 3D Customizer Lab produces bespoke garments tailored to your specifications. Due to the permanent nature of textile printing, custom pieces cannot be cancelled once heat-press curing begins.
+                </p>
+                <p>
+                  Customers must ensure artwork resolution is high (minimum 300 DPI recommended). Slight visual color variations between digital monitor displays and physical fabric ink absorption fall within acceptable craft tolerances.
+                </p>
+              </div>
+            </article>
+
+            {/* Clause 5 */}
+            <article className="py-10 grid grid-cols-1 md:grid-cols-[240px_1fr] gap-6 items-start">
+              <div className="font-mono text-[11px] font-bold uppercase text-[#171717] tracking-wider">
+                05. SHIPPING & FULFILLMENT
+              </div>
+              <div className="space-y-3 text-[13px] leading-[1.8] text-[#6f6a63]">
+                <p>
+                  Standard catalog garments are dispatched within 24 to 48 hours from our Srikakulam atelier. Custom pieces require an additional 1 to 2 business days for curation and curing.
+                </p>
+                <p>
+                  Deliveries are managed through licensed express courier partners (Blue Dart, Delhivery, DTDC). Estimated transit times range from 3 to 6 business days depending on delivery pincodes across India.
+                </p>
+              </div>
+            </article>
+
+            {/* Clause 6 */}
+            <article className="py-10 grid grid-cols-1 md:grid-cols-[240px_1fr] gap-6 items-start">
+              <div className="font-mono text-[11px] font-bold uppercase text-[#171717] tracking-wider">
+                06. 7-DAY DOORSTEP EXCHANGES
+              </div>
+              <div className="space-y-3 text-[13px] leading-[1.8] text-[#6f6a63]">
+                <p>
+                  We offer hassle-free 7-day doorstep size exchanges for all standard catalog garments. Returned apparel must be unworn, unwashed, and retained with original tags and protective packaging.
+                </p>
+                <p>
+                  Defective or damaged items reported within 48 hours of delivery receive an immediate complimentary replacement without charge.
+                </p>
+              </div>
+            </article>
+
+            {/* Clause 7 */}
+            <article className="py-10 grid grid-cols-1 md:grid-cols-[240px_1fr] gap-6 items-start">
+              <div className="font-mono text-[11px] font-bold uppercase text-[#171717] tracking-wider">
+                07. JURISDICTION & GOVERNING LAW
+              </div>
+              <div className="space-y-3 text-[13px] leading-[1.8] text-[#6f6a63]">
+                <p>
+                  These Terms are interpreted under the laws of the Republic of India. Any legal dispute, arbitration, or statutory claim shall fall under the exclusive jurisdiction of the competent courts in Srikakulam, Andhra Pradesh.
+                </p>
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      {/* =======================================================
+           FINAL CTA (Red Full-Width Banner Matching AboutPage)
+      ======================================================= */}
+      <section className="py-[100px] px-5 bg-[#e6321c] text-white text-center">
+        <div className="text-[10px] font-semibold tracking-[0.2em] uppercase text-white/80 mb-2">
+          NEED LEGAL OR ATELIER CLARIFICATION?
         </div>
 
-        {/* ─── Terms Document ─── */}
-        <div className="bg-white p-6 sm:p-10 rounded-2xl border border-[#DDD3C5] space-y-8 text-sm leading-relaxed text-[#171717]">
-          
-          <section className="space-y-3">
-            <h2 className="text-lg sm:text-xl font-bold font-heading text-[#171717]">
-              1. Acceptance of Terms
-            </h2>
-            <p className="text-[#6F6A63]">
-              By accessing, browsing, or purchasing from Bingooo Men&apos;s Wear (bingooo.in), you acknowledge that you have read, understood, and agreed to be bound by these Terms of Service, our Privacy Policy, Shipping Policy, and Return Policy. If you do not agree to these terms, please refrain from using the platform.
-            </p>
-          </section>
+        <h2 className="my-2 mb-[25px] text-[clamp(45px,7vw,90px)] leading-[0.85] font-extrabold tracking-[-0.07em] uppercase text-white">
+          HAVE A QUESTION<br />
+          ABOUT OUR TERMS?
+        </h2>
 
-          <section className="space-y-3">
-            <h2 className="text-lg sm:text-xl font-bold font-heading text-[#171717]">
-              2. User Accounts & Security
-            </h2>
-            <p className="text-[#6F6A63]">
-              When creating an account, you must provide accurate, current, and complete details. You are responsible for safeguarding your password and account credentials. Bingooo will not be liable for any losses arising from unauthorized account access where credentials were compromised on the user&apos;s device.
-            </p>
-          </section>
+        <p className="max-w-[480px] mx-auto mb-[30px] text-white/90 text-[12px] leading-[1.7]">
+          Our customer care and grievance officers in Srikakulam are here to address your order inquiries, custom artwork representations, and store guidelines.
+        </p>
 
-          <section className="space-y-3">
-            <h2 className="text-lg sm:text-xl font-bold font-heading text-[#171717]">
-              3. 3D Customizer Studio & Uploaded Content
-            </h2>
-            <p className="text-[#6F6A63]">
-              Bingooo allows users to upload custom logos, illustrations, graphics, and text to manufacture customized apparel. By uploading any file:
-            </p>
-            <ul className="list-disc pl-5 space-y-1.5 text-[#6F6A63]">
-              <li>You warrant that you own or hold valid intellectual property licenses for all logos, trademarks, or visual artwork submitted.</li>
-              <li>You agree not to submit hate speech, unlawful imagery, defamatory content, or artwork violating third-party trademarks.</li>
-              <li>You grant Bingooo a limited, non-exclusive license to process and print the uploaded file onto your ordered garments.</li>
-              <li>Bingooo reserves the right to reject and cancel any custom order that infringes intellectual property rights or violates applicable laws.</li>
-            </ul>
-          </section>
-
-          <section className="space-y-3">
-            <h2 className="text-lg sm:text-xl font-bold font-heading text-[#171717]">
-              4. Pricing, Billing, and Order Acceptance
-            </h2>
-            <p className="text-[#6F6A63]">
-              All prices listed on the website are in Indian Rupees (INR) and inclusive of applicable Goods and Services Tax (GST). While we endeavor to maintain accurate pricing, typographical errors may occur. In the event of a manifest pricing error, Bingooo reserves the right to cancel the order and provide a full refund.
-            </p>
-          </section>
-
-          <section className="space-y-3">
-            <h2 className="text-lg sm:text-xl font-bold font-heading text-[#171717]">
-              5. Shipping, Exchanges, and Refunds
-            </h2>
-            <p className="text-[#6F6A63]">
-              Garments are dispatched in accordance with our dedicated <Link to="/shipping-policy" className="text-[#E6321C] underline font-medium">Shipping Policy</Link>. Standard catalog apparel can be exchanged within 7 days under our <Link to="/returns-refunds" className="text-[#E6321C] underline font-medium">Returns and Exchange Policy</Link>. Custom printed apparel is manufactured on-demand and can only be reprinted if defective upon delivery.
-            </p>
-          </section>
-
-          <section className="space-y-3">
-            <h2 className="text-lg sm:text-xl font-bold font-heading text-[#171717]">
-              6. Limitation of Liability and Governing Law
-            </h2>
-            <p className="text-[#6F6A63]">
-              Bingooo shall not be liable for indirect, incidental, or consequential damages resulting from the use or inability to use our website or products. Any legal claims or disputes shall be subject to the exclusive jurisdiction of the competent courts in Srikakulam, Andhra Pradesh, India.
-            </p>
-          </section>
-
-        </div>
-
-        {/* ─── Footer Navigation ─── */}
-        <div className="flex flex-wrap items-center justify-between gap-4 pt-4 border-t border-[#DDD3C5] text-xs font-bold font-heading">
-          <Link to="/privacy-policy" className="text-[#171717] hover:text-[#E6321C] transition-colors">
-            &larr; Privacy Policy
-          </Link>
-          <Link to="/contact" className="text-[#171717] hover:text-[#E6321C] transition-colors">
-            Contact Support &rarr;
-          </Link>
-        </div>
-
-      </div>
-    </div>
+        <Link
+          to="/contact"
+          onClick={() => triggerHaptic('medium')}
+          className="inline-flex items-center justify-center min-h-[48px] px-[23px] rounded-[7px] bg-[#171717] text-white text-[10px] font-bold uppercase tracking-wider hover:bg-black hover:-translate-y-0.5 transition-all"
+        >
+          CONTACT STORE CONCIERGE →
+        </Link>
+      </section>
+    </main>
   );
 }
+
+export default TermsPage;

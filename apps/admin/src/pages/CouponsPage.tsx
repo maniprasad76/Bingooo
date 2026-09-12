@@ -1,193 +1,217 @@
-import { useState } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { TicketPercent, Plus, Trash2, Check, LoaderCircle } from 'lucide-react';
-import { api } from '../lib/api/client';
-import { formatCurrency, formatDate } from '../lib/utils';
-import { useToast } from '../components/ui/Toast';
-import { Modal } from '../components/ui/Modal';
+import { useEffect, useState } from 'react';
+import { api } from '../lib/api';
+import { Plus, Trash2, ToggleLeft, ToggleRight, X, LoaderCircle } from 'lucide-react';
 
-interface CouponItem {
+interface Coupon {
   id: string;
   code: string;
   type: 'percentage' | 'fixed';
   value: number;
-  min_order_amount?: number;
+  min_order_value: number;
+  max_uses: number;
+  used_count: number;
   is_active: boolean;
   expires_at?: string;
-  created_at: string;
 }
 
+const EMPTY_FORM: {
+  code: string;
+  type: 'percentage' | 'fixed';
+  value: number;
+  min_order_value: number;
+  max_uses: number;
+} = { code: '', type: 'percentage', value: 10, min_order_value: 0, max_uses: 100 };
+
 export function CouponsPage() {
-  const queryClient = useQueryClient();
-  const { toast } = useToast();
+  const [coupons, setCoupons] = useState<Coupon[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [showModal, setShowModal] = useState(false);
+  const [form, setForm] = useState(EMPTY_FORM);
+  const [saving, setSaving] = useState(false);
 
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [code, setCode] = useState('');
-  const [type, setType] = useState<'percentage' | 'fixed'>('percentage');
-  const [value, setValue] = useState('15');
-  const [minOrder, setMinOrder] = useState('999');
+  const fetchCoupons = () => {
+    setLoading(true);
+    api.get<Coupon[]>('/coupons')
+      .then(setCoupons)
+      .catch(() => setCoupons([]))
+      .finally(() => setLoading(false));
+  };
 
-  const { data: coupons = [], isLoading, isError } = useQuery<CouponItem[]>({
-    queryKey: ['admin', 'coupons'],
-    queryFn: () => api.get<CouponItem[]>('/coupons'),
-  });
+  useEffect(() => { fetchCoupons(); }, []);
 
-  const createMutation = useMutation({
-    mutationFn: () =>
-      api.post('/coupons', {
-        code: code.trim().toUpperCase(),
-        type,
-        value: Number(value),
-        minOrderAmount: Number(minOrder),
-        isActive: true,
-      }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['admin', 'coupons'] });
-      toast({ title: 'Coupon created successfully', variant: 'success' });
-      setIsModalOpen(false);
-      setCode('');
-    },
-    onError: (err: Error) => {
-      toast({ title: 'Could not create coupon', description: err.message, variant: 'danger' });
-    },
-  });
+  const handleCreate = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSaving(true);
+    try {
+      await api.post('/coupons', form);
+      setShowModal(false);
+      setForm(EMPTY_FORM);
+      fetchCoupons();
+    } catch {}
+    setSaving(false);
+  };
+
+  const handleToggle = async (id: string) => {
+    try {
+      await api.patch(`/coupons/${id}/toggle`);
+      fetchCoupons();
+    } catch {}
+  };
+
+  const handleDelete = async (id: string) => {
+    if (!confirm('Delete this coupon?')) return;
+    try {
+      await api.delete(`/coupons/${id}`);
+      fetchCoupons();
+    } catch {}
+  };
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-wrap items-center justify-between gap-4 card-admin p-5">
-        <div className="min-w-0">
-          <h2 className="text-lg font-bold text-ink">Discount Coupons & Vouchers</h2>
-          <p className="text-xs text-muted">
-            Configure promotional promo codes, cart incentives, and flash-sale discounts.
-          </p>
+    <div className="space-y-5">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+        <div>
+          <h1 className="text-xl font-extrabold uppercase tracking-wide text-ink">Coupons</h1>
+          <p className="text-xs text-muted mt-0.5">{coupons.length} coupons configured</p>
         </div>
-        <button onClick={() => setIsModalOpen(true)} className="btn-primary">
-          <Plus size={16} /> New Coupon
+        <button onClick={() => setShowModal(true)} className="btn-primary">
+          <Plus size={14} /> Create Coupon
         </button>
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {isLoading ? (
-          <div className="col-span-full card-admin p-12 text-center text-muted">
-            <LoaderCircle size={22} className="mx-auto animate-spin text-brand-red mb-2" />
-            Loading discount coupons...
-          </div>
-        ) : isError ? (
-          <div className="col-span-full card-admin p-8 text-center text-danger">
-            Failed to load coupons.
-          </div>
-        ) : (
-          coupons.map((c) => (
-            <div key={c.id} className="card-admin p-5 space-y-3">
-              <div className="flex items-center justify-between">
-                <span className="font-mono text-sm font-black uppercase tracking-wider text-brand-red">
-                  {c.code}
-                </span>
-                <span className="rounded-full bg-success/10 px-2.5 py-0.5 text-[10px] font-bold text-success">
-                  Active
-                </span>
-              </div>
-              <p className="text-2xl font-black text-ink">
-                {c.type === 'percentage' ? `${c.value}% OFF` : `₹${c.value} OFF`}
-              </p>
-              <div className="text-xs text-muted">
-                <p>Min order value: {formatCurrency(c.min_order_amount || 0)}</p>
-                <p className="mt-0.5 text-[11px]">Created {formatDate(c.created_at)}</p>
-              </div>
-            </div>
-          ))
-        )}
+      {/* Coupons Table */}
+      <div className="admin-card overflow-x-auto">
+        <table className="admin-table">
+          <thead>
+            <tr>
+              <th>Code</th>
+              <th>Discount</th>
+              <th>Min Order</th>
+              <th>Usage</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {loading ? (
+              <tr><td colSpan={6} className="text-center py-12 text-muted">Loading…</td></tr>
+            ) : coupons.length === 0 ? (
+              <tr><td colSpan={6} className="text-center py-12 text-muted">No coupons created yet</td></tr>
+            ) : (
+              coupons.map((c) => (
+                <tr key={c.id}>
+                  <td className="font-mono text-xs font-extrabold tracking-wider">{c.code}</td>
+                  <td className="font-bold">
+                    {c.type === 'percentage' ? `${c.value}%` : `₹${c.value}`}
+                  </td>
+                  <td className="text-sm">₹{c.min_order_value.toLocaleString('en-IN')}</td>
+                  <td className="text-sm">
+                    <span className="font-semibold">{c.used_count}</span>
+                    <span className="text-muted">/{c.max_uses}</span>
+                  </td>
+                  <td>
+                    <span className={`badge ${c.is_active ? 'badge-success' : 'badge-neutral'}`}>
+                      {c.is_active ? 'Active' : 'Inactive'}
+                    </span>
+                  </td>
+                  <td>
+                    <div className="flex items-center gap-1">
+                      <button
+                        onClick={() => handleToggle(c.id)}
+                        className="btn-ghost p-1.5"
+                        title={c.is_active ? 'Deactivate' : 'Activate'}
+                      >
+                        {c.is_active
+                          ? <ToggleRight size={18} className="text-success" />
+                          : <ToggleLeft size={18} className="text-muted" />
+                        }
+                      </button>
+                      <button onClick={() => handleDelete(c.id)} className="btn-ghost p-1.5 text-danger hover:text-danger" title="Delete">
+                        <Trash2 size={14} />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))
+            )}
+          </tbody>
+        </table>
       </div>
 
-      <Modal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        title="Create Promo Coupon"
-        description="Provide a discount code and order threshold."
-        maxWidth="md"
-      >
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            createMutation.mutate();
-          }}
-          className="space-y-4"
-        >
-          <div>
-            <label className="block text-xs font-bold text-muted">
-              Coupon Code *
-              <input
-                required
-                value={code}
-                onChange={(e) => setCode(e.target.value.toUpperCase())}
-                placeholder="DROP20"
-                className="input-admin mt-1.5 font-mono uppercase"
-              />
-            </label>
-          </div>
-
-          <div className="grid grid-cols-2 gap-3">
-            <div>
-              <label className="block text-xs font-bold text-muted">
-                Discount Type
-                <select
-                  value={type}
-                  onChange={(e) => setType(e.target.value as any)}
-                  className="input-admin mt-1.5"
-                >
-                  <option value="percentage">Percentage (%)</option>
-                  <option value="fixed">Fixed Amount (₹)</option>
-                </select>
-              </label>
+      {/* Create Modal */}
+      {showModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+          <div className="bg-white rounded-xl shadow-elevated w-full max-w-md">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-border">
+              <h3 className="text-sm font-bold uppercase tracking-wider text-ink">Create Coupon</h3>
+              <button onClick={() => setShowModal(false)} className="btn-ghost p-1"><X size={18} /></button>
             </div>
-            <div>
-              <label className="block text-xs font-bold text-muted">
-                Discount Value *
+            <form onSubmit={handleCreate} className="p-6 space-y-4">
+              <div>
+                <label className="admin-label">Coupon Code</label>
                 <input
+                  className="admin-input uppercase"
+                  value={form.code}
+                  onChange={(e) => setForm({ ...form, code: e.target.value.toUpperCase() })}
                   required
-                  type="number"
-                  min="1"
-                  value={value}
-                  onChange={(e) => setValue(e.target.value)}
-                  placeholder="20"
-                  className="input-admin mt-1.5"
+                  placeholder="SUMMER25"
                 />
-              </label>
-            </div>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="admin-label">Type</label>
+                  <select
+                    className="admin-select"
+                    value={form.type}
+                    onChange={(e) => setForm({ ...form, type: e.target.value as 'percentage' | 'fixed' })}
+                  >
+                    <option value="percentage">Percentage (%)</option>
+                    <option value="fixed">Fixed (₹)</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="admin-label">Value</label>
+                  <input
+                    type="number"
+                    className="admin-input"
+                    value={form.value}
+                    onChange={(e) => setForm({ ...form, value: Number(e.target.value) })}
+                    required
+                    min={1}
+                  />
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="admin-label">Min Order (₹)</label>
+                  <input
+                    type="number"
+                    className="admin-input"
+                    value={form.min_order_value}
+                    onChange={(e) => setForm({ ...form, min_order_value: Number(e.target.value) })}
+                    min={0}
+                  />
+                </div>
+                <div>
+                  <label className="admin-label">Max Uses</label>
+                  <input
+                    type="number"
+                    className="admin-input"
+                    value={form.max_uses}
+                    onChange={(e) => setForm({ ...form, max_uses: Number(e.target.value) })}
+                    min={1}
+                  />
+                </div>
+              </div>
+              <div className="flex justify-end gap-2 pt-2">
+                <button type="button" onClick={() => setShowModal(false)} className="btn-secondary">Cancel</button>
+                <button type="submit" disabled={saving} className="btn-primary">
+                  {saving ? <LoaderCircle size={14} className="animate-spin" /> : 'Create'}
+                </button>
+              </div>
+            </form>
           </div>
-
-          <div>
-            <label className="block text-xs font-bold text-muted">
-              Minimum Order Subtotal (₹)
-              <input
-                type="number"
-                min="0"
-                value={minOrder}
-                onChange={(e) => setMinOrder(e.target.value)}
-                placeholder="999"
-                className="input-admin mt-1.5"
-              />
-            </label>
-          </div>
-
-          <div className="flex justify-end gap-3 pt-4 border-t border-border">
-            <button
-              type="button"
-              onClick={() => setIsModalOpen(false)}
-              className="btn-secondary"
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              disabled={createMutation.isPending}
-              className="btn-primary"
-            >
-              <Check size={16} /> Create Coupon
-            </button>
-          </div>
-        </form>
-      </Modal>
+        </div>
+      )}
     </div>
   );
 }

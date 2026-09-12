@@ -1,16 +1,14 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { motion, useReducedMotion } from 'framer-motion';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { ArrowLeft, CheckCircle2, Mail, ShieldCheck } from 'lucide-react';
-import { Button } from '../components/ui/Button';
-import { Input } from '../components/ui/Input';
+import { ArrowLeft, CheckCircle2, Mail, ShieldCheck, ArrowRight } from 'lucide-react';
 import { Logo } from '../components/ui/Logo';
 import { requestPasswordReset } from '../lib/auth/supabase';
 import { useToast } from '../components/ui/Toast';
 import { SEO } from '../components/common/SEO';
+import { triggerHaptic } from '../lib/native/capacitorBridge';
 
 const forgotSchema = z.object({
   email: z.string().min(1, 'Email is required').email('Please enter a valid email address'),
@@ -19,7 +17,6 @@ const forgotSchema = z.object({
 type ForgotForm = z.infer<typeof forgotSchema>;
 
 export function ForgotPasswordPage() {
-  const shouldReduceMotion = useReducedMotion();
   const [loading, setLoading] = useState(false);
   const [submittedEmail, setSubmittedEmail] = useState<string | null>(null);
   const { toast } = useToast();
@@ -33,6 +30,7 @@ export function ForgotPasswordPage() {
   });
 
   const onSubmit = async (data: ForgotForm) => {
+    triggerHaptic('medium');
     setLoading(true);
     try {
       await requestPasswordReset(data.email);
@@ -54,111 +52,169 @@ export function ForgotPasswordPage() {
   };
 
   return (
-    <div className="flex min-h-[80vh] items-center justify-center px-4 py-12 sm:py-16">
+    <main className="bg-[#f7eedb] text-[#171717] font-sans antialiased min-h-[calc(100vh-104px)] flex flex-col justify-center py-8 sm:py-16">
       <SEO
-        title="Forgot Password"
-        description="Reset your Bingooo account password safely and regain access to your orders and designs."
+        title="Forgot Password — BINGOOO"
+        description="Reset your Bingooo account password safely and regain access to your orders and bespoke designs."
         noindex={true}
       />
-      <motion.div
-        initial={shouldReduceMotion ? false : { opacity: 0, y: 16 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ type: 'spring', stiffness: 350, damping: 30 }}
-        className="w-full max-w-[440px] bg-white rounded-2xl border border-[#DDD3C5] shadow-card overflow-hidden"
-      >
-        {/* Top Brand Accent Bar */}
-        <div className="h-1 w-full bg-gradient-to-r from-[#E6321C] via-[#B91F12] to-[#E6321C]" />
 
-        <div className="p-6 sm:p-8">
-          {/* Header */}
-          <div className="text-center mb-6 flex flex-col items-center">
-            <motion.div whileHover={{ scale: 1.03 }} transition={{ type: 'spring', stiffness: 400 }}>
-              <Logo variant="red" size="md" withLink className="mb-3" />
-            </motion.div>
-            <h1 className="font-heading text-2xl sm:text-[28px] font-extrabold uppercase tracking-tight text-[#171717] leading-tight">
-              Reset Password
-            </h1>
-            <p className="mt-1 text-xs sm:text-sm text-[#6F6A63]">
-              Enter your email and we'll send you recovery instructions
-            </p>
+      <div className="container-bingooo">
+        <div className="max-w-[1040px] mx-auto grid grid-cols-1 lg:grid-cols-[1.1fr_1fr] overflow-hidden border border-[#ddd3c5] bg-white shadow-sm">
+          {/* Editorial Visual Column (Inspired by HomePage / AboutPage) */}
+          <div className="relative hidden lg:flex flex-col justify-between p-10 bg-[#171717] text-white overflow-hidden">
+            <div className="absolute inset-0 opacity-40">
+              <img
+                src="https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&w=1200&q=90"
+                alt="Bingooo Atelier"
+                className="h-full w-full object-cover grayscale"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#171717] via-[#171717]/60 to-transparent" />
+            </div>
+
+            <div className="relative z-10">
+              <div className="text-[10px] font-semibold tracking-[0.22em] uppercase text-[#e6321c] font-mono mb-2">
+                ACCOUNT RECOVERY
+              </div>
+              <h2 className="text-3xl lg:text-4xl font-extrabold uppercase leading-[0.9] tracking-[-0.06em] text-white">
+                REGAIN<br />
+                YOUR<br />
+                <span className="text-[#e6321c]">ACCESS.</span>
+              </h2>
+            </div>
+
+            <div className="relative z-10 space-y-4 pt-12">
+              <p className="text-xs text-[#c7c3bd] leading-relaxed max-w-[280px]">
+                Enter your registered email. We will send a secure link to reset your credentials and access your saved fits.
+              </p>
+              <div className="text-[9px] font-mono uppercase tracking-[0.16em] text-[#aaaaaa]">
+                BINGOOO ATELIER &bull; EST. 2026
+              </div>
+            </div>
           </div>
 
-          {submittedEmail ? (
-            <motion.div
-              initial={shouldReduceMotion ? false : { opacity: 0, scale: 0.96 }}
-              animate={{ opacity: 1, scale: 1 }}
-              className="text-center flex flex-col items-center py-2"
-            >
-              <div className="w-14 h-14 rounded-full bg-[#238636]/10 text-[#238636] flex items-center justify-center mb-4">
-                <CheckCircle2 size={32} />
+          {/* Form Column */}
+          <div className="p-6 sm:p-10 lg:p-12 flex flex-col justify-center bg-[#faf8f5]">
+            <div className="mb-8">
+              <div className="flex items-center gap-2 mb-3">
+                <Logo variant="red" size="sm" />
+                <span className="text-[9px] font-mono uppercase tracking-[0.18em] text-[#6f6a63] pl-2 border-l border-[#ddd3c5]">
+                  SECURITY
+                </span>
               </div>
-
-              <h2 className="text-lg font-bold text-ink">Instructions Sent</h2>
-              <p className="mt-2 text-xs sm:text-sm text-muted leading-relaxed max-w-xs">
-                We've sent password reset instructions to{' '}
-                <span className="font-semibold text-ink">{submittedEmail}</span>.
+              <h1 className="text-2xl sm:text-3xl font-extrabold uppercase tracking-tight text-[#171717]">
+                RESET PASSWORD
+              </h1>
+              <p className="mt-1 text-xs text-[#6f6a63] leading-relaxed">
+                Enter your email address and we'll send you recovery instructions.
               </p>
-              <p className="mt-2 text-xs text-muted">
-                Didn't receive the email? Check your spam folder or try resending.
-              </p>
+            </div>
 
-              <div className="mt-6 flex flex-col w-full gap-3">
-                <Button
-                  variant="outline"
-                  fullWidth
-                  onClick={() => setSubmittedEmail(null)}
-                >
-                  Try Another Email
-                </Button>
-                <Link to="/login" className="w-full">
-                  <Button variant="ghost" fullWidth className="gap-2">
-                    <ArrowLeft size={16} /> Back to Sign In
-                  </Button>
-                </Link>
+            {submittedEmail ? (
+              <div className="p-6 border border-[#ddd3c5] bg-white text-center space-y-4">
+                <div className="w-12 h-12 rounded-full bg-[#238636]/10 text-[#238636] mx-auto flex items-center justify-center">
+                  <CheckCircle2 size={24} />
+                </div>
+                <div>
+                  <h3 className="text-sm font-bold uppercase tracking-wider text-[#171717]">
+                    Instructions Dispatched
+                  </h3>
+                  <p className="mt-1 text-xs text-[#6f6a63] leading-relaxed">
+                    We sent password reset instructions to <strong className="text-[#171717]">{submittedEmail}</strong>.
+                  </p>
+                  <p className="mt-2 text-[11px] text-[#6f6a63]">
+                    Please check your inbox or spam folder within the next few minutes.
+                  </p>
+                </div>
+                <div className="pt-2 flex flex-col sm:flex-row gap-2">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      triggerHaptic('light');
+                      setSubmittedEmail(null);
+                    }}
+                    className="flex-1 py-3 px-4 border border-[#171717] text-[#171717] text-[10px] font-bold uppercase tracking-wider hover:bg-[#171717] hover:text-white transition-colors cursor-pointer"
+                  >
+                    Try Another Email
+                  </button>
+                  <Link
+                    to="/login"
+                    onClick={() => triggerHaptic('light')}
+                    className="flex-1 py-3 px-4 bg-[#171717] text-white text-[10px] font-bold uppercase tracking-wider hover:bg-black transition-colors text-center inline-flex items-center justify-center gap-1"
+                  >
+                    <span>Back to Login</span>
+                    <ArrowRight size={12} />
+                  </Link>
+                </div>
               </div>
-            </motion.div>
-          ) : (
-            <>
-              <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
-                <Input
-                  label="Email Address"
-                  type="email"
-                  autoComplete="email"
-                  placeholder="you@example.com"
-                  leftIcon={<Mail size={16} />}
-                  error={errors.email?.message}
-                  {...register('email')}
-                />
+            ) : (
+              <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+                <div>
+                  <label htmlFor="email" className="block text-[10px] font-mono font-bold uppercase tracking-[0.16em] text-[#171717] mb-1.5">
+                    REGISTERED EMAIL ADDRESS
+                  </label>
+                  <div className="relative">
+                    <input
+                      id="email"
+                      type="email"
+                      autoComplete="email"
+                      placeholder="e.g. yourname@gmail.com"
+                      {...register('email')}
+                      className="w-full h-12 px-3.5 bg-white border border-[#ddd3c5] text-xs text-[#171717] placeholder:text-[#999] outline-none focus:border-[#171717] transition-colors rounded-none"
+                    />
+                    <Mail size={15} className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[#6f6a63] pointer-events-none" />
+                  </div>
+                  {errors.email && (
+                    <p className="mt-1 text-[11px] font-medium text-[#e6321c]">
+                      {errors.email.message}
+                    </p>
+                  )}
+                </div>
 
-                <Button
+                <button
                   type="submit"
-                  size="md"
-                  fullWidth
-                  loading={loading}
-                  className="mt-2"
+                  disabled={loading}
+                  onClick={() => triggerHaptic('light')}
+                  className="w-full h-12 bg-[#171717] text-white text-[11px] font-bold uppercase tracking-[0.14em] hover:bg-[#e6321c] transition-colors flex items-center justify-center gap-2 cursor-pointer disabled:opacity-60"
                 >
-                  Send Reset Link
-                </Button>
+                  {loading ? (
+                    <span>DISPATCHING...</span>
+                  ) : (
+                    <>
+                      <span>SEND RECOVERY LINK</span>
+                      <ArrowRight size={13} />
+                    </>
+                  )}
+                </button>
+
+                <div className="flex items-center justify-between pt-4 border-t border-[#ddd3c5]/70 text-xs">
+                  <Link
+                    to="/login"
+                    onClick={() => triggerHaptic('light')}
+                    className="inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-[#6f6a63] hover:text-[#e6321c] transition-colors"
+                  >
+                    <ArrowLeft size={13} />
+                    <span>Back to Sign In</span>
+                  </Link>
+                  <Link
+                    to="/contact"
+                    onClick={() => triggerHaptic('light')}
+                    className="text-[11px] text-[#6f6a63] hover:text-[#171717] transition-colors"
+                  >
+                    Need Help?
+                  </Link>
+                </div>
               </form>
+            )}
 
-              <div className="mt-6 text-center">
-                <Link
-                  to="/login"
-                  className="inline-flex items-center gap-2 text-xs font-semibold text-[#6F6A63] hover:text-[#E6321C] transition-colors"
-                >
-                  <ArrowLeft size={15} /> Back to Sign In
-                </Link>
-              </div>
-            </>
-          )}
-
-          {/* Security Guarantee */}
-          <div className="mt-6 pt-5 border-t border-[#DDD3C5]/60 flex items-center justify-center gap-2 text-[11px] text-[#6F6A63]">
-            <ShieldCheck size={14} className="text-[#238636] shrink-0" />
-            <span>Secure account verification powered by Bingooo</span>
+            {/* Trust Assurance */}
+            <div className="mt-8 pt-4 border-t border-[#ddd3c5]/50 flex items-center gap-2 text-[10px] text-[#6f6a63]">
+              <ShieldCheck size={14} className="text-[#238636] shrink-0" />
+              <span>Bingooo encrypted account security &bull; Srikakulam Atelier</span>
+            </div>
           </div>
         </div>
-      </motion.div>
-    </div>
+      </div>
+    </main>
   );
 }

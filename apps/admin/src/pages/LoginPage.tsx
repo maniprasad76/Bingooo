@@ -1,129 +1,121 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Lock, Mail, ArrowRight, Sparkles, Shield } from 'lucide-react';
-import { signIn, loginAsDevAdmin } from '../lib/auth/supabase';
-import { useToast } from '../components/ui/Toast';
-import { Logo } from '../components/ui/Logo';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { Store, LoaderCircle, AlertCircle } from 'lucide-react';
+import { adminLogin, loginAsDevAdmin } from '../lib/auth';
 
 export function LoginPage() {
-  const navigate = useNavigate();
-  const { toast } = useToast();
-
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
+  const location = useLocation();
+  const from = (location.state as any)?.from?.pathname || '/dashboard';
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsLoading(true);
+    setError('');
+    setLoading(true);
     try {
-      await signIn(email, password);
-      toast({ title: 'Welcome back, Admin', variant: 'success' });
-      navigate('/');
+      await adminLogin(email, password);
+      navigate(from, { replace: true });
     } catch (err: any) {
-      toast({
-        title: 'Authentication failed',
-        description: err.message || 'Please check your admin credentials.',
-        variant: 'danger',
-      });
+      setError(err.message || 'Login failed. Check your credentials.');
     } finally {
-      setIsLoading(false);
+      setLoading(false);
     }
   };
 
-  const handleDevBypass = () => {
+  const handleDevLogin = () => {
     loginAsDevAdmin();
-    toast({
-      title: 'Dev Admin Bypass Active',
-      description: 'Authorized as local Super Admin for development.',
-      variant: 'success',
-    });
-    navigate('/');
+    navigate('/dashboard', { replace: true });
   };
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-[#171717] p-4 text-white">
-      <div className="w-full max-w-md space-y-8 rounded-2xl border border-white/10 bg-[#1F1D1B] p-8 shadow-2xl">
-        {/* Brand Header */}
-        <div className="text-center">
-          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-white/5 border border-white/10 p-2.5 shadow-lg mb-4">
-            <img src="/app-icon-white.png" alt="Bingooo" className="h-full w-full object-contain" />
+    <div className="flex min-h-screen items-center justify-center bg-[#111111] px-4">
+      <div className="w-full max-w-[380px]">
+        {/* Brand */}
+        <div className="text-center mb-8">
+          <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-brand-red/10 mb-4">
+            <Store size={28} className="text-brand-red" />
           </div>
-          <div className="flex justify-center mb-3">
-            <Logo variant="white" size="lg" />
-          </div>
-          <p className="mt-1 text-xs font-bold uppercase tracking-widest text-brand-red">
-            Operations & Control Panel
-          </p>
-          <p className="mt-2 text-xs text-white/50">
-            Sign in with an authorized Bingooo administrator account.
+          <h1 className="text-xl font-extrabold uppercase tracking-widest text-white">
+            Bingooo
+          </h1>
+          <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-white/30 mt-1">
+            Admin Panel
           </p>
         </div>
 
-        {/* Form */}
-        <form onSubmit={handleSubmit} className="space-y-4">
+        {/* Login Form */}
+        <form
+          onSubmit={handleSubmit}
+          className="bg-white rounded-xl p-6 shadow-elevated space-y-4"
+        >
           <div>
-            <label className="block text-xs font-bold text-white/70">
-              Admin Email
-              <div className="relative mt-1.5">
-                <Mail size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-white/40" />
-                <input
-                  required
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="admin@bingooo.in"
-                  className="w-full rounded-lg border border-white/15 bg-white/5 pl-10 pr-3.5 py-2.5 text-sm text-white placeholder:text-white/30 focus:border-brand-red focus:outline-none focus:ring-1 focus:ring-brand-red"
-                />
-              </div>
-            </label>
+            <h2 className="text-base font-bold text-ink">Sign in to Admin</h2>
+            <p className="text-xs text-muted mt-0.5">
+              Enter your admin credentials to continue.
+            </p>
           </div>
 
-          <div>
-            <label className="block text-xs font-bold text-white/70">
-              Password
-              <div className="relative mt-1.5">
-                <Lock size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-white/40" />
-                <input
-                  required
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="••••••••"
-                  className="w-full rounded-lg border border-white/15 bg-white/5 pl-10 pr-3.5 py-2.5 text-sm text-white placeholder:text-white/30 focus:border-brand-red focus:outline-none focus:ring-1 focus:ring-brand-red"
-                />
-              </div>
-            </label>
+          {error && (
+            <div className="flex items-start gap-2 rounded-lg bg-danger-light p-3">
+              <AlertCircle size={16} className="text-danger shrink-0 mt-0.5" />
+              <p className="text-xs font-medium text-danger">{error}</p>
+            </div>
+          )}
+
+          <div className="space-y-3">
+            <div>
+              <label htmlFor="admin-email" className="admin-label">Email</label>
+              <input
+                id="admin-email"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="admin@bingooo.in"
+                required
+                autoComplete="email"
+                className="admin-input"
+              />
+            </div>
+            <div>
+              <label htmlFor="admin-password" className="admin-label">Password</label>
+              <input
+                id="admin-password"
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="••••••••"
+                required
+                autoComplete="current-password"
+                className="admin-input"
+              />
+            </div>
           </div>
 
           <button
             type="submit"
-            disabled={isLoading}
-            className="btn-primary w-full"
+            disabled={loading}
+            className="btn-primary w-full py-3"
           >
-            <span>{isLoading ? 'Verifying...' : 'Sign In To Console'}</span>
-            <ArrowRight size={15} />
+            {loading ? (
+              <LoaderCircle size={16} className="animate-spin" />
+            ) : (
+              'Sign In'
+            )}
           </button>
         </form>
 
-        {/* Development Quick Bypass */}
-        <div className="border-t border-white/10 pt-5 text-center">
-          <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
-            <p className="flex items-center justify-center gap-1.5 text-xs font-bold text-white/80">
-              <Sparkles size={14} className="text-brand-red" />
-              Local Development Mode
-            </p>
-            <p className="mt-1 text-[11px] text-white/45">
-              Instantly bypass credentials with a local Super Admin session.
-            </p>
-            <button
-              type="button"
-              onClick={handleDevBypass}
-              className="mt-3 inline-flex w-full items-center justify-center gap-2 rounded-lg border border-white/20 bg-white/10 py-2.5 text-xs font-bold text-white transition-all hover:bg-white/20"
-            >
-              <Shield size={14} className="text-brand-red" /> Enter as Dev Admin
-            </button>
-          </div>
+        {/* Dev bypass */}
+        <div className="mt-4 text-center">
+          <button
+            onClick={handleDevLogin}
+            className="text-[10px] font-mono font-medium text-white/20 hover:text-white/50 transition-colors underline underline-offset-2"
+          >
+            Dev Admin Login
+          </button>
         </div>
       </div>
     </div>

@@ -1,664 +1,301 @@
-import { useState, useEffect } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import {
-  Settings,
-  Store,
-  CreditCard,
-  Truck,
-  Database,
-  Bell,
-  Search,
-  Check,
-  ShieldCheck,
-  Globe,
-  Sliders,
-  Sparkles,
-  LoaderCircle,
-} from 'lucide-react';
-import { useToast } from '../components/ui/Toast';
-import { api } from '../lib/api/client';
-import { ImageUploadDropzone } from '../components/ui/ImageUploadDropzone';
+import { useEffect, useState } from 'react';
+import { api } from '../lib/api';
+import { Settings, Save, CheckCircle, AlertCircle, LoaderCircle, Store, Truck, CreditCard } from 'lucide-react';
+
+interface StoreSettings {
+  store_name: string;
+  store_email: string;
+  store_phone: string;
+  support_hours: string;
+  currency: string;
+  cod_enabled: boolean;
+  partial_cod_enabled: boolean;
+  partial_cod_advance_amount: number;
+  max_cod_limit: number;
+  cod_deposit_percentage: number;
+  shipping_fee_default: number;
+  free_shipping_threshold: number;
+  tax_rate_percentage: number;
+  max_upload_size_mb: number;
+  return_window_days: number;
+  dtg_print_lead_days: number;
+}
+
+const DEFAULT_SETTINGS: StoreSettings = {
+  store_name: 'Bingooo Luxury Streetwear',
+  store_email: 'care@bingooo.in',
+  store_phone: '+91 98765 43210',
+  support_hours: 'Mon - Sat: 10:00 AM - 7:00 PM IST',
+  currency: 'INR',
+  cod_enabled: true,
+  partial_cod_enabled: true,
+  partial_cod_advance_amount: 79,
+  max_cod_limit: 5000,
+  cod_deposit_percentage: 30,
+  shipping_fee_default: 99,
+  free_shipping_threshold: 999,
+  tax_rate_percentage: 5,
+  max_upload_size_mb: 15,
+  return_window_days: 7,
+  dtg_print_lead_days: 3,
+};
 
 export function SettingsPage() {
-  const { toast } = useToast();
-  const queryClient = useQueryClient();
-  const [activeTab, setActiveTab] = useState<
-    'store' | 'commerce' | 'shipping' | 'cod' | 'payments' | 'notifications' | 'storage' | 'seo'
-  >('store');
-
-  // Store Settings
-  const [storeName, setStoreName] = useState("Bingooo Men's Wear");
-  const [tagline, setTagline] = useState('Wear what feels like you.');
-  const [supportEmail, setSupportEmail] = useState('support@bingooo.in');
-  const [supportPhone, setSupportPhone] = useState('+91 98765 43210');
-  const [storeAddress, setStoreAddress] = useState('12th Main, Indiranagar, Bengaluru, Karnataka 560038');
-
-  // Commerce
-  const [currency, setCurrency] = useState('INR (₹)');
-  const [gstRate, setGstRate] = useState('5');
-  const [minOrderValue, setMinOrderValue] = useState('499');
-
-  // Shipping
-  const [freeShippingThreshold, setFreeShippingThreshold] = useState('999');
-  const [standardShippingFee, setStandardShippingFee] = useState('99');
-  const [expressShippingFee, setExpressShippingFee] = useState('199');
-  const [deliveryDays, setDeliveryDays] = useState('3-7 business days');
-
-  // COD
-  const [codEnabled, setCodEnabled] = useState(true);
-  const [partialCodEnabled, setPartialCodEnabled] = useState(true);
-  const [partialCodAmount, setPartialCodAmount] = useState('150');
-  const [maxCodLimit, setMaxCodLimit] = useState('5000');
-
-  // Payments
-  const [razorpayKeyId, setRazorpayKeyId] = useState('rzp_test_1DP5mmOlF5G5ag');
-  const [razorpaySecret, setRazorpaySecret] = useState('••••••••••••••••••••••••');
-  const [paymentMode, setPaymentMode] = useState<'test' | 'live'>('test');
-
-  // Storage
-  const [r2Bucket, setR2Bucket] = useState('bingooo-production-media');
-  const [r2AccountId, setR2AccountId] = useState('d3b07384d113edec49eaa6238ad5ff00');
-  const [cdnDomain, setCdnDomain] = useState('https://media.bingooo.in');
-
-  // SEO
-  const [seoTitle, setSeoTitle] = useState("Bingooo Men's Wear | Streetwear & Custom Design Studio");
-  const [seoDescription, setSeoDescription] = useState('Premium 240 GSM boxy streetwear t-shirts, fleece hoodies, and live custom design studio. Wear what feels like you.');
-  const [ogImageUrl, setOgImageUrl] = useState('https://images.unsplash.com/photo-1490481651871-ab68de25d43d?w=1200');
-
-  const { data: serverSettings, isLoading } = useQuery({
-    queryKey: ['admin', 'settings'],
-    queryFn: () => api.get<Record<string, any>>('/admin/settings'),
-  });
+  const [settings, setSettings] = useState<StoreSettings>(DEFAULT_SETTINGS);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [success, setSuccess] = useState('');
+  const [error, setError] = useState('');
 
   useEffect(() => {
-    if (serverSettings) {
-      if (serverSettings.store_name) setStoreName(serverSettings.store_name);
-      if (serverSettings.store_email) setSupportEmail(serverSettings.store_email);
-      if (serverSettings.store_phone) setSupportPhone(serverSettings.store_phone);
-      if (serverSettings.free_shipping_threshold) setFreeShippingThreshold(String(serverSettings.free_shipping_threshold));
-      if (serverSettings.shipping_fee_default) setStandardShippingFee(String(serverSettings.shipping_fee_default));
-      if (serverSettings.tax_rate_percentage) setGstRate(String(serverSettings.tax_rate_percentage));
-      if (serverSettings.cod_enabled !== undefined) setCodEnabled(Boolean(serverSettings.cod_enabled));
-      if (serverSettings.partial_cod_enabled !== undefined) setPartialCodEnabled(Boolean(serverSettings.partial_cod_enabled));
-      if (serverSettings.partial_cod_advance_amount !== undefined) setPartialCodAmount(String(serverSettings.partial_cod_advance_amount));
-      if (serverSettings.max_cod_limit !== undefined) setMaxCodLimit(String(serverSettings.max_cod_limit));
-      if (serverSettings.currency) setCurrency(serverSettings.currency);
-    }
-  }, [serverSettings]);
+    api.get<StoreSettings>('/admin/settings')
+      .then((data) => {
+        if (data) setSettings({ ...DEFAULT_SETTINGS, ...data });
+      })
+      .catch(() => {
+        // use default fallback
+      })
+      .finally(() => setLoading(false));
+  }, []);
 
-  const saveMutation = useMutation({
-    mutationFn: (data: Record<string, any>) => api.put('/admin/settings', data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['admin', 'settings'] });
-      toast({
-        title: 'Store settings synchronized',
-        description: 'Parameters saved to backend database and updated across storefront.',
-        variant: 'success',
-      });
-    },
-    onError: (err: any) => {
-      toast({
-        title: 'Save failed',
-        description: err.message || 'Could not update settings.',
-        variant: 'danger',
-      });
-    },
-  });
-
-  const handleSave = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    saveMutation.mutate({
-      store_name: storeName,
-      store_email: supportEmail,
-      store_phone: supportPhone,
-      free_shipping_threshold: Number(freeShippingThreshold) || 999,
-      shipping_fee_default: Number(standardShippingFee) || 99,
-      tax_rate_percentage: Number(gstRate) || 5,
-      cod_enabled: codEnabled,
-      partial_cod_enabled: partialCodEnabled,
-      partial_cod_advance_amount: Number(partialCodAmount) || 79,
-      max_cod_limit: Number(maxCodLimit) || 5000,
-      currency: currency,
-    });
+    setSaving(true);
+    setSuccess('');
+    setError('');
+
+    try {
+      const updated = await api.put<StoreSettings>('/admin/settings', settings);
+      if (updated) setSettings({ ...DEFAULT_SETTINGS, ...updated });
+      setSuccess('Settings saved successfully.');
+      setTimeout(() => setSuccess(''), 4000);
+    } catch (err: any) {
+      setError(err?.message || 'Failed to update store settings.');
+    } finally {
+      setSaving(false);
+    }
   };
 
-  const tabs = [
-    { key: 'store', label: 'Store Profile', icon: Store },
-    { key: 'commerce', label: 'Commerce & GST', icon: Sliders },
-    { key: 'shipping', label: 'Shipping Rules', icon: Truck },
-    { key: 'cod', label: 'COD & Partial COD', icon: CreditCard },
-    { key: 'payments', label: 'Razorpay Gateway', icon: ShieldCheck },
-    { key: 'notifications', label: 'Notifications', icon: Bell },
-    { key: 'storage', label: 'Cloudflare R2', icon: Database },
-    { key: 'seo', label: 'SEO & Metadata', icon: Globe },
-  ] as const;
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <LoaderCircle size={28} className="animate-spin text-brand-red" />
+      </div>
+    );
+  }
 
   return (
-    <div className="space-y-6 max-w-5xl">
-      {/* Header */}
-      <div className="flex flex-wrap items-center justify-between gap-4 card-admin p-6">
-        <div>
-          <span className="inline-flex items-center gap-1.5 rounded-full bg-[#FDF0EE] px-3 py-1 text-xs font-bold uppercase text-brand-red">
-            <Settings size={14} /> System Parameters
-          </span>
-          <h2 className="mt-2 text-xl font-black text-ink sm:text-2xl">
-            Store & Infrastructure Settings
-          </h2>
-          <p className="text-xs text-muted">
-            Configure storefront branding, shipping matrices, Razorpay keys, and Cloudflare R2 endpoints.
-          </p>
+    <div className="space-y-6 max-w-4xl">
+      <div>
+        <h1 className="text-xl font-extrabold uppercase tracking-wide text-ink flex items-center gap-2">
+          <Settings size={22} className="text-brand-red" /> Store Settings
+        </h1>
+        <p className="text-xs text-muted mt-0.5">
+          Configure operations, payment rules, shipping fees, and store policies.
+        </p>
+      </div>
+
+      {success && (
+        <div className="flex items-center gap-2 rounded-lg bg-success-light p-3.5 text-success border border-success/20 text-xs font-semibold">
+          <CheckCircle size={16} />
+          <span>{success}</span>
         </div>
-      </div>
+      )}
 
-      {/* Tabs Navigation */}
-      <div className="flex flex-wrap items-center gap-2 border-b border-border pb-3">
-        {tabs.map((tab) => {
-          const Icon = tab.icon;
-          return (
-            <button
-              key={tab.key}
-              onClick={() => setActiveTab(tab.key)}
-              className={`flex items-center gap-2 rounded-xl px-3.5 py-2 text-xs font-bold transition-all ${
-                activeTab === tab.key
-                  ? 'bg-brand-red text-white shadow-sm'
-                  : 'bg-white text-muted border border-border hover:border-brand-red hover:text-ink'
-              }`}
-            >
-              <Icon size={14} />
-              <span>{tab.label}</span>
-            </button>
-          );
-        })}
-      </div>
+      {error && (
+        <div className="flex items-center gap-2 rounded-lg bg-danger-light p-3.5 text-danger border border-danger/20 text-xs font-semibold">
+          <AlertCircle size={16} />
+          <span>{error}</span>
+        </div>
+      )}
 
-      <form onSubmit={handleSave} className="space-y-6">
-        {/* Tab 1: Store Profile */}
-        {activeTab === 'store' && (
-          <div className="card-admin p-6 space-y-4">
-            <h3 className="font-bold text-ink text-base border-b border-border pb-3">
-              Store Identity & Contact Details
-            </h3>
-
-            <div className="grid gap-4 sm:grid-cols-2">
-              <div>
-                <label className="block text-xs font-bold text-muted">
-                  Storefront Name *
-                  <input
-                    value={storeName}
-                    onChange={(e) => setStoreName(e.target.value)}
-                    className="input-admin mt-1"
-                  />
-                </label>
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold text-muted">
-                  Brand Tagline
-                  <input
-                    value={tagline}
-                    onChange={(e) => setTagline(e.target.value)}
-                    className="input-admin mt-1"
-                  />
-                </label>
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold text-muted">
-                  Support Email
-                  <input
-                    type="email"
-                    value={supportEmail}
-                    onChange={(e) => setSupportEmail(e.target.value)}
-                    className="input-admin mt-1"
-                  />
-                </label>
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold text-muted">
-                  Support Phone / WhatsApp
-                  <input
-                    value={supportPhone}
-                    onChange={(e) => setSupportPhone(e.target.value)}
-                    className="input-admin mt-1"
-                  />
-                </label>
-              </div>
-
-              <div className="sm:col-span-2">
-                <label className="block text-xs font-bold text-muted">
-                  Business HQ Address
-                  <input
-                    value={storeAddress}
-                    onChange={(e) => setStoreAddress(e.target.value)}
-                    className="input-admin mt-1"
-                  />
-                </label>
-              </div>
-            </div>
+      <form onSubmit={handleSubmit} className="space-y-6">
+        {/* Store Profile */}
+        <div className="admin-card p-6 space-y-4">
+          <div className="flex items-center gap-2 pb-3 border-b border-border">
+            <Store size={18} className="text-brand-red" />
+            <h2 className="text-sm font-bold uppercase tracking-wider text-ink">General Store Information</h2>
           </div>
-        )}
 
-        {/* Tab 2: Commerce */}
-        {activeTab === 'commerce' && (
-          <div className="card-admin p-6 space-y-4">
-            <h3 className="font-bold text-ink text-base border-b border-border pb-3">
-              Commerce Economics & Taxation
-            </h3>
-
-            <div className="grid gap-4 sm:grid-cols-3">
-              <div>
-                <label className="block text-xs font-bold text-muted">
-                  Storefront Currency
-                  <input
-                    disabled
-                    value={currency}
-                    className="input-admin mt-1 font-bold opacity-75"
-                  />
-                </label>
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold text-muted">
-                  Applicable GST Rate (%)
-                  <input
-                    type="number"
-                    value={gstRate}
-                    onChange={(e) => setGstRate(e.target.value)}
-                    className="input-admin mt-1"
-                  />
-                </label>
-                <p className="text-[11px] text-muted mt-1">HSN 6109 (Apparel below ₹1,000 is 5% GST)</p>
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold text-muted">
-                  Minimum Cart Checkout (₹)
-                  <input
-                    type="number"
-                    value={minOrderValue}
-                    onChange={(e) => setMinOrderValue(e.target.value)}
-                    className="input-admin mt-1"
-                  />
-                </label>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Tab 3: Shipping */}
-        {activeTab === 'shipping' && (
-          <div className="card-admin p-6 space-y-4">
-            <h3 className="font-bold text-ink text-base border-b border-border pb-3">
-              Logistics & Courier Delivery Rules
-            </h3>
-
-            <div className="grid gap-4 sm:grid-cols-2">
-              <div>
-                <label className="block text-xs font-bold text-muted">
-                  Free Shipping Minimum Cart (₹)
-                  <input
-                    type="number"
-                    value={freeShippingThreshold}
-                    onChange={(e) => setFreeShippingThreshold(e.target.value)}
-                    className="input-admin mt-1 font-bold"
-                  />
-                </label>
-                <p className="text-[11px] text-muted mt-1">Orders above this threshold qualify for zero delivery fee</p>
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold text-muted">
-                  Standard Shipping Fee (₹)
-                  <input
-                    type="number"
-                    value={standardShippingFee}
-                    onChange={(e) => setStandardShippingFee(e.target.value)}
-                    className="input-admin mt-1"
-                  />
-                </label>
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold text-muted">
-                  Express Air Delivery Fee (₹)
-                  <input
-                    type="number"
-                    value={expressShippingFee}
-                    onChange={(e) => setExpressShippingFee(e.target.value)}
-                    className="input-admin mt-1"
-                  />
-                </label>
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold text-muted">
-                  Estimated Delivery Commitment
-                  <input
-                    value={deliveryDays}
-                    onChange={(e) => setDeliveryDays(e.target.value)}
-                    className="input-admin mt-1"
-                  />
-                </label>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Tab 4: COD */}
-        {activeTab === 'cod' && (
-          <div className="card-admin p-6 space-y-6">
-            <div className="flex items-center justify-between border-b border-border pb-3">
-              <div>
-                <h3 className="font-bold text-ink text-base">
-                  Cash On Delivery & Partial COD Advance Controls
-                </h3>
-                <p className="text-xs text-muted mt-0.5">
-                  Toggle COD availability and configure token advance requirements to prevent courier RTOs.
-                </p>
-              </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label className="admin-label">Store Name</label>
+              <input
+                type="text"
+                className="admin-input"
+                value={settings.store_name}
+                onChange={(e) => setSettings({ ...settings, store_name: e.target.value })}
+                required
+              />
             </div>
 
-            {/* Status Summary Banner */}
-            <div className="rounded-xl border border-border bg-[#FAF7F2] p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-              <div className="space-y-1">
-                <span className="text-xs font-black uppercase tracking-wider text-ink block">
-                  Live Storefront Checkout Policy
-                </span>
-                <div className="flex flex-wrap items-center gap-2 text-xs font-semibold">
-                  <span
-                    className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-[11px] font-bold ${
-                      codEnabled
-                        ? 'bg-emerald-100 text-emerald-800 border border-emerald-300'
-                        : 'bg-rose-100 text-rose-800 border border-rose-300'
-                    }`}
-                  >
-                    Full COD: {codEnabled ? 'ACTIVE (100% on delivery)' : 'DISABLED'}
-                  </span>
-                  <span
-                    className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-[11px] font-bold ${
-                      partialCodEnabled
-                        ? 'bg-blue-100 text-blue-800 border border-blue-300'
-                        : 'bg-gray-100 text-gray-700 border border-gray-300'
-                    }`}
-                  >
-                    Partial COD: {partialCodEnabled ? `ACTIVE (₹${partialCodAmount} Advance via UPI)` : 'DISABLED'}
-                  </span>
-                </div>
-              </div>
+            <div>
+              <label className="admin-label">Currency</label>
+              <input
+                type="text"
+                className="admin-input"
+                value={settings.currency}
+                onChange={(e) => setSettings({ ...settings, currency: e.target.value })}
+                required
+              />
             </div>
 
-            <div className="space-y-5">
-              {/* Toggle 1: Full COD */}
-              <div className="flex items-center justify-between p-4 rounded-xl border border-border bg-white shadow-2xs">
-                <div className="space-y-0.5 pr-4">
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm font-bold text-ink">Enable Full Cash on Delivery (COD)</span>
-                    <span
-                      className={`text-[10px] font-black uppercase px-2 py-0.5 rounded-full ${
-                        codEnabled ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'
-                      }`}
-                    >
-                      {codEnabled ? 'ON' : 'OFF'}
-                    </span>
-                  </div>
-                  <p className="text-xs text-muted">
-                    Allow shoppers to place orders without online payment; courier collects 100% of order total at doorstep.
-                  </p>
-                </div>
-                <button
-                  type="button"
-                  role="switch"
-                  aria-checked={codEnabled}
-                  onClick={() => setCodEnabled(!codEnabled)}
-                  className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
-                    codEnabled ? 'bg-[#E6321C]' : 'bg-gray-300'
-                  }`}
-                >
-                  <span
-                    className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-md ring-0 transition duration-200 ease-in-out ${
-                      codEnabled ? 'translate-x-5' : 'translate-x-0'
-                    }`}
-                  />
-                </button>
-              </div>
-
-              {/* Toggle 2: Partial COD */}
-              <div className="flex items-center justify-between p-4 rounded-xl border border-border bg-white shadow-2xs">
-                <div className="space-y-0.5 pr-4">
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm font-bold text-ink">
-                      Enable Partial COD (Advance Token Deposit)
-                    </span>
-                    <span
-                      className={`text-[10px] font-black uppercase px-2 py-0.5 rounded-full ${
-                        partialCodEnabled ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-700'
-                      }`}
-                    >
-                      {partialCodEnabled ? 'ON' : 'OFF'}
-                    </span>
-                  </div>
-                  <p className="text-xs text-muted">
-                    Customer pays a small nominal advance (e.g. ₹79) right now via UPI (PhonePe / GPay / Paytm) to confirm booking, then pays remaining balance at delivery.
-                  </p>
-                </div>
-                <button
-                  type="button"
-                  role="switch"
-                  aria-checked={partialCodEnabled}
-                  onClick={() => setPartialCodEnabled(!partialCodEnabled)}
-                  className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
-                    partialCodEnabled ? 'bg-[#E6321C]' : 'bg-gray-300'
-                  }`}
-                >
-                  <span
-                    className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-md ring-0 transition duration-200 ease-in-out ${
-                      partialCodEnabled ? 'translate-x-5' : 'translate-x-0'
-                    }`}
-                  />
-                </button>
-              </div>
-
-              {/* Numeric Inputs */}
-              <div className="grid gap-4 sm:grid-cols-2 pt-2">
-                <div className="rounded-xl border border-border p-4 bg-white">
-                  <label className="block text-xs font-bold text-ink">
-                    Partial COD Advance Token (₹)
-                    <input
-                      type="number"
-                      min={1}
-                      value={partialCodAmount}
-                      onChange={(e) => setPartialCodAmount(e.target.value)}
-                      className="input-admin mt-1.5 font-bold text-base text-[#E6321C]"
-                    />
-                  </label>
-                  <p className="text-[11px] text-muted mt-1.5">
-                    Amount paid upfront via UPI. Defaults to ₹79. Remaining order balance is collected by delivery agent.
-                  </p>
-                </div>
-
-                <div className="rounded-xl border border-border p-4 bg-white">
-                  <label className="block text-xs font-bold text-ink">
-                    Maximum COD Order Cap (₹)
-                    <input
-                      type="number"
-                      value={maxCodLimit}
-                      onChange={(e) => setMaxCodLimit(e.target.value)}
-                      className="input-admin mt-1.5 font-bold text-base"
-                    />
-                  </label>
-                  <p className="text-[11px] text-muted mt-1.5">
-                    Orders exceeding this cart total cannot be placed via Full COD (prepaid or Partial COD required).
-                  </p>
-                </div>
-              </div>
+            <div>
+              <label className="admin-label">Support Email</label>
+              <input
+                type="email"
+                className="admin-input"
+                value={settings.store_email}
+                onChange={(e) => setSettings({ ...settings, store_email: e.target.value })}
+                required
+              />
             </div>
-          </div>
-        )}
 
-        {/* Tab 5: Payments */}
-        {activeTab === 'payments' && (
-          <div className="card-admin p-6 space-y-4">
-            <h3 className="font-bold text-ink text-base border-b border-border pb-3">
-              Razorpay Gateway Credentials
-            </h3>
-
-            <div className="grid gap-4 sm:grid-cols-2">
-              <div>
-                <label className="block text-xs font-bold text-muted">
-                  Environment Mode
-                  <select
-                    value={paymentMode}
-                    onChange={(e) => setPaymentMode(e.target.value as any)}
-                    className="input-admin mt-1 text-xs font-bold"
-                  >
-                    <option value="test">Test Mode (Sandboxed)</option>
-                    <option value="live">Live Production</option>
-                  </select>
-                </label>
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold text-muted">
-                  Razorpay Key ID *
-                  <input
-                    value={razorpayKeyId}
-                    onChange={(e) => setRazorpayKeyId(e.target.value)}
-                    className="input-admin mt-1 font-mono text-xs"
-                  />
-                </label>
-              </div>
-
-              <div className="sm:col-span-2">
-                <label className="block text-xs font-bold text-muted">
-                  Razorpay Key Secret *
-                  <input
-                    type="password"
-                    value={razorpaySecret}
-                    onChange={(e) => setRazorpaySecret(e.target.value)}
-                    className="input-admin mt-1 font-mono text-xs"
-                  />
-                </label>
-              </div>
+            <div>
+              <label className="admin-label">Support Phone</label>
+              <input
+                type="text"
+                className="admin-input"
+                value={settings.store_phone}
+                onChange={(e) => setSettings({ ...settings, store_phone: e.target.value })}
+              />
             </div>
-          </div>
-        )}
 
-        {/* Tab 6: Notifications */}
-        {activeTab === 'notifications' && (
-          <div className="card-admin p-6 space-y-4">
-            <h3 className="font-bold text-ink text-base border-b border-border pb-3">
-              Operational Notifications & Webhooks
-            </h3>
-
-            <div className="space-y-3 text-xs">
-              <label className="flex items-center gap-3 cursor-pointer">
-                <input type="checkbox" defaultChecked className="h-4 w-4 accent-brand-red" />
-                <span>Send transactional email alert to admin on new paid order</span>
-              </label>
-              <label className="flex items-center gap-3 cursor-pointer">
-                <input type="checkbox" defaultChecked className="h-4 w-4 accent-brand-red" />
-                <span>Alert production queue when customer uploads custom DTG vector</span>
-              </label>
-              <label className="flex items-center gap-3 cursor-pointer">
-                <input type="checkbox" defaultChecked className="h-4 w-4 accent-brand-red" />
-                <span>Trigger low stock warning email when SKU drops below 5 units</span>
-              </label>
-            </div>
-          </div>
-        )}
-
-        {/* Tab 7: Storage */}
-        {activeTab === 'storage' && (
-          <div className="card-admin p-6 space-y-4">
-            <h3 className="font-bold text-ink text-base border-b border-border pb-3">
-              Cloudflare R2 Object Storage Configuration
-            </h3>
-
-            <div className="grid gap-4 sm:grid-cols-2">
-              <div>
-                <label className="block text-xs font-bold text-muted">
-                  R2 Bucket Name
-                  <input
-                    value={r2Bucket}
-                    onChange={(e) => setR2Bucket(e.target.value)}
-                    className="input-admin mt-1 font-mono text-xs"
-                  />
-                </label>
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold text-muted">
-                  Cloudflare Account ID
-                  <input
-                    value={r2AccountId}
-                    onChange={(e) => setR2AccountId(e.target.value)}
-                    className="input-admin mt-1 font-mono text-xs"
-                  />
-                </label>
-              </div>
-
-              <div className="sm:col-span-2">
-                <label className="block text-xs font-bold text-muted">
-                  Public CDN Domain URL
-                  <input
-                    value={cdnDomain}
-                    onChange={(e) => setCdnDomain(e.target.value)}
-                    className="input-admin mt-1 text-xs"
-                  />
-                </label>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Tab 8: SEO */}
-        {activeTab === 'seo' && (
-          <div className="card-admin p-6 space-y-4">
-            <h3 className="font-bold text-ink text-base border-b border-border pb-3">
-              Default SEO Metadata & Open Graph Social Cards
-            </h3>
-
-            <div className="space-y-4">
-              <div>
-                <label className="block text-xs font-bold text-muted">
-                  Global Meta Title
-                  <input
-                    value={seoTitle}
-                    onChange={(e) => setSeoTitle(e.target.value)}
-                    className="input-admin mt-1"
-                  />
-                </label>
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold text-muted">
-                  Global Meta Description
-                  <textarea
-                    rows={3}
-                    value={seoDescription}
-                    onChange={(e) => setSeoDescription(e.target.value)}
-                    className="input-admin mt-1 text-xs"
-                  />
-                </label>
-              </div>
-
-              <ImageUploadDropzone
-                value={ogImageUrl}
-                onChange={setOgImageUrl}
-                label="Open Graph Social Share Image"
-                helperText="Drag & drop 1200x630 social share preview image or click to browse"
-                category="banners"
-                aspectRatio="wide"
+            <div className="sm:col-span-2">
+              <label className="admin-label">Support Hours</label>
+              <input
+                type="text"
+                className="admin-input"
+                value={settings.support_hours}
+                onChange={(e) => setSettings({ ...settings, support_hours: e.target.value })}
               />
             </div>
           </div>
-        )}
+        </div>
 
-        {/* Save Bar */}
-        <div className="flex items-center justify-end gap-3 card-admin p-4">
-          <button type="submit" className="btn-primary">
-            <Check size={16} /> Save Configuration
+        {/* Payments & COD */}
+        <div className="admin-card p-6 space-y-4">
+          <div className="flex items-center gap-2 pb-3 border-b border-border">
+            <CreditCard size={18} className="text-brand-red" />
+            <h2 className="text-sm font-bold uppercase tracking-wider text-ink">Payments & Cash on Delivery (COD)</h2>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="flex items-center justify-between p-3.5 rounded-lg border border-border bg-beige/20">
+              <div>
+                <p className="text-xs font-bold text-ink">Cash on Delivery (COD)</p>
+                <p className="text-[11px] text-muted">Enable COD payment method at checkout</p>
+              </div>
+              <input
+                type="checkbox"
+                className="h-4 w-4 rounded text-brand-red focus:ring-brand-red"
+                checked={settings.cod_enabled}
+                onChange={(e) => setSettings({ ...settings, cod_enabled: e.target.checked })}
+              />
+            </div>
+
+            <div className="flex items-center justify-between p-3.5 rounded-lg border border-border bg-beige/20">
+              <div>
+                <p className="text-xs font-bold text-ink">Partial COD Deposit</p>
+                <p className="text-[11px] text-muted">Require nominal token advance to confirm COD</p>
+              </div>
+              <input
+                type="checkbox"
+                className="h-4 w-4 rounded text-brand-red focus:ring-brand-red"
+                checked={settings.partial_cod_enabled}
+                onChange={(e) => setSettings({ ...settings, partial_cod_enabled: e.target.checked })}
+              />
+            </div>
+
+            <div>
+              <label className="admin-label">Partial COD Advance (₹)</label>
+              <input
+                type="number"
+                min={0}
+                className="admin-input"
+                value={settings.partial_cod_advance_amount}
+                onChange={(e) => setSettings({ ...settings, partial_cod_advance_amount: Number(e.target.value) })}
+              />
+            </div>
+
+            <div>
+              <label className="admin-label">Max Allowed COD Order Value (₹)</label>
+              <input
+                type="number"
+                min={0}
+                className="admin-input"
+                value={settings.max_cod_limit}
+                onChange={(e) => setSettings({ ...settings, max_cod_limit: Number(e.target.value) })}
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Shipping & Logistics */}
+        <div className="admin-card p-6 space-y-4">
+          <div className="flex items-center gap-2 pb-3 border-b border-border">
+            <Truck size={18} className="text-brand-red" />
+            <h2 className="text-sm font-bold uppercase tracking-wider text-ink">Shipping & Fulfillment Policies</h2>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label className="admin-label">Standard Delivery Fee (₹)</label>
+              <input
+                type="number"
+                min={0}
+                className="admin-input"
+                value={settings.shipping_fee_default}
+                onChange={(e) => setSettings({ ...settings, shipping_fee_default: Number(e.target.value) })}
+              />
+            </div>
+
+            <div>
+              <label className="admin-label">Free Shipping Threshold (₹)</label>
+              <input
+                type="number"
+                min={0}
+                className="admin-input"
+                value={settings.free_shipping_threshold}
+                onChange={(e) => setSettings({ ...settings, free_shipping_threshold: Number(e.target.value) })}
+              />
+            </div>
+
+            <div>
+              <label className="admin-label">Return Window (Days)</label>
+              <input
+                type="number"
+                min={0}
+                className="admin-input"
+                value={settings.return_window_days}
+                onChange={(e) => setSettings({ ...settings, return_window_days: Number(e.target.value) })}
+              />
+            </div>
+
+            <div>
+              <label className="admin-label">DTG Custom Studio Lead Time (Days)</label>
+              <input
+                type="number"
+                min={1}
+                className="admin-input"
+                value={settings.dtg_print_lead_days}
+                onChange={(e) => setSettings({ ...settings, dtg_print_lead_days: Number(e.target.value) })}
+              />
+            </div>
+          </div>
+        </div>
+
+        <div className="flex justify-end pt-2">
+          <button type="submit" disabled={saving} className="btn-primary px-6 py-3">
+            {saving ? (
+              <>
+                <LoaderCircle size={16} className="animate-spin" /> Saving…
+              </>
+            ) : (
+              <>
+                <Save size={16} /> Save Changes
+              </>
+            )}
           </button>
         </div>
       </form>

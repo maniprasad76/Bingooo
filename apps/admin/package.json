@@ -4,29 +4,20 @@
   "version": "0.0.1",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "vite --host --port 5174",
     "build": "tsc -b && vite build",
-    "build:admin": "tsc -b && vite build",
-    "build:frontend": "tsc -b && vite build",
     "preview": "vite preview",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@hookform/resolvers": "^3.9.0",
-    "@supabase/supabase-js": "^2.109.0",
     "@tanstack/react-query": "^5.62.0",
-    "clsx": "^2.1.0",
-    "framer-motion": "^11.15.0",
     "lucide-react": "^0.468.0",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
-    "react-hook-form": "^7.54.0",
     "react-router-dom": "^7.1.0",
-    "zod": "^3.24.0",
     "zustand": "^5.0.0"
   },
   "devDependencies": {
-    "@types/node": "^24.13.3",
     "@types/react": "^19.2.18",
     "@types/react-dom": "^19.2.4",
     "@vitejs/plugin-react": "^6.1.0",

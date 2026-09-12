@@ -2,12 +2,12 @@ import { create } from 'zustand';
 
 export interface AdminUser {
   id: string;
-  email?: string;
+  email: string;
+  fullName?: string;
   role?: string;
-  name?: string;
 }
 
-interface AuthStore {
+interface AuthState {
   isAuthenticated: boolean;
   user: AdminUser | null;
   loading: boolean;
@@ -16,7 +16,7 @@ interface AuthStore {
   logout: () => void;
 }
 
-export const useAuthStore = create<AuthStore>((set) => ({
+export const useAuthStore = create<AuthState>((set) => ({
   isAuthenticated: false,
   user: null,
   loading: true,

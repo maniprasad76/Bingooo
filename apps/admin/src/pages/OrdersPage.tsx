@@ -1,435 +1,170 @@
-import { useState, useMemo } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import {
-  ClipboardList,
-  Search,
-  ChevronRight,
-  Eye,
-  LoaderCircle,
-  Truck,
-  CreditCard,
-  User,
-  MapPin,
-  Clock,
-  Package,
-  Trash2,
-} from 'lucide-react';
-import { api } from '../lib/api/client';
-import { formatCurrency, formatDate } from '../lib/utils';
-import { StatusBadge } from '../components/ui/StatusBadge';
-import { Modal } from '../components/ui/Modal';
-import { useToast } from '../components/ui/Toast';
+import { useEffect, useState } from 'react';
+import { api } from '../lib/api';
+import { Search, RefreshCw } from 'lucide-react';
 
-interface OrderItem {
+interface Order {
   id: string;
-  order_number: string;
+  orderNumber: string;
   total: number;
-  subtotal: number;
   status: string;
-  payment_status: string;
-  payment_method?: string;
-  created_at: string;
-  address_snapshot_json?: {
-    name?: string;
-    phone?: string;
-    street?: string;
-    city?: string;
-    state?: string;
-    pincode?: string;
-  };
-  items?: Array<{
-    id: string;
-    title?: string;
-    sku?: string;
-    quantity: number;
-    price: number;
-    size?: string;
-    color?: string;
-  }>;
+  paymentStatus: string;
+  paymentMethod: string;
+  itemCount: number;
+  createdAt: string;
+  user?: { fullName?: string; email?: string };
+  shippingAddress?: any;
+}
+
+const STATUSES = ['all', 'pending_payment', 'processing', 'shipped', 'delivered', 'cancelled'];
+const STATUS_BADGE: Record<string, string> = {
+  delivered: 'badge-success',
+  shipped: 'badge-info',
+  processing: 'badge-warning',
+  pending_payment: 'badge-neutral',
+  cancelled: 'badge-danger',
+};
+
+function formatCurrency(v: number) {
+  return '₹' + v.toLocaleString('en-IN');
+}
+
+function formatDate(d: string) {
+  return new Date(d).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
 }
 
 export function OrdersPage() {
-  const queryClient = useQueryClient();
-  const { toast } = useToast();
-
+  const [orders, setOrders] = useState<Order[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [filter, setFilter] = useState('all');
   const [search, setSearch] = useState('');
-  const [statusFilter, setStatusFilter] = useState('all');
-  const [selectedOrder, setSelectedOrder] = useState<OrderItem | null>(null);
+  const [updating, setUpdating] = useState<string | null>(null);
 
-  const { data: orders = [], isLoading, isError } = useQuery<OrderItem[]>({
-    queryKey: ['admin', 'orders'],
-    queryFn: () => api.get<OrderItem[]>('/orders/admin/all'),
-  });
-
-  const updateStatusMutation = useMutation({
-    mutationFn: ({ id, status }: { id: string; status: string }) =>
-      api.patch(`/orders/${id}/status`, { status }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['admin', 'orders'] });
-      queryClient.invalidateQueries({ queryKey: ['admin', 'dashboard'] });
-      toast({ title: 'Order fulfillment status updated', variant: 'success' });
-      if (selectedOrder) {
-        setSelectedOrder((prev) => (prev ? { ...prev, status: prev.status } : null));
-      }
-    },
-    onError: (err: Error) => {
-      toast({ title: 'Update failed', description: err.message, variant: 'danger' });
-    },
-  });
-
-  const deleteOrderMutation = useMutation({
-    mutationFn: (id: string) => api.delete(`/orders/${id}`),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['admin', 'orders'] });
-      queryClient.invalidateQueries({ queryKey: ['admin', 'dashboard'] });
-      toast({ title: 'Order deleted permanently', variant: 'success' });
-      setSelectedOrder(null);
-    },
-    onError: (err: Error) => {
-      toast({ title: 'Could not delete order', description: err.message, variant: 'danger' });
-    },
-  });
-
-  const handleDeleteOrder = (order: OrderItem) => {
-    if (
-      window.confirm(
-        `Are you sure you want to permanently delete Order #${order.order_number}? This action cannot be undone.`,
-      )
-    ) {
-      deleteOrderMutation.mutate(order.id);
-    }
+  const fetchOrders = () => {
+    setLoading(true);
+    const params: Record<string, any> = {};
+    if (filter !== 'all') params.status = filter;
+    if (search) params.search = search;
+    api.get<Order[]>('/orders/admin/all', params)
+      .then(setOrders)
+      .catch(() => setOrders([]))
+      .finally(() => setLoading(false));
   };
 
-  const filtered = useMemo(() => {
-    return orders.filter((o) => {
-      const matchesSearch =
-        o.order_number.toLowerCase().includes(search.toLowerCase()) ||
-        (o.address_snapshot_json?.name || '').toLowerCase().includes(search.toLowerCase()) ||
-        (o.address_snapshot_json?.phone || '').includes(search);
+  useEffect(() => { fetchOrders(); }, [filter]);
 
-      const matchesStatus =
-        statusFilter === 'all' || o.status === statusFilter;
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    fetchOrders();
+  };
 
-      return matchesSearch && matchesStatus;
-    });
-  }, [orders, search, statusFilter]);
-
-  const statusTabs = [
-    { key: 'all', label: 'All Orders' },
-    { key: 'pending_payment', label: 'Pending Payment' },
-    { key: 'processing', label: 'Processing' },
-    { key: 'shipped', label: 'Shipped' },
-    { key: 'delivered', label: 'Delivered' },
-    { key: 'cancelled', label: 'Cancelled' },
-  ];
+  const updateStatus = async (id: string, status: string) => {
+    setUpdating(id);
+    try {
+      await api.patch(`/orders/${id}/status`, { status });
+      fetchOrders();
+    } catch {}
+    setUpdating(null);
+  };
 
   return (
-    <div className="space-y-6">
-      {/* Quick Status Filter Tabs */}
-      <div className="flex flex-wrap items-center gap-2 border-b border-border pb-3">
-        {statusTabs.map((tab) => (
-          <button
-            key={tab.key}
-            onClick={() => setStatusFilter(tab.key)}
-            className={`rounded-xl px-3.5 py-1.5 text-xs font-bold transition-all ${
-              statusFilter === tab.key
-                ? 'bg-brand-red text-white shadow-sm'
-                : 'bg-white text-muted border border-border hover:border-brand-red hover:text-ink'
-            }`}
-          >
-            {tab.label}
-          </button>
-        ))}
+    <div className="space-y-5">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+        <div>
+          <h1 className="text-xl font-extrabold uppercase tracking-wide text-ink">Orders</h1>
+          <p className="text-xs text-muted mt-0.5">{orders.length} total orders</p>
+        </div>
+        <button onClick={fetchOrders} className="btn-secondary gap-1.5" disabled={loading}>
+          <RefreshCw size={14} className={loading ? 'animate-spin' : ''} />
+          Refresh
+        </button>
       </div>
 
-      {/* Search & Filter Header */}
-      <div className="flex flex-wrap items-center justify-between gap-4 card-admin p-5">
-        <div className="relative min-w-0 flex-1 sm:min-w-[260px]">
-          <Search size={17} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted" />
-          <input
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search by Order #, customer name, or phone..."
-            aria-label="Search orders by order number, customer name, or phone"
-            className="input-admin pl-10 text-xs"
-          />
+      {/* Filters */}
+      <div className="flex flex-col sm:flex-row gap-3">
+        <div className="flex flex-wrap gap-1.5">
+          {STATUSES.map((s) => (
+            <button
+              key={s}
+              onClick={() => setFilter(s)}
+              className={`px-3 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-wider transition-all
+                ${filter === s
+                  ? 'bg-ink text-white'
+                  : 'bg-white text-muted border border-border hover:border-ink hover:text-ink'
+                }`}
+            >
+              {s.replace(/_/g, ' ')}
+            </button>
+          ))}
         </div>
 
-        <select
-          value={statusFilter}
-          onChange={(e) => setStatusFilter(e.target.value)}
-          aria-label="Filter orders by fulfillment stage"
-          className="input-admin w-auto min-w-[160px] text-xs font-bold"
-        >
-          <option value="all">All Fulfillment Stages</option>
-          <option value="pending_payment">Pending Payment</option>
-          <option value="paid">Paid</option>
-          <option value="processing">Processing</option>
-          <option value="packed">Packed</option>
-          <option value="shipped">Shipped</option>
-          <option value="delivered">Delivered</option>
-          <option value="cancelled">Cancelled</option>
-        </select>
+        <form onSubmit={handleSearch} className="flex gap-2 sm:ml-auto">
+          <div className="relative">
+            <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted" />
+            <input
+              type="text"
+              placeholder="Search orders…"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="admin-input pl-9 w-[220px]"
+            />
+          </div>
+        </form>
       </div>
 
       {/* Orders Table */}
-      <div className="overflow-hidden card-admin">
-        <div className="overflow-x-auto">
-          <table className="min-w-[860px] w-full text-left text-xs">
-            <thead className="bg-[#F7EEDB]/70 uppercase tracking-wider text-muted font-bold">
-              <tr>
-                <th className="p-4">Order ID & Date</th>
-                <th className="p-4">Customer</th>
-                <th className="p-4">Items</th>
-                <th className="p-4">Total</th>
-                <th className="p-4">Payment</th>
-                <th className="p-4">Fulfillment Stage</th>
-                <th className="p-4 text-right">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-border">
-              {isLoading ? (
-                <tr>
-                  <td colSpan={7} className="p-12 text-center text-muted">
-                    <LoaderCircle size={24} className="mx-auto animate-spin text-brand-red mb-2" />
-                    Loading orders...
+      <div className="admin-card overflow-x-auto">
+        <table className="admin-table">
+          <thead>
+            <tr>
+              <th>Order #</th>
+              <th>Items</th>
+              <th>Total</th>
+              <th>Payment</th>
+              <th>Status</th>
+              <th>Date</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {loading ? (
+              <tr><td colSpan={7} className="text-center py-12 text-muted">Loading…</td></tr>
+            ) : orders.length === 0 ? (
+              <tr><td colSpan={7} className="text-center py-12 text-muted">No orders found</td></tr>
+            ) : (
+              orders.map((o) => (
+                <tr key={o.id}>
+                  <td className="font-mono text-xs font-bold">{o.orderNumber}</td>
+                  <td>{o.itemCount}</td>
+                  <td className="font-bold">{formatCurrency(o.total)}</td>
+                  <td>
+                    <span className={`badge ${o.paymentStatus === 'captured' || o.paymentStatus === 'paid' ? 'badge-success' : 'badge-neutral'}`}>
+                      {o.paymentStatus}
+                    </span>
+                  </td>
+                  <td>
+                    <span className={`badge ${STATUS_BADGE[o.status] || 'badge-neutral'}`}>
+                      {o.status.replace(/_/g, ' ')}
+                    </span>
+                  </td>
+                  <td className="text-xs text-muted whitespace-nowrap">{formatDate(o.createdAt)}</td>
+                  <td>
+                    <select
+                      value={o.status}
+                      onChange={(e) => updateStatus(o.id, e.target.value)}
+                      disabled={updating === o.id}
+                      className="admin-select text-xs py-1.5 w-[140px]"
+                    >
+                      {STATUSES.filter((s) => s !== 'all').map((s) => (
+                        <option key={s} value={s}>{s.replace(/_/g, ' ')}</option>
+                      ))}
+                    </select>
                   </td>
                 </tr>
-              ) : isError ? (
-                <tr>
-                  <td colSpan={7} className="p-8 text-center text-danger">
-                    Failed to load order records.
-                  </td>
-                </tr>
-              ) : filtered.length === 0 ? (
-                <tr>
-                  <td colSpan={7} className="p-12 text-center text-muted">
-                    No orders match your filter criteria.
-                  </td>
-                </tr>
-              ) : (
-                filtered.map((order) => (
-                  <tr key={order.id} className="hover:bg-[#FDF9F4] transition-colors">
-                    <td className="p-4">
-                      <a
-                        href={`/orders/${order.id}`}
-                        className="font-mono font-extrabold text-ink hover:text-brand-red transition-colors block"
-                      >
-                        #{order.order_number}
-                      </a>
-                      <p className="text-[11px] text-muted">{formatDate(order.created_at)}</p>
-                    </td>
-
-                    <td className="p-4">
-                      <p className="font-bold text-ink">
-                        {order.address_snapshot_json?.name || 'Customer'}
-                      </p>
-                      <p className="text-[11px] text-muted">
-                        {order.address_snapshot_json?.city || 'India'}
-                      </p>
-                    </td>
-
-                    <td className="p-4 font-semibold text-muted">
-                      {order.items?.length || 1} item(s)
-                    </td>
-
-                    <td className="p-4 font-extrabold text-ink">
-                      {formatCurrency(order.total)}
-                    </td>
-
-                    <td className="p-4">
-                      <StatusBadge status={order.payment_status || 'pending'} />
-                    </td>
-
-                    <td className="p-4">
-                      <select
-                        value={order.status}
-                        disabled={updateStatusMutation.isPending}
-                        onChange={(e) =>
-                          updateStatusMutation.mutate({
-                            id: order.id,
-                            status: e.target.value,
-                          })
-                        }
-                        aria-label={`Fulfillment status of order ${order.order_number}`}
-                        className="rounded-lg border border-border bg-white px-2.5 py-1 text-xs font-bold text-ink focus:border-brand-red focus:outline-none"
-                      >
-                        <option value="pending_payment">Pending Payment</option>
-                        <option value="paid">Paid</option>
-                        <option value="processing">Processing</option>
-                        <option value="packed">Packed</option>
-                        <option value="shipped">Shipped</option>
-                        <option value="delivered">Delivered</option>
-                        <option value="cancelled">Cancelled</option>
-                      </select>
-                    </td>
-
-                    <td className="p-4 text-right">
-                      <div className="flex items-center justify-end gap-1.5">
-                        <button
-                          onClick={() => setSelectedOrder(order)}
-                          className="inline-flex items-center gap-1 rounded-lg border border-border bg-white px-2.5 py-1 text-xs font-bold text-ink shadow-xs transition-colors hover:border-brand-red hover:text-brand-red"
-                          title="Quick preview modal"
-                        >
-                          <Eye size={13} /> Preview
-                        </button>
-                        <a
-                          href={`/orders/${order.id}`}
-                          className="inline-flex items-center gap-1 rounded-lg bg-brand-red/10 px-2.5 py-1 text-xs font-bold text-brand-red hover:bg-brand-red hover:text-white transition-colors"
-                        >
-                          Details →
-                        </a>
-                        <button
-                          onClick={() => handleDeleteOrder(order)}
-                          disabled={deleteOrderMutation.isPending}
-                          className="inline-flex items-center justify-center rounded-lg border border-border bg-white p-1.5 text-xs font-bold text-muted hover:border-danger hover:bg-danger/10 hover:text-danger transition-colors"
-                          title={`Delete Order #${order.order_number}`}
-                          aria-label={`Delete order ${order.order_number}`}
-                        >
-                          <Trash2 size={14} />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-        </div>
+              ))
+            )}
+          </tbody>
+        </table>
       </div>
-
-      {/* Order Detail Modal */}
-      {selectedOrder && (
-        <Modal
-          isOpen={Boolean(selectedOrder)}
-          onClose={() => setSelectedOrder(null)}
-          title={`Order ${selectedOrder.order_number}`}
-          description={`Placed on ${formatDate(selectedOrder.created_at)}`}
-          maxWidth="2xl"
-        >
-          <div className="space-y-6 text-xs">
-            {/* Summary Highlights */}
-            <div className="grid grid-cols-2 gap-4 rounded-2xl border border-border bg-[#FDF9F4] p-4 sm:grid-cols-4">
-              <div>
-                <p className="text-[10px] font-bold uppercase text-muted">Total Amount</p>
-                <p className="text-base font-extrabold text-ink">{formatCurrency(selectedOrder.total)}</p>
-              </div>
-              <div>
-                <p className="text-[10px] font-bold uppercase text-muted">Payment</p>
-                <StatusBadge status={selectedOrder.payment_status || 'paid'} className="mt-1" />
-              </div>
-              <div>
-                <p className="text-[10px] font-bold uppercase text-muted">Fulfillment</p>
-                <StatusBadge status={selectedOrder.status} className="mt-1" />
-              </div>
-              <div>
-                <p className="text-[10px] font-bold uppercase text-muted">Method</p>
-                <p className="mt-1 font-bold capitalize text-ink">{selectedOrder.payment_method || 'Online'}</p>
-              </div>
-            </div>
-
-            {/* Shipping Address */}
-            <div className="rounded-2xl border border-border p-4">
-              <div className="flex items-center gap-2 font-bold text-ink mb-2">
-                <MapPin size={16} className="text-brand-red" />
-                <span>Delivery Address</span>
-              </div>
-              <p className="font-bold text-ink">{selectedOrder.address_snapshot_json?.name || 'Customer'}</p>
-              <p className="text-muted mt-0.5">{selectedOrder.address_snapshot_json?.street || 'Address'}</p>
-              <p className="text-muted">
-                {selectedOrder.address_snapshot_json?.city},{' '}
-                {selectedOrder.address_snapshot_json?.state} -{' '}
-                {selectedOrder.address_snapshot_json?.pincode}
-              </p>
-              {selectedOrder.address_snapshot_json?.phone && (
-                <p className="text-muted mt-1">Phone: {selectedOrder.address_snapshot_json.phone}</p>
-              )}
-            </div>
-
-            {/* Order Items List */}
-            <div className="space-y-3">
-              <p className="font-bold uppercase tracking-wider text-muted text-[11px]">
-                Ordered Garments ({selectedOrder.items?.length || 1})
-              </p>
-              <div className="divide-y divide-border rounded-2xl border border-border overflow-hidden">
-                {(selectedOrder.items || []).map((item, idx) => (
-                  <div key={idx} className="flex items-center justify-between p-3.5 bg-white">
-                    <div className="flex items-center gap-3">
-                      <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#F7EEDB] text-brand-red font-bold">
-                        <Package size={18} />
-                      </span>
-                      <div>
-                        <p className="font-bold text-ink">{item.title || 'Bingooo Garment'}</p>
-                        <p className="text-muted text-[11px]">
-                          SKU: {item.sku || 'N/A'} • Size: {item.size || 'M'} • Color: {item.color || 'Standard'}
-                        </p>
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      <p className="font-bold text-ink">{formatCurrency(item.price)}</p>
-                      <p className="text-muted text-[11px]">Qty: {item.quantity}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Update Status Selector */}
-            <div className="border-t border-border pt-4 flex items-center justify-between">
-              <label className="text-xs font-bold text-muted flex items-center gap-2">
-                <Truck size={16} className="text-brand-red" />
-                Change fulfillment stage:
-              </label>
-              <select
-                value={selectedOrder.status}
-                onChange={(e) =>
-                  updateStatusMutation.mutate({
-                    id: selectedOrder.id,
-                    status: e.target.value,
-                  })
-                }
-                className="input-admin w-auto"
-              >
-                <option value="pending_payment">Pending Payment</option>
-                <option value="paid">Paid</option>
-                <option value="processing">Processing</option>
-                <option value="packed">Packed</option>
-                <option value="shipped">Shipped</option>
-                <option value="delivered">Delivered</option>
-                <option value="cancelled">Cancelled</option>
-              </select>
-            </div>
-
-            {/* Modal Actions Footer */}
-            <div className="border-t border-border pt-4 flex items-center justify-between">
-              <button
-                type="button"
-                onClick={() => handleDeleteOrder(selectedOrder)}
-                disabled={deleteOrderMutation.isPending}
-                className="inline-flex items-center gap-1.5 rounded-xl border border-danger/30 bg-danger/5 px-3 py-2 text-xs font-bold text-danger hover:bg-danger hover:text-white transition-colors"
-              >
-                <Trash2 size={14} /> Delete Order
-              </button>
-
-              <div className="flex items-center gap-2">
-                <button
-                  type="button"
-                  onClick={() => setSelectedOrder(null)}
-                  className="btn-secondary text-xs"
-                >
-                  Close
-                </button>
-                <a
-                  href={`/orders/${selectedOrder.id}`}
-                  className="btn-primary text-xs"
-                >
-                  Open Full Details →
-                </a>
-              </div>
-            </div>
-          </div>
-        </Modal>
-      )}
     </div>
   );
 }

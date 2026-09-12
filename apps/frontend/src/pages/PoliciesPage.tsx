@@ -1,12 +1,6 @@
-import { useParams, Link } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { motion, useReducedMotion } from 'framer-motion';
 import { Truck, RotateCcw, XCircle, Shield, FileText, Ruler, ArrowRight } from 'lucide-react';
-import { SizeGuidePage } from './SizeGuidePage';
-import { ShippingPolicyPage } from './ShippingPolicyPage';
-import { ReturnsRefundsPage } from './ReturnsRefundsPage';
-import { PrivacyPolicyPage } from './PrivacyPolicyPage';
-import { TermsPage } from './TermsPage';
-import { CancellationPolicyPage } from './CancellationPolicyPage';
 import { SEO } from '../components/common/SEO';
 
 const POLICY_CARDS = [
@@ -50,29 +44,7 @@ const POLICY_CARDS = [
 
 export function PoliciesPage() {
   const shouldReduceMotion = useReducedMotion();
-  const { slug } = useParams<{ slug: string }>();
 
-  // If specific sub-policy slug is requested, render that page directly
-  if (slug === 'size-guide') {
-    return <SizeGuidePage />;
-  }
-  if (slug === 'shipping' || slug === 'shipping-policy') {
-    return <ShippingPolicyPage />;
-  }
-  if (slug === 'returns' || slug === 'returns-refunds' || slug === 'return-policy') {
-    return <ReturnsRefundsPage />;
-  }
-  if (slug === 'privacy' || slug === 'privacy-policy') {
-    return <PrivacyPolicyPage />;
-  }
-  if (slug === 'terms' || slug === 'terms-and-conditions') {
-    return <TermsPage />;
-  }
-  if (slug === 'cancellation' || slug === 'cancellation-policy') {
-    return <CancellationPolicyPage />;
-  }
-
-  // Otherwise, render the Central Policy Directory
   return (
     <div className="w-full bg-[#FAF8F5] text-[#171717] min-h-screen py-10 sm:py-16 font-sans">
       <SEO

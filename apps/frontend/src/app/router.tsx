@@ -95,6 +95,8 @@ export const router = createBrowserRouter([
 
       // User Account (Protected)
       { path: 'account', element: <RequireAuth><AccountPage /></RequireAuth> },
+      { path: 'profile', element: <Navigate to="/account" replace /> },
+      { path: 'account/profile', element: <RequireAuth><AccountPage /></RequireAuth> },
       { path: 'account/orders', element: <RequireAuth><AccountPage /></RequireAuth> },
       { path: 'account/orders/:orderNumber', element: <RequireAuth><OrderDetailPage /></RequireAuth> },
       { path: 'account/recently-viewed', element: <RecentlyViewedPage /> },

@@ -1,332 +1,708 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { SEO } from '../components/common/SEO';
 import { triggerHaptic } from '../lib/native/capacitorBridge';
 import { WhatsAppIcon, getWhatsAppUrl } from '../components/ui/SocialIcons';
+import {
+  RefreshCw,
+  Truck,
+  ShieldCheck,
+  CreditCard,
+  ArrowRight,
+  ChevronDown,
+  CheckCircle2,
+  AlertCircle,
+  PackageCheck,
+  Clock,
+  Sparkles,
+  HelpCircle,
+  FileText,
+  Mail,
+  MapPin,
+  ExternalLink,
+} from 'lucide-react';
 
 const RETURN_STEPS = [
   {
     step: '01',
-    title: 'Lodge Request in 7 Days',
-    desc: 'Go to Account > Orders and tap "Exchange Size", or drop a quick note to our WhatsApp concierge desk.',
+    label: 'REQUEST',
+    title: 'Lodge in 60 Seconds',
+    desc: 'Navigate to Account > Orders and select "Exchange Size", or drop your Order ID to our WhatsApp concierge desk.',
+    highlight: 'No paper forms or printing required',
   },
   {
     step: '02',
-    title: 'Doorstep Courier Pickup',
-    desc: 'Our logistics courier arrives at your location within 24 to 48 hours to collect the packed item with tags intact.',
+    label: 'PICKUP',
+    title: 'Doorstep Courier Arrival',
+    desc: 'Our logistics courier (Blue Dart / Delhivery / DTDC) arrives at your door within 24–48 hours to collect the packed piece.',
+    highlight: 'Sealed tamper-proof bag provided at doorstep',
   },
   {
     step: '03',
-    title: 'Rapid Replacement',
-    desc: 'Your fresh size is dispatched from our Srikakulam atelier immediately, or your refund is initiated within 24 hours.',
+    label: 'FULFILLMENT',
+    title: 'Fresh Dispatch or 24H Refund',
+    desc: 'Your replacement size dispatches immediately from our Srikakulam atelier, or your full refund is credited via UPI/source.',
+    highlight: 'Zero restocking or hidden deductions',
+  },
+];
+
+const FAQS = [
+  {
+    question: 'How do Cash on Delivery (COD) refunds work?',
+    answer:
+      'For COD orders, we do not require your bank account numbers or IFSC codes over chat. Once reverse pickup is verified, you receive a secure automated Razorpay UPI Payout link via SMS and WhatsApp. Simply input your UPI ID (Google Pay, PhonePe, Paytm, or BHIM) and the full funds transfer directly into your bank account within seconds.',
+  },
+  {
+    question: 'How long does a size exchange take from pickup to delivery?',
+    answer:
+      'Once your reverse pickup is handed over to the courier executive, our system automatically initiates dispatch of your replacement size from our Srikakulam atelier. Most exchanges are completed door-to-door within 3 to 6 business days depending on your pincode.',
+  },
+  {
+    question: 'Can I exchange for a completely different style or colorway?',
+    answer:
+      'Yes. If the size you need is out of stock, or if you prefer an alternate colorway or product of equal value, our atelier concierge desk can process a direct swap. Alternatively, we can issue an instant Bingooo Atelier store credit with lifetime validity.',
+  },
+  {
+    question: 'What exact condition must the garment be in to pass inspection?',
+    answer:
+      'Garments must be unworn, unwashed, unaltered, and free from perfume, body spray, deodorant residue, or smoke stains. The original Bingooo brand tags, care labels, and poly packaging must be returned intact. Trying on the garment for fit is of course completely welcomed.',
+  },
+  {
+    question: 'What is the refund timeline for Prepaid orders (Card / UPI / Net Banking)?',
+    answer:
+      'Prepaid refunds are initiated via Razorpay immediately upon return inspection. UPI payments typically reflect within 2 to 24 hours. Credit card, debit card, and net banking transactions reflect within 3 to 5 business days, subject to your issuing bank’s settlement cycle.',
+  },
+  {
+    question: 'What if my package arrives damaged, flawed, or misprinted?',
+    answer:
+      'We stand behind every seam. If an item arrives damaged, defective, with flawed stitching, or with any print error, take 1 or 2 quick photos and message our concierge within 48 hours of delivery. We bypass regular inspection, ship an immediate fresh replacement via air priority, or issue a 100% instant refund with zero fees.',
+  },
+  {
+    question: 'What if the courier misses the reverse pickup slot?',
+    answer:
+      'Courier executives make up to 2 attempts. If a pickup fails due to address access or unexpected courier delay, our logistics team automatically re-triggers a priority slot or routes an alternate partner within 24 hours. You can also nudge us on WhatsApp for an immediate manual dispatch push.',
   },
 ];
 
 export function ReturnsRefundsPage() {
+  const [activeFaq, setActiveFaq] = useState<number | null>(0);
+
+  const toggleFaq = (index: number) => {
+    triggerHaptic('light');
+    setActiveFaq(activeFaq === index ? null : index);
+  };
+
   return (
-    <main className="bg-[#f7eedb] text-[#171717] font-sans antialiased">
+    <main className="bg-[#F7EEDB] text-[#171717] font-sans antialiased selection:bg-[#E6321C] selection:text-white">
       <SEO
-        title="Returns & Refunds Policy — BINGOOO"
-        description="Learn about Bingooo's hassle-free 7-day doorstep size exchange policy, reverse courier pickups, and rapid refund timelines across India."
+        title="Returns & Refunds Policy — BINGOOO Atelier"
+        description="Learn about Bingooo's hassle-free 7-day doorstep size exchange policy, reverse courier pickups across 19,000+ Indian pincodes, and rapid 24h refund timelines."
         canonical="https://bingooo.in/returns-refunds"
       />
 
       {/* =======================================================
-           HERO SECTION (Matching AboutPage & HomePage Layout)
+           TOP BREADCRUMB & LOGISTICS LIVE STATUS
       ======================================================= */}
-      <section className="min-h-[600px] lg:min-h-[650px] grid grid-cols-1 lg:grid-cols-[45%_55%] bg-[#f7eedb]">
-        <div className="flex flex-col justify-center py-[65px] px-6 sm:px-10 lg:py-[clamp(50px,8vw,110px)] lg:px-[clamp(25px,6vw,90px)]">
-          <div className="text-[10px] font-semibold tracking-[0.2em] uppercase text-[#171717] mb-3 font-mono">
-            BINGOOO / RETURNS & EXCHANGES
+      <div className="border-b border-[#DDD3C5] bg-[#EDE0CC]/60 px-4 sm:px-8 py-3 text-[11px]">
+        <div className="container-bingooo flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+          <nav aria-label="Breadcrumb" className="flex items-center gap-2 font-mono uppercase tracking-wider text-[#6F6A63]">
+            <Link to="/" className="hover:text-[#171717] transition-colors">HOME</Link>
+            <span>/</span>
+            <span className="text-[#6F6A63]">POLICIES</span>
+            <span>/</span>
+            <span className="text-[#171717] font-bold">RETURNS & EXCHANGES</span>
+          </nav>
+          <div className="flex items-center gap-2 font-mono text-[10px] tracking-wider text-[#171717] uppercase">
+            <span className="w-2 h-2 rounded-full bg-[#238636] animate-pulse" />
+            <span>REVERSE LOGISTICS ACTIVE ACROSS 19,000+ PINCODES</span>
+          </div>
+        </div>
+      </div>
+
+      {/* =======================================================
+           HERO SECTION: EDITORIAL SPLIT
+      ======================================================= */}
+      <section className="min-h-[620px] lg:min-h-[680px] grid grid-cols-1 lg:grid-cols-[48%_52%] border-b border-[#DDD3C5]">
+        {/* Left Editorial Copy */}
+        <div className="flex flex-col justify-center py-12 px-6 sm:px-10 lg:py-[clamp(50px,7vw,100px)] lg:px-[clamp(30px,5vw,80px)] bg-[#F7EEDB]">
+          <div className="inline-flex items-center gap-2 self-start px-2.5 py-1 bg-[#EDE0CC] border border-[#DDD3C5] text-[#E6321C] text-[10px] font-mono font-bold tracking-[0.2em] uppercase rounded-[2px] mb-4">
+            <Sparkles className="w-3 h-3 text-[#E6321C]" />
+            <span>ATELIER PROMISE • 7-DAY DOORSTEP EXCHANGE</span>
           </div>
 
-          <h1 className="my-3 mb-6 text-[clamp(52px,7vw,105px)] font-extrabold leading-[0.84] tracking-[-0.075em] uppercase">
+          <h1 className="my-2 mb-6 text-[clamp(44px,6.2vw,92px)] font-extrabold leading-[0.86] tracking-[-0.07em] uppercase text-[#171717]">
             <span className="block">PERFECT FIT.</span>
             <span className="block">DOORSTEP PICKUP.</span>
-            <span className="block text-[#e6321c]">ZERO HASSLE.</span>
+            <span className="block text-[#E6321C]">ZERO FRICTION.</span>
           </h1>
 
-          <p className="max-w-[440px] m-0 mb-[30px] text-[#6f6a63] text-[13px] leading-[1.8]">
-            We stand unreservedly behind our heavyweight menswear. If the size or fit isn't right, our doorstep reverse courier network takes care of everything.
+          <p className="max-w-[480px] m-0 mb-8 text-[#6F6A63] text-[13px] leading-[1.8]">
+            Every Bingooo garment is cut with heavyweight structure and architectural precision. If the size or fit isn't right, our reverse logistics network picks up straight from your doorstep — no post office runs, no printing slips, and no friction.
           </p>
 
-          <div className="flex flex-wrap items-center gap-3">
-            <a
-              href="#exchange-process"
-              onClick={() => triggerHaptic('light')}
-              className="inline-flex items-center justify-center min-h-[48px] px-[23px] rounded-[7px] bg-[#171717] text-white text-[10px] font-bold uppercase tracking-wider hover:bg-black hover:-translate-y-0.5 transition-all cursor-pointer"
-            >
-              HOW EXCHANGES WORK ↓
-            </a>
-
+          {/* CTAs */}
+          <div className="flex flex-wrap items-center gap-3 mb-8">
             <Link
               to="/account/orders"
               onClick={() => triggerHaptic('light')}
-              className="inline-flex items-center justify-center min-h-[48px] px-[23px] rounded-[7px] border border-[#171717] text-[#171717] text-[10px] font-bold uppercase tracking-wider hover:bg-[#171717] hover:text-white hover:-translate-y-0.5 transition-all"
+              className="btn btn-black inline-flex items-center gap-2"
             >
-              MANAGE MY ORDERS →
+              <span>INITIATE SIZE EXCHANGE</span>
+              <ArrowRight className="w-3.5 h-3.5" />
             </Link>
+
+            <a
+              href={getWhatsAppUrl('Hi Bingooo, I would like to arrange an exchange or return for my order.')}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={() => triggerHaptic('light')}
+              className="btn btn-outline inline-flex items-center gap-2"
+            >
+              <WhatsAppIcon className="w-4 h-4 text-[#25D366]" />
+              <span>WHATSAPP ATELIER</span>
+            </a>
+          </div>
+
+          {/* Quick SLA Badges */}
+          <div className="grid grid-cols-3 gap-2 pt-6 border-t border-[#DDD3C5]">
+            <div className="flex flex-col">
+              <span className="font-mono text-[10px] font-bold uppercase text-[#171717]">WINDOW</span>
+              <span className="text-[12px] font-bold text-[#6F6A63]">7 Calendar Days</span>
+            </div>
+            <div className="flex flex-col border-l border-[#DDD3C5] pl-3">
+              <span className="font-mono text-[10px] font-bold uppercase text-[#171717]">PICKUP</span>
+              <span className="text-[12px] font-bold text-[#6F6A63]">Doorstep Handover</span>
+            </div>
+            <div className="flex flex-col border-l border-[#DDD3C5] pl-3">
+              <span className="font-mono text-[10px] font-bold uppercase text-[#E6321C]">REFUND</span>
+              <span className="text-[12px] font-bold text-[#171717]">Direct UPI / Source</span>
+            </div>
           </div>
         </div>
 
-        <div className="h-[400px] sm:h-[500px] lg:h-auto overflow-hidden bg-[#252525]">
+        {/* Right Imagery Banner */}
+        <div className="relative min-h-[380px] sm:min-h-[480px] lg:min-h-full overflow-hidden bg-[#171717]">
           <img
             src="https://images.unsplash.com/photo-1551488831-00ddcb6c6bd3?auto=format&fit=crop&w=1600&q=90"
-            alt="Bingooo returns and exchanges"
-            className="w-full h-full object-cover grayscale"
+            alt="Bingooo atelier garment craftsmanship and doorstep returns"
+            className="w-full h-full object-cover grayscale contrast-125 opacity-85"
           />
-        </div>
-      </section>
-
-      {/* =======================================================
-           STATEMENT BANNER (Dark Full-Width Punchline)
-      ======================================================= */}
-      <section className="py-[clamp(75px,10vw,145px)] px-5 bg-[#171717] text-white text-center">
-        <div className="text-[10px] font-semibold tracking-[0.2em] uppercase text-[#aaaaaa] mb-4 font-mono">
-          OUR FIT GUARANTEE
-        </div>
-
-        <h2 className="max-w-[1000px] mx-auto m-0 text-[clamp(40px,7vw,88px)] leading-[0.9] font-extrabold tracking-[-0.07em] uppercase text-white">
-          CLOTHES MUST FEEL <span className="text-[#e6321c]">RIGHT.</span><br />
-          NOT TOO TIGHT. NOT TOO LOOSE.<br />
-          <span className="text-[#e6321c]">7 DAYS. AT YOUR DOORSTEP.</span>
-        </h2>
-      </section>
-
-      {/* =======================================================
-           THREE-STEP REVERSE PROCESS (Beige Canvas Grid)
-      ======================================================= */}
-      <section className="py-[100px] bg-[#ede0cc]" id="exchange-process">
-        <div className="container-bingooo">
-          <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-[45px] gap-4">
+          <div className="absolute inset-0 bg-gradient-to-t from-[#171717]/80 via-transparent to-black/20" />
+          
+          {/* Overlay Atelier Stamp */}
+          <div className="absolute bottom-6 left-6 right-6 p-5 bg-[#171717]/90 backdrop-blur-md border border-white/10 text-white rounded-[2px] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div>
-              <div className="text-[10px] font-semibold tracking-[0.2em] uppercase text-[#6f6a63] mb-2 font-mono">
-                THE PROCESS
+              <div className="font-mono text-[9px] uppercase tracking-[0.2em] text-[#E6321C] mb-1">
+                SRIKAKULAM WORKSHOP • VERIFIED PROCESS
               </div>
+              <div className="text-sm font-bold uppercase tracking-tight">
+                100% Defect & Sizing Protection Guaranteed
+              </div>
+            </div>
+            <div className="font-mono text-[10px] text-[#DDD3C5]/80 uppercase tracking-widest self-end sm:self-center">
+              ISO-STANDARD QUALITY
+            </div>
+          </div>
+        </div>
+      </section>
 
-              <h2 className="m-0 text-[clamp(40px,5vw,68px)] leading-[0.88] font-extrabold tracking-[-0.065em] uppercase">
-                THREE SIMPLE<br />
-                STEPS.
-              </h2>
+      {/* =======================================================
+           KEY METRICS / SLA STRIP
+      ======================================================= */}
+      <section className="bg-[#F7EEDB] border-b border-[#DDD3C5]">
+        <div className="container-bingooo">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 divide-y sm:divide-y-0 sm:divide-x divide-[#DDD3C5]">
+            <div className="p-6 sm:p-8 flex flex-col justify-between">
+              <div className="flex items-center justify-between mb-4">
+                <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-[#6F6A63]">EXCHANGE PERIOD</span>
+                <Clock className="w-4 h-4 text-[#E6321C]" />
+              </div>
+              <div>
+                <div className="text-[clamp(36px,4vw,56px)] font-extrabold tracking-[-0.06em] leading-none text-[#171717]">
+                  7 DAYS
+                </div>
+                <p className="mt-2 text-[11px] font-semibold uppercase tracking-wider text-[#6F6A63]">
+                  Complimentary Doorstep Size Exchange
+                </p>
+              </div>
             </div>
 
-            <p className="max-w-[330px] m-0 text-[#6f6a63] text-[11px] leading-[1.7]">
-              We arrange reverse courier transit straight from your address across India. No post office queues.
+            <div className="p-6 sm:p-8 flex flex-col justify-between">
+              <div className="flex items-center justify-between mb-4">
+                <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-[#6F6A63]">REVERSE COURIER</span>
+                <Truck className="w-4 h-4 text-[#171717]" />
+              </div>
+              <div>
+                <div className="text-[clamp(36px,4vw,56px)] font-extrabold tracking-[-0.06em] leading-none text-[#171717]">
+                  24–48H
+                </div>
+                <p className="mt-2 text-[11px] font-semibold uppercase tracking-wider text-[#6F6A63]">
+                  Doorstep Courier Pickup Window
+                </p>
+              </div>
+            </div>
+
+            <div className="p-6 sm:p-8 flex flex-col justify-between">
+              <div className="flex items-center justify-between mb-4">
+                <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-[#6F6A63]">GARMENT DEFECTS</span>
+                <ShieldCheck className="w-4 h-4 text-[#E6321C]" />
+              </div>
+              <div>
+                <div className="text-[clamp(36px,4vw,56px)] font-extrabold tracking-[-0.06em] leading-none text-[#E6321C]">
+                  100%
+                </div>
+                <p className="mt-2 text-[11px] font-semibold uppercase tracking-wider text-[#6F6A63]">
+                  Flawless Garment & Print Guarantee
+                </p>
+              </div>
+            </div>
+
+            <div className="p-6 sm:p-8 flex flex-col justify-between">
+              <div className="flex items-center justify-between mb-4">
+                <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-[#6F6A63]">REFUND DISPATCH</span>
+                <CreditCard className="w-4 h-4 text-[#171717]" />
+              </div>
+              <div>
+                <div className="text-[clamp(36px,4vw,56px)] font-extrabold tracking-[-0.06em] leading-none text-[#171717]">
+                  24H
+                </div>
+                <p className="mt-2 text-[11px] font-semibold uppercase tracking-wider text-[#6F6A63]">
+                  UPI / Source Account Payout Post-Scan
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* =======================================================
+           THREE-STEP REVERSE LOGISTICS TIMELINE
+      ======================================================= */}
+      <section className="py-20 lg:py-28 bg-[#EDE0CC] border-b border-[#DDD3C5]" id="exchange-process">
+        <div className="container-bingooo">
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-14 gap-6">
+            <div>
+              <div className="text-[10px] font-semibold tracking-[0.2em] uppercase text-[#6F6A63] mb-2 font-mono">
+                THE LOGISTICS WORKFLOW
+              </div>
+              <h2 className="m-0 text-[clamp(36px,5vw,64px)] leading-[0.88] font-extrabold tracking-[-0.065em] uppercase text-[#171717]">
+                THREE STEPS.<br />
+                ZERO PAPERWORK.
+              </h2>
+            </div>
+            <p className="max-w-[360px] m-0 text-[#6F6A63] text-[12px] leading-[1.8]">
+              We coordinate end-to-end courier transit directly from your residence or office. No post office visits, no label printing, and no hidden freight charges.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-[1px] bg-[#ddd3c5]">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-[1px] bg-[#DDD3C5]">
             {RETURN_STEPS.map((step) => (
-              <article key={step.step} className="min-h-[300px] p-[35px] bg-[#f7eedb] flex flex-col justify-between">
+              <article key={step.step} className="p-8 sm:p-10 bg-[#F7EEDB] flex flex-col justify-between min-h-[320px] transition-transform hover:-translate-y-1">
                 <div>
-                  <div className="text-[#e6321c] font-mono text-[11px] font-bold">
-                    STEP {step.step}
+                  <div className="flex items-center justify-between mb-6">
+                    <span className="text-[#E6321C] font-mono text-sm font-bold tracking-wider">
+                      STEP {step.step}
+                    </span>
+                    <span className="font-mono text-[9px] uppercase tracking-widest px-2 py-0.5 bg-[#EDE0CC] border border-[#DDD3C5] text-[#171717]">
+                      {step.label}
+                    </span>
                   </div>
-                  <h3 className="mt-[50px] mb-3 text-[20px] font-extrabold tracking-[-0.03em] uppercase text-[#171717]">
+                  <h3 className="mb-3 text-[22px] font-extrabold tracking-[-0.03em] uppercase text-[#171717]">
                     {step.title}
                   </h3>
+                  <p className="text-[#6F6A63] text-[12px] leading-[1.8]">
+                    {step.desc}
+                  </p>
                 </div>
-                <p className="max-w-[300px] m-0 text-[#6f6a63] text-[11px] leading-[1.7]">
-                  {step.desc}
-                </p>
+
+                <div className="mt-8 pt-4 border-t border-[#DDD3C5]/60 flex items-center gap-2 font-mono text-[10px] font-bold text-[#171717]">
+                  <CheckCircle2 className="w-3.5 h-3.5 text-[#238636] shrink-0" />
+                  <span>{step.highlight}</span>
+                </div>
               </article>
             ))}
           </div>
-        </div>
-      </section>
 
-      {/* =======================================================
-           METRICS STRIP (Numbers Matching AboutPage)
-      ======================================================= */}
-      <section className="py-[70px] sm:py-[100px]">
-        <div className="container-bingooo">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 border-t border-b border-[#ddd3c5]">
-            <div className="p-[35px_25px] border-b sm:border-b-0 sm:border-r border-[#ddd3c5]">
-              <div className="text-[clamp(35px,4vw,58px)] font-extrabold tracking-[-0.06em]">
-                7 DAYS
-              </div>
-              <div className="mt-[7px] text-[#6f6a63] text-[9px] font-semibold uppercase tracking-[0.12em]">
-                Doorstep Size Exchange Window
-              </div>
-            </div>
-
-            <div className="p-[35px_25px] border-b sm:border-b-0 lg:border-r border-[#ddd3c5]">
-              <div className="text-[clamp(35px,4vw,58px)] font-extrabold tracking-[-0.06em]">
-                24-48H
-              </div>
-              <div className="mt-[7px] text-[#6f6a63] text-[9px] font-semibold uppercase tracking-[0.12em]">
-                Reverse Courier Pickup Arrival
-              </div>
-            </div>
-
-            <div className="p-[35px_25px] border-b sm:border-b-0 sm:border-r border-[#ddd3c5]">
-              <div className="text-[clamp(35px,4vw,58px)] font-extrabold tracking-[-0.06em] text-[#e6321c]">
-                100%
-              </div>
-              <div className="mt-[7px] text-[#6f6a63] text-[9px] font-semibold uppercase tracking-[0.12em]">
-                Flawless Defect Guarantee
-              </div>
-            </div>
-
-            <div className="p-[35px_25px]">
-              <div className="text-[clamp(35px,4vw,58px)] font-extrabold tracking-[-0.06em]">
-                24H
-              </div>
-              <div className="mt-[7px] text-[#6f6a63] text-[9px] font-semibold uppercase tracking-[0.12em]">
-                Rapid UPI & Source Refund Payout
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* =======================================================
-           CUSTOM APPAREL CLAUSE SPLIT BANNER
-      ======================================================= */}
-      <section className="grid grid-cols-1 lg:grid-cols-[55%_45%] min-h-[550px] lg:min-h-[600px]">
-        <div className="min-h-[380px] lg:min-h-full overflow-hidden bg-[#252525]">
-          <img
-            src="https://images.unsplash.com/photo-1529139574466-a303027c1d8b?auto=format&fit=crop&w=1500&q=90"
-            alt="Bingooo custom apparel guarantee"
-            className="w-full h-full object-cover grayscale"
-          />
-        </div>
-
-        <div className="flex flex-col justify-center p-[45px_24px] sm:p-[clamp(45px,7vw,100px)] bg-[#171717] text-white">
-          <div className="text-[10px] font-semibold tracking-[0.2em] uppercase text-[#e6321c] mb-3 font-mono">
-            ON-DEMAND CUSTOM PIECES
-          </div>
-
-          <h2 className="my-3 mb-5 text-[clamp(40px,5vw,70px)] font-extrabold leading-[0.88] tracking-[-0.065em] uppercase text-white">
-            CUSTOMIZED TO FIT.<br />
-            GUARANTEED IN PRINT.
-          </h2>
-
-          <p className="max-w-[410px] m-0 mb-[30px] text-[#aaa7a1] text-[12px] leading-[1.8]">
-            Because customized garments are tailored and heat-cured specifically for you, they cannot be exchanged for a subjective change of mind. However, if any custom piece arrives flawed, misprinted, or defective, we reprint it free or refund you 100% immediately.
-          </p>
-
-          <div>
+          <div className="mt-8 text-center">
             <Link
-              to="/artwork-guidelines"
-              onClick={() => triggerHaptic('medium')}
-              className="inline-flex items-center justify-center min-h-[48px] px-[23px] rounded-[7px] bg-[#e6321c] text-white text-[10px] font-bold uppercase tracking-wider hover:bg-[#b91f12] hover:-translate-y-0.5 transition-all"
+              to="/account/orders"
+              onClick={() => triggerHaptic('light')}
+              className="btn btn-black inline-flex items-center gap-2"
             >
-              ARTWORK GUIDELINES →
+              <PackageCheck className="w-4 h-4" />
+              <span>START YOUR EXCHANGE REQUEST NOW</span>
             </Link>
           </div>
         </div>
       </section>
 
       {/* =======================================================
-           DETAILED POLICY CLAUSES (Editorial Typography)
+           CATEGORY BREAKDOWN: STANDARD VS ON-DEMAND CUSTOM
       ======================================================= */}
-      <section className="py-[100px] sm:py-[120px]">
-        <div className="container-bingooo max-w-[1000px] mx-auto">
-          <div className="text-center mb-[60px]">
-            <div className="text-[10px] font-semibold tracking-[0.2em] uppercase text-[#6f6a63] mb-2.5 font-mono">
-              POLICY CLAUSES
+      <section className="py-20 lg:py-28 bg-[#F7EEDB] border-b border-[#DDD3C5]">
+        <div className="container-bingooo">
+          <div className="text-center max-w-[700px] mx-auto mb-14">
+            <div className="text-[10px] font-semibold tracking-[0.2em] uppercase text-[#6F6A63] mb-2 font-mono">
+              PRODUCT COVERAGE CRITERIA
             </div>
-            <h2 className="my-2.5 text-[clamp(35px,5vw,65px)] font-extrabold leading-[0.9] tracking-[-0.06em] uppercase">
-              EXCHANGE & REFUND TERMS
+            <h2 className="text-[clamp(32px,4.5vw,56px)] font-extrabold leading-[0.9] tracking-[-0.06em] uppercase text-[#171717]">
+              WHAT IS ELIGIBLE FOR RETURN?
             </h2>
-            <p className="text-[11px] font-mono text-[#6f6a63] mt-3">
-              Last Updated: September 2026 • Governed under Consumer Protection Act (India)
+            <p className="text-[#6F6A63] text-[13px] leading-[1.8] mt-4">
+              To maintain the highest standards of hygiene and artisanal precision, here is our straightforward breakdown between off-the-rack and bespoke pieces.
             </p>
           </div>
 
-          <div className="divide-y divide-[#ddd3c5] border-t border-b border-[#ddd3c5]">
-            {/* Clause 1 */}
-            <article className="py-10 grid grid-cols-1 md:grid-cols-[240px_1fr] gap-6 items-start">
-              <div className="font-mono text-[11px] font-bold uppercase text-[#171717] tracking-wider">
-                01. ELIGIBILITY CRITERIA
-              </div>
-              <div className="space-y-3 text-[13px] leading-[1.8] text-[#6f6a63]">
-                <p>
-                  To be eligible for an exchange or return:
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            {/* Card 1: Standard Atelier Garments */}
+            <div className="p-8 sm:p-10 bg-white border border-[#DDD3C5] rounded-[2px] flex flex-col justify-between">
+              <div>
+                <div className="inline-flex items-center gap-2 px-2.5 py-1 bg-[#F7EEDB] border border-[#DDD3C5] font-mono text-[10px] font-bold uppercase tracking-wider text-[#171717] mb-6">
+                  <RefreshCw className="w-3.5 h-3.5 text-[#171717]" />
+                  <span>OFF-THE-RACK COLLECTION</span>
+                </div>
+
+                <h3 className="text-2xl font-extrabold uppercase tracking-tight text-[#171717] mb-3">
+                  Standard Heavyweight Menswear
+                </h3>
+                <p className="text-[#6F6A63] text-[13px] leading-[1.8] mb-6">
+                  Includes all standard catalog pieces: Heavyweight Crewneck Tees, Oversized Hoodies, Vintage Acid Washed Garments, Boxy Polos, and Sweatpants.
                 </p>
-                <ul className="list-disc pl-5 space-y-1.5">
-                  <li>Garments must be unworn, unwashed, unaltered, and free from perfume, deodorant stains, or smoke.</li>
-                  <li>Original brand neck tags, wash care tags, and poly packaging must be preserved and returned intact.</li>
-                  <li>The exchange request must be initiated within <strong className="text-[#171717]">7 calendar days</strong> of confirmed courier delivery.</li>
+
+                <ul className="space-y-3 font-mono text-[11px] text-[#171717]">
+                  <li className="flex items-start gap-2.5">
+                    <CheckCircle2 className="w-4 h-4 text-[#238636] shrink-0 mt-0.5" />
+                    <span><strong>7-Day Window:</strong> Initiate within 7 days of confirmed delivery.</span>
+                  </li>
+                  <li className="flex items-start gap-2.5">
+                    <CheckCircle2 className="w-4 h-4 text-[#238636] shrink-0 mt-0.5" />
+                    <span><strong>Doorstep Pickup:</strong> Free reverse pickup across 19,000+ Indian pincodes.</span>
+                  </li>
+                  <li className="flex items-start gap-2.5">
+                    <CheckCircle2 className="w-4 h-4 text-[#238636] shrink-0 mt-0.5" />
+                    <span><strong>Flexible Modes:</strong> Exchange size, swap for another piece, or receive 100% refund.</span>
+                  </li>
+                  <li className="flex items-start gap-2.5">
+                    <CheckCircle2 className="w-4 h-4 text-[#238636] shrink-0 mt-0.5" />
+                    <span><strong>Condition:</strong> Unworn, unwashed, with original atelier tags and polybag intact.</span>
+                  </li>
                 </ul>
               </div>
-            </article>
 
-            {/* Clause 2 */}
-            <article className="py-10 grid grid-cols-1 md:grid-cols-[240px_1fr] gap-6 items-start">
-              <div className="font-mono text-[11px] font-bold uppercase text-[#171717] tracking-wider">
-                02. DOORSTEP COURIER PICKUP
+              <div className="mt-8 pt-6 border-t border-[#DDD3C5]">
+                <Link
+                  to="/account/orders"
+                  className="text-link text-[11px] text-[#171717] hover:text-[#E6321C]"
+                >
+                  VIEW YOUR ELIGIBLE ORDERS →
+                </Link>
               </div>
-              <div className="space-y-3 text-[13px] leading-[1.8] text-[#6f6a63]">
-                <p>
-                  We coordinate with Blue Dart, Delhivery, and DTDC to execute reverse doorstep pickups across 19,000+ Indian pincodes.
-                </p>
-                <p>
-                  A courier executive will attempt pickup up to 2 times. Please keep the garment securely wrapped in its original packaging along with the exchange slip.
-                </p>
-              </div>
-            </article>
+            </div>
 
-            {/* Clause 3 */}
-            <article className="py-10 grid grid-cols-1 md:grid-cols-[240px_1fr] gap-6 items-start">
-              <div className="font-mono text-[11px] font-bold uppercase text-[#171717] tracking-wider">
-                03. REFUND MODES & TIMELINES
-              </div>
-              <div className="space-y-3 text-[13px] leading-[1.8] text-[#6f6a63]">
-                <p>
-                  <strong className="text-[#171717]">Prepaid Orders (Cards, Net Banking, UPI):</strong> Refunds are credited directly back to the originating bank account or card via Razorpay within 3 to 5 business days.
-                </p>
-                <p>
-                  <strong className="text-[#171717]">Cash on Delivery (COD) Orders:</strong> Once reverse pickup verification occurs, a secure automated payout link is sent via WhatsApp and SMS to deposit the full amount into your verified UPI VPA within 24 hours.
-                </p>
-              </div>
-            </article>
+            {/* Card 2: On-Demand Custom DTF Pieces */}
+            <div className="p-8 sm:p-10 bg-[#171717] text-white border border-[#171717] rounded-[2px] flex flex-col justify-between">
+              <div>
+                <div className="inline-flex items-center gap-2 px-2.5 py-1 bg-white/10 border border-white/20 font-mono text-[10px] font-bold uppercase tracking-wider text-[#E6321C] mb-6">
+                  <Sparkles className="w-3.5 h-3.5 text-[#E6321C]" />
+                  <span>ON-DEMAND CUSTOM WORK</span>
+                </div>
 
-            {/* Clause 4 */}
-            <article className="py-10 grid grid-cols-1 md:grid-cols-[240px_1fr] gap-6 items-start">
-              <div className="font-mono text-[11px] font-bold uppercase text-[#171717] tracking-wider">
-                04. DEFECTIVE & DAMAGED PIECES
-              </div>
-              <div className="space-y-3 text-[13px] leading-[1.8] text-[#6f6a63]">
-                <p>
-                  If an order arrives with incorrect sizing, damaged stitching, or printing defects, notify our atelier desk within 48 hours of delivery.
+                <h3 className="text-2xl font-extrabold uppercase tracking-tight text-white mb-3">
+                  Bespoke DTF Printed Apparel
+                </h3>
+                <p className="text-[#AAA7A1] text-[13px] leading-[1.8] mb-6">
+                  Items tailored and heat-cured specifically to your artwork upload. Because these items are manufactured on demand, they cannot be returned for subjective change of mind.
                 </p>
-                <p>
-                  We arrange priority collection and send an immediate replacement or issue a 100% full refund with zero deductions.
-                </p>
+
+                <ul className="space-y-3 font-mono text-[11px] text-white/90">
+                  <li className="flex items-start gap-2.5">
+                    <ShieldCheck className="w-4 h-4 text-[#E6321C] shrink-0 mt-0.5" />
+                    <span><strong>100% Defect Protection:</strong> Misprinted, misaligned, or peeled prints are fully covered.</span>
+                  </li>
+                  <li className="flex items-start gap-2.5">
+                    <ShieldCheck className="w-4 h-4 text-[#E6321C] shrink-0 mt-0.5" />
+                    <span><strong>Free Instant Reprint:</strong> Flawed pieces are remade and shipped via express priority air.</span>
+                  </li>
+                  <li className="flex items-start gap-2.5">
+                    <ShieldCheck className="w-4 h-4 text-[#E6321C] shrink-0 mt-0.5" />
+                    <span><strong>Zero-Friction Refund:</strong> If a reprint does not satisfy, receive a full 100% refund.</span>
+                  </li>
+                  <li className="flex items-start gap-2.5">
+                    <AlertCircle className="w-4 h-4 text-[#B7791F] shrink-0 mt-0.5" />
+                    <span><strong>Sizing Note:</strong> Please consult our precise sizing chart before custom printing.</span>
+                  </li>
+                </ul>
               </div>
-            </article>
+
+              <div className="mt-8 pt-6 border-t border-white/15">
+                <Link
+                  to="/artwork-guidelines"
+                  className="text-link text-[11px] text-white hover:text-[#E6321C]"
+                >
+                  REVIEW ARTWORK SPECIFICATIONS →
+                </Link>
+              </div>
+            </div>
           </div>
         </div>
       </section>
 
       {/* =======================================================
-           FINAL CTA (Red Full-Width Banner Matching AboutPage)
+           INTERACTIVE FAQ ACCORDION
       ======================================================= */}
-      <section className="py-[100px] px-5 bg-[#e6321c] text-white text-center">
-        <div className="text-[10px] font-semibold tracking-[0.2em] uppercase text-white/80 mb-2 font-mono">
-          DOORSTEP CONCIERGE DESK
+      <section className="py-20 lg:py-28 bg-[#EDE0CC] border-b border-[#DDD3C5]">
+        <div className="container-bingooo max-w-[900px] mx-auto">
+          <div className="text-center mb-12">
+            <div className="text-[10px] font-semibold tracking-[0.2em] uppercase text-[#6F6A63] mb-2 font-mono">
+              FREQUENTLY ASKED QUESTIONS
+            </div>
+            <h2 className="text-[clamp(32px,4.5vw,56px)] font-extrabold leading-[0.9] tracking-[-0.06em] uppercase text-[#171717]">
+              COMMON QUESTIONS & ANSWERS
+            </h2>
+            <p className="text-[#6F6A63] text-[13px] leading-[1.8] mt-3">
+              Clear answers on logistics timelines, payment deposits, and sizing swaps.
+            </p>
+          </div>
+
+          <div className="border-t border-[#DDD3C5] divide-y divide-[#DDD3C5]">
+            {FAQS.map((faq, idx) => {
+              const isOpen = activeFaq === idx;
+              return (
+                <div key={idx} className="transition-colors hover:bg-[#F7EEDB]/50">
+                  <button
+                    type="button"
+                    onClick={() => toggleFaq(idx)}
+                    className="w-full py-5 px-4 text-left flex items-center justify-between gap-4 font-extrabold uppercase tracking-tight text-sm sm:text-base text-[#171717] focus:outline-none"
+                    aria-expanded={isOpen}
+                  >
+                    <span className="flex items-center gap-3">
+                      <span className="font-mono text-xs text-[#E6321C]">0{idx + 1}.</span>
+                      <span>{faq.question}</span>
+                    </span>
+                    <ChevronDown
+                      className={`w-4 h-4 text-[#171717] shrink-0 transition-transform duration-200 ${
+                        isOpen ? 'rotate-180 text-[#E6321C]' : ''
+                      }`}
+                    />
+                  </button>
+
+                  {isOpen && (
+                    <div className="px-4 pb-6 pt-1 text-[13px] leading-[1.8] text-[#6F6A63] border-l-2 border-[#E6321C] ml-4 mb-2 bg-[#F7EEDB] p-4 rounded-[2px]">
+                      <p>{faq.answer}</p>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+
+          <div className="mt-10 p-6 bg-[#F7EEDB] border border-[#DDD3C5] rounded-[2px] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <HelpCircle className="w-5 h-5 text-[#E6321C] shrink-0" />
+              <div>
+                <div className="font-extrabold uppercase text-xs text-[#171717]">
+                  Have a question not answered here?
+                </div>
+                <div className="text-[#6F6A63] text-[11px]">
+                  Our Srikakulam atelier team responds in under 15 minutes on WhatsApp.
+                </div>
+              </div>
+            </div>
+            <a
+              href={getWhatsAppUrl('Hi Bingooo, I have a specific question regarding returns/exchanges.')}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn btn-outline text-xs h-10 px-5"
+            >
+              CHAT WITH CONCIERGE →
+            </a>
+          </div>
         </div>
+      </section>
 
-        <h2 className="my-2 mb-[25px] text-[clamp(45px,7vw,90px)] leading-[0.85] font-extrabold tracking-[-0.07em] uppercase text-white">
-          NEED AN EXCHANGE<br />
-          OR RAPID REFUND?
-        </h2>
+      {/* =======================================================
+           SELF-SERVICE ACTION CENTER & CONCIERGE
+      ======================================================= */}
+      <section className="py-20 lg:py-28 bg-[#F7EEDB] border-b border-[#DDD3C5]">
+        <div className="container-bingooo">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {/* Action 1: Self-Service Order Hub */}
+            <div className="p-8 sm:p-10 bg-white border border-[#DDD3C5] rounded-[2px] flex flex-col justify-between">
+              <div>
+                <div className="font-mono text-[10px] font-bold uppercase text-[#E6321C] tracking-[0.2em] mb-2">
+                  SELF-SERVICE HUB
+                </div>
+                <h3 className="text-2xl font-extrabold uppercase tracking-tight text-[#171717] mb-3">
+                  Manage or Exchange Orders
+                </h3>
+                <p className="text-[#6F6A63] text-[13px] leading-[1.8] mb-6">
+                  Log in with your registered phone number or email to view past orders, request doorstep pickup, or download your invoices.
+                </p>
 
-        <p className="max-w-[480px] mx-auto mb-[30px] text-white/90 text-[12px] leading-[1.7]">
-          Message our tailors directly on WhatsApp. We schedule your doorstep reverse pickup and confirm your replacement in real time.
-        </p>
+                <div className="space-y-3 font-mono text-[11px] text-[#171717] mb-8">
+                  <div className="flex items-center gap-2">
+                    <CheckCircle2 className="w-3.5 h-3.5 text-[#238636]" />
+                    <span>Real-time tracking of reverse courier executive</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <CheckCircle2 className="w-3.5 h-3.5 text-[#238636]" />
+                    <span>1-click size swap selection</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <CheckCircle2 className="w-3.5 h-3.5 text-[#238636]" />
+                    <span>Direct Razorpay UPI payout status updates</span>
+                  </div>
+                </div>
+              </div>
 
-        <a
-          href={getWhatsAppUrl('Hi Bingooo, I would like to arrange an exchange or return for my order.')}
-          target="_blank"
-          rel="noopener noreferrer"
-          onClick={() => triggerHaptic('medium')}
-          className="inline-flex items-center justify-center gap-2 min-h-[48px] px-[25px] rounded-[7px] bg-[#171717] text-white text-[10px] font-bold uppercase tracking-wider hover:bg-black hover:-translate-y-0.5 transition-all"
-        >
-          <WhatsAppIcon className="w-4 h-4 text-[#25D366]" />
-          <span>SCHEDULE VIA WHATSAPP →</span>
-        </a>
+              <div className="flex flex-wrap gap-3">
+                <Link
+                  to="/account/orders"
+                  onClick={() => triggerHaptic('light')}
+                  className="btn btn-black inline-flex items-center gap-2"
+                >
+                  <PackageCheck className="w-4 h-4" />
+                  <span>GO TO MY ORDERS</span>
+                </Link>
+                <Link
+                  to="/track-order"
+                  onClick={() => triggerHaptic('light')}
+                  className="btn btn-outline inline-flex items-center gap-2"
+                >
+                  <Truck className="w-4 h-4" />
+                  <span>TRACK PARCEL</span>
+                </Link>
+              </div>
+            </div>
+
+            {/* Action 2: Atelier Concierge Desk */}
+            <div className="p-8 sm:p-10 bg-[#EDE0CC] border border-[#DDD3C5] rounded-[2px] flex flex-col justify-between">
+              <div>
+                <div className="font-mono text-[10px] font-bold uppercase text-[#171717] tracking-[0.2em] mb-2">
+                  ATELIER ASSISTANCE
+                </div>
+                <h3 className="text-2xl font-extrabold uppercase tracking-tight text-[#171717] mb-3">
+                  Direct Tailor Support Desk
+                </h3>
+                <p className="text-[#6F6A63] text-[13px] leading-[1.8] mb-6">
+                  Need personalized advice on sizing before exchanging? Speak directly with our production coordinators and tailors.
+                </p>
+
+                <div className="space-y-4 text-[12px] mb-8">
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-full bg-[#171717] text-white flex items-center justify-center shrink-0">
+                      <WhatsAppIcon className="w-4 h-4 text-[#25D366]" />
+                    </div>
+                    <div>
+                      <div className="font-bold text-[#171717] uppercase">WhatsApp Concierge (Fastest)</div>
+                      <div className="text-[#6F6A63] font-mono text-[11px]">+91 93902 44747 • 9:00 AM – 9:00 PM IST</div>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-full bg-[#171717] text-white flex items-center justify-center shrink-0">
+                      <Mail className="w-4 h-4 text-white" />
+                    </div>
+                    <div>
+                      <div className="font-bold text-[#171717] uppercase">Official Email Inquiries</div>
+                      <div className="text-[#6F6A63] font-mono text-[11px]">support@bingooo.in • 24-hour response</div>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-full bg-[#171717] text-white flex items-center justify-center shrink-0">
+                      <MapPin className="w-4 h-4 text-[#E6321C]" />
+                    </div>
+                    <div>
+                      <div className="font-bold text-[#171717] uppercase">Atelier Dispatch Workshop</div>
+                      <div className="text-[#6F6A63] font-mono text-[11px]">Srikakulam, Andhra Pradesh 532001, India</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <a
+                  href={getWhatsAppUrl('Hi Bingooo Atelier, I need help with an exchange/return request.')}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={() => triggerHaptic('medium')}
+                  className="btn btn-black inline-flex items-center gap-2 w-full sm:w-auto"
+                >
+                  <WhatsAppIcon className="w-4 h-4 text-[#25D366]" />
+                  <span>START WHATSAPP CHAT</span>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* =======================================================
+           STATUTORY COMPLIANCE & LEGAL NOTICE
+      ======================================================= */}
+      <section className="py-12 bg-[#F7EEDB] border-b border-[#DDD3C5]">
+        <div className="container-bingooo max-w-[900px] mx-auto text-center">
+          <div className="flex items-center justify-center gap-2 mb-3 text-[#6F6A63] text-[11px] font-mono uppercase tracking-wider">
+            <FileText className="w-3.5 h-3.5" />
+            <span>STATUTORY COMPLIANCE • CONSUMER PROTECTION ACT (INDIA)</span>
+          </div>
+          <p className="text-[#6F6A63] text-[11px] leading-[1.7] max-w-[760px] mx-auto">
+            Governed by the Consumer Protection (E-Commerce) Rules, 2020. Bingooo Menswear Atelier ensures all returns, exchanges, and refunds are processed within statutory timelines without unjustified demur. For grievances, contact our designated Grievance Officer at <a href="mailto:grievance@bingooo.in" className="underline font-bold text-[#171717]">grievance@bingooo.in</a>.
+          </p>
+          <div className="mt-4 flex flex-wrap justify-center gap-4 text-[10px] font-mono uppercase tracking-wider text-[#6F6A63]">
+            <Link to="/terms" className="hover:text-[#171717] underline">TERMS OF SERVICE</Link>
+            <span>•</span>
+            <Link to="/privacy" className="hover:text-[#171717] underline">PRIVACY POLICY</Link>
+            <span>•</span>
+            <Link to="/shipping-policy" className="hover:text-[#171717] underline">SHIPPING POLICY</Link>
+            <span>•</span>
+            <Link to="/artwork-guidelines" className="hover:text-[#171717] underline">ARTWORK GUIDELINES</Link>
+          </div>
+        </div>
+      </section>
+
+      {/* =======================================================
+           BOTTOM CALLOUT BANNER (Atelier Red)
+      ======================================================= */}
+      <section className="py-20 lg:py-24 px-5 bg-[#E6321C] text-white text-center">
+        <div className="container-bingooo max-w-[800px] mx-auto">
+          <div className="text-[10px] font-semibold tracking-[0.2em] uppercase text-white/80 mb-3 font-mono">
+            DOORSTEP REVERSE LOGISTICS
+          </div>
+
+          <h2 className="my-2 mb-6 text-[clamp(38px,6vw,84px)] leading-[0.88] font-extrabold tracking-[-0.07em] uppercase text-white">
+            NEED A SIZE SWAP<br />
+            OR RAPID REFUND?
+          </h2>
+
+          <p className="max-w-[480px] mx-auto mb-8 text-white/90 text-[13px] leading-[1.8]">
+            We will book your reverse courier within minutes. Experience zero-friction service from India's heavyweight custom apparel atelier.
+          </p>
+
+          <div className="flex flex-wrap justify-center items-center gap-4">
+            <Link
+              to="/account/orders"
+              onClick={() => triggerHaptic('medium')}
+              className="inline-flex items-center justify-center gap-2 min-h-[48px] px-8 rounded-[2px] bg-[#171717] text-white text-[11px] font-extrabold uppercase tracking-wider hover:bg-black hover:-translate-y-0.5 transition-all shadow-md"
+            >
+              <PackageCheck className="w-4 h-4" />
+              <span>MANAGE MY ORDERS →</span>
+            </Link>
+
+            <a
+              href={getWhatsAppUrl('Hi Bingooo Atelier, I need urgent assistance with an order exchange/refund.')}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={() => triggerHaptic('medium')}
+              className="inline-flex items-center justify-center gap-2 min-h-[48px] px-8 rounded-[2px] bg-white text-[#171717] text-[11px] font-extrabold uppercase tracking-wider hover:bg-[#F7EEDB] hover:-translate-y-0.5 transition-all shadow-md"
+            >
+              <WhatsAppIcon className="w-4 h-4 text-[#25D366]" />
+              <span>WHATSAPP CONCIERGE</span>
+              <ExternalLink className="w-3 h-3 text-[#6F6A63]" />
+            </a>
+          </div>
+        </div>
       </section>
     </main>
   );

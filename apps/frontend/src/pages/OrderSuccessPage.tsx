@@ -1,26 +1,25 @@
 import { useEffect, useState } from 'react';
 import { useLocation, useParams, Link } from 'react-router-dom';
-import { motion } from 'framer-motion';
 import {
-  CheckCircle2,
-  Package,
-  ArrowRight,
-  Clock,
-  Truck,
-  ShieldCheck,
-  Copy,
   Check,
+  Copy,
   Printer,
-  Phone,
+  Package,
+  Truck,
+  ArrowRight,
+  ShieldCheck,
   Sparkles,
+  CheckCircle2,
+  Scissors,
+  Layers,
+  MapPin,
 } from 'lucide-react';
-import { Button } from '../components/ui/Button';
-import { Logo } from '../components/ui/Logo';
 import { SEO } from '../components/common/SEO';
-import { ResponseTimePromise } from '../components/common/ResponseTimePromise';
 import { BrandPageLoader } from '../components/ui/BrandPageLoader';
 import { api } from '../lib/api/client';
 import { useToast } from '../components/ui/Toast';
+import { getWhatsAppUrl, WhatsAppIcon } from '../components/ui/SocialIcons';
+import { triggerHaptic } from '../lib/native/capacitorBridge';
 
 export function OrderSuccessPage() {
   const location = useLocation();
@@ -34,7 +33,7 @@ export function OrderSuccessPage() {
   const [isLoading, setIsLoading] = useState<boolean>(!stateOrder && !!orderNumberParam);
   const [copied, setCopied] = useState<boolean>(false);
 
-  // If order was not passed via state, fetch it by orderNumberParam if available
+  // If order was not passed via state, fetch it by orderNumberParam
   useEffect(() => {
     if (!order && orderNumberParam) {
       setIsLoading(true);
@@ -52,19 +51,20 @@ export function OrderSuccessPage() {
     }
   }, [order, orderNumberParam]);
 
-  // Fallback demo order if navigated directly without an order (for preview/verification)
+  // Fallback demo order if navigated directly for review
   const displayOrder = order || {
     id: 'ord_demo_2026',
     order_number: orderNumberParam || 'BNG-984210',
     created_at: new Date().toISOString(),
     status: 'paid',
     payment_status: 'captured',
-    subtotal: 1998,
-    discount_amount: 200,
+    payment_method: 'Razorpay UPI (Google Pay)',
+    subtotal: 2298,
+    discount_amount: 300,
     shipping_amount: 0,
-    total: 1798,
+    total: 1998,
     currency: 'INR',
-    customer_notes: 'Please double-check chest print alignment',
+    customer_notes: 'Priority atelier cut and double protective packaging requested.',
     address_snapshot_json: {
       name: 'Aditya Sen',
       line1: 'Flat 402, Oakwood Residences',
@@ -78,20 +78,20 @@ export function OrderSuccessPage() {
     items: [
       {
         id: 'item-1',
-        product_title: 'Classic Heavyweight Oversized Tee',
-        variant_title: 'Washed Charcoal / L',
+        product_title: 'Heavyweight Boxy Tee (240 GSM)',
+        variant_title: 'Obsidian Black / L',
         quantity: 1,
-        unit_price: 999,
-        total_price: 999,
+        unit_price: 1299,
+        total_price: 1299,
         image_url: 'https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=500&auto=format&fit=crop',
         customization: {
-          design_title: 'Studio Minimal Red Chest Typo',
-          technique: 'Direct-to-Film (DTF) High Density',
+          design_title: 'Bespoke Distressed Studio Typo',
+          technique: 'High-Density Direct-to-Film (DTF)',
         },
       },
       {
         id: 'item-2',
-        product_title: 'Heavy Terry Boxy Hoodie',
+        product_title: 'Oversized Minimalist Sweatshirt',
         variant_title: 'Raw Bone / L',
         quantity: 1,
         unit_price: 999,
@@ -104,253 +104,308 @@ export function OrderSuccessPage() {
   const address = displayOrder.address_snapshot_json || {};
 
   const handleCopyOrderNumber = () => {
+    triggerHaptic('light');
     navigator.clipboard.writeText(displayOrder.order_number);
     setCopied(true);
     toast({
-      title: 'Copied to clipboard',
-      message: `Order #${displayOrder.order_number} copied.`,
+      title: 'Order Reference Copied',
+      message: `#${displayOrder.order_number} copied to your clipboard.`,
       type: 'success',
     });
     setTimeout(() => setCopied(false), 2500);
   };
 
   const handlePrintReceipt = () => {
+    triggerHaptic('light');
     window.print();
   };
 
   if (isLoading) {
-    return <BrandPageLoader message="Fetching your order details..." fullScreen />;
+    return <BrandPageLoader message="Retrieving order manifest from atelier..." fullScreen />;
   }
 
+  const orderDate = new Date(displayOrder.created_at || Date.now()).toLocaleDateString('en-IN', {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+  });
+
   return (
-    <div className="min-h-screen bg-[#F7EEDB] py-8 sm:py-14 text-[#171717]">
+    <div className="min-h-screen bg-[#F7EEDB] text-[#171717] font-sans antialiased selection:bg-[#E6321C] selection:text-white py-8 sm:py-12 md:py-16">
       <SEO
         title={`Order Confirmed #${displayOrder.order_number}`}
-        description="Your Bingooo bespoke menswear order has been successfully placed. View item details, fulfillment timeline, and dispatch guarantee."
+        description="Your bespoke Bingooo menswear order is confirmed. Workshop cutting and tailoring initiated in our Srikakulam atelier."
         noindex={true}
       />
 
-      <div className="mx-auto max-w-[1080px] px-4 sm:px-6 lg:px-8 space-y-8">
-        {/* Top Minimal Header */}
-        <div className="flex items-center justify-between">
-          <Link to="/" className="inline-flex items-center gap-2">
-            <Logo variant="red" size="md" />
-          </Link>
-          <div className="flex items-center gap-3">
+      <div className="container-bingooo max-w-[1240px] space-y-8 sm:space-y-12">
+        {/* =========================================================
+            1. TOP ATELIER STATUS BAR
+        ========================================================= */}
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-6 border-b border-[#DDD3C5]">
+          <div>
+            <div className="flex items-center gap-2">
+              <span className="inline-block w-2 h-2 rounded-full bg-[#238636] animate-pulse" />
+              <span className="text-[10px] font-bold uppercase tracking-[0.22em] text-[#171717] font-mono">
+                SRIKAKULAM ATELIER • DISPATCH PROTOCOL ACTIVE
+              </span>
+            </div>
+            <p className="text-[11px] text-[#6F6A63] font-mono mt-0.5">
+              CONFIRMATION TRANSMITTED • {orderDate}
+            </p>
+          </div>
+
+          <div className="flex items-center gap-2.5 sm:gap-3 w-full sm:w-auto">
             <button
               onClick={handlePrintReceipt}
-              className="inline-flex items-center gap-1.5 rounded-lg border border-[#DDD3C5] bg-white px-3 py-1.5 text-xs font-bold text-[#171717] hover:bg-[#EDE0CC]/40 transition-colors shadow-xs"
+              className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 border border-[#DDD3C5] bg-[#FFFFFF] px-4 py-2.5 text-[10px] font-extrabold uppercase tracking-[0.14em] text-[#171717] hover:border-[#171717] hover:bg-[#EDE0CC]/40 transition-all rounded-[2px]"
             >
-              <Printer size={14} />
-              <span className="hidden sm:inline">Print Receipt</span>
+              <Printer size={13} />
+              <span>Print Receipt</span>
             </button>
-            <Link to="/shop">
-              <Button variant="secondary" size="sm">
-                Shop New Arrivals
-              </Button>
+            <Link
+              to="/shop"
+              className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 bg-[#171717] text-white px-5 py-2.5 text-[10px] font-extrabold uppercase tracking-[0.14em] hover:bg-[#E6321C] transition-colors rounded-[2px]"
+            >
+              <span>Explore Drops</span>
+              <ArrowRight size={13} />
             </Link>
           </div>
         </div>
 
-        {/* ─── Hero Celebratory Card ─── */}
-        <div className="relative overflow-hidden rounded-3xl border border-[#DDD3C5] bg-white p-6 sm:p-12 shadow-sm text-center">
-          {/* Subtle Background Red Glow */}
-          <div className="pointer-events-none absolute -top-24 left-1/2 -translate-x-1/2 h-48 w-96 rounded-full bg-[#E6321C]/10 blur-3xl" />
-
-          {/* Animated Success Seal */}
-          <motion.div
-            initial={{ scale: 0, rotate: -25 }}
-            animate={{ scale: [0, 1.2, 1], rotate: 0 }}
-            transition={{ type: 'spring', stiffness: 350, damping: 18 }}
-            className="relative mx-auto mb-6 flex h-20 w-20 sm:h-24 sm:w-24 items-center justify-center rounded-full bg-[#238636]/10 text-[#238636] ring-8 ring-[#238636]/5"
-          >
-            <CheckCircle2 size={44} className="sm:scale-125" />
-          </motion.div>
-
-          <span className="inline-flex items-center gap-1.5 rounded-full bg-[#E6321C]/10 px-3 py-1 text-[11px] font-extrabold uppercase tracking-widest text-[#E6321C]">
-            <Sparkles size={12} />
-            Payment Verified & Locked
-          </span>
-
-          <h1 className="mt-3 text-3xl sm:text-5xl font-extrabold tracking-tight text-[#171717] uppercase">
-            Thank You For Your Order
-          </h1>
-
-          <p className="mx-auto mt-3 max-w-xl text-sm sm:text-base text-[#6F6A63] leading-relaxed">
-            Your garments have been transmitted to our master cutting and tailoring workshop in
-            Bengaluru. We have sent a complete order confirmation to your email.
-          </p>
-
-          {/* Order Reference Pill */}
-          <div className="mt-6 inline-flex flex-wrap items-center justify-center gap-2 rounded-2xl border border-[#DDD3C5] bg-[#FDF9F4] p-2 sm:px-4 sm:py-2.5">
-            <span className="text-xs font-semibold text-[#6F6A63]">Order Reference:</span>
-            <span className="font-mono text-sm sm:text-base font-black text-[#171717] tracking-wider">
-              #{displayOrder.order_number}
-            </span>
-            <button
-              onClick={handleCopyOrderNumber}
-              className="inline-flex items-center gap-1 rounded-lg bg-white px-2.5 py-1 text-xs font-bold text-[#171717] border border-[#DDD3C5] hover:bg-[#EDE0CC]/50 transition-colors"
-              title="Copy Order Reference"
-            >
-              {copied ? <Check size={13} className="text-[#238636]" /> : <Copy size={13} />}
-              <span>{copied ? 'Copied' : 'Copy'}</span>
-            </button>
-          </div>
-        </div>
-
-        {/* ─── Production & Fulfillment Timeline Tracker ─── */}
-        <div className="rounded-3xl border border-[#DDD3C5] bg-white p-6 sm:p-8 shadow-sm">
-          <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[#DDD3C5]/60 pb-4">
-            <div>
-              <span className="text-[11px] font-bold uppercase tracking-wider text-[#E6321C]">
-                Real-Time Fulfillment Tracker
-              </span>
-              <h2 className="text-lg sm:text-xl font-extrabold text-[#171717]">
-                Workshop Production Milestones
-              </h2>
-            </div>
-            <div className="inline-flex items-center gap-2 rounded-lg bg-[#238636]/10 px-3 py-1 text-xs font-bold text-[#238636]">
-              <span className="h-2 w-2 rounded-full bg-[#238636] animate-pulse" />
-              Workshop Priority Queue: Active
-            </div>
+        {/* =========================================================
+            2. HERO CONFIRMATION STATEMENT
+        ========================================================= */}
+        <section className="relative border border-[#DDD3C5] bg-[#FFFFFF] p-6 sm:p-10 md:p-12 rounded-[2px] overflow-hidden shadow-2xs">
+          {/* Architectural Background Stamp */}
+          <div className="absolute right-4 -bottom-6 select-none pointer-events-none opacity-[0.03] text-[120px] sm:text-[180px] font-extrabold font-mono tracking-tighter text-[#171717]">
+            BINGOOO
           </div>
 
-          <div className="mt-8 grid grid-cols-1 sm:grid-cols-4 gap-4 relative">
-            {[
-              {
-                step: '01',
-                title: 'Order Confirmed',
-                desc: 'Payment captured, fabric batch reserved.',
-                status: 'done',
-                icon: CheckCircle2,
-                time: 'Just now',
-              },
-              {
-                step: '02',
-                title: 'Tailoring & DTF Print',
-                desc: 'Pattern cutting, bio-wash & quality audit.',
-                status: 'current',
-                icon: Clock,
-                time: 'Next 24–36 hrs',
-              },
-              {
-                step: '03',
-                title: 'Workshop Dispatch',
-                desc: 'Eco-sealed in protective box with sticker pack.',
-                status: 'upcoming',
-                icon: Package,
-                time: 'Within 48 hrs',
-              },
-              {
-                step: '04',
-                title: 'Air Express Delivery',
-                desc: 'Hand-delivered to your doorstep via BlueDart.',
-                status: 'upcoming',
-                icon: Truck,
-                time: '3–5 days',
-              },
-            ].map((item, idx) => {
-              const Icon = item.icon;
-              const isDone = item.status === 'done';
-              const isCurrent = item.status === 'current';
+          <div className="relative z-10 max-w-[850px]">
+            <div className="eyebrow text-[#E6321C] mb-3 flex items-center gap-2">
+              <Sparkles size={13} />
+              <span>OFFICIAL ORDER CONFIRMATION • ATELIER DROP 2026</span>
+            </div>
 
-              return (
-                <div
-                  key={idx}
-                  className={`rounded-2xl border p-4 transition-all relative ${
-                    isCurrent
-                      ? 'border-[#E6321C] bg-[#FDF0EE]/50 ring-2 ring-[#E6321C]/20'
-                      : isDone
-                      ? 'border-[#238636]/30 bg-[#238636]/5'
-                      : 'border-[#DDD3C5]/60 bg-[#FDF9F4]'
-                  }`}
-                >
-                  <div className="flex items-center justify-between mb-3">
-                    <span
-                      className={`font-mono text-[11px] font-black uppercase ${
-                        isCurrent ? 'text-[#E6321C]' : isDone ? 'text-[#238636]' : 'text-[#6F6A63]'
-                      }`}
-                    >
-                      Step {item.step}
-                    </span>
-                    <div
-                      className={`flex h-7 w-7 items-center justify-center rounded-full ${
-                        isCurrent
-                          ? 'bg-[#E6321C] text-white'
-                          : isDone
-                          ? 'bg-[#238636] text-white'
-                          : 'bg-[#DDD3C5]/40 text-[#6F6A63]'
-                      }`}
-                    >
-                      <Icon size={14} />
-                    </div>
-                  </div>
+            <h1 className="text-[clamp(34px,6vw,68px)] font-extrabold leading-[0.92] tracking-[-0.065em] uppercase text-[#171717] m-0">
+              NOT JUST CLOTHES.
+              <br />
+              <span className="text-[#E6321C]">YOUR PIECE IS RESERVED.</span>
+            </h1>
 
-                  <h3 className="font-extrabold text-sm text-[#171717]">{item.title}</h3>
-                  <p className="mt-1 text-xs text-[#6F6A63] leading-relaxed">{item.desc}</p>
-                  <span className="mt-3 block text-[10px] font-bold uppercase tracking-wider text-[#171717]/80">
-                    {item.time}
+            <p className="mt-4 text-xs sm:text-sm md:text-base text-[#6F6A63] leading-relaxed max-w-[700px]">
+              Thank you for trusting the Bingooo atelier. Your garment cut has been assigned to our
+              master tailors in Srikakulam. Fabric batches of 240–280 GSM combed cotton have been locked,
+              bio-washed, and prepped for direct dispatch.
+            </p>
+
+            {/* Order Reference Badge & Quick Copy */}
+            <div className="mt-8 pt-6 border-t border-[#DDD3C5]/80 flex flex-wrap items-center justify-between gap-4">
+              <div className="flex flex-wrap items-center gap-3 sm:gap-4">
+                <div className="border border-[#DDD3C5] bg-[#F7EEDB] px-4 py-2 rounded-[2px] flex items-center gap-2.5">
+                  <span className="text-[10px] font-extrabold uppercase tracking-[0.16em] text-[#6F6A63] font-mono">
+                    ORDER NO:
                   </span>
+                  <span className="font-mono text-sm sm:text-base font-extrabold text-[#171717] tracking-wider">
+                    #{displayOrder.order_number}
+                  </span>
+                  <button
+                    onClick={handleCopyOrderNumber}
+                    className="ml-1 p-1 hover:text-[#E6321C] transition-colors"
+                    title="Copy Order ID"
+                    aria-label="Copy Order Number"
+                  >
+                    {copied ? <Check size={14} className="text-[#238636]" /> : <Copy size={14} />}
+                  </button>
                 </div>
-              );
-            })}
-          </div>
-        </div>
 
-        {/* ─── Response Time Promise Workshop Guarantee ─── */}
-        <ResponseTimePromise variant="section" />
-
-        {/* ─── Order Summary & Garment Details Grid ─── */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-          {/* Left Column: Itemized Garments */}
-          <div className="lg:col-span-7 space-y-6">
-            <div className="rounded-3xl border border-[#DDD3C5] bg-white p-6 sm:p-8 shadow-sm">
-              <div className="flex items-center justify-between pb-4 border-b border-[#DDD3C5]/60">
-                <h2 className="text-base sm:text-lg font-extrabold text-[#171717] uppercase tracking-wide">
-                  Your Garments ({displayOrder.items?.length || 0})
-                </h2>
-                <span className="text-xs font-bold text-[#6F6A63]">240 GSM Combed Cotton</span>
+                <div className="flex items-center gap-2 px-3 py-2 rounded-[2px] bg-[#238636]/10 text-[#238636] border border-[#238636]/20 text-[10px] font-extrabold uppercase tracking-wider font-mono">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#238636]" />
+                  <span>PAYMENT SECURED • READY FOR CUTTING</span>
+                </div>
               </div>
 
-              <div className="divide-y divide-[#DDD3C5]/50 mt-4">
+              <div className="text-[11px] font-mono text-[#6F6A63]">
+                ESTIMATED AIR DISPATCH: <strong className="text-[#171717]">WITHIN 36 HOURS</strong>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* =========================================================
+            3. WORKSHOP PRODUCTION MILESTONE TRACKER
+        ========================================================= */}
+        <section className="border border-[#DDD3C5] bg-[#FFFFFF] p-6 sm:p-8 rounded-[2px]">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-5 border-b border-[#DDD3C5]">
+            <div>
+              <span className="eyebrow text-[#E6321C]">ATELIER PRODUCTION PROTOCOL</span>
+              <h2 className="text-base sm:text-xl font-extrabold uppercase tracking-tight text-[#171717] mt-0.5">
+                Workshop Fulfillment Milestones
+              </h2>
+            </div>
+            <div className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#6F6A63] font-mono">
+              STAGE 02 / 04 ACTIVE
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-6">
+            {/* Step 1 */}
+            <div className="border border-[#238636]/30 bg-[#238636]/5 p-4 rounded-[2px] relative flex flex-col justify-between">
+              <div>
+                <div className="flex items-center justify-between text-[#238636] mb-3">
+                  <span className="font-mono text-[10px] font-extrabold tracking-widest uppercase">
+                    01 • SECURED
+                  </span>
+                  <CheckCircle2 size={16} />
+                </div>
+                <h3 className="font-bold text-xs uppercase tracking-wider text-[#171717]">
+                  Order Locked & Verified
+                </h3>
+                <p className="text-[11px] text-[#6F6A63] mt-1 leading-relaxed">
+                  Payment confirmed. Fabric lot assigned and reserved in studio.
+                </p>
+              </div>
+              <span className="text-[9px] font-mono font-bold text-[#238636] uppercase tracking-wider mt-4">
+                ✓ Completed Just Now
+              </span>
+            </div>
+
+            {/* Step 2 (Current) */}
+            <div className="border-2 border-[#E6321C] bg-[#FDF0EE] p-4 rounded-[2px] relative flex flex-col justify-between shadow-xs">
+              <div className="absolute -top-2.5 right-3 bg-[#E6321C] text-white text-[8px] font-extrabold uppercase tracking-[0.2em] px-2 py-0.5 rounded-[1px]">
+                IN PROGRESS
+              </div>
+              <div>
+                <div className="flex items-center justify-between text-[#E6321C] mb-3">
+                  <span className="font-mono text-[10px] font-extrabold tracking-widest uppercase">
+                    02 • ATELIER
+                  </span>
+                  <Scissors size={16} />
+                </div>
+                <h3 className="font-bold text-xs uppercase tracking-wider text-[#171717]">
+                  Pattern Cutting & Tailoring
+                </h3>
+                <p className="text-[11px] text-[#6F6A63] mt-1 leading-relaxed">
+                  Manual fabric cutting, precision shoulder seam stitching & bio-wash.
+                </p>
+              </div>
+              <span className="text-[9px] font-mono font-bold text-[#E6321C] uppercase tracking-wider mt-4 flex items-center gap-1.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-[#E6321C] animate-ping" />
+                Active Workshop Queue
+              </span>
+            </div>
+
+            {/* Step 3 */}
+            <div className="border border-[#DDD3C5] bg-[#EDE0CC]/20 p-4 rounded-[2px] relative flex flex-col justify-between">
+              <div>
+                <div className="flex items-center justify-between text-[#6F6A63] mb-3">
+                  <span className="font-mono text-[10px] font-extrabold tracking-widest uppercase">
+                    03 • PRINT & QA
+                  </span>
+                  <Layers size={16} />
+                </div>
+                <h3 className="font-bold text-xs uppercase tracking-wider text-[#171717]">
+                  Custom Print & Audit
+                </h3>
+                <p className="text-[11px] text-[#6F6A63] mt-1 leading-relaxed">
+                  High-density DTF graphics cured at 165°C and 100% garment inspection.
+                </p>
+              </div>
+              <span className="text-[9px] font-mono font-bold text-[#6F6A63] uppercase tracking-wider mt-4">
+                Within 24 Hours
+              </span>
+            </div>
+
+            {/* Step 4 */}
+            <div className="border border-[#DDD3C5] bg-[#EDE0CC]/20 p-4 rounded-[2px] relative flex flex-col justify-between">
+              <div>
+                <div className="flex items-center justify-between text-[#6F6A63] mb-3">
+                  <span className="font-mono text-[10px] font-extrabold tracking-widest uppercase">
+                    04 • DISPATCH
+                  </span>
+                  <Truck size={16} />
+                </div>
+                <h3 className="font-bold text-xs uppercase tracking-wider text-[#171717]">
+                  Air Express Dispatch
+                </h3>
+                <p className="text-[11px] text-[#6F6A63] mt-1 leading-relaxed">
+                  Boxed in bespoke matte packaging and handed to BlueDart / Delhivery.
+                </p>
+              </div>
+              <span className="text-[9px] font-mono font-bold text-[#6F6A63] uppercase tracking-wider mt-4">
+                2–4 Days Transit
+              </span>
+            </div>
+          </div>
+        </section>
+
+        {/* =========================================================
+            4. SPLIT CONTENT: GARMENTS MANIFEST & ORDER SUMMARY
+        ========================================================= */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+          {/* ─────────────────────────────────────────────────────────
+              LEFT: ITEM MANIFEST (7 COLS)
+          ───────────────────────────────────────────────────────── */}
+          <div className="lg:col-span-7 space-y-6">
+            <div className="border border-[#DDD3C5] bg-[#FFFFFF] p-6 sm:p-8 rounded-[2px]">
+              <div className="flex items-center justify-between pb-4 border-b border-[#DDD3C5]">
+                <h2 className="text-sm sm:text-base font-extrabold uppercase tracking-wide text-[#171717]">
+                  Garments Manifest ({displayOrder.items?.length || 0} Piece
+                  {(displayOrder.items?.length || 0) === 1 ? '' : 's'})
+                </h2>
+                <span className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#6F6A63] font-mono">
+                  HEAVYWEIGHT ATELIER RUN
+                </span>
+              </div>
+
+              {/* Items List */}
+              <div className="divide-y divide-[#DDD3C5]/60">
                 {displayOrder.items?.map((item: any) => (
-                  <div key={item.id} className="py-4 first:pt-0 last:pb-0 flex items-start gap-4">
+                  <div key={item.id} className="py-5 first:pt-4 last:pb-0 flex items-start gap-4 sm:gap-5">
                     <img
-                      src={item.image_url || 'https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=200&auto=format&fit=crop'}
+                      src={
+                        item.image_url ||
+                        'https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=300&auto=format&fit=crop'
+                      }
                       alt={item.product_title}
-                      className="h-20 w-16 sm:h-24 sm:w-20 rounded-xl object-cover border border-[#DDD3C5] bg-[#EDE0CC]/30 shrink-0"
+                      className="w-18 h-22 sm:w-20 sm:h-26 object-cover rounded-[2px] border border-[#DDD3C5] bg-[#EDE0CC]/40 shrink-0 grayscale hover:grayscale-0 transition-all duration-300"
                     />
 
                     <div className="flex-1 min-w-0">
-                      <div className="flex items-start justify-between gap-2">
+                      <div className="flex items-start justify-between gap-3">
                         <div>
-                          <h4 className="font-extrabold text-sm text-[#171717] leading-snug">
+                          <h4 className="font-extrabold text-sm sm:text-base text-[#171717] tracking-tight leading-snug">
                             {item.product_title}
                           </h4>
-                          <span className="text-xs text-[#6F6A63] font-medium block mt-0.5">
-                            {item.variant_title || 'Regular Edit'}
-                          </span>
+                          <p className="text-[11px] font-semibold text-[#6F6A63] uppercase tracking-wider mt-0.5">
+                            {item.variant_title || 'Signature Fit'}
+                          </p>
                         </div>
-                        <span className="font-mono text-sm font-black text-[#171717]">
-                          ₹{item.total_price || item.unit_price}
+                        <span className="font-mono text-sm sm:text-base font-extrabold text-[#171717]">
+                          ₹{(item.total_price || item.unit_price).toLocaleString('en-IN')}
                         </span>
                       </div>
 
+                      {/* Custom Print Badge */}
                       {item.customization && (
-                        <div className="mt-2 rounded-lg bg-[#FDF0EE] p-2 text-xs border border-[#E6321C]/20">
-                          <span className="font-bold text-[#E6321C] block text-[11px] uppercase tracking-wider">
-                            Custom Workshop Print
+                        <div className="mt-2.5 rounded-[2px] bg-[#FDF0EE] p-2.5 border border-[#E6321C]/25">
+                          <span className="text-[9px] font-extrabold text-[#E6321C] uppercase tracking-widest block font-mono">
+                            BESPOKE ATELIER PRINT:
                           </span>
-                          <p className="text-[#171717] text-[11px] mt-0.5">
-                            {item.customization.design_title} ({item.customization.technique})
+                          <p className="text-[#171717] text-xs font-bold mt-0.5">
+                            {item.customization.design_title}
                           </p>
+                          <span className="text-[10px] text-[#6F6A63] font-medium block mt-0.5">
+                            Method: {item.customization.technique}
+                          </span>
                         </div>
                       )}
 
-                      <div className="mt-2 flex items-center justify-between text-xs text-[#6F6A63]">
-                        <span>Qty: {item.quantity}</span>
-                        <span className="text-[#238636] font-semibold text-[11px]">
-                          ✓ Pre-shrunk & Washed
+                      <div className="mt-3 flex items-center justify-between text-xs border-t border-[#DDD3C5]/40 pt-2 text-[#6F6A63]">
+                        <span className="font-mono text-[11px]">QTY: {item.quantity}</span>
+                        <span className="text-[#238636] font-mono text-[10px] font-bold uppercase tracking-wider">
+                          ✓ 100% Bio-Washed Combed Cotton
                         </span>
                       </div>
                     </div>
@@ -359,125 +414,172 @@ export function OrderSuccessPage() {
               </div>
             </div>
 
-            {/* Need Help or Custom Revision Card */}
-            <div className="rounded-3xl border border-[#DDD3C5] bg-[#FDF9F4] p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            {/* Atelier Craft Guarantee Strip */}
+            <div className="border border-[#DDD3C5] bg-[#EDE0CC]/30 p-5 rounded-[2px] grid grid-cols-1 sm:grid-cols-3 gap-4 text-center sm:text-left">
               <div>
-                <span className="text-[11px] font-bold uppercase tracking-wider text-[#E6321C] block">
-                  Dedicated Concierge
+                <span className="text-[9px] font-mono font-extrabold uppercase tracking-widest text-[#E6321C] block">
+                  FABRIC STANDARD
                 </span>
-                <h3 className="font-extrabold text-sm sm:text-base text-[#171717] mt-0.5">
-                  Need an urgent address change or size revision?
+                <p className="text-xs font-bold text-[#171717] mt-0.5">240 GSM Combed Cotton</p>
+                <p className="text-[10px] text-[#6F6A63]">Pre-shrunk, heavyweight drape.</p>
+              </div>
+              <div>
+                <span className="text-[9px] font-mono font-extrabold uppercase tracking-widest text-[#E6321C] block">
+                  COLLAR DENSITY
+                </span>
+                <p className="text-xs font-bold text-[#171717] mt-0.5">Thick Ribbed Collar</p>
+                <p className="text-[10px] text-[#6F6A63]">Maintains shape after 40+ washes.</p>
+              </div>
+              <div>
+                <span className="text-[9px] font-mono font-extrabold uppercase tracking-widest text-[#E6321C] block">
+                  PRINT LIFE
+                </span>
+                <p className="text-xs font-bold text-[#171717] mt-0.5">Crack-Resistant Curing</p>
+                <p className="text-[10px] text-[#6F6A63]">Industrial heat-pressed pigments.</p>
+              </div>
+            </div>
+
+            {/* WhatsApp Atelier Concierge Card */}
+            <div className="border border-[#DDD3C5] bg-[#FFFFFF] p-6 rounded-[2px] flex flex-col sm:flex-row sm:items-center justify-between gap-5 shadow-2xs">
+              <div>
+                <span className="eyebrow text-[#E6321C] flex items-center gap-1.5">
+                  <WhatsAppIcon className="w-3.5 h-3.5 text-[#25D366]" />
+                  <span>DIRECT ATELIER CONCIERGE</span>
+                </span>
+                <h3 className="font-extrabold text-sm sm:text-base text-[#171717] uppercase tracking-tight mt-1">
+                  Need an urgent address change or sizing amendment?
                 </h3>
-                <p className="text-xs text-[#6F6A63] mt-1">
-                  Our WhatsApp support responds in under 18 minutes during workshop hours (9 AM - 9 PM).
+                <p className="text-xs text-[#6F6A63] mt-1 leading-relaxed">
+                  Connect directly with our atelier cutting desk. Pre-filled with your order reference.
                 </p>
               </div>
+
               <a
-                href={`https://wa.me/919876543210?text=Hi%20Bingooo,%20I%20have%20an%20urgent%20inquiry%20regarding%20my%20order%20${displayOrder.order_number}`}
+                href={getWhatsAppUrl(
+                  `Hi Bingooo Atelier, I have an urgent inquiry regarding my order #${displayOrder.order_number}.`,
+                )}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 rounded-xl bg-[#171717] px-4 py-2.5 text-xs font-bold text-white hover:bg-[#E6321C] transition-colors shrink-0 shadow-xs"
+                className="inline-flex items-center justify-center gap-2 bg-[#171717] text-white px-5 py-3 text-[10px] font-extrabold uppercase tracking-[0.14em] hover:bg-[#25D366] hover:text-white transition-all rounded-[2px] shrink-0"
               >
-                <Phone size={14} />
-                <span>Message Concierge</span>
+                <WhatsAppIcon className="w-4 h-4 text-[#25D366] group-hover:text-white" />
+                <span>WhatsApp Concierge</span>
               </a>
             </div>
           </div>
 
-          {/* Right Column: Financial Breakdown & Shipping Details */}
+          {/* ─────────────────────────────────────────────────────────
+              RIGHT: FINANCIAL SUMMARY & DELIVERY LEDGER (5 COLS)
+          ───────────────────────────────────────────────────────── */}
           <div className="lg:col-span-5 space-y-6">
-            {/* Payment & Breakdown Card */}
-            <div className="rounded-3xl border border-[#DDD3C5] bg-white p-6 sm:p-8 shadow-sm space-y-4">
-              <h3 className="text-sm font-extrabold uppercase tracking-wide text-[#171717] pb-3 border-b border-[#DDD3C5]/60">
-                Payment Summary
-              </h3>
+            {/* Payment Summary */}
+            <div className="border border-[#DDD3C5] bg-[#FFFFFF] p-6 sm:p-8 rounded-[2px] shadow-2xs space-y-4">
+              <div className="flex items-center justify-between pb-3 border-b border-[#DDD3C5]">
+                <h3 className="text-sm font-extrabold uppercase tracking-wide text-[#171717]">
+                  Financial Breakdown
+                </h3>
+                <span className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#238636] font-mono">
+                  TAX INVOICE
+                </span>
+              </div>
 
-              <div className="space-y-2 text-xs">
-                <div className="flex justify-between text-[#6F6A63]">
+              <div className="space-y-2.5 text-xs text-[#6F6A63]">
+                <div className="flex justify-between items-center">
                   <span>Garments Subtotal</span>
-                  <span className="font-mono text-[#171717] font-semibold">
-                    ₹{displayOrder.subtotal || displayOrder.total}
+                  <span className="font-mono font-semibold text-[#171717]">
+                    ₹{(displayOrder.subtotal || displayOrder.total).toLocaleString('en-IN')}
                   </span>
                 </div>
 
                 {displayOrder.discount_amount ? (
-                  <div className="flex justify-between text-[#238636]">
-                    <span>Promotional Atelier Privilege</span>
-                    <span className="font-mono font-semibold">-₹{displayOrder.discount_amount}</span>
+                  <div className="flex justify-between items-center text-[#238636]">
+                    <span>Atelier Promo Privilege</span>
+                    <span className="font-mono font-bold">
+                      -₹{Number(displayOrder.discount_amount).toLocaleString('en-IN')}
+                    </span>
                   </div>
                 ) : null}
 
-                <div className="flex justify-between text-[#6F6A63]">
-                  <span>Pan-India Air Shipping</span>
-                  <span className="font-mono text-[#238636] font-semibold uppercase">FREE</span>
+                <div className="flex justify-between items-center">
+                  <span>Pan-India Air Logistics</span>
+                  <span className="font-mono font-bold text-[#238636] uppercase">FREE</span>
                 </div>
 
-                <div className="flex justify-between text-[#6F6A63]">
-                  <span>GST (12% Included)</span>
-                  <span className="font-mono text-[#171717] font-semibold">Calculated</span>
+                <div className="flex justify-between items-center">
+                  <span>GST (Included)</span>
+                  <span className="font-mono text-[#171717] font-semibold">12% Built-In</span>
                 </div>
 
-                <div className="border-t border-[#DDD3C5] pt-3 flex justify-between items-baseline">
+                <div className="border-t border-[#DDD3C5] pt-4 mt-2 flex justify-between items-baseline">
                   <div>
-                    <span className="text-sm font-extrabold text-[#171717] uppercase">Total Paid</span>
-                    <span className="text-[10px] text-[#6F6A63] block">Includes all taxes</span>
+                    <span className="text-xs font-extrabold uppercase tracking-wider text-[#171717] block">
+                      Total Amount Settled
+                    </span>
+                    <span className="text-[10px] text-[#6F6A63] font-mono">
+                      via {displayOrder.payment_method || 'Prepaid Secure Gateway'}
+                    </span>
                   </div>
-                  <span className="font-mono text-xl sm:text-2xl font-black text-[#E6321C]">
-                    ₹{displayOrder.total}
+                  <span className="font-mono text-2xl sm:text-3xl font-extrabold text-[#E6321C] tracking-tight">
+                    ₹{Number(displayOrder.total).toLocaleString('en-IN')}
                   </span>
                 </div>
               </div>
 
-              <div className="rounded-xl bg-[#EDE0CC]/30 p-3 text-[11px] text-[#6F6A63] flex items-center gap-2">
+              <div className="rounded-[2px] bg-[#F7EEDB] p-3 text-[10px] text-[#6F6A63] flex items-center gap-2 border border-[#DDD3C5]/80">
                 <ShieldCheck size={16} className="text-[#238636] shrink-0" />
-                <span>Transaction settled via 256-bit SSL encrypted gateway.</span>
+                <span>Verified 256-bit encrypted transaction with audit log record.</span>
               </div>
             </div>
 
-            {/* Shipping Destination Card */}
-            <div className="rounded-3xl border border-[#DDD3C5] bg-white p-6 sm:p-8 shadow-sm space-y-4">
-              <div className="flex items-center justify-between pb-3 border-b border-[#DDD3C5]/60">
-                <h3 className="text-sm font-extrabold uppercase tracking-wide text-[#171717]">
-                  Delivery Address
+            {/* Delivery Destination */}
+            <div className="border border-[#DDD3C5] bg-[#FFFFFF] p-6 sm:p-8 rounded-[2px] shadow-2xs space-y-3">
+              <div className="flex items-center justify-between pb-3 border-b border-[#DDD3C5]">
+                <h3 className="text-sm font-extrabold uppercase tracking-wide text-[#171717] flex items-center gap-1.5">
+                  <MapPin size={15} className="text-[#E6321C]" />
+                  <span>Delivery Destination</span>
                 </h3>
-                <span className="text-[10px] font-bold uppercase tracking-wider text-[#238636] bg-[#238636]/10 px-2 py-0.5 rounded">
-                  BlueDart Express
+                <span className="text-[10px] font-bold uppercase tracking-[0.14em] text-[#171717] font-mono">
+                  BLUEDART AIR
                 </span>
               </div>
 
               <div className="text-xs text-[#171717] leading-relaxed space-y-1">
                 <strong className="block text-sm font-extrabold text-[#171717]">
-                  {address.name || 'Valued Customer'}
+                  {address.name || 'Valued Patron'}
                 </strong>
                 <p className="text-[#6F6A63]">
                   {address.line1}
                   {address.line2 ? `, ${address.line2}` : ''}
                   <br />
-                  {address.city}, {address.state} - {address.postalCode}
+                  {address.city}, {address.state} — {address.postalCode}
                   <br />
                   {address.country || 'India'}
                 </p>
                 {address.phone && (
                   <p className="text-[#6F6A63] pt-1">
-                    Phone: <span className="font-mono font-medium text-[#171717]">{address.phone}</span>
+                    Phone:{' '}
+                    <span className="font-mono font-bold text-[#171717]">{address.phone}</span>
                   </p>
                 )}
               </div>
             </div>
 
-            {/* Primary Action Buttons */}
-            <div className="space-y-3 pt-2">
-              <Link to="/account/orders" className="block">
-                <Button variant="secondary" size="lg" className="w-full">
-                  <Package size={16} />
-                  <span>View All In Your Account</span>
-                </Button>
+            {/* Action Buttons */}
+            <div className="space-y-3 pt-1">
+              <Link
+                to="/shop"
+                className="w-full inline-flex items-center justify-center gap-2 bg-[#171717] text-white py-3.5 px-6 text-xs font-extrabold uppercase tracking-[0.16em] hover:bg-[#E6321C] transition-all rounded-[2px] shadow-2xs"
+              >
+                <span>Continue Shopping Menswear</span>
+                <ArrowRight size={14} />
               </Link>
-              <Link to="/shop" className="block">
-                <Button variant="primary" size="lg" className="w-full">
-                  <span>Continue Shopping Menswear</span>
-                  <ArrowRight size={16} />
-                </Button>
+
+              <Link
+                to="/account/orders"
+                className="w-full inline-flex items-center justify-center gap-2 border border-[#DDD3C5] bg-[#FFFFFF] text-[#171717] py-3.5 px-6 text-xs font-extrabold uppercase tracking-[0.16em] hover:border-[#171717] hover:bg-[#EDE0CC]/40 transition-all rounded-[2px]"
+              >
+                <Package size={14} />
+                <span>View Order In Your Account</span>
               </Link>
             </div>
           </div>

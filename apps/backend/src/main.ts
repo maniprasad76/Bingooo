@@ -17,8 +17,15 @@ import { CacheInterceptor } from './common/interceptors/cache.interceptor';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  // ── Payload & Body Limits ──
-  app.use(express.json({ limit: '10mb' }));
+  // ── Payload & Body Limits (with rawBody capture for webhook signature verification) ──
+  app.use(
+    express.json({
+      limit: '10mb',
+      verify: (req: any, _res: any, buf: Buffer) => {
+        req.rawBody = buf;
+      },
+    }),
+  );
   app.use(express.urlencoded({ limit: '10mb', extended: true }));
 
   // ── Response Compression (gzip/deflate for responses > 1KB) ──

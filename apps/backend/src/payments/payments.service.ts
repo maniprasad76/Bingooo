@@ -313,7 +313,39 @@ export class PaymentsService {
   }
 
   /** Webhook listener for async Razorpay events */
-  handleWebhook(event: any, signature?: string) {
+  handleWebhook(event: any, signature?: string, rawBody?: Buffer | string) {
+    const webhookSecret = process.env.RAZORPAY_WEBHOOK_SECRET;
+
+    // If a webhook secret is configured, enforce strict cryptographic HMAC signature validation
+    if (webhookSecret) {
+      if (!signature) {
+        throw new BadRequestException({
+          code: 'MISSING_WEBHOOK_SIGNATURE',
+          message: 'Missing x-razorpay-signature header',
+        });
+      }
+
+      const payloadString = rawBody
+        ? (Buffer.isBuffer(rawBody) ? rawBody.toString('utf8') : rawBody)
+        : JSON.stringify(event);
+
+      try {
+        const isValid = Razorpay.validateWebhookSignature(payloadString, signature, webhookSecret);
+        if (!isValid) {
+          throw new BadRequestException({
+            code: 'INVALID_WEBHOOK_SIGNATURE',
+            message: 'Razorpay webhook signature verification failed',
+          });
+        }
+      } catch (err: any) {
+        if (err instanceof BadRequestException) throw err;
+        throw new BadRequestException({
+          code: 'INVALID_WEBHOOK_SIGNATURE',
+          message: 'Error verifying webhook signature: ' + (err?.message || 'Invalid format'),
+        });
+      }
+    }
+
     const eventId = event?.id || uuidv4();
     const existing = db.payments.find((p) => p.raw_event_id === eventId);
     if (existing) {
@@ -325,7 +357,7 @@ export class PaymentsService {
       const payment = db.payments.find((p) => p.provider_order_id === payload.order_id);
       if (payment) {
         payment.raw_event_id = eventId;
-        if (event.event === 'payment.captured') {
+        if (event.event === 'payment.captured' || event.event === 'order.paid') {
           payment.status = 'captured';
           payment.provider_payment_id = payload.id;
           const order = db.orders.find((o) => o.id === payment.order_id);
@@ -339,7 +371,22 @@ export class PaymentsService {
       }
     }
 
-    return { received: true };
+    // Handle refund events
+    const refundEntity = event?.payload?.refund?.entity;
+    if (refundEntity?.payment_id) {
+      const payment = db.payments.find((p) => p.provider_payment_id === refundEntity.payment_id);
+      if (payment) {
+        if (event.event === 'refund.processed') {
+          payment.status = 'refunded';
+          const order = db.orders.find((o) => o.id === payment.order_id);
+          if (order) {
+            order.payment_status = 'refunded';
+          }
+        }
+      }
+    }
+
+    return { received: true, status: 'ok' };
   }
 
   /** Admin: List all payments with filtering */

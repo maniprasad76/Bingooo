@@ -6,6 +6,7 @@ import {
   Param,
   Query,
   Headers,
+  Req,
   UseGuards,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiHeader, ApiBearerAuth } from '@nestjs/swagger';
@@ -80,8 +81,12 @@ export class PaymentsController {
   @Post('razorpay/webhook')
   @ApiOperation({ summary: 'Razorpay webhook receiver' })
   @ApiHeader({ name: 'x-razorpay-signature', required: false })
-  handleWebhook(@Body() event: any, @Headers('x-razorpay-signature') signature?: string) {
-    return this.paymentsService.handleWebhook(event, signature);
+  handleWebhook(
+    @Body() event: any,
+    @Headers('x-razorpay-signature') signature?: string,
+    @Req() req?: any,
+  ) {
+    return this.paymentsService.handleWebhook(event, signature, req?.rawBody);
   }
 }
 

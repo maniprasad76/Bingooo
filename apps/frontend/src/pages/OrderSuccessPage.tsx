@@ -583,6 +583,17 @@ export function OrderSuccessPage() {
                 <Package size={14} />
                 <span>View Order In Your Account</span>
               </Link>
+
+              <a
+                href={getWhatsAppUrl(`Hi Bingooo, I just placed order #${displayOrder.order_number || displayOrder.id || 'recent'} and have a question.`)}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => triggerHaptic('light')}
+                className="w-full inline-flex items-center justify-center gap-2 border border-[#25D366]/40 bg-[#25D366]/10 text-[#171717] py-3 px-6 text-xs font-bold uppercase tracking-wider hover:bg-[#25D366] hover:text-white transition-all rounded-[2px]"
+              >
+                <WhatsAppIcon className="w-4 h-4 text-[#25D366]" />
+                <span>Order Help on WhatsApp</span>
+              </a>
             </div>
           </div>
         </div>

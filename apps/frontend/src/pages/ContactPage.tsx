@@ -1,9 +1,19 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { CheckCircle2 } from 'lucide-react';
+import { CheckCircle2, PhoneCall, Mail } from 'lucide-react';
 import { SEO } from '../components/common/SEO';
 import { useToast } from '../components/ui/Toast';
 import { triggerHaptic } from '../lib/native/capacitorBridge';
+import {
+  BINGOOO_EMAIL_SUPPORT,
+  BINGOOO_PHONE_DISPLAY,
+  BINGOOO_PHONE_RAW,
+  BINGOOO_INSTAGRAM_URL,
+  BINGOOO_INSTAGRAM_HANDLE,
+  getWhatsAppUrl,
+  WhatsAppIcon,
+  InstagramIcon,
+} from '../components/ui/SocialIcons';
 
 export function ContactPage() {
   const { toast } = useToast();
@@ -147,110 +157,112 @@ export function ContactPage() {
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 border-t border-l border-[#333333]">
-            {/* Option 01 */}
+            {/* Option 01 - Email */}
             <div className="min-h-[220px] p-7 border-r border-b border-[#333333] flex flex-col hover:bg-[#222222] transition-colors group">
               <div className="text-[10px] text-[#777777] font-mono font-bold mb-8">
                 01
               </div>
               <div className="w-[38px] h-[38px] border border-[#555555] grid place-items-center mb-5 text-[#e6321c]">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" className="w-[18px] h-[18px]">
-                  <path d="M4 5h16v12H4z" />
-                  <path d="m4 6 8 6 8-6" />
-                </svg>
+                <Mail className="w-[18px] h-[18px]" />
               </div>
-              <h3 className="text-[17px] font-bold uppercase tracking-[-0.02em] mb-2 text-white">
-                Email
+              <h3 className="text-[17px] font-bold uppercase tracking-[-0.02em] mb-1 text-white">
+                Official Email
               </h3>
+              <div className="text-[11px] font-mono text-[#e6321c] mb-2 select-all">
+                {BINGOOO_EMAIL_SUPPORT}
+              </div>
               <p className="text-[#999999] text-[12px] leading-[1.7] mb-auto">
-                Send us your question and our atelier desk will get back to you within 24 hours.
+                Send us your questions, order feedback, or custom design queries.
               </p>
               <a
-                href="mailto:hello@bingooo.in"
+                href={`mailto:${BINGOOO_EMAIL_SUPPORT}?subject=Inquiry%20from%20Bingooo%20Store`}
                 onClick={() => triggerHaptic('light')}
                 className="mt-6 text-[#e6321c] text-[11px] font-extrabold tracking-[0.06em] uppercase group-hover:translate-x-1 transition-transform inline-block"
               >
-                Email us →
+                Send Email →
               </a>
             </div>
 
-            {/* Option 02 */}
+            {/* Option 02 - WhatsApp */}
             <div className="min-h-[220px] p-7 border-r border-b border-[#333333] flex flex-col hover:bg-[#222222] transition-colors group">
               <div className="text-[10px] text-[#777777] font-mono font-bold mb-8">
                 02
               </div>
-              <div className="w-[38px] h-[38px] border border-[#555555] grid place-items-center mb-5 text-[#e6321c]">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" className="w-[18px] h-[18px]">
-                  <path d="M20 11.5a8 8 0 0 1-8 8 8.7 8.7 0 0 1-3.5-.7L4 20l1.2-4A8 8 0 1 1 20 11.5Z" />
-                  <path d="M9 10.5c.7 1.4 1.6 2.3 3 3" />
-                </svg>
+              <div className="w-[38px] h-[38px] border border-[#555555] grid place-items-center mb-5 text-[#25D366]">
+                <WhatsAppIcon className="w-[18px] h-[18px]" />
               </div>
-              <h3 className="text-[17px] font-bold uppercase tracking-[-0.02em] mb-2 text-white">
-                WhatsApp
+              <h3 className="text-[17px] font-bold uppercase tracking-[-0.02em] mb-1 text-white">
+                WhatsApp Chat
               </h3>
+              <div className="text-[11px] font-mono text-[#25D366] mb-2 select-all">
+                {BINGOOO_PHONE_DISPLAY}
+              </div>
               <p className="text-[#999999] text-[12px] leading-[1.7] mb-auto">
-                Chat with Bingooo on WhatsApp for swift support, delivery check, and custom fits.
+                Direct WhatsApp assistance for orders, sizing recommendations, and custom design approvals.
               </p>
               <a
-                href="https://wa.me/919390246684?text=Hi%20Bingooo,%20I%20need%20assistance"
+                href={getWhatsAppUrl('Hi Bingooo, I would like to inquire about your apparel and custom designs.')}
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={() => triggerHaptic('light')}
-                className="mt-6 text-[#e6321c] text-[11px] font-extrabold tracking-[0.06em] uppercase group-hover:translate-x-1 transition-transform inline-block"
+                className="mt-6 text-[#25D366] text-[11px] font-extrabold tracking-[0.06em] uppercase group-hover:translate-x-1 transition-transform inline-block"
               >
-                Chat with us →
+                Chat on WhatsApp →
               </a>
             </div>
 
-            {/* Option 03 */}
+            {/* Option 03 - Phone Call */}
             <div className="min-h-[220px] p-7 border-r border-b border-[#333333] flex flex-col hover:bg-[#222222] transition-colors group">
               <div className="text-[10px] text-[#777777] font-mono font-bold mb-8">
                 03
               </div>
               <div className="w-[38px] h-[38px] border border-[#555555] grid place-items-center mb-5 text-[#e6321c]">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" className="w-[18px] h-[18px]">
-                  <circle cx="12" cy="12" r="8" />
-                  <path d="M12 8v4l3 2" />
-                </svg>
+                <PhoneCall className="w-[18px] h-[18px]" />
               </div>
-              <h3 className="text-[17px] font-bold uppercase tracking-[-0.02em] mb-2 text-white">
-                Order Support
+              <h3 className="text-[17px] font-bold uppercase tracking-[-0.02em] mb-1 text-white">
+                Direct Call
               </h3>
+              <div className="text-[11px] font-mono text-[#d4d1cc] mb-2 select-all">
+                {BINGOOO_PHONE_DISPLAY}
+              </div>
               <p className="text-[#999999] text-[12px] leading-[1.7] mb-auto">
-                Track your package, verify dispatch status, or initiate hassle-free returns.
+                Speak directly with our atelier team in Srikakulam (Mon–Sat, 9 AM – 9 PM IST).
               </p>
-              <Link
-                to="/track-order"
+              <a
+                href={`tel:+${BINGOOO_PHONE_RAW}`}
                 onClick={() => triggerHaptic('light')}
                 className="mt-6 text-[#e6321c] text-[11px] font-extrabold tracking-[0.06em] uppercase group-hover:translate-x-1 transition-transform inline-block"
               >
-                Track an order →
-              </Link>
+                Call Concierge →
+              </a>
             </div>
 
-            {/* Option 04 */}
+            {/* Option 04 - Instagram */}
             <div className="min-h-[220px] p-7 border-r border-b border-[#333333] flex flex-col hover:bg-[#222222] transition-colors group">
               <div className="text-[10px] text-[#777777] font-mono font-bold mb-8">
                 04
               </div>
-              <div className="w-[38px] h-[38px] border border-[#555555] grid place-items-center mb-5 text-[#e6321c]">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" className="w-[18px] h-[18px]">
-                  <path d="M6 4h12v16H6z" />
-                  <path d="M9 8h6M9 12h6M9 16h3" />
-                </svg>
+              <div className="w-[38px] h-[38px] border border-[#555555] grid place-items-center mb-5 text-[#E1306C]">
+                <InstagramIcon className="w-[18px] h-[18px]" />
               </div>
-              <h3 className="text-[17px] font-bold uppercase tracking-[-0.02em] mb-2 text-white">
-                Custom Design
+              <h3 className="text-[17px] font-bold uppercase tracking-[-0.02em] mb-1 text-white">
+                Instagram Community
               </h3>
+              <div className="text-[11px] font-mono text-[#E1306C] mb-2 select-all">
+                {BINGOOO_INSTAGRAM_HANDLE}
+              </div>
               <p className="text-[#999999] text-[12px] leading-[1.7] mb-auto">
-                Have a unique idea? Turn it into a wearable piece with our Custom Studio.
+                Explore reel drops, style inspiration, and tag us to be featured on our community feed.
               </p>
-              <Link
-                to="/customize"
+              <a
+                href={BINGOOO_INSTAGRAM_URL}
+                target="_blank"
+                rel="noopener noreferrer"
                 onClick={() => triggerHaptic('light')}
-                className="mt-6 text-[#e6321c] text-[11px] font-extrabold tracking-[0.06em] uppercase group-hover:translate-x-1 transition-transform inline-block"
+                className="mt-6 text-[#E1306C] text-[11px] font-extrabold tracking-[0.06em] uppercase group-hover:translate-x-1 transition-transform inline-block"
               >
-                Start creating →
-              </Link>
+                Follow @bingooo.co →
+              </a>
             </div>
           </div>
         </div>
@@ -280,26 +292,64 @@ export function ContactPage() {
             <div className="mt-10 border-t border-[#ddd3c5]">
               <div className="py-5 border-b border-[#ddd3c5]">
                 <div className="text-[10px] font-extrabold text-[#e6321c] tracking-[0.12em] uppercase mb-1.5">
-                  Email
+                  Email Desk
                 </div>
-                <div className="text-[14px] font-semibold">hello@bingooo.in</div>
-                <div className="text-[12px] text-[#6f6a63] mt-1">For general enquiries & collaborations</div>
+                <a
+                  href={`mailto:${BINGOOO_EMAIL_SUPPORT}`}
+                  className="text-[14px] font-semibold text-[#171717] hover:text-[#e6321c] transition-colors block"
+                >
+                  {BINGOOO_EMAIL_SUPPORT}
+                </a>
+                <div className="text-[12px] text-[#6f6a63] mt-1">For orders, returns, sizing & general inquiries</div>
               </div>
 
               <div className="py-5 border-b border-[#ddd3c5]">
                 <div className="text-[10px] font-extrabold text-[#e6321c] tracking-[0.12em] uppercase mb-1.5">
-                  Support
+                  Phone & WhatsApp Support
                 </div>
-                <div className="text-[14px] font-semibold">support@bingooo.in</div>
-                <div className="text-[12px] text-[#6f6a63] mt-1">Orders, returns & product sizing assistance</div>
+                <div className="flex items-center gap-3">
+                  <a
+                    href={`tel:+${BINGOOO_PHONE_RAW}`}
+                    className="text-[14px] font-semibold text-[#171717] hover:text-[#e6321c] transition-colors"
+                  >
+                    {BINGOOO_PHONE_DISPLAY}
+                  </a>
+                  <span className="text-[#6F6A63] text-xs">•</span>
+                  <a
+                    href={getWhatsAppUrl('Hi Bingooo, I would like to chat with support.')}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-[12px] font-bold text-[#25D366] hover:underline inline-flex items-center gap-1"
+                  >
+                    <WhatsAppIcon className="w-3.5 h-3.5" />
+                    <span>WhatsApp</span>
+                  </a>
+                </div>
+                <div className="text-[12px] text-[#6f6a63] mt-1">Active Mon–Sat, 9:00 AM – 9:00 PM IST</div>
               </div>
 
               <div className="py-5 border-b border-[#ddd3c5]">
                 <div className="text-[10px] font-extrabold text-[#e6321c] tracking-[0.12em] uppercase mb-1.5">
-                  Location
+                  Instagram
+                </div>
+                <a
+                  href={BINGOOO_INSTAGRAM_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-[14px] font-semibold text-[#171717] hover:text-[#e6321c] transition-colors inline-flex items-center gap-1.5"
+                >
+                  <span>{BINGOOO_INSTAGRAM_HANDLE}</span>
+                  <InstagramIcon className="w-3.5 h-3.5 text-[#E1306C]" />
+                </a>
+                <div className="text-[12px] text-[#6f6a63] mt-1">Follow for daily drops, community fits & behind-the-scenes</div>
+              </div>
+
+              <div className="py-5 border-b border-[#ddd3c5]">
+                <div className="text-[10px] font-extrabold text-[#e6321c] tracking-[0.12em] uppercase mb-1.5">
+                  Atelier Location
                 </div>
                 <div className="text-[14px] font-semibold">Srikakulam, Andhra Pradesh, India</div>
-                <div className="text-[12px] text-[#6f6a63] mt-1">Bingooo Men's Wear Atelier</div>
+                <div className="text-[12px] text-[#6f6a63] mt-1">Bingooo Men's Wear Atelier & Custom Studio</div>
               </div>
             </div>
           </div>

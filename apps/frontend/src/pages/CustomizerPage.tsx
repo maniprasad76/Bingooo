@@ -165,15 +165,19 @@ export function CustomizerPage() {
         const config = data?.data || data;
         if (config && Array.isArray(config.garments) && config.garments.length > 0) {
           setGarmentsList(config.garments);
-          const currentG =
-            config.garments.find((g: any) => g.id === selectedGarment.id) || config.garments[0];
-          setSelectedGarment(currentG);
-          if (currentG.colors && currentG.colors.length > 0) {
-            const matched =
-              currentG.colors.find((c: any) => c.name.toLowerCase() === selectedColor.name.toLowerCase()) ||
-              currentG.colors[0];
-            setSelectedColor(matched);
-          }
+          setSelectedGarment((prevG) => {
+            const currentG =
+              config.garments.find((g: any) => g.id === prevG.id) || config.garments[0];
+            if (currentG.colors && currentG.colors.length > 0) {
+              setSelectedColor((prevC) => {
+                const matched =
+                  currentG.colors.find((c: any) => c.name.toLowerCase() === prevC.name.toLowerCase()) ||
+                  currentG.colors[0];
+                return matched;
+              });
+            }
+            return currentG;
+          });
         }
       })
       .catch(() => {});

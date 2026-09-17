@@ -8,6 +8,7 @@ import {
   Sparkles,
   CheckCircle2,
 } from 'lucide-react';
+import { BINGOOO_INSTAGRAM_URL } from '../ui/SocialIcons';
 
 interface InstagramPost {
   id: string;
@@ -83,7 +84,7 @@ const INSTAGRAM_ITEMS: InstagramPost[] = [
 
 export function InstagramCommunity() {
   const [hoveredId, setHoveredId] = useState<string | null>(null);
-  const instagramUrl = 'https://www.instagram.com/bingooo.co/';
+  const instagramUrl = BINGOOO_INSTAGRAM_URL;
 
   return (
     <section className="mx-auto max-w-[1360px] px-4 sm:px-8 py-10 sm:py-14">

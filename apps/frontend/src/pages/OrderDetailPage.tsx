@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { motion, useReducedMotion } from 'framer-motion';
@@ -26,11 +26,7 @@ export function OrderDetailPage() {
     enabled: !!orderNumber,
   });
 
-  useEffect(() => {
-    if (order?.items?.[0]?.title_snapshot) {
-      setReturnGarment(order.items[0].title_snapshot);
-    }
-  }, [order]);
+  const selectedGarmentTitle = returnGarment || order?.items?.[0]?.title_snapshot || '';
 
   const handleReturnSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -40,7 +36,7 @@ export function OrderDetailPage() {
       await api.post('/returns', {
         orderId: order.id,
         orderNumber: order.order_number,
-        garmentTitle: returnGarment || order.items?.[0]?.title_snapshot || 'Garment Item',
+        garmentTitle: selectedGarmentTitle || 'Garment Item',
         size: order.items?.[0]?.size || 'M',
         reason: returnReason,
         comments: returnComments,
@@ -284,7 +280,7 @@ export function OrderDetailPage() {
                     Select Garment *
                   </label>
                   <select
-                    value={returnGarment}
+                    value={selectedGarmentTitle}
                     onChange={(e) => setReturnGarment(e.target.value)}
                     className="w-full px-3 py-2 bg-paper border border-border rounded-lg text-xs font-bold text-ink focus:outline-none focus:border-brand-red"
                   >

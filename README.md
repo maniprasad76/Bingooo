@@ -65,8 +65,9 @@ Bingooo adheres to a warm, editorial streetwear aesthetic designed to wow custom
 | **Border** | `#DDD3C5` | Subtle dividers and component outlines |
 
 ### Typography
-- **Primary Font Family:** `Manrope` (Google Fonts) — modern geometric sans-serif delivering editorial confidence across headlines and tabular data.
-- **Accents:** `Impact` / `Bebas Neue` for select display hero headlines.
+- **Primary Font Family:** `Manrope` (Google Fonts) — modern geometric sans-serif delivering editorial confidence across all headlines, body copy, and tabular data.
+- **Spec & Technical:** `IBM Plex Mono` — fabric weight (GSM specs), technical counters, and product spec badges.
+- **Custom Studio Fonts:** Anton, Bebas Neue, Bungee, Caveat, Cinzel, Cormorant Garamond, Major Mono Display, Permanent Marker, Playfair Display, Prata, Righteous, Russo One, Space Grotesk, Syne (user-selectable in the live apparel customizer).
 
 ---
 
@@ -171,13 +172,17 @@ npm run build
 
 | Command | Workspace | Description |
 |:---|:---|:---|
-| `npm run dev:web` | `apps/frontend` | Starts the customer-facing storefront in dev mode |
-| `npm run dev:admin` | `apps/admin` | Starts the admin control center dev server |
-| `npm run dev:api` | `apps/backend` | Starts the NestJS backend API with hot reload |
+| `npm run dev:web` | `apps/frontend` | Starts the customer-facing storefront in dev mode (Vite on :5173) |
+| `npm run dev:admin` | `apps/admin` | Starts the admin control center dev server (Vite on :5174) |
+| `npm run dev:api` | `apps/backend` | Starts the NestJS backend API with hot reload (Port :3000) |
+| `npm run dev:all` | Root | Starts backend API, customer storefront, and admin portal concurrently |
 | `npm run build:web` | `apps/frontend` | Compiles the production bundle for the storefront |
 | `npm run build:admin` | `apps/admin` | Compiles the production bundle for the admin portal |
 | `npm run build:api` | `apps/backend` | Compiles the production NestJS backend application |
+| `npm run android` | `apps/frontend` | Compiles frontend and syncs to Capacitor native Android shell |
+| `npm run android:open`| `apps/frontend` | Opens the native Android project in Android Studio |
 | `npm run typecheck` | Root | Runs TypeScript compilation verification across all workspaces |
+| `npm run build` | Root | Builds production bundles for all apps |
 | `npm run lint` | Root | Lints all packages and apps |
 
 ---

@@ -595,7 +595,7 @@ export function ReturnsRefundsPage() {
                     </div>
                     <div>
                       <div className="font-bold text-[#171717] uppercase">WhatsApp Concierge (Fastest)</div>
-                      <div className="text-[#6F6A63] font-mono text-[11px]">+91 93902 44747 • 9:00 AM – 9:00 PM IST</div>
+                      <div className="text-[#6F6A63] font-mono text-[11px]">+91 79817 87317 • 9:00 AM – 9:00 PM IST</div>
                     </div>
                   </div>
 
@@ -605,7 +605,7 @@ export function ReturnsRefundsPage() {
                     </div>
                     <div>
                       <div className="font-bold text-[#171717] uppercase">Official Email Inquiries</div>
-                      <div className="text-[#6F6A63] font-mono text-[11px]">support@bingooo.in • 24-hour response</div>
+                      <div className="text-[#6F6A63] font-mono text-[11px]">bingooo.sklm@gmail.com • 24-hour response</div>
                     </div>
                   </div>
 
@@ -648,7 +648,7 @@ export function ReturnsRefundsPage() {
             <span>STATUTORY COMPLIANCE • CONSUMER PROTECTION ACT (INDIA)</span>
           </div>
           <p className="text-[#6F6A63] text-[11px] leading-[1.7] max-w-[760px] mx-auto">
-            Governed by the Consumer Protection (E-Commerce) Rules, 2020. Bingooo Menswear Atelier ensures all returns, exchanges, and refunds are processed within statutory timelines without unjustified demur. For grievances, contact our designated Grievance Officer at <a href="mailto:grievance@bingooo.in" className="underline font-bold text-[#171717]">grievance@bingooo.in</a>.
+            Governed by the Consumer Protection (E-Commerce) Rules, 2020. Bingooo Menswear Atelier ensures all returns, exchanges, and refunds are processed within statutory timelines without unjustified demur. For grievances, contact our designated Grievance Officer at <a href="mailto:bingooo.sklm@gmail.com" className="underline font-bold text-[#171717]">bingooo.sklm@gmail.com</a>.
           </p>
           <div className="mt-4 flex flex-wrap justify-center gap-4 text-[10px] font-mono uppercase tracking-wider text-[#6F6A63]">
             <Link to="/terms" className="hover:text-[#171717] underline">TERMS OF SERVICE</Link>

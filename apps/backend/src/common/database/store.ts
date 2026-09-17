@@ -1023,6 +1023,13 @@ export const db = {
   } as any,
 };
 
+type SaveHook = () => void;
+const saveHooks: SaveHook[] = [];
+
+export function registerSaveHook(hook: SaveHook): void {
+  saveHooks.push(hook);
+}
+
 export function saveDb() {
   try {
     if (!fs.existsSync(DATA_DIR)) {
@@ -1030,11 +1037,14 @@ export function saveDb() {
     }
     fs.writeFileSync(STORE_FILE, JSON.stringify(db, null, 2), 'utf-8');
 
-    // Rebuild in-memory hash indexes after every save
-    try {
-      const { rebuildIndexes } = require('./db-index.service');
-      rebuildIndexes();
-    } catch { /* indexes not yet loaded */ }
+    // Notify registered hooks (e.g. rebuild in-memory indexes) without circular import
+    for (const hook of saveHooks) {
+      try {
+        hook();
+      } catch (err) {
+        console.error('[Database] Save hook error:', err);
+      }
+    }
   } catch (err) {
     console.error('[Database] Failed to save store to disk:', err);
   }

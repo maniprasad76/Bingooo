@@ -3,7 +3,7 @@
 // Replaces linear .find() / .filter() scans on db arrays
 // ─────────────────────────────────────────────────────────
 
-import { db } from './store';
+import { db, registerSaveHook } from './store';
 
 // ── Single-record indexes (Map<key, record>) ──
 const productsById = new Map<string, any>();
@@ -156,5 +156,6 @@ export function getProductIdsByCollectionId(collectionId: string) { return produ
 export function getAddressesByUserId(userId: string) { return addressesByUserId.get(userId) || []; }
 export function getReviewsByProductId(productId: string) { return reviewsByProductId.get(productId) || []; }
 
-// Build indexes on module load
+// Build indexes on module load & register auto-rebuild on database saves
 rebuildIndexes();
+registerSaveHook(rebuildIndexes);

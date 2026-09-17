@@ -51,3 +51,6 @@ supabase/.temp/
 apps/backend/uploads/
 **/uploads/*
 !**/uploads/.gitkeep
+
+# Graphify cache
+graphify-out/cache/

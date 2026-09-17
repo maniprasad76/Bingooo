@@ -15,7 +15,7 @@ import {
 } from 'lucide-react';
 import { SEO } from '../components/common/SEO';
 import { Breadcrumbs } from '../components/common/Breadcrumbs';
-import { getWhatsAppUrl } from '../components/ui/SocialIcons';
+import { getWhatsAppUrl, WhatsAppIcon } from '../components/ui/SocialIcons';
 
 interface TrackingResult {
   orderNumber: string;
@@ -605,6 +605,15 @@ export function TrackOrderPage() {
             </div>
           </div>
           <div className="pt-2 flex flex-wrap items-center gap-4">
+            <a
+              href={getWhatsAppUrl(`Hi Bingooo Logistics, I need live tracking updates on my order${orderQuery ? ` (${orderQuery})` : ''}.`)}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 text-xs font-bold text-[#25D366] hover:underline"
+            >
+              <WhatsAppIcon className="w-3.5 h-3.5" />
+              <span>Track via WhatsApp Concierge</span>
+            </a>
             <Link
               to="/shipping-policy"
               className="inline-flex items-center gap-1.5 text-xs font-bold text-[#E6321C] hover:underline"

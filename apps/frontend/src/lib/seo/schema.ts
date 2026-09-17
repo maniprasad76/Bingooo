@@ -30,7 +30,7 @@ export function generateOrganizationSchema() {
     description:
       'Contemporary Indian luxury menswear crafted with 240 to 280 GSM heavyweight cotton and bespoke 3D custom apparel.',
     telephone: '+91-7981787317',
-    email: 'support@bingooo.in',
+    email: 'bingooo.sklm@gmail.com',
     address: {
       '@type': 'PostalAddress',
       streetAddress: '7 Roads Junction, Main Road',
@@ -61,7 +61,7 @@ export function generateOrganizationSchema() {
       },
     ],
     sameAs: [
-      'https://www.instagram.com/bingooo.sklm',
+      'https://www.instagram.com/bingooo.co',
       'https://wa.me/917981787317',
     ],
     priceRange: '₹₹',
@@ -301,7 +301,7 @@ export function generateLocalBusinessSchema() {
     description:
       'Bingooo is India\'s premium heavyweight menswear brand offering 240–420 GSM streetwear and bespoke custom-printed apparel. Located in Srikakulam, Andhra Pradesh.',
     telephone: '+91-7981787317',
-    email: 'support@bingooo.in',
+    email: 'bingooo.sklm@gmail.com',
     address: {
       '@type': 'PostalAddress',
       streetAddress: '7 Roads Junction, Main Road',
@@ -328,7 +328,7 @@ export function generateLocalBusinessSchema() {
       },
     ],
     sameAs: [
-      'https://www.instagram.com/bingooo.sklm',
+      'https://www.instagram.com/bingooo.co',
       'https://wa.me/917981787317',
     ],
     aggregateRating: {

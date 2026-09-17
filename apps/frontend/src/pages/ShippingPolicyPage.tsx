@@ -94,7 +94,7 @@ const FAQS = [
   {
     question: 'What should I do if the courier parcel arrives damaged or opened?',
     answer:
-      'All Bingooo garments leave our facility in heavy tamper-evident sealed flyers. If the outer flyer is torn, re-taped, or clearly opened, please refuse delivery from the courier executive and message our WhatsApp desk (+91 93902 44747) or email support@bingooo.in immediately. We dispatch a priority replacement right away.',
+      'All Bingooo garments leave our facility in heavy tamper-evident sealed flyers. If the outer flyer is torn, re-taped, or clearly opened, please refuse delivery from the courier executive and message our WhatsApp desk (+91 79817 87317) or email bingooo.sklm@gmail.com immediately. We dispatch a priority replacement right away.',
   },
   {
     question: 'What happens if I miss the courier delivery attempt?',
@@ -668,7 +668,7 @@ export function ShippingPolicyPage() {
                     </div>
                     <div>
                       <div className="font-bold text-[#171717] uppercase">WhatsApp Dispatch Desk (Fastest)</div>
-                      <div className="text-[#6F6A63] font-mono text-[11px]">+91 93902 44747 • Live Courier Interception</div>
+                      <div className="text-[#6F6A63] font-mono text-[11px]">+91 79817 87317 • Live Courier Interception</div>
                     </div>
                   </div>
 
@@ -688,7 +688,7 @@ export function ShippingPolicyPage() {
                     </div>
                     <div>
                       <div className="font-bold text-[#171717] uppercase">Official Logistics Inquiries</div>
-                      <div className="text-[#6F6A63] font-mono text-[11px]">support@bingooo.in • 24-Hour Response</div>
+                      <div className="text-[#6F6A63] font-mono text-[11px]">bingooo.sklm@gmail.com • 24-Hour Response</div>
                     </div>
                   </div>
                 </div>
@@ -721,7 +721,7 @@ export function ShippingPolicyPage() {
             <span>STATUTORY COMPLIANCE • CONSUMER PROTECTION ACT (INDIA)</span>
           </div>
           <p className="text-[#6F6A63] text-[11px] leading-[1.7] max-w-[760px] mx-auto">
-            Governed under the Consumer Protection (E-Commerce) Rules, 2020. Bingooo Menswear Atelier ensures all consignments are dispatched with genuine Airway Bills, carrier insurance, and tamper-evident packaging. For freight escalations, reach our Grievance Officer at <a href="mailto:grievance@bingooo.in" className="underline font-bold text-[#171717]">grievance@bingooo.in</a>.
+            Governed under the Consumer Protection (E-Commerce) Rules, 2020. Bingooo Menswear Atelier ensures all consignments are dispatched with genuine Airway Bills, carrier insurance, and tamper-evident packaging. For freight escalations, reach our Grievance Officer at <a href="mailto:bingooo.sklm@gmail.com" className="underline font-bold text-[#171717]">bingooo.sklm@gmail.com</a>.
           </p>
           <div className="mt-4 flex flex-wrap justify-center gap-4 text-[10px] font-mono uppercase tracking-wider text-[#6F6A63]">
             <Link to="/returns-refunds" className="hover:text-[#171717] underline">RETURNS & EXCHANGES</Link>

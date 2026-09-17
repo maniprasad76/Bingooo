@@ -199,3 +199,70 @@ Interaction elevation: cards lift via shadow + border darkens (`border-ink/25`) 
 5. Prices always bold charcoal; compare-at price small, muted, strikethrough.
 
 ---
+
+# PART B — AI IMAGE GENERATION GUIDE & READY PROMPTS
+
+Use these prompt templates with **Midjourney (v6)**, **DALL·E 3**, **SDXL**, or **Adobe Firefly** to generate on-brand campaign and e-commerce imagery that blends seamlessly into the Bingooo storefront and design system.
+
+---
+
+## 7. Photography Art Direction & Mood
+
+### 7.1 Key Visual Pillars
+- **Palette Control**: The overall frame must be anchored in warm cream (`#F7EEDB`), soft architectural concrete, deep charcoal (`#171717`), and muted earthy stone tones. Any red (`#E6321C`) must be intentional and isolated (e.g. a red woven tag, an embroidery detail, or an architectural prop).
+- **Subject & Fit**: South Asian and international male models, relaxed editorial postures, confident and unforced expressions. Garments must have visible weight: heavy 240–280 GSM cotton boxy tees that don't cling, 380–420 GSM structured fleece hoodies with deep hoods, and crisp utility trousers.
+- **Lighting**: Soft diffused north-facing daylight or editorial studio softbox with gentle falloff. Natural warm shadows, zero harsh camera flashes, zero saturated neon colored rim-lights.
+- **Camera Spec Style**: 50mm or 85mm prime lens, f/2.8 to f/4.0 aperture, medium depth of field with sharp textile weave in focus.
+
+---
+
+## 8. Ready-to-Paste AI Image Prompts
+
+### 8.1 Hero Campaign / Lookbook Banner (16:9 or 21:9)
+```text
+Cinematic editorial streetwear campaign photo of a stylish South Asian male model wearing an oversized heavyweight boxy black 260 GSM combed cotton t-shirt with drop shoulders and charcoal utility cargo pants, standing in a minimalist warm cream architectural concrete atelier studio, soft natural directional daylight casting gentle warm shadows, neutral warm palette of cream, beige, and matte black with a subtle touch of crimson red detail, high-fashion magazine aesthetic, shot on 35mm Hasselblad, f/3.2, ultra-realistic cotton fabric texture, crisp details --ar 16:9 --style raw --v 6.0
+```
+
+### 8.2 Product Catalog / Ghost Mannequin / Padded Well (4:5)
+```text
+High-end commercial studio product photography of a premium 400 GSM heavyweight fleece hoodie in stone grey, laid out or on invisible mannequin, perfectly styled relaxed drop-shoulder silhouette, thick ribbed cuffs, deep double-lined hood, premium cotton grain and dense fleece weave visible under soft diffuse studio lighting, placed against a seamless warm cream paper background (#F7EEDB), clean minimal luxury menswear catalogue shot, 8k resolution, razor sharp focus --ar 4:5 --style raw --v 6.0
+```
+
+### 8.3 Custom Studio Atelier Backdrop (16:9 or 4:3)
+```text
+Interior photograph of a modern bespoke garment customization atelier and screen-printing workshop, clean Scandinavian and Japanese minimalist aesthetic, industrial warm oak cutting tables, textile rolls of natural heavyweight unbleached cotton and heavyweight denim, clean digital design monitors displaying garment vector wireframes, ambient warm daylight, tasteful muted color palette of warm cream, beige, raw canvas, and charcoal with a singular red architectural accent stool, clean and uncluttered --ar 16:9 --v 6.0
+```
+
+### 8.4 Fabric & Craftsmanship Close-Up / Macro (1:1 or 4:5)
+```text
+Extreme macro detail shot of 280 GSM premium organic heavyweight combed cotton fabric in off-white cream, showing dense tactile yarn loop weave, clean double-needle reinforced collar ribbing, matte texture with zero synthetic sheen, accompanied by a small crimson red woven label with clean typography, soft tactile side lighting, editorial menswear craftsmanship showcase, hyper-realistic macro photography, 8k --ar 4:5 --style raw --v 6.0
+```
+
+### 8.5 Street Culture Lifestyle / Indian Urban Context (4:5 or 3:4)
+```text
+Candid editorial streetwear photo of a young man wearing a boxy beige oversized t-shirt and charcoal trousers walking in a modern architectural urban setting in Mumbai or New Delhi, brutalist stone backdrop, warm late afternoon golden hour lighting, muted warm colors, authentic street culture lifestyle, shot on 50mm Leica, crisp garment silhouette, premium streetwear brand campaign --ar 4:5 --style raw --v 6.0
+```
+
+---
+
+## 9. Negative Prompts & Anti-Slop Constraints
+
+When using Stable Diffusion, SDXL, or tools supporting negative prompts, ALWAYS append:
+
+```text
+--no neon glow, cyberpunk, futuristic, glossy plastic, overly smooth skin, airbrushed, oversaturated colors, purple tint, generic stock photo smiles, fake digital render, cartoon, 3d render, distorted hands, blurry fabric, low resolution, crowded background, clutter
+```
+
+---
+
+## 10. Post-Processing & Integration Checklist
+
+Before embedding any AI-generated image into `apps/frontend/public/` or product mockups:
+1. **Color Calibration**: Verify background matches or blends with `#F7EEDB` (Paper Cream) or `#EDE0CC` (Beige).
+2. **Format & Sizing**:
+   - Convert to modern `.webp` format using `sharp` or Squoosh.
+   - Hero images: max `1920px` width, target `< 180 KB`.
+   - Product cards: `800x1000px` (4:5 aspect ratio), target `< 80 KB`.
+   - Category tiles: `600x450px` (4:3 aspect ratio), target `< 60 KB`.
+3. **Alt Text**: Include descriptive accessibility text (e.g. `Heavyweight 280 GSM Boxy Tee in Charcoal Black - Bingooo`).
+

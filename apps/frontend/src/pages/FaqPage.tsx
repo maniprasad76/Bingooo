@@ -75,7 +75,7 @@ const FAQ_ITEMS: FaqItem[] = [
     category: 'returns',
     question: 'I received a damaged or wrong item. What should I do?',
     answer:
-      'Contact BINGOOO support within 48 hours of delivery at support@bingooo.in or via WhatsApp (+91 79817 87317) with your Order ID and clear photos of the damaged garment and outer parcel. Our team will verify and immediately dispatch a brand-new replacement at no charge.',
+      'Contact BINGOOO support within 48 hours of delivery at bingooo.sklm@gmail.com or via WhatsApp (+91 79817 87317) with your Order ID and clear photos of the damaged garment and outer parcel. Our team will verify and immediately dispatch a brand-new replacement at no charge.',
     searchKeywords: 'damaged wrong item defective tear flaw received broken replacement issue claim',
   },
   {
@@ -171,7 +171,7 @@ const FAQ_ITEMS: FaqItem[] = [
     category: 'account',
     question: 'How can I contact customer support?',
     answer:
-      'You can reach our concierge team anytime through our Contact Us page, email us directly at support@bingooo.in, or chat with us on WhatsApp at +91 79817 87317. Our support desk is active Monday through Saturday, from 10:00 AM to 7:00 PM IST.',
+      'You can reach our concierge team anytime through our Contact Us page, email us directly at bingooo.sklm@gmail.com, or chat with us on WhatsApp at +91 79817 87317. Our support desk is active Monday through Saturday, from 10:00 AM to 7:00 PM IST.',
     searchKeywords: 'contact customer support help desk email phone whatsapp hours reach talk',
   },
   {
@@ -189,7 +189,7 @@ const FAQ_ITEMS: FaqItem[] = [
     category: 'technical',
     question: 'My payment was deducted, but the order was not confirmed. What should I do?',
     answer:
-      'Do not worry! In rare instances of banking network latency, the payment provider might debit the amount before confirming the session. If an Order ID was not generated, the banking switch will automatically reverse the transaction within 24 to 48 hours. If the amount is not returned after 48 hours, share your payment UTR reference with support@bingooo.in.',
+      'Do not worry! In rare instances of banking network latency, the payment provider might debit the amount before confirming the session. If an Order ID was not generated, the banking switch will automatically reverse the transaction within 24 to 48 hours. If the amount is not returned after 48 hours, share your payment UTR reference with bingooo.sklm@gmail.com.',
     searchKeywords: 'payment deducted money cut failed pending transaction confirmation utr bank issue',
   },
   {
@@ -405,7 +405,7 @@ export function FaqPage() {
                     </div>
 
                     <a
-                      href="mailto:support@bingooo.in"
+                      href="mailto:bingooo.sklm@gmail.com"
                       className="flex items-center gap-2.5 text-[10px] font-semibold text-[#171717] hover:text-[#E6321C] transition-colors"
                     >
                       <svg
@@ -419,7 +419,7 @@ export function FaqPage() {
                         <rect x="3" y="5" width="18" height="14" rx="2" />
                         <path d="m3 7 9 6 9-6" />
                       </svg>
-                      <span>support@bingooo.in</span>
+                      <span>bingooo.sklm@gmail.com</span>
                     </a>
                   </div>
                 </div>
@@ -531,10 +531,10 @@ export function FaqPage() {
                       Mon – Sat, 10AM – 7PM IST
                     </span>
                     <a
-                      href="mailto:support@bingooo.in"
+                      href="mailto:bingooo.sklm@gmail.com"
                       className="text-[10px] font-semibold text-[#171717] underline"
                     >
-                      support@bingooo.in
+                      bingooo.sklm@gmail.com
                     </a>
                   </div>
                 </div>

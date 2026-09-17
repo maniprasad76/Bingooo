@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { Heart, Truck, Package, Sparkles, ShieldCheck, CheckCircle2, Mail, ArrowRight, X, ChevronLeft, ChevronRight, Maximize2 } from 'lucide-react';
 import { SEO } from '../components/common/SEO';
 import { generateOrganizationSchema, generateWebSiteSchema, generateLocalBusinessSchema } from '../lib/seo/schema';
-import { BINGOOO_INSTAGRAM_URL, getWhatsAppUrl, WhatsAppIcon, InstagramIcon } from '../components/ui/SocialIcons';
+import { BINGOOO_INSTAGRAM_URL, BINGOOO_INSTAGRAM_HANDLE, getWhatsAppUrl, WhatsAppIcon, InstagramIcon } from '../components/ui/SocialIcons';
 import { triggerHaptic } from '../lib/native/capacitorBridge';
 import { api } from '../lib/api/client';
 import { prefetchProduct } from '../lib/utils/preloader';
@@ -22,7 +22,7 @@ const FEATURED_PRODUCTS: FeaturedProduct[] = [
     id: 'prod-1',
     name: 'Classic Logo Tee',
     price: '₹999',
-    image: '',
+    image: '/hero-banner.png',
     swatches: ['#171717', '#ffffff', '#d9cbb8'],
     link: '/product/classic-oversized-tee',
   },
@@ -30,7 +30,7 @@ const FEATURED_PRODUCTS: FeaturedProduct[] = [
     id: 'prod-2',
     name: 'Minimal Tee',
     price: '₹1,099',
-    image: '',
+    image: '/hero-banner-5.jpg',
     swatches: ['#171717', '#d9cbb8', '#ffffff'],
     link: '/product/minimalist-heavyweight-tee',
   },
@@ -38,7 +38,7 @@ const FEATURED_PRODUCTS: FeaturedProduct[] = [
     id: 'prod-3',
     name: 'Statement Hoodie',
     price: '₹1,499',
-    image: '',
+    image: '/real-fit-1.jpg',
     swatches: ['#171717', '#8d8984', '#d9cbb8'],
     link: '/product/heavyweight-fleece-hoodie',
   },
@@ -46,7 +46,7 @@ const FEATURED_PRODUCTS: FeaturedProduct[] = [
     id: 'prod-4',
     name: 'Bold B Tee',
     price: '₹1,199',
-    image: '',
+    image: '/real-fit-2.jpg',
     swatches: ['#171717', '#ffffff', '#8d8984'],
     link: '/product/bold-signature-tee',
   },
@@ -259,12 +259,19 @@ export function HomePage() {
         <div className="container-bingooo grid grid-cols-2">
           {/* Category: Men */}
           <article className="min-h-[140px] md:min-h-[165px] flex flex-col sm:grid sm:grid-cols-[90px_1fr] md:grid-cols-[120px_1fr] gap-3 sm:gap-5 items-start sm:items-center p-3 sm:p-5 md:p-[25px] border-r border-white/15">
-            <Link to="/shop?category=men" className="w-full aspect-[4/3] sm:w-[90px] sm:h-[110px] md:w-[120px] md:h-[120px] overflow-hidden bg-[#252525] shrink-0 block group">
-              <img
-                src="https://images.unsplash.com/photo-1551488831-00ddcb6c6bd3?auto=format&fit=crop&w=500&q=80"
-                alt="Men collection"
-                className="h-full w-full object-cover grayscale group-hover:scale-105 transition-transform duration-300"
-              />
+            <Link to="/shop?category=men" className="w-full aspect-[4/3] sm:w-[90px] sm:h-[110px] md:w-[120px] md:h-[120px] overflow-hidden bg-[#252525] shrink-0 block group rounded-sm">
+              <picture>
+                <source srcSet="/men-category.webp" type="image/webp" />
+                <img
+                  src="/men-category.jpg"
+                  alt="Bingooo Men collection — Everyday fit for every you"
+                  width={500}
+                  height={500}
+                  loading="lazy"
+                  decoding="async"
+                  className="h-full w-full object-cover object-center group-hover:scale-105 transition-transform duration-300"
+                />
+              </picture>
             </Link>
             <div className="w-full">
               <h3 className="m-0 mb-1 sm:mb-[9px] text-sm sm:text-[18px] font-bold uppercase text-white tracking-tight">
@@ -281,12 +288,19 @@ export function HomePage() {
 
           {/* Category: Women */}
           <article className="min-h-[140px] md:min-h-[165px] flex flex-col sm:grid sm:grid-cols-[90px_1fr] md:grid-cols-[120px_1fr] gap-3 sm:gap-5 items-start sm:items-center p-3 sm:p-5 md:p-[25px]">
-            <Link to="/shop?category=women" className="w-full aspect-[4/3] sm:w-[90px] sm:h-[110px] md:w-[120px] md:h-[120px] overflow-hidden bg-[#252525] shrink-0 block group">
-              <img
-                src="https://images.unsplash.com/photo-1496747611176-843222e1e57c?auto=format&fit=crop&w=500&q=80"
-                alt="Women collection"
-                className="h-full w-full object-cover grayscale group-hover:scale-105 transition-transform duration-300"
-              />
+            <Link to="/shop?category=women" className="w-full aspect-[4/3] sm:w-[90px] sm:h-[110px] md:w-[120px] md:h-[120px] overflow-hidden bg-[#252525] shrink-0 block group rounded-sm">
+              <picture>
+                <source srcSet="/women-category.webp" type="image/webp" />
+                <img
+                  src="/women-category.jpg"
+                  alt="Bingooo Women collection — Style that moves with you"
+                  width={500}
+                  height={500}
+                  loading="lazy"
+                  decoding="async"
+                  className="h-full w-full object-cover object-center group-hover:scale-105 transition-transform duration-300"
+                />
+              </picture>
             </Link>
             <div className="w-full">
               <h3 className="m-0 mb-1 sm:mb-[9px] text-sm sm:text-[18px] font-bold uppercase text-white tracking-tight">
@@ -514,7 +528,7 @@ export function HomePage() {
         <div className="container-bingooo">
           <div className="flex justify-between items-end mb-3.5 sm:mb-5">
             <div>
-              <div className="eyebrow text-[#171717]">@BINGOOO</div>
+              <div className="eyebrow text-[#171717]">{BINGOOO_INSTAGRAM_HANDLE.toUpperCase()}</div>
               <h2 className="m-0 mt-1 text-[clamp(22px,2.2vw,30px)] font-extrabold tracking-[-0.05em] uppercase text-[#171717]">
                 REAL PEOPLE. REAL FITS.
               </h2>
@@ -576,7 +590,7 @@ export function HomePage() {
           {/* Slim Community Footer Bar */}
           <div className="mt-3 p-2.5 sm:p-3 bg-[#faf6ee] border border-[#ddd3c5] flex flex-col sm:flex-row items-center justify-between gap-2 text-center sm:text-left">
             <span className="text-[10px] sm:text-[11px] font-bold tracking-wider uppercase text-[#6f6a63]">
-              Tag <span className="text-[#171717] font-extrabold">@bingooo</span> to be featured • Real People. Real Fits.
+              Tag <span className="text-[#171717] font-extrabold">{BINGOOO_INSTAGRAM_HANDLE}</span> to be featured • Real People. Real Fits.
             </span>
 
             <a
@@ -669,7 +683,7 @@ export function HomePage() {
                 className="btn btn-red py-2 px-4 text-xs font-bold uppercase tracking-wider inline-flex items-center gap-2 shadow-sm shrink-0"
               >
                 <InstagramIcon className="w-4 h-4" />
-                <span>FOLLOW @BINGOOO</span>
+                <span>FOLLOW {BINGOOO_INSTAGRAM_HANDLE.toUpperCase()}</span>
               </a>
             </div>
           </div>

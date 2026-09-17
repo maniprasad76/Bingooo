@@ -175,18 +175,13 @@ export function ProductPage() {
   const [quantity, setQuantity] = useState(1);
   const [isAddedFeedback, setIsAddedFeedback] = useState(false);
 
-  // Sync color & size defaults when options change
-  useEffect(() => {
-    if (colorOptions.length > 0 && !colorOptions.some((c) => c.name.toLowerCase() === selectedColor.toLowerCase())) {
-      setSelectedColor(colorOptions[0].name);
-    }
-  }, [colorOptions]);
-
-  useEffect(() => {
-    if (sizeOptions.length > 0 && !sizeOptions.includes(selectedSize)) {
-      setSelectedSize(sizeOptions[0]);
-    }
-  }, [sizeOptions]);
+  // Adjust selection during render if options changed
+  if (colorOptions.length > 0 && !colorOptions.some((c) => c.name.toLowerCase() === selectedColor.toLowerCase())) {
+    setSelectedColor(colorOptions[0].name);
+  }
+  if (sizeOptions.length > 0 && !sizeOptions.includes(selectedSize)) {
+    setSelectedSize(sizeOptions[0]);
+  }
 
   // Delivery check state
   const [pincode, setPincode] = useState('');

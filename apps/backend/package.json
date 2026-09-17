@@ -11,6 +11,8 @@
     "test:checkout": "node --require @swc-node/register test/run-checkout-e2e.ts",
     "test:admin": "node --require @swc-node/register test/run-admin-e2e.ts",
     "test:upload": "node --require @swc-node/register test/run-upload-e2e.ts",
+    "test:load": "node --require @swc-node/register test/run-load-test.ts",
+    "test:backup": "node --require @swc-node/register test/run-backup-test.ts",
     "lint": "echo 'TODO: add linter'"
   },
   "dependencies": {
@@ -23,6 +25,7 @@
     "@supabase/supabase-js": "^2.109.0",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.1",
+    "compression": "^1.8.2",
     "cookie-parser": "^1.4.7",
     "helmet": "^8.0.0",
     "razorpay": "^2.9.8",
@@ -33,6 +36,7 @@
   "devDependencies": {
     "@swc-node/register": "^1.10.0",
     "@swc/core": "^1.9.0",
+    "@types/compression": "^1.8.1",
     "@types/cookie-parser": "^1.4.10",
     "@types/express": "^5.0.0",
     "@types/multer": "^2.2.0",

@@ -1,289 +1,201 @@
-# BINGOOO — Complete Design System & UI/UX Specification
+# BINGOOO — Design System Audit & AI Image Generation Guide
 
-> **Product:** BINGOOO Men's Wear (bingooo.in)  
-> **Brand Slogan:** **Wear What Defines You.**  
-> **Mission Statement:** **Clothing. Custom. Culture. You.**  
-> **Version:** 2.0 (Latest — Unified with Home Page Minimalist Architecture)
-
----
-
-## 1. Design North Star & Brand Aesthetic
-
-Bingooo is an elevated Indian menswear and custom apparel label built on **warm minimalism, editorial fashion photography, and streetwear confidence**. It rejects generic, cluttered ecommerce templates in favor of a timeless, high-fashion editorial presence.
-
-### Core Aesthetic Pillars
-- **Warm Minimalism:** Organic, warm cream canvas (`#F7EEDB`) and soft beige (`#EDE0CC`) rather than sterile hospital-white or generic grey.
-- **Strategic Red Accent:** Signature Bingooo Red (`#E6321C`) is used strictly with surgical precision — on the logo period dot, the focal headline phrase (`A YOU.`), active tabs, primary CTAs, and prices. Red is **never** used as a noisy full-screen background wash.
-- **Editorial Photography:** High-contrast grayscale or desaturated campaign imagery with gentle gradient blends into the cream background.
-- **Strong Brutalist-Inspired Typography:** Extra-bold uppercase headlines in **Manrope** with tight tracking (`-0.06em` to `-0.075em`) and condensed line heights (`0.72` to `0.90`).
-- **No AI-Slop:** Clean lines, authentic product shots, minimal rounded corners (`2px` to `6px`), tactile borders, and zero gaudy neon gradients or generic dropshadows.
-
----
-
-## 2. Brand Identity & Logo Specification
-
-### Primary Wordmark
-The Bingooo brand identity is defined by the bold geometric wordmark featuring the signature **Red Dot**:
-
-$$\mathbf{BINGOOO\color{#E6321C}.}$$
-
-```tsx
-/* Exact JSX Implementation */
-<Link
-  to="/"
-  className="text-[clamp(25px,2.4vw,34px)] leading-none font-extrabold tracking-[-0.07em] whitespace-nowrap text-[#171717]"
-  aria-label="BINGOOO."
+> **Source of truth audit** of `apps/frontend` (storefront) + `apps/admin`, extracted from:
+> `apps/frontend/tailwind.config.js`, `apps/frontend/src/styles/index.css`, `apps/frontend/src/styles/theme.ts`,
+> `apps/admin/tailwind.config.js`, `apps/admin/src/styles/index.css`, `apps/frontend/index.html`,
+> and live components (`HomePage`, `Navbar`, `Footer`, `ProductCard`, `Button`, `Logo`, etc.)
 >
-  BINGOOO<span className="text-[#E6321C]">.</span>
-</Link>
-```
-
-### Logo Rules
-1. **The Red Period:** The dot following "BINGOOO" is **always** `#E6321C` (Brand Red).
-2. **Wordmark Color:** The letters `BINGOOO` are `#171717` on light backgrounds (`#F7EEDB`, `#EDE0CC`, `#FFFFFF`) and `#FFFFFF` on dark backgrounds (`#171717`).
-3. **Typography:** Set in **Manrope**, weight **800 (ExtraBold)**, uppercase, with tracking set to **`-0.07em`** (tight).
-4. **Never Alter:** Never recolor the letters to red, never remove the red dot, never stretch, skew, outline, or add drop shadows to the wordmark.
-5. **Secondary Icon Mark:** Stylized solid **B** monogram used strictly for app icons, favicons (`/favicon.png`), and compact brand tags.
+> **Part A** = complete design audit. **Part B** = ready-to-paste prompts for AI image tools (Midjourney, DALL·E, Firefly, SDXL) to generate imagery that matches this exact design language.
 
 ---
 
-## 3. Minimalist Color Palette
+# PART A — DESIGN SYSTEM AUDIT
 
-The Bingooo color palette is simple, restrained, and authentic:
+## 1. Brand Overview
 
-| Token | Hex Value | Role & Usage |
-| :--- | :--- | :--- |
-| **Warm Cream** | `#F7EEDB` | **Primary Canvas / Background** for storefront pages, hero sections, and editorial backgrounds. |
-| **Soft Beige** | `#EDE0CC` | **Secondary Surfaces:** Campaign promo cards, product card image backdrops, drawer panels, and secondary badges. |
-| **Charcoal Black** | `#171717` | **Primary Text & Dark Sections:** Primary headings, body copy, header navigation, primary buttons (`.btn-black`), and the dark Category Strip & Footer. |
-| **Brand Red** | `#E6321C` | **Accent & Focal Action:** Logo period dot, `A YOU.` punchline, active category filters, primary red CTAs, sale tags, and wishlist heart. |
-| **Deep Red** | `#B91F12` | **Hover & Active State:** Hover color for red buttons, links, and focused elements. |
-| **Pure White** | `#FFFFFF` | **Card & Form Surfaces:** Search inputs, newsletter inputs, wishlist buttons, and modal dialogs. |
-| **Muted Grey** | `#6F6A63` | **Secondary Copy:** Subtitles, product descriptions, breadcrumbs, timestamp tags, and helper copy. |
-| **Warm Border** | `#DDD3C5` | **Dividers & Structural Rules:** Clean 1px border rules between grid items, table rows, and trust bars. |
-
-### Semantic Colors
-- **Success:** `#238636` (Order placed, verified stock, green status)
-- **Warning:** `#B7791F` (Low stock alert, pending verification)
-- **Error:** `#C62828` (Form validation failure, payment declined)
+| Property | Value |
+|---|---|
+| Brand | **BINGOOO.** (wordmark ends with a red period) |
+| Tagline | "WEAR WHAT DEFINES YOU." |
+| Secondary motto | "CLOTHING · CUSTOM · CULTURE" |
+| Category | Premium heavyweight menswear / Indian streetwear (240–420 GSM cotton) |
+| Market | India (prices in ₹, Pan-India delivery, UPI-first) |
+| Personality | Bold, confident, editorial-brutalist, warm-premium, streetwear-luxe |
+| Design feel | **Warm cream paper + charcoal ink + one loud signal red.** Swiss-brutalist typography meets premium catalogue design. Flat, crisp, high-contrast. No soft pastel gradients, no neon, no glassy tech-startup look. |
+| Stack | React 19 + Vite + Tailwind CSS 3.4, framer-motion (springs), GSAP, lucide-react icons, Capacitor Android app |
 
 ---
 
-## 4. Typography Hierarchy
+## 2. Color Palette (audited)
 
-**Primary Font Family:** `Manrope, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif`  
-**Secondary Monospace (for codes, SKUs & counters):** `IBM Plex Mono, monospace`
+### 2.1 Core Brand Colors — use these in every generated image
 
-```css
-/* Google Fonts Import */
-@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@500;600&display=swap');
-```
+| Token | Hex | Role / where it appears |
+|---|---|---|
+| **Brand Red** | `#E6321C` | THE signal color. Primary CTAs, logo dot, focus rings, links hover, selection highlight, active swatch rings, scarcity dots, red glow shadows. Roughly 5–10% of any screen. |
+| **Deep Red** | `#B91F12` | Hover/pressed red, "Few Left" urgency text, footer hover accents |
+| **Red Light** | `#FDF0EE` | Red-tinted badge/surface backgrounds |
+| **Red Glow** | `rgba(230,50,28,0.25–0.45)` | Ambient glow shadows under red buttons |
+| **Charcoal Ink** | `#171717` | Primary text, headings, black buttons, top-bar, footer, table headers. The "black" of the brand (never pure `#000` for surfaces — pure black only on `.btn-black:hover`) |
+| **Paper Cream** | `#F7EEDB` | Page background everywhere. The dominant canvas (~60–70% of a screen) |
+| **Beige** | `#EDE0CC` | Secondary surface: image placeholder wells, hover rows, rating tracks, product-card backdrop |
+| **Bisque** | `#F5ECE1` | Tertiary warm surface |
+| **Ivory** | `#FDF9F4` | Brightest warm surface |
+| **Header Off-White** | `#FAF8F5` | Sticky navbar background (98% opacity + blur when scrolled) |
+| **Stock Paper** | `#FAF6EE` | Stock/inset boxes on product page |
+| **Muted** | `#6F6A63` | Body/secondary text, captions, table headers, meta labels |
+| **Border** | `#DDD3C5` | 1px hairline borders, dividers, inputs, secondary-button outline |
+| **White** | `#FFFFFF` | Cards, surfaces, text on dark |
 
-### Typographic Scale
+### 2.2 Garment Swatch Palette (product colors)
 
-| Role | Font Weight | Size Scale | Tracking | Line Height | Usage Example |
-| :--- | :--- | :--- | :--- | :--- | :--- |
-| **Giant Display** | 800 (ExtraBold) | `clamp(55px, 13vw, 105px)` | `-0.075em` | `0.85` | Homepage Hero: `NOT JUST CLOTHES. A YOU.` |
-| **Section H1 / H2** | 800 (ExtraBold) | `clamp(36px, 5vw, 64px)` | `-0.06em` | `0.90` | `FEATURED COLLECTION`, `YOUR IDEA. OUR CANVAS.` |
-| **Card / Subhead** | 700 (Bold) | `18px – 24px` | `-0.03em` | `1.1` | Category Strip titles (`MEN`, `WOMEN`), FAQ questions |
-| **Eyebrow / Kicker**| 800 (ExtraBold) | `9px – 11px` | `+0.18em` to `+0.34em` | `1.7` | `CLOTHING CUSTOM CULTURE YOU`, `NEW DROP`, `EST. 2026` |
-| **Body Primary** | 500 / 600 | `13px – 14px` | `normal` | `1.6` | Product descriptions, campaign body copy |
-| **Body Secondary**| 400 / 500 | `11px – 12px` | `normal` | `1.5` | Footnotes, support details, accordion answers |
-| **Caption / Meta** | 700 / 800 | `9px – 10px` | `+0.1em` | `1.4` | Badges, size swatches, trust bar subtitles |
+| Swatch | Hex | Notes |
+|---|---|---|
+| Black | `#171717` | Signature tee color |
+| White | `#FFFFFF` | Rendered with `#CCCCCC` edge border |
+| Sand/Beige | `#D9CBB8` | Warm neutral garment |
+| Stone Grey | `#77736D` | Hoodie body (hood: `#55524D`) |
+| Red | `#E6321C` | Statement pieces |
 
----
+### 2.3 Status Colors (semantic)
 
-## 5. Home Page Architecture & Section Blueprint
+| Status | Base | Light bg |
+|---|---|---|
+| Success | `#238636` | `#F0FDF4` |
+| Warning | `#B7791F` | `#FEFCE8` |
+| Danger | `#C62828` | `#FEF2F2` |
+| Info | `#2563A6` | `#EFF6FF` |
 
-The Home Page (`HomePage.tsx`) serves as the design master blueprint for the entire Bingooo storefront:
+### 2.4 Dark-UI & FX Extras (used sparingly)
 
-```
-┌─────────────────────────────────────────────────────────────┐
-│ 1. TOP ANNOUNCEMENT BAR                                     │
-│    FREE DELIVERY ON ORDERS ABOVE ₹999  | TRACK | APP | HELP │
-├─────────────────────────────────────────────────────────────┤
-│ 2. GLOBAL NAVBAR                                            │
-│    [MEN WOMEN CUSTOM COLLECTIONS ABOUT]  BINGOOO. [SEARCH]  │
-├─────────────────────────────────────────────────────────────┤
-│ 3. HERO SECTION (Split Grid)                                │
-│    Left: Eyebrow + NOT JUST CLOTHES. A YOU. + Shop CTA      │
-│    Right: Grayscale Editorial Campaign Blend + EST. 2026    │
-├─────────────────────────────────────────────────────────────┤
-│ 4. CATEGORY STRIP (Solid #171717)                           │
-│    [ MEN ] ───────────────────────── [ WOMEN ] (thumbnails) │
-├─────────────────────────────────────────────────────────────┤
-│ 5. FEATURED COLLECTION (4-Col Grid)                         │
-│    Clean 4:5 Cards + Wishlist Pill + Swatches + Price       │
-├─────────────────────────────────────────────────────────────┤
-│ 6. CUSTOM STUDIO CAMPAIGN (Split Beige #EDE0CC)             │
-│    Artisan Photo | YOUR IDEA. OUR CANVAS. | START CREATING  │
-├─────────────────────────────────────────────────────────────┤
-│ 7. TRUST & VALUE BAR (4-Col Divider Grid)                   │
-│    Free Delivery | Easy Returns | Premium Quality | Payment │
-├─────────────────────────────────────────────────────────────┤
-│ 8. SOCIAL PROOF & COMMUNITY (@BINGOOO)                      │
-│    REAL PEOPLE. REAL FITS. + 6 UGC Instagram Fit Photos     │
-├─────────────────────────────────────────────────────────────┤
-│ 9. NEWSLETTER SUBSCRIPTION (Minimalist)                     │
-│    GET THE NEXT DROP. + Clean Input + SUBSCRIBE →           │
-├─────────────────────────────────────────────────────────────┤
-│ 10. GLOBAL FOOTER (Solid #171717)                           │
-│     BINGOOO. | Links | Atelier Coordinates | Copyright      │
-└─────────────────────────────────────────────────────────────┘
-```
+- Scrollbar: track `#121318`, thumb `#2E313D`, hover red
+- Carbon `#1F1D1B`, Steel `#2B2825`, dark border `#2B2D38` (dark overlays/glass)
+- Glass dark: `rgba(18,19,24,0.75)` + 16px blur; Glass light: `rgba(255,255,255,0.85)`
+- Legacy/hot accent gradients: red `#FE260A → #FF6B4A`, gold `#FAD961 → #F76B1C`, lime glow `#D8FF00` (glow-border effect)
 
-### Detailed Section Specs
+### 2.5 Ratio Rule (for AI image composition)
 
-#### 1. Hero Section
-- **Background:** `#F7EEDB`
-- **Left Copy Box:**
-  - 4-line stacked uppercase eyebrow: `CLOTHING / CUSTOM / CULTURE / YOU` with `text-[#171717]` and tracking `0.18em`.
-  - Massive 3-line headline:
-    - Line 1: `NOT JUST`
-    - Line 2: `CLOTHES.`
-    - Line 3: `<span className="text-[#E6321C]">A YOU.</span>`
-  - Subtitle: `WEAR WHAT DEFINES YOU.` (`11px`, `tracking-[0.34em]`, `font-semibold`).
-  - Action buttons: `.btn-black` (`SHOP NOW →`) paired with clean `.text-link` (`CREATE YOUR OWN`).
-- **Right Image Overlay:**
-  - High-fashion campaign model photo in pure grayscale.
-  - Smooth editorial gradient overlay (`from-[#F7EEDB] via-[#F7EEDB]/20 to-transparent`) creating a seamless fade into the cream canvas.
-  - Editorial coordinates tag in top right: `EST. 2026 / INDIA` with a `28px` fine divider line.
-
-#### 2. Dark Category Strip
-- **Background:** `#171717` (Deep Charcoal Black), text `#FFFFFF`.
-- **Layout:** 2-column responsive grid (`grid-cols-1 md:grid-cols-2`) with `1px` border (`border-white/15`).
-- **Cards:** Includes a `120x120px` grayscale thumbnail, uppercase heading (`MEN`, `WOMEN`), subline (`Everyday fits for every you` / `Style that moves with you`), and an underlined white link that hovers to `#E6321C`.
-
-#### 3. Featured Products Grid
-- **Aspect Ratio:** `4/5` clean portrait aspect ratio for product photography.
-- **Card Background:** Soft beige `#EDE0CC`.
-- **Floating Wishlist Button:** Circular white button (`31x31px`), border `#DDD3C5`, toggles solid `#E6321C` heart (`♥`).
-- **Details:** Product name (`12px`, font-semibold), price (`14px`, font-bold, `#171717`), and miniature circular color swatches (`13x13px`, border `#DDD3C5`).
-
-#### 4. Custom Studio Campaign
-- **Background:** Soft beige `#EDE0CC`.
-- **Layout:** 50/50 split banner.
-- **Content:** Tailoring / printmaking workshop photo + Headline: `YOUR IDEA. OUR CANVAS.` + Primary Red Button: `START CREATING →` (`.btn-red`).
-
-#### 5. Minimalist Trust Bar
-- **Background:** `#F9F5ED` with `1px` border top and bottom (`#DDD3C5`).
-- **Items:** 4 columns with subtle monochrome glyphs/SVGs:
-  1. *Free Delivery* — On orders above ₹999
-  2. *Easy Returns* — Within 15 days
-  3. *Premium Quality* — Made to last
-  4. *Secure Payment* — 100% safe & secure
-
-#### 6. Social Community (@BINGOOO)
-- **Headline:** `REAL PEOPLE. REAL FITS.`
-- **Grid:** 6 square tiles showing real customers in Bingooo apparel, grayscale by default, zooming smoothly on hover (`hover:scale-105`).
-
-#### 7. Newsletter Section
-- **Background:** Warm cream `#F7EEDB`.
-- **Form:** Ultra-minimalist inline form (`48px` height) with white input, 1px border `#DDD3C5`, and solid black `.btn-black` (`SUBSCRIBE →`).
+> `#F7EEDB` cream dominates → `#171717` charcoal for type/blocks → `#E6321C` red only as a deliberate accent (button, dot, underline, wordmark period) → `#EDE0CC`/`#DDD3C5` as warm mid-tones and hairlines.
 
 ---
 
-## 6. UI Components & Reusable Styles
+## 4. Spacing, Layout & Grid (audited)
 
-All pages must reuse these canonical button and element tokens defined in `index.css`:
+### 4.1 Base Unit & Scale
 
-### Buttons
+- Root font-size **16px**; Tailwind 4px base scale + custom extensions: `13 = 52px`, `15 = 60px`, `17 = 68px`, `18 = 72px`, `88 = 352px`, `128 = 512px`.
+- Spacing rhythm in components: **4 / 6 / 8 / 12 / 16 / 20 / 24 / 32px** (Tailwind 1–8). Cards use tight internal gaps (4–8px); sections use large air (64–112px).
 
-```css
-/* 1. Primary Solid Black Button */
-.btn-black {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  height: 48px;
-  padding: 0 28px;
-  background-color: #171717;
-  color: #FFFFFF;
-  font-family: 'Manrope', sans-serif;
-  font-size: 10px;
-  font-weight: 800;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  border-radius: 2px;
-  border: 1px solid #171717;
-  transition: all 0.2s ease;
-}
-.btn-black:hover {
-  background-color: #E6321C;
-  border-color: #E6321C;
-  color: #FFFFFF;
-}
+### 4.2 Containers (page width)
 
-/* 2. Brand Red Action Button */
-.btn-red {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  height: 48px;
-  padding: 0 28px;
-  background-color: #E6321C;
-  color: #FFFFFF;
-  font-family: 'Manrope', sans-serif;
-  font-size: 10px;
-  font-weight: 800;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  border-radius: 2px;
-  border: 1px solid #E6321C;
-  transition: all 0.2s ease;
-}
-.btn-red:hover {
-  background-color: #B91F12;
-  border-color: #B91F12;
-}
+| Utility | Max width | Gutters |
+|---|---|---|
+| `.container-bingooo` (primary) | `min(100% − 48px, 1440px)` | 24px each side; **32px total on ≤800px** |
+| `.container-page` | 1440px | `clamp(1rem, 4vw, 4rem)` |
+| `.container-wide` | 1536px | `clamp(1rem, 4vw, 4rem)` |
+| `.container-narrow` | 800px | `clamp(1rem, 3.5vw, 2.5rem)` |
+| Tailwind `max-w-page` | 1280px | — |
 
-/* 3. Minimalist Text Link */
-.text-link {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  font-family: 'Manrope', sans-serif;
-  font-size: 10px;
-  font-weight: 800;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: #171717;
-  border-bottom: 1px solid #171717;
-  padding-bottom: 2px;
-  transition: all 0.2s ease;
-}
-.text-link:hover {
-  color: #E6321C;
-  border-color: #E6321C;
-}
-```
+### 4.3 Vertical Rhythm
 
-### Form Inputs & Search Fields
-- **Background:** `#FFFFFF` or `rgba(255, 255, 255, 0.35)` on cream surfaces.
-- **Border:** `1px solid #DDD3C5`.
-- **Focus State:** `border-color: #171717` or `outline: 2px solid #E6321C`.
-- **Corner Radius:** `2px` (sharp, architectural).
-- **Placeholder:** `#8C867E`.
+- Section padding-block: **`clamp(2.5rem, 6vw, 7rem)`** (40→112px); small sections `clamp(1.75rem, 4vw, 4rem)`.
+- Hero: `min-height: min(650px, 100vh − 104px)`, two-column split **43% copy / 57% visual**, copy padding 65–70px block.
+- Hero headline margin-bottom 32px; eyebrow margin-bottom 28px.
+- Navbar: 28px black utility top bar + main bar (total ≈ 104px), sticky, gains blur+shadow on scroll (threshold 20px).
+- Button heights: **sm 32px · md 40px · lg 44px · xl 48–52px**; classic `.btn` min-height 48px, padding 0 24px.
+- Product card: image well **aspect 4/5** (padded p-2/p-4), body p-3–4, price row separated by 1px border-top.
+- Category tiles: `aspect 4/3` mobile, 90×110 / 120×120 desktop, on `#252525` wells.
+
+### 4.4 Breakpoints
+
+`xs 480px · sm 640px · md 768px · lg 1024px · xl 1280px · 2xl 1536px` (mobile-first; Android app via Capacitor, safe-area insets supported).
 
 ---
 
-## 7. Responsive Breakpoints
+## 5. Shape, Radius & Borders (audited)
 
-| Breakpoint | Width | Layout Adjustments |
-| :--- | :--- | :--- |
-| **Desktop** | `> 1024px` | Full split grids, 4-column product grids, sidebars intact. |
-| **Tablet** | `768px – 1023px` | 2-column product grids, category sidebar tightens to 220px, 2-column service strip. |
-| **Mobile** | `< 767px` | 1-column layouts, category filters become horizontal scrollable strips (`overflow-x: auto`), hero scales down with clamp, fixed mobile bottom navigation bar (`68px`). |
+| Token | Value | Used on |
+|---|---|---|
+| `--radius-sm` | 6px | Small buttons, inputs (md) |
+| `--radius-md` | 10px | lg buttons, inputs, logo tiles |
+| `--radius-lg` | 16px | Modals, large cards |
+| `rounded-card` | 8px (0.5rem) | Standard cards |
+| `rounded-2xl` | 16px | **Product cards, hero panels** (most common card radius — 150+ usages) |
+| `rounded-[8px/10px]` | 8–10px | Buttons md/lg/xl |
+| `rounded-[2px]` | 2px | Squared icon chips (38×38 beige feature squares) — intentional brutalist accent |
+| `rounded-full` | pill | Badges, swatches, dots, scrollbar |
+
+**Border language:** hairline **1px solid `#DDD3C5`** (often `/60–80%` alpha) on white cards; 2px `#171717` for outline buttons; selected states use 2px black or red ring (`ring-1 ring-brand-red`); color swatch selection = 2px black ring with 3px cream inset.
 
 ---
 
-## 8. Anti-Slop Rules & Quality Checklist
+## 6. Elevation & Shadows (audited)
 
-Before shipping any page, verify:
-- [x] Background is warm cream `#F7EEDB` or soft beige `#EDE0CC` (no generic cold white `#F8FAFC`).
-- [x] Logo uses `BINGOOO<span className="text-[#E6321C]">.</span>` with font-extrabold and tight letter spacing.
-- [x] Headings use **Manrope**, tight tracking (`-0.06em`), and uppercase styling.
-- [x] Red is an accent and never the whole background.
-- [x] Campaign images use grayscale or warm desaturated tone for editorial elegance.
-- [x] Buttons follow `.btn-black` (hover red) or `.btn-red` (hover deep red).
-- [x] Zero build warnings or unused variables (`tsc -b`).
+Shadow philosophy: **very soft, low-opacity, neutral-black** — plus one signature **red glow** reserved for primary CTAs.
+
+| Token | Value | Used on |
+|---|---|---|
+| `2xs` | `0 1px 1px rgba(0,0,0,0.03)` | Chips, secondary buttons |
+| `xs` | `0 1px 2px rgba(0,0,0,0.05)` | Cards at rest, logo tiles |
+| `soft` | `0 1px 3px rgba(0,0,0,0.04)` | Inputs |
+| `card` | `0 2px 8px rgba(0,0,0,0.06)` | Product cards at rest |
+| `card-hover` | `0 4px 16px rgba(0,0,0,0.1)` | Cards on hover |
+| `elevated` | `0 8px 24px rgba(0,0,0,0.08)` | Modals, popovers |
+| `drawer` | `0 -4px 24px rgba(0,0,0,0.1)` | Bottom sheets/drawers (upward shadow) |
+| **Red glow (rest)** | `0 4px 14px rgba(230,50,28,0.28)` | Primary red buttons |
+| **Red glow (hover)** | `0 6px 20–28px rgba(230,50,28,0.38–0.45)` | Primary red buttons hover |
+| Black button | `0 4px 12px rgba(23,23,23,0.15)` → hover `0 6px 18px rgba(0,0,0,0.25)` | `.btn-black` |
+
+Interaction elevation: cards lift via shadow + border darkens (`border-ink/25`) + image scales 1.05 (500–700ms ease-out) + optional 8° 3D tilt (`InteractiveTilt`).
+
+---
+
+## 3. Typography (audited)
+
+### 3.1 Typefaces
+
+| Role | Font | Weights | Usage |
+|---|---|---|---|
+| **Everything (UI + display)** | **Manrope** (Google Fonts) | 400, 500, 600, 700, 800 | Headings, body, buttons, prices, nav. Single-family system. |
+| **Mono / spec text** | **IBM Plex Mono** | 400, 500 | GSM specs ("220 GSM"), swatch counters ("+2"), technical labels |
+| Studio fonts (Customizer only) | Anton, Bebas Neue, Bungee, Caveat, Cinzel, Cormorant Garamond, Major Mono Display, Permanent Marker, Playfair Display, Prata, Righteous, Russo One, Space Grotesk, Syne | — | User-selectable fonts for custom garment designs — **not part of core UI** |
+
+> **Manrope is the identity.** Geometric-humanist grotesque: clean, slightly rounded terminals, excellent heavy weights. AI "typography feel" = heavy Manrope-style uppercase grotesque.
+
+### 3.2 Type Scale (actual values)
+
+| Token / element | Size | Weight | Line-height | Tracking | Case |
+|---|---|---|---|---|---|
+| Hero H1 | `clamp(52px, 6.8vw, 96px)` | 800 | **0.84** | **−0.07em** | UPPERCASE |
+| Section H2 (large) | `clamp(38–42px, 4.5–5vw, 64–72px)` | 800 | 0.88–0.9 | −0.06 to −0.065em | UPPERCASE |
+| Section H2 (mid) | `clamp(30px, 4vw, 52px)` | 800 | — | −0.06em | UPPERCASE |
+| Base `h1` | `clamp(2.5rem, 6vw, 5.5rem)` | 800 | 0.92 | −0.02em | UPPERCASE |
+| Base `h2` | `clamp(1.75rem, 4vw, 2.5rem)` | 700 | 1.08 | +0.02em | UPPERCASE |
+| Base `h3` | `clamp(1.25rem, 2.5vw, 1.75rem)` | 700 | 1.15 | +0.02em | UPPERCASE |
+| Base `h4` | `clamp(0.95rem, 1.8vw, 1.25rem)` | 700 | 1.2 | +0.04em | UPPERCASE |
+| Display XL | 3.25rem / 52px | 800 | 1.1 | — | — |
+| Display LG | 2.25rem / 36px | 800 | 1.15 | — | — |
+| Hero (tw) | 3.5rem / 56px | 800 | 1.1 | — | — |
+| Page title | 2rem / 32px | 700 | 1.2 | — | — |
+| Section | 1.5rem / 24px | 700 | 1.3 | — | — |
+| Body | 1rem / 16px | 400 | 1.6 | 0 | Sentence case, `#6F6A63` |
+| Body SM | 0.875rem / 14px | 400 | 1.5 | 0 | — |
+| Caption | 0.8125rem / 13px | 500 | 1.5 | 0 | — |
+| Button | 0.875rem / 14px (11–13px in practice) | 600–800 | 1 | +0.02–0.06em | UPPERCASE / tracking-wide |
+| Price | 1.125rem / 18px | 700 | 1.3 | 0 | `#171717` |
+| Price LG | 1.5rem / 24px | 700 | 1.2 | 0 | — |
+| **Eyebrow** | 11px | 600 | 1.8 | **+0.22em** | UPPERCASE — brand signature above H1s |
+| Top bar | 9px | 600 | — | +0.08em | UPPERCASE on `#171717` |
+| Card meta | 9–10px | 600 | — | — | "220 GSM", "Essential • Few Left" |
+| Footer wordmark | 31px+ | 800 | 1 | −0.07em | UPPERCASE white |
+| Footer column head | 10px | 800 | — | +0.24em | UPPERCASE `#E6321C` |
+
+### 3.3 Typography Rules
+
+1. **All headings UPPERCASE, extrabold (800), very tight leading (0.84–1.1) and tight tracking (−0.05 to −0.07em)** — the "compressed poster headline" is the strongest brand signal.
+2. Multi-line headlines are hard-broken into short stacked lines: `WEAR WHAT / DEFINES / YOU.` — final period in brand red.
+3. Body text is quiet: 16px Manrope Regular in `#6F6A63` on cream.
+4. Contrast pattern: huge black display type ↔ tiny tracked-out uppercase micro-labels (9–11px).
+5. Prices always bold charcoal; compare-at price small, muted, strikethrough.
+
+---

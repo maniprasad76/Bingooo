@@ -4,28 +4,39 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ToastProvider } from '../components/ui/Toast';
 import { initAuth } from '../lib/auth/supabase';
 import { router } from './router';
+import { setPreloaderQueryClient } from '../lib/utils/preloader';
+import { registerServiceWorker } from '../lib/sw/registerServiceWorker';
+import { OfflineBanner } from '../components/common/OfflineBanner';
+import { GlobalErrorBoundary } from '../components/common/GlobalErrorBoundary';
 
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      staleTime: 1000 * 5, // 5 seconds for snappy updates from admin changes
+      staleTime: 60 * 1000, // 1 minute stale time for snappy cached navigation
+      gcTime: 30 * 60 * 1000, // 30 minutes in-memory retention
       retry: 1,
-      refetchOnWindowFocus: true,
+      refetchOnReconnect: true,
+      refetchOnWindowFocus: false, // Prevents unnecessary re-render flashing
     },
   },
 });
 
+setPreloaderQueryClient(queryClient);
 
 export function App() {
   useEffect(() => {
     initAuth();
+    registerServiceWorker();
   }, []);
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <ToastProvider>
-        <RouterProvider router={router} />
-      </ToastProvider>
-    </QueryClientProvider>
+    <GlobalErrorBoundary>
+      <QueryClientProvider client={queryClient}>
+        <ToastProvider>
+          <OfflineBanner />
+          <RouterProvider router={router} />
+        </ToastProvider>
+      </QueryClientProvider>
+    </GlobalErrorBoundary>
   );
 }

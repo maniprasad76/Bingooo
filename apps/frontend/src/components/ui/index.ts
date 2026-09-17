@@ -19,6 +19,7 @@ export {
   InstagramIcon,
   EmailIcon,
   YouTubeIcon,
+  PinterestIcon,
   XTwitterIcon,
   GoogleIcon,
   FacebookIcon,

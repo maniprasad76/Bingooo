@@ -8,6 +8,9 @@ import {
   Sparkles,
   LoaderCircle,
   Heart,
+  Lock,
+  ArrowRight,
+  ShoppingBag,
 } from 'lucide-react';
 import { useCart } from '../hooks/useCart';
 import { useWishlist } from '../hooks/useWishlist';
@@ -16,6 +19,7 @@ import { api } from '../lib/api/client';
 import { useQuery } from '@tanstack/react-query';
 import { SEO } from '../components/common/SEO';
 import { triggerHaptic } from '../lib/native/capacitorBridge';
+import { CartItemSkeleton } from '../components/ui/Skeleton';
 
 export function CartPage() {
   const { cart, updateQuantity, removeItem, clearCart, isLoading } = useCart();
@@ -210,7 +214,20 @@ export function CartPage() {
 
         {/* Cart Section */}
         <section className="pt-4 pb-20">
-          {items.length === 0 ? (
+          {isLoading ? (
+            <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1.65fr)_minmax(340px,0.75fr)] gap-10 lg:gap-14 items-start">
+              <div className="space-y-4">
+                <div className="h-6 w-36 bg-[#EDE0CC]/70 rounded-[2px] animate-shimmer" />
+                <CartItemSkeleton />
+                <CartItemSkeleton />
+              </div>
+              <div className="p-6 border border-[#DDD3C5] bg-white rounded-[2px] space-y-4">
+                <div className="h-5 w-28 bg-[#EDE0CC]/70 rounded-[2px] animate-shimmer" />
+                <div className="h-4 w-full bg-[#EDE0CC]/70 rounded-[2px] animate-shimmer" />
+                <div className="h-10 w-full bg-[#EDE0CC]/70 rounded-[2px] animate-shimmer" />
+              </div>
+            </div>
+          ) : items.length === 0 ? (
             /* ================= EMPTY CART STATE ================= */
             <div className="text-center py-24 px-5">
               <h2 className="text-[44px] sm:text-[48px] font-extrabold tracking-[-2px] uppercase mb-3">
@@ -221,9 +238,11 @@ export function CartPage() {
               </p>
               <Link
                 to="/shop"
-                className="inline-flex h-12 items-center px-8 bg-[#171717] text-white text-[10px] font-extrabold uppercase tracking-wider hover:bg-[#E6321C] transition-colors"
+                className="btn btn-red min-h-[52px] px-9 text-xs font-extrabold tracking-wider shadow-[0_6px_22px_rgba(230,50,28,0.32)] hover:shadow-[0_8px_28px_rgba(230,50,28,0.42)] inline-flex items-center gap-2.5 group"
               >
-                SHOP THE COLLECTION →
+                <ShoppingBag size={16} />
+                <span>SHOP THE COLLECTION</span>
+                <ArrowRight size={15} className="transition-transform duration-200 group-hover:translate-x-1" />
               </Link>
             </div>
           ) : (
@@ -443,13 +462,30 @@ export function CartPage() {
                   )}
                 </div>
 
+                {/* 5% Prepaid Online Perk */}
+                <div className="mt-4 p-3 bg-emerald-50 border border-emerald-200 rounded-lg flex items-center gap-2.5 text-xs text-emerald-900">
+                  <div className="w-6 h-6 rounded-full bg-emerald-600 text-white grid place-items-center shrink-0 font-bold text-[9px]">
+                    5%
+                  </div>
+                  <div>
+                    <span className="font-extrabold uppercase tracking-wide block text-[10px] text-emerald-700">
+                      PREPAID ONLINE DISCOUNT
+                    </span>
+                    <span className="text-[11px] leading-snug">
+                      Save extra <strong>5% (₹{Math.round(total * 0.05)})</strong> automatically at checkout when paying via UPI or Card!
+                    </span>
+                  </div>
+                </div>
+
                 {/* Proceed to Checkout CTA */}
                 <button
                   type="button"
                   onClick={handleProceedToCheckout}
-                  className="w-full h-[53px] border-0 mt-5 bg-[#E6321C] text-white text-[11px] font-extrabold tracking-[0.5px] uppercase hover:bg-[#B91F12] active:translate-y-[1px] transition-all cursor-pointer shadow-xs"
+                  className="w-full min-h-[54px] mt-5 border-0 rounded-[8px] bg-[#E6321C] text-white text-[12px] font-extrabold tracking-[0.06em] uppercase hover:bg-[#B91F12] active:scale-[0.99] transition-all cursor-pointer shadow-[0_6px_22px_rgba(230,50,28,0.35)] hover:shadow-[0_8px_28px_rgba(230,50,28,0.45)] inline-flex items-center justify-center gap-2.5 group"
                 >
-                  PROCEED TO CHECKOUT →
+                  <Lock size={14} />
+                  <span>PROCEED TO CHECKOUT</span>
+                  <ArrowRight size={15} className="transition-transform duration-200 group-hover:translate-x-1" />
                 </button>
 
                 {/* Assurances */}

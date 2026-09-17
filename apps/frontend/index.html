@@ -3,39 +3,127 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-    <meta name="description" content="Bingooo — Premium men's wear and custom fashion. Wear what feels like you." />
-    <meta property="og:title" content="Bingooo — Men's Wear & Custom Fashion" />
-    <meta property="og:description" content="Shop curated menswear or create custom designs. Premium quality, made for your style." />
+
+    <!-- ── Primary Meta ── -->
+    <meta name="description" content="Shop curated 240–280 GSM heavyweight cotton menswear or craft custom bespoke streetwear in our 3D Atelier Studio. Pan-India express delivery." />
+    <meta name="author" content="Bingooo" />
+    <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
+
+    <!-- ── Google Search Console Verification ── -->
+    <!-- Configure with domain token upon Search Console DNS / HTML tag verification -->
+    <meta name="google-site-verification" content="bingooo-official-store-verification" />
+
+    <!-- ── Geo / Local SEO ── -->
+    <meta name="geo.region" content="IN-AP" />
+    <meta name="geo.placename" content="Srikakulam, Andhra Pradesh" />
+    <meta name="geo.position" content="18.2969;83.8968" />
+    <meta name="ICBM" content="18.2969, 83.8968" />
+
+    <!-- ── OpenGraph ── -->
+    <meta property="og:title" content="Bingooo — Premium Heavyweight Men's Wear" />
+    <meta property="og:description" content="Shop curated menswear or create custom designs. 240–280 GSM premium quality, made for your style." />
     <meta property="og:type" content="website" />
-    <meta property="og:image" content="/og-image.png" />
+    <meta property="og:image" content="https://bingooo.in/og-image.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:url" content="https://bingooo.in" />
+    <meta property="og:site_name" content="Bingooo Men's Wear" />
+    <meta property="og:locale" content="en_IN" />
+
+    <!-- ── Twitter Card ── -->
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="Bingooo — Men's Wear & Custom Fashion" />
+    <meta name="twitter:title" content="Bingooo — Premium Heavyweight Men's Wear" />
     <meta name="twitter:description" content="Shop curated menswear or create custom designs. Premium quality, made for your style." />
-    <meta name="twitter:image" content="/og-image.png" />
+    <meta name="twitter:image" content="https://bingooo.in/og-image.png" />
+
+    <!-- ── PWA ── -->
     <meta name="theme-color" content="#111111" />
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="apple-mobile-web-app-title" content="Bingooo" />
     <link rel="manifest" href="/manifest.webmanifest" />
+
+    <!-- ── Favicons ── -->
     <link rel="icon" type="image/svg+xml" href="/brand-logo.svg?v=2026" id="app-favicon-svg" />
     <link rel="icon" type="image/png" sizes="32x32" href="/brand-logo-32.png?v=2026" id="app-favicon-png" />
     <link rel="icon" type="image/png" sizes="16x16" href="/brand-logo-16.png?v=2026" />
     <link rel="shortcut icon" href="/brand-logo-32.png?v=2026" />
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png?v=2026" />
+
+    <!-- ── LCP Preload: Hero banner is the Largest Contentful Paint element ── -->
+    <link rel="preload" as="image" href="/hero-banner.png" fetchpriority="high" />
+
+    <!-- ── Font Preconnects ── -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+    <!-- ── Fonts with display=swap to eliminate FOIT (render-blocking) ── -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+
+    <title>Bingooo — Premium Heavyweight Men's Wear</title>
+
+    <!-- ── Inline JSON-LD: Pre-JS Googlebot discovery of Organization + WebSite ── -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "WebSite",
+          "@id": "https://bingooo.in/#website",
+          "url": "https://bingooo.in",
+          "name": "Bingooo",
+          "potentialAction": {
+            "@type": "SearchAction",
+            "target": {
+              "@type": "EntryPoint",
+              "urlTemplate": "https://bingooo.in/shop?q={search_term_string}"
+            },
+            "query-input": "required name=search_term_string"
+          }
+        },
+        {
+          "@type": ["ClothingStore", "LocalBusiness"],
+          "@id": "https://bingooo.in/#localbusiness",
+          "name": "Bingooo",
+          "url": "https://bingooo.in",
+          "logo": "https://bingooo.in/brand-logo.png",
+          "image": "https://bingooo.in/og-image.png",
+          "description": "India's premium heavyweight menswear brand. 240–420 GSM streetwear and bespoke custom apparel from Srikakulam, Andhra Pradesh.",
+          "telephone": "+91-7981787317",
+          "email": "support@bingooo.in",
+          "priceRange": "₹699–₹1,999",
+          "address": {
+            "@type": "PostalAddress",
+            "streetAddress": "7 Roads Junction, Main Road",
+            "addressLocality": "Srikakulam",
+            "addressRegion": "Andhra Pradesh",
+            "postalCode": "532001",
+            "addressCountry": "IN"
+          },
+          "geo": {
+            "@type": "GeoCoordinates",
+            "latitude": "18.2969",
+            "longitude": "83.8968"
+          },
+          "sameAs": [
+            "https://www.instagram.com/bingooo.sklm",
+            "https://wa.me/917981787317"
+          ]
+        }
+      ]
+    }
+    </script>
+
     <script>
       try {
         var fv = document.getElementById('app-favicon-svg');
         if (fv) fv.href = '/brand-logo.svg?t=' + Date.now();
       } catch (e) {}
     </script>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&display=swap"
-      rel="stylesheet"
-    />
-    <title>Bingooo — Men's Wear & Custom Fashion</title>
   </head>
   <body>
     <div id="root"></div>

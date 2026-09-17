@@ -1,9 +1,10 @@
 import { forwardRef, type ReactNode } from 'react';
 import { motion, type HTMLMotionProps } from 'framer-motion';
 import { cn } from '../../lib/utils';
+import { triggerHaptic } from '../../lib/native/capacitorBridge';
 
 export type ButtonVariant = 'primary' | 'secondary' | 'outline' | 'ghost' | 'danger';
-export type ButtonSize = 'sm' | 'md' | 'lg';
+export type ButtonSize = 'sm' | 'md' | 'lg' | 'xl';
 
 interface ButtonProps extends Omit<HTMLMotionProps<'button'>, 'children'> {
   variant?: ButtonVariant;
@@ -16,21 +17,22 @@ interface ButtonProps extends Omit<HTMLMotionProps<'button'>, 'children'> {
 
 const variantStyles: Record<ButtonVariant, string> = {
   primary:
-    'bg-[#E6321C] text-white hover:bg-[#B91F12] active:bg-[#B91F12]/90 shadow-2xs',
+    'bg-[#E6321C] text-white hover:bg-[#B91F12] active:bg-[#B91F12]/95 shadow-[0_4px_14px_rgba(230,50,28,0.28)] hover:shadow-[0_6px_20px_rgba(230,50,28,0.38)] active:translate-y-[1px]',
   secondary:
-    'bg-[#EDE0CC] text-[#171717] hover:bg-[#DDD3C5] active:bg-[#DDD3C5]/90',
+    'bg-white text-[#171717] border border-[#DDD3C5] hover:border-[#171717] hover:bg-[#FAF8F5] active:bg-[#EDE0CC]/40 shadow-2xs',
   outline:
-    'border border-[#DDD3C5] text-[#171717] hover:border-[#E6321C] hover:text-[#E6321C] hover:bg-white',
+    'border-2 border-[#171717] text-[#171717] bg-transparent hover:bg-[#171717] hover:text-white active:bg-[#171717]/90',
   ghost:
     'text-[#171717] hover:text-[#E6321C] hover:bg-black/5 active:bg-black/10',
   danger:
-    'bg-[#C62828] text-white hover:bg-[#B71C1C] active:bg-[#B71C1C]/90',
+    'bg-[#C62828] text-white hover:bg-[#B71C1C] active:bg-[#B71C1C]/90 shadow-2xs',
 };
 
 const sizeStyles: Record<ButtonSize, string> = {
-  sm: 'h-7 px-2.5 text-[11px] font-semibold gap-1.5 rounded-md',
-  md: 'h-8 px-3.5 text-xs font-semibold gap-1.5 rounded-md',
-  lg: 'h-9 px-4 text-xs sm:text-[13px] font-semibold gap-2 rounded-md',
+  sm: 'h-8 px-3 text-[11px] font-bold gap-1.5 rounded-md',
+  md: 'h-10 px-4 text-xs font-bold gap-2 rounded-[8px]',
+  lg: 'h-11 px-5 text-[13px] font-bold gap-2 rounded-[10px]',
+  xl: 'h-12 sm:h-[52px] px-6 text-sm font-bold gap-2.5 rounded-[10px] tracking-wider',
 };
 
 const Button = forwardRef<HTMLButtonElement, ButtonProps>(
@@ -75,6 +77,12 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
           className,
         )}
         disabled={disabled || loading}
+        onClick={(e) => {
+          if (animateInteraction && !disabled && !loading) {
+            triggerHaptic('light');
+          }
+          props.onClick?.(e);
+        }}
         {...props}
       >
         {loading && (

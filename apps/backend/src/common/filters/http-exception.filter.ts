@@ -67,8 +67,11 @@ function mapStatusToCode(status: number): string {
     case 400: return 'VALIDATION_ERROR';
     case 401: return 'AUTH_REQUIRED';
     case 403: return 'FORBIDDEN';
-    case 404: return 'PRODUCT_NOT_FOUND';
+    case 404: return 'NOT_FOUND';
+    case 408: return 'REQUEST_TIMEOUT';
+    case 409: return 'CONFLICT';
     case 429: return 'RATE_LIMITED';
+    case 504: return 'GATEWAY_TIMEOUT';
     default: return 'INTERNAL_ERROR';
   }
 }

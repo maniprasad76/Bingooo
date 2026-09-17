@@ -238,4 +238,67 @@ export class UsersService {
     const { password_hash, ...safe } = user;
     return { ...safe, name: user.full_name, twoFactorEnabled: false, lastActive: user.updated_at };
   }
+
+  /**
+   * Delete User Account & Associated Personal Data
+   * Complies with Apple App Store Guideline 5.1.1(v) and Google Play Store User Data policy.
+   * - Purges user profile and authentication record
+   * - Purges saved addresses, active cart, and wishlist
+   * - Anonymizes customer identifiers on existing orders (retaining financial records for statutory tax/accounting compliance)
+   */
+  deleteAccount(userId: string) {
+    // 1. Remove from users and profiles
+    const userIndex = db.users.findIndex((u) => u.id === userId);
+    if (userIndex !== -1) {
+      db.users.splice(userIndex, 1);
+    }
+
+    const profileIndex = db.profiles.findIndex((p) => p.id === userId);
+    if (profileIndex !== -1) {
+      db.profiles.splice(profileIndex, 1);
+    }
+
+    // 2. Remove all saved shipping addresses
+    db.addresses = db.addresses.filter((a) => a.user_id !== userId);
+
+    // 3. Remove user cart & cart items
+    const userCart = db.carts.find((c) => c.user_id === userId);
+    if (userCart) {
+      db.cart_items = db.cart_items.filter((item) => item.cart_id !== userCart.id);
+      db.carts = db.carts.filter((c) => c.id !== userCart.id);
+    }
+
+    // 4. Remove wishlist entries
+    if (db.wishlists) {
+      db.wishlists = db.wishlists.filter((w: any) => w.user_id !== userId);
+    }
+
+    // 5. Anonymize orders for GDPR / DPDP compliance
+    db.orders.forEach((order) => {
+      if (order.user_id === userId) {
+        order.user_id = 'deleted-user';
+        if (order.shipping_address) {
+          order.shipping_address = {
+            fullName: 'Deleted User',
+            phone: '0000000000',
+            addressLine1: 'Redacted (Account Deleted)',
+            city: order.shipping_address.city || 'Redacted',
+            state: order.shipping_address.state || 'Redacted',
+            postalCode: '000000',
+            country: 'IN',
+          };
+        }
+        if (order.customer_email) order.customer_email = 'deleted@bingooo.in';
+        if (order.customer_name) order.customer_name = 'Deleted User';
+      }
+    });
+
+    saveDb();
+
+    return {
+      success: true,
+      message: 'Your account, profile, and associated personal data have been permanently deleted.',
+      deletedAt: new Date().toISOString(),
+    };
+  }
 }

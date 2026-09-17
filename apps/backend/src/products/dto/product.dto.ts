@@ -33,9 +33,23 @@ export class CreateProductDto {
   @ApiPropertyOptional() @IsOptional() @IsString() fabric?: string;
   @ApiPropertyOptional() @IsOptional() @IsString() gsm?: string;
   @ApiPropertyOptional() @IsOptional() @IsString() fit?: string;
+  @ApiPropertyOptional() @IsOptional() @IsString() designDetails?: string;
+  @ApiPropertyOptional() @IsOptional() @IsString() careInstructions?: string;
   @ApiPropertyOptional() @IsOptional() tags?: string[];
   @ApiPropertyOptional() @IsOptional() @IsBoolean() featured?: boolean;
   @ApiPropertyOptional() @IsOptional() @IsBoolean() bestseller?: boolean;
+  @ApiPropertyOptional() @IsOptional() @IsBoolean() isSale?: boolean;
+  @ApiPropertyOptional() @IsOptional() @IsString() saleTag?: string;
+  @ApiPropertyOptional() @IsOptional() @IsString() badgeText?: string;
+  @ApiPropertyOptional() @IsOptional() variants?: Array<{
+    id?: string;
+    sku?: string;
+    size?: string;
+    color?: string;
+    colorHex?: string;
+    price?: number;
+    stockQuantity?: number;
+  }>;
 }
 
 export class UpdateProductDto {
@@ -54,9 +68,23 @@ export class UpdateProductDto {
   @ApiPropertyOptional() @IsOptional() @IsString() fabric?: string;
   @ApiPropertyOptional() @IsOptional() @IsString() gsm?: string;
   @ApiPropertyOptional() @IsOptional() @IsString() fit?: string;
+  @ApiPropertyOptional() @IsOptional() @IsString() designDetails?: string;
+  @ApiPropertyOptional() @IsOptional() @IsString() careInstructions?: string;
   @ApiPropertyOptional() @IsOptional() tags?: string[];
   @ApiPropertyOptional() @IsOptional() @IsBoolean() featured?: boolean;
   @ApiPropertyOptional() @IsOptional() @IsBoolean() bestseller?: boolean;
+  @ApiPropertyOptional() @IsOptional() @IsBoolean() isSale?: boolean;
+  @ApiPropertyOptional() @IsOptional() @IsString() saleTag?: string;
+  @ApiPropertyOptional() @IsOptional() @IsString() badgeText?: string;
+  @ApiPropertyOptional() @IsOptional() variants?: Array<{
+    id?: string;
+    sku?: string;
+    size?: string;
+    color?: string;
+    colorHex?: string;
+    price?: number;
+    stockQuantity?: number;
+  }>;
 }
 
 export class CreateVariantDto {

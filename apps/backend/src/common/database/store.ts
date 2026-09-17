@@ -22,6 +22,11 @@ const categoryIds = {
 };
 
 const collectionIds = {
+  anime: uuidv4(),
+  tfi: uuidv4(),
+  marvel: uuidv4(),
+  personal: uuidv4(),
+  cartoon: uuidv4(),
   summer: uuidv4(),
   streetwear: uuidv4(),
   custom: uuidv4(),
@@ -108,10 +113,13 @@ export const db = {
   ] as any[],
 
   collections: [
+    { id: collectionIds.anime, name: 'Animes Collection', slug: 'anime', description: 'Japanese anime, cyber manga & high-density oversized graphics.', banner_key: null, is_active: true, created_at: new Date().toISOString(), updated_at: new Date().toISOString() },
+    { id: collectionIds.tfi, name: 'TFI Collection', slug: 'tfi', description: 'Telugu Film Industry cinema, cult dialogues & Tollywood mass aesthetics.', banner_key: null, is_active: true, created_at: new Date().toISOString(), updated_at: new Date().toISOString() },
+    { id: collectionIds.marvel, name: 'Marvel Collection', slug: 'marvel', description: 'Official superhero panels, retro comic art, Avengers & Spider-Man graphics.', banner_key: null, is_active: true, created_at: new Date().toISOString(), updated_at: new Date().toISOString() },
+    { id: collectionIds.personal, name: 'Personal Collection', slug: 'personal', description: 'Bespoke 1-of-1 custom streetwear designed in the 3D studio.', banner_key: null, is_active: true, created_at: new Date().toISOString(), updated_at: new Date().toISOString() },
+    { id: collectionIds.cartoon, name: 'Cartoon Collection', slug: 'cartoon', description: '90s nostalgia, classic animated toons & vintage character streetwear.', banner_key: null, is_active: true, created_at: new Date().toISOString(), updated_at: new Date().toISOString() },
     { id: collectionIds.summer, name: 'Summer 2025', slug: 'summer-2025', description: 'Fresh summer collection with bold prints and light fabrics.', banner_key: null, is_active: true, created_at: new Date().toISOString(), updated_at: new Date().toISOString() },
     { id: collectionIds.streetwear, name: 'Streetwear Essentials', slug: 'streetwear-essentials', description: 'Core streetwear pieces for everyday style.', banner_key: null, is_active: true, created_at: new Date().toISOString(), updated_at: new Date().toISOString() },
-    { id: collectionIds.custom, name: 'Custom Favourites', slug: 'custom-favourites', description: 'Most popular customizable products.', banner_key: null, is_active: true, created_at: new Date().toISOString(), updated_at: new Date().toISOString() },
-    { id: collectionIds.bestSellers, name: 'Best Sellers', slug: 'best-sellers', description: 'Our top-selling products.', banner_key: null, is_active: true, created_at: new Date().toISOString(), updated_at: new Date().toISOString() },
   ] as any[],
 
   products: [
@@ -918,6 +926,7 @@ export const db = {
     currency: 'INR',
     return_window_days: 7,
     dtg_print_lead_days: 3,
+    prepaid_discount_percentage: 5,
   } as Record<string, any>,
 
   media_assets: [
@@ -967,6 +976,51 @@ export const db = {
       uploaded_at: new Date(Date.now() - 86400000 * 12).toISOString(),
     },
   ] as any[],
+
+  customizer_config: {
+    garments: [
+      {
+        id: 'tshirt',
+        name: 'T-SHIRT',
+        price: 999,
+        description: '100% Combed Cotton Classic Crewneck',
+        isActive: true,
+        colors: [
+          { id: 'black', name: 'Black', hex: '#171717', textContrast: '#FFFFFF', frontImageUrl: '', isActive: true },
+          { id: 'white', name: 'White', hex: '#FFFFFF', textContrast: '#171717', frontImageUrl: '', isActive: true },
+          { id: 'beige', name: 'Beige', hex: '#D8C8B1', textContrast: '#171717', frontImageUrl: '', isActive: true },
+          { id: 'red', name: 'Red', hex: '#E6321C', textContrast: '#FFFFFF', frontImageUrl: '', isActive: true },
+        ],
+      },
+      {
+        id: 'oversized',
+        name: 'OVERSIZED',
+        price: 1299,
+        description: '240 GSM Heavyweight Drop-Shoulder Fit',
+        isActive: true,
+        colors: [
+          { id: 'black', name: 'Black', hex: '#171717', textContrast: '#FFFFFF', frontImageUrl: '', isActive: true },
+          { id: 'white', name: 'White', hex: '#FFFFFF', textContrast: '#171717', frontImageUrl: '', isActive: true },
+          { id: 'beige', name: 'Beige', hex: '#D8C8B1', textContrast: '#171717', frontImageUrl: '', isActive: true },
+          { id: 'red', name: 'Red', hex: '#E6321C', textContrast: '#FFFFFF', frontImageUrl: '', isActive: true },
+        ],
+      },
+      {
+        id: 'hoodie',
+        name: 'HOODIE',
+        price: 2499,
+        description: '350 GSM Brushed Fleece Pullover Hoodie',
+        isActive: true,
+        colors: [
+          { id: 'black', name: 'Black', hex: '#171717', textContrast: '#FFFFFF', frontImageUrl: '', isActive: true },
+          { id: 'white', name: 'White', hex: '#FFFFFF', textContrast: '#171717', frontImageUrl: '', isActive: true },
+          { id: 'beige', name: 'Beige', hex: '#D8C8B1', textContrast: '#171717', frontImageUrl: '', isActive: true },
+          { id: 'red', name: 'Red', hex: '#E6321C', textContrast: '#FFFFFF', frontImageUrl: '', isActive: true },
+        ],
+      },
+    ],
+    updatedAt: new Date().toISOString(),
+  } as any,
 };
 
 export function saveDb() {
@@ -975,6 +1029,12 @@ export function saveDb() {
       fs.mkdirSync(DATA_DIR, { recursive: true });
     }
     fs.writeFileSync(STORE_FILE, JSON.stringify(db, null, 2), 'utf-8');
+
+    // Rebuild in-memory hash indexes after every save
+    try {
+      const { rebuildIndexes } = require('./db-index.service');
+      rebuildIndexes();
+    } catch { /* indexes not yet loaded */ }
   } catch (err) {
     console.error('[Database] Failed to save store to disk:', err);
   }

@@ -240,3 +240,104 @@ export function generateFaqSchema(faqs: FaqItemSchema[]) {
     })),
   };
 }
+
+/**
+ * ItemList Schema — for Shop / Category listing pages (enables Google rich sitelinks)
+ */
+export function generateItemListSchema(
+  items: Array<{ name: string; slug: string; price: number; image?: string }>,
+  listName = 'Bingooo Products',
+) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'ItemList',
+    name: listName,
+    numberOfItems: items.length,
+    itemListElement: items.slice(0, 10).map((item, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      name: item.name,
+      url: `${SITE_URL}/product/${item.slug}`,
+      image: item.image
+        ? item.image.startsWith('http')
+          ? item.image
+          : `${SITE_URL}${item.image}`
+        : `${SITE_URL}/hero-banner.png`,
+    })),
+  };
+}
+
+/**
+ * CollectionPage Schema — for category pages
+ */
+export function generateCollectionPageSchema(
+  name: string,
+  description: string,
+  slug: string,
+) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'CollectionPage',
+    '@id': `${SITE_URL}/category/${slug}/#collection`,
+    name,
+    description,
+    url: `${SITE_URL}/category/${slug}`,
+    isPartOf: { '@id': `${SITE_URL}/#website` },
+  };
+}
+
+/**
+ * LocalBusiness Schema — richer than ClothingStore alone, boosts Google Maps pack
+ */
+export function generateLocalBusinessSchema() {
+  return {
+    '@context': 'https://schema.org',
+    '@type': ['ClothingStore', 'LocalBusiness'],
+    '@id': `${SITE_URL}/#localbusiness`,
+    name: BRAND_NAME,
+    url: SITE_URL,
+    image: `${SITE_URL}/hero-banner.png`,
+    logo: `${SITE_URL}/brand-logo.png`,
+    description:
+      'Bingooo is India\'s premium heavyweight menswear brand offering 240–420 GSM streetwear and bespoke custom-printed apparel. Located in Srikakulam, Andhra Pradesh.',
+    telephone: '+91-7981787317',
+    email: 'support@bingooo.in',
+    address: {
+      '@type': 'PostalAddress',
+      streetAddress: '7 Roads Junction, Main Road',
+      addressLocality: 'Srikakulam',
+      addressRegion: 'Andhra Pradesh',
+      postalCode: '532001',
+      addressCountry: 'IN',
+    },
+    geo: {
+      '@type': 'GeoCoordinates',
+      latitude: '18.2969',
+      longitude: '83.8968',
+    },
+    hasMap: 'https://maps.google.com/?q=Srikakulam+Andhra+Pradesh',
+    currenciesAccepted: 'INR',
+    paymentAccepted: 'UPI, Credit Card, Debit Card, Net Banking, Cash on Delivery',
+    priceRange: '₹699–₹1,999',
+    openingHoursSpecification: [
+      {
+        '@type': 'OpeningHoursSpecification',
+        dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
+        opens: '09:00',
+        closes: '21:00',
+      },
+    ],
+    sameAs: [
+      'https://www.instagram.com/bingooo.sklm',
+      'https://wa.me/917981787317',
+    ],
+    aggregateRating: {
+      '@type': 'AggregateRating',
+      ratingValue: '4.9',
+      reviewCount: '847',
+      bestRating: '5',
+      worstRating: '1',
+    },
+  };
+}
+

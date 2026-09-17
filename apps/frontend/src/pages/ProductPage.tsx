@@ -1,6 +1,6 @@
 import { useState, useMemo, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import { Heart, Star, Check, CheckCircle2, Lock, Truck, RotateCcw } from 'lucide-react';
+import { Heart, Star, Check, CheckCircle2, Lock, Truck, RotateCcw, ShoppingBag, Zap } from 'lucide-react';
 import { useProduct } from '../hooks/useProducts';
 import { useCart } from '../hooks/useCart';
 import { useWishlist, useIsInWishlist } from '../hooks/useWishlist';
@@ -10,41 +10,37 @@ import { SEO } from '../components/common/SEO';
 import { generateProductSchema } from '../lib/seo/schema';
 import { triggerHaptic } from '../lib/native/capacitorBridge';
 import { FALLBACK_PRODUCTS } from '../data/fallbackProducts';
+import { ProductDetailSkeleton } from '../components/ui/Skeleton';
+import { StickyMobileActionBar } from '../components/product/StickyMobileActionBar';
 
-const DEFAULT_GALLERY_IMAGES = [
-  'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&w=1400&q=90',
-  'https://images.unsplash.com/photo-1583743814966-8936f37f7996?auto=format&fit=crop&w=700&q=85',
-  'https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?auto=format&fit=crop&w=700&q=85',
-  'https://images.unsplash.com/photo-1551488831-00ddcb6c6bd3?auto=format&fit=crop&w=700&q=85',
-];
 
 const DEFAULT_RELATED = [
   {
     id: 'rel-1',
     name: 'Statement Hoodie',
     price: '₹1,499',
-    image: 'https://images.unsplash.com/photo-1556821840-3a63f95609a7?auto=format&fit=crop&w=900&q=85',
+    image: '',
     link: '/product/heavyweight-fleece-hoodie',
   },
   {
     id: 'rel-2',
     name: 'Bold B Tee',
     price: '₹1,199',
-    image: 'https://images.unsplash.com/photo-1583743814966-8936f37f7996?auto=format&fit=crop&w=900&q=85',
+    image: '',
     link: '/product/bold-signature-tee',
   },
   {
     id: 'rel-3',
     name: 'Minimal Tee',
     price: '₹1,099',
-    image: 'https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?auto=format&fit=crop&w=900&q=85',
+    image: '',
     link: '/product/minimalist-heavyweight-tee',
   },
   {
     id: 'rel-4',
     name: 'Oversized Tee',
     price: '₹1,299',
-    image: 'https://images.unsplash.com/photo-1529139574466-a303027c1d8b?auto=format&fit=crop&w=900&q=85',
+    image: '',
     link: '/product/classic-oversized-tee',
   },
 ];
@@ -92,7 +88,7 @@ const REVIEWS_DATA: ReviewItem[] = [
 export function ProductPage() {
   const { slug } = useParams<{ slug: string }>();
   const navigate = useNavigate();
-  const { data: remoteProduct } = useProduct(slug);
+  const { data: remoteProduct, isLoading: isProductLoading } = useProduct(slug);
   const { addItem, isAdding } = useCart();
   const { toggleWishlist } = useWishlist();
   const { toast } = useToast();
@@ -120,25 +116,77 @@ export function ProductPage() {
     }
   }, [product, addProduct]);
 
-  // Gallery state
+  // Gallery state — dynamically display all images provided by backend
   const images = useMemo<string[]>(() => {
     if (product?.images && product.images.length > 0) {
-      const urls = product.images.map((img: any) =>
-        typeof img === 'string' ? img : img.url || img.object_key
-      );
-      if (urls.length >= 4) return urls;
-      return [...urls, ...DEFAULT_GALLERY_IMAGES.slice(urls.length)];
+      const urls = product.images
+        .map((img: any) => (typeof img === 'string' ? img : img.url || img.object_key))
+        .filter(Boolean);
+      if (urls.length > 0) return urls;
     }
-    return DEFAULT_GALLERY_IMAGES;
+    return ['/hero-banner.png'];
   }, [product]);
 
   const [activeImageIndex, setActiveImageIndex] = useState(0);
 
-  // Variant selections
-  const [selectedColor, setSelectedColor] = useState('Black');
-  const [selectedSize, setSelectedSize] = useState('S');
+  // Dynamic colors derived from product.variants
+  const colorOptions = useMemo(() => {
+    if (product?.variants && product.variants.length > 0) {
+      const map = new Map<string, string>();
+      product.variants.forEach((v: any) => {
+        if (v.color) {
+          map.set(v.color, v.colorHex || v.color_hex || '#171717');
+        }
+      });
+      if (map.size > 0) {
+        return Array.from(map.entries()).map(([name, hex]) => ({ name, hex }));
+      }
+    }
+    return [
+      { name: 'Charcoal Black', hex: '#171717' },
+      { name: 'Vintage Cream', hex: '#F7EEDB' },
+    ];
+  }, [product]);
+
+  const [selectedColor, setSelectedColor] = useState('Charcoal Black');
+
+  // Dynamic sizes derived from product.variants for selected color
+  const sizeOptions = useMemo(() => {
+    if (product?.variants && product.variants.length > 0) {
+      const matching = product.variants.filter(
+        (v: any) => !selectedColor || v.color?.toLowerCase() === selectedColor.toLowerCase()
+      );
+      const variantsToUse = matching.length > 0 ? matching : product.variants;
+      const sizes = [...new Set(variantsToUse.map((v: any) => v.size).filter(Boolean))] as string[];
+      if (sizes.length > 0) {
+        const order = ['XS', 'S', 'M', 'L', 'XL', 'XXL', '3XL'];
+        return sizes.sort((a, b) => {
+          const ia = order.indexOf(a);
+          const ib = order.indexOf(b);
+          if (ia !== -1 && ib !== -1) return ia - ib;
+          return a.localeCompare(b);
+        });
+      }
+    }
+    return ['S', 'M', 'L', 'XL'];
+  }, [product, selectedColor]);
+
+  const [selectedSize, setSelectedSize] = useState('M');
   const [quantity, setQuantity] = useState(1);
   const [isAddedFeedback, setIsAddedFeedback] = useState(false);
+
+  // Sync color & size defaults when options change
+  useEffect(() => {
+    if (colorOptions.length > 0 && !colorOptions.some((c) => c.name.toLowerCase() === selectedColor.toLowerCase())) {
+      setSelectedColor(colorOptions[0].name);
+    }
+  }, [colorOptions]);
+
+  useEffect(() => {
+    if (sizeOptions.length > 0 && !sizeOptions.includes(selectedSize)) {
+      setSelectedSize(sizeOptions[0]);
+    }
+  }, [sizeOptions]);
 
   // Delivery check state
   const [pincode, setPincode] = useState('');
@@ -155,22 +203,36 @@ export function ProductPage() {
   const [reviewBody, setReviewBody] = useState('');
   const [reviewSubmitted, setReviewSubmitted] = useState(false);
 
-  const price = product?.base_price ?? product?.basePrice ?? 999;
+  // Find authoritative matching variant
+  const selectedVariant = useMemo(() => {
+    if (!product?.variants || product.variants.length === 0) return null;
+    return (
+      product.variants.find(
+        (v: any) =>
+          v.color?.toLowerCase() === selectedColor?.toLowerCase() &&
+          v.size?.toLowerCase() === selectedSize?.toLowerCase()
+      ) ||
+      product.variants.find(
+        (v: any) => v.size?.toLowerCase() === selectedSize?.toLowerCase()
+      ) ||
+      product.variants[0]
+    );
+  }, [product, selectedColor, selectedSize]);
+
+  const price = selectedVariant?.price ?? product?.base_price ?? product?.basePrice ?? 999;
   const compareAtPrice = product?.compare_at_price ?? product?.compareAtPrice ?? Math.round(price * 1.3);
   const discountPercent = Math.round(((compareAtPrice - price) / compareAtPrice) * 100);
-
-  const colorOptions = useMemo(() => [
-    { name: 'Black', hex: '#171717' },
-    { name: 'Cream', hex: '#eee6d8' },
-    { name: 'Grey', hex: '#77736d' },
-  ], []);
-
-  const sizeOptions = ['XS', 'S', 'M', 'L', 'XL'];
+  const currentStock = selectedVariant?.stockQuantity ?? selectedVariant?.stock_quantity ?? 15;
+  const isOutOfStock = currentStock <= 0;
 
   // Handle Add To Cart
   const handleAddToCart = () => {
+    if (isOutOfStock) {
+      toast({ title: 'Selected size is currently out of stock', variant: 'danger' });
+      return;
+    }
     triggerHaptic('medium');
-    const variantId = product?.variants?.[0]?.id || `var-${product?.id || 'prod'}-${selectedSize}-${selectedColor}`;
+    const variantId = selectedVariant?.id || product?.variants?.[0]?.id || `var-${product?.id || 'prod'}-${selectedSize}-${selectedColor}`;
     addItem(variantId, quantity);
 
     setIsAddedFeedback(true);
@@ -235,13 +297,24 @@ export function ProductPage() {
     toast({ title: 'Review submitted!', description: 'Thank you for your rating.', variant: 'success' });
   };
 
+  if (isProductLoading && !remoteProduct) {
+    return <ProductDetailSkeleton />;
+  }
+
   return (
     <main className="bg-[#f7eedb] text-[#171717] font-sans antialiased pb-[72px] sm:pb-0">
       <SEO
         title={`${product?.title || 'Classic Logo Tee'} — BINGOOO`}
         description={product?.description || "BINGOOO Men's fashion, custom designs and clothing culture."}
         canonical={`https://bingooo.in/product/${slug || 'classic-logo-tee'}`}
+        ogType="product"
+        productPrice={price}
         schema={[generateProductSchema(product as any)]}
+        breadcrumbs={[
+          { name: 'Home', url: 'https://bingooo.in/' },
+          { name: product?.category?.name || 'Shop', url: `https://bingooo.in/category/${product?.category?.slug || 'shop'}` },
+          { name: product?.title || 'Product', url: `https://bingooo.in/product/${slug}` },
+        ]}
       />
 
       {/* =======================================================
@@ -269,9 +342,9 @@ export function ProductPage() {
           
           {/* ── GALLERY ── */}
           <div className="sticky top-5 flex flex-col-reverse md:grid md:grid-cols-[88px_minmax(0,1fr)] gap-[15px]">
-            {/* Thumbnails */}
-            <div className="grid grid-cols-4 md:flex md:flex-col gap-[10px]">
-              {images.slice(0, 4).map((src: string, i: number) => (
+            {/* Thumbnails — Displays up to 5 product gallery angles */}
+            <div className="grid grid-cols-5 md:flex md:flex-col gap-[10px]">
+              {images.slice(0, 5).map((src: string, i: number) => (
                 <button
                   key={i}
                   type="button"
@@ -295,17 +368,38 @@ export function ProductPage() {
               ))}
             </div>
 
-            {/* Main Image */}
+            {/* Main Image with Dynamic Badges */}
             <div className="relative aspect-[1/1.18] sm:aspect-[4/5] overflow-hidden bg-[#ede0cc] group">
-              <div className="absolute left-[18px] top-[18px] z-10 px-[10px] py-[7px] bg-[#171717] text-white text-[9px] font-bold tracking-[0.12em] uppercase select-none">
-                NEW DROP
+              <div className="absolute left-[18px] top-[18px] z-10 flex flex-col gap-1.5 select-none">
+                {Boolean(product?.bestseller) && (
+                  <span className="px-[10px] py-[6px] bg-[#171717] text-white text-[9px] font-extrabold tracking-[0.14em] uppercase shadow-xs">
+                    BESTSELLER
+                  </span>
+                )}
+                {(Boolean(product?.is_sale) || compareAtPrice > price) && (
+                  <span className="px-[10px] py-[6px] bg-[#E6321C] text-white text-[9px] font-extrabold tracking-[0.14em] uppercase shadow-xs">
+                    {product?.sale_tag || (discountPercent > 0 ? `SALE • ${discountPercent}% OFF` : 'ON SALE')}
+                  </span>
+                )}
+                {product?.badge_text && !product?.bestseller && (
+                  <span className="px-[10px] py-[6px] bg-[#171717] text-white text-[9px] font-extrabold tracking-[0.14em] uppercase shadow-xs">
+                    {product.badge_text}
+                  </span>
+                )}
               </div>
 
-              <img
-                src={images[activeImageIndex] || images[0]}
-                alt={product?.title || 'Product Image'}
-                className="w-full h-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.025]"
-              />
+              {images[activeImageIndex] || images[0] ? (
+                <img
+                  src={images[activeImageIndex] || images[0]}
+                  alt={product?.title || 'Product Image'}
+                  className="w-full h-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.025]"
+                  onError={(e) => {
+                    e.currentTarget.style.display = 'none';
+                  }}
+                />
+              ) : (
+                <div className="w-full h-full bg-[#ede0cc]" />
+              )}
             </div>
           </div>
 
@@ -373,20 +467,52 @@ export function ProductPage() {
             <div className="stock-box">
               <div className="flex justify-between items-center mb-[9px]">
                 <div className="flex items-center gap-[7px] text-[10px] font-bold uppercase text-[#171717]">
-                  <span className="stock-dot" />
-                  LOW STOCK
+                  <span
+                    className={`stock-dot ${
+                      isOutOfStock
+                        ? '!bg-[#C62828]'
+                        : currentStock <= 5
+                        ? '!bg-[#E6321C]'
+                        : '!bg-[#238636]'
+                    }`}
+                  />
+                  {isOutOfStock
+                    ? 'OUT OF STOCK'
+                    : currentStock <= 5
+                    ? 'LOW STOCK'
+                    : 'IN STOCK & READY TO SHIP'}
                 </div>
                 <div className="text-[10px] font-semibold text-[#171717]">
-                  4 left
+                  {isOutOfStock ? '0 available' : `${currentStock} available`}
                 </div>
               </div>
 
               <div className="stock-bar">
-                <div className="stock-progress w-[22%]" />
+                <div
+                  className="stock-progress"
+                  style={{
+                    width: `${Math.min(100, Math.max(12, (currentStock / 30) * 100))}%`,
+                    backgroundColor: isOutOfStock
+                      ? '#C62828'
+                      : currentStock <= 5
+                      ? '#E6321C'
+                      : '#238636',
+                  }}
+                />
               </div>
 
               <p className="m-0 mt-[9px] text-[9px] text-[#6f6a63]">
-                Limited availability in this selected variant.
+                {isOutOfStock ? (
+                  <span className="text-[#C62828] font-bold">
+                    This variant ({selectedColor} / {selectedSize}) is currently sold out.
+                  </span>
+                ) : currentStock <= 5 ? (
+                  <span className="text-[#E6321C] font-semibold">
+                    Only {currentStock} left in stock for size {selectedSize} — order soon.
+                  </span>
+                ) : (
+                  'Ready to dispatch within 24 hours from Bingooo atelier.'
+                )}
               </p>
             </div>
 
@@ -434,19 +560,30 @@ export function ProductPage() {
               </div>
 
               <div className="grid grid-cols-5 gap-2">
-                {sizeOptions.map((sz) => (
-                  <button
-                    key={sz}
-                    type="button"
-                    onClick={() => {
-                      triggerHaptic('light');
-                      setSelectedSize(sz);
-                    }}
-                    className={`size-btn ${selectedSize === sz ? 'active' : ''}`}
-                  >
-                    {sz}
-                  </button>
-                ))}
+                {sizeOptions.map((sz) => {
+                  const szStock = (product?.variants || []).find(
+                    (v: any) =>
+                      v.size?.toLowerCase() === sz.toLowerCase() &&
+                      (!selectedColor || v.color?.toLowerCase() === selectedColor.toLowerCase())
+                  )?.stockQuantity ?? 10;
+                  const isSzSoldOut = szStock <= 0;
+
+                  return (
+                    <button
+                      key={sz}
+                      type="button"
+                      onClick={() => {
+                        triggerHaptic('light');
+                        setSelectedSize(sz);
+                      }}
+                      className={`size-btn ${selectedSize === sz ? 'active' : ''} ${
+                        isSzSoldOut ? 'opacity-40 line-through' : ''
+                      }`}
+                    >
+                      {sz}
+                    </button>
+                  );
+                })}
               </div>
             </div>
 
@@ -482,19 +619,33 @@ export function ProductPage() {
               {/* Add To Cart */}
               <button
                 type="button"
-                disabled={isAdding}
+                disabled={isAdding || isOutOfStock}
                 onClick={handleAddToCart}
-                className="btn btn-black h-[52px] w-full"
+                className={`btn h-[52px] w-full text-xs font-extrabold tracking-wider transition-all duration-200 cursor-pointer ${
+                  isOutOfStock
+                    ? 'bg-zinc-400 text-white cursor-not-allowed'
+                    : isAddedFeedback
+                    ? 'bg-[#238636] text-white border-[#238636] shadow-[0_4px_16px_rgba(35,134,54,0.3)]'
+                    : 'bg-[#171717] text-white hover:bg-black active:scale-[0.99] shadow-xs'
+                }`}
               >
-                {isAddedFeedback ? (
-                  <span className="inline-flex items-center gap-1.5">
-                    <span>ADDED</span>
-                    <Check size={14} />
+                {isOutOfStock ? (
+                  <span>SOLD OUT</span>
+                ) : isAddedFeedback ? (
+                  <span className="inline-flex items-center gap-2">
+                    <Check size={16} strokeWidth={2.5} />
+                    <span>ADDED TO BAG</span>
                   </span>
                 ) : isAdding ? (
-                  'ADDING…'
+                  <span className="inline-flex items-center gap-2">
+                    <span className="animate-spin w-4 h-4 border-2 border-white/30 border-t-white rounded-full" />
+                    <span>ADDING…</span>
+                  </span>
                 ) : (
-                  'ADD TO CART'
+                  <span className="inline-flex items-center gap-2">
+                    <ShoppingBag size={15} />
+                    <span>ADD TO CART</span>
+                  </span>
                 )}
               </button>
             </div>
@@ -504,20 +655,27 @@ export function ProductPage() {
               <button
                 type="button"
                 onClick={handleBuyNow}
-                className="btn btn-red h-[52px] w-full"
+                className="btn btn-red h-[52px] w-full text-xs font-extrabold tracking-wider shadow-[0_6px_20px_rgba(230,50,28,0.32)] hover:shadow-[0_8px_25px_rgba(230,50,28,0.42)] group"
               >
-                BUY IT NOW →
+                <Zap size={14} className="fill-white" />
+                <span>BUY IT NOW</span>
+                <span className="transition-transform duration-200 group-hover:translate-x-1">→</span>
               </button>
 
               <button
                 type="button"
                 onClick={handleToggleWishlist}
-                className="btn btn-black h-[52px] w-full"
+                className={`btn h-[52px] w-full text-xs font-extrabold tracking-wider border transition-all duration-200 cursor-pointer ${
+                  inWishlist
+                    ? 'border-[#E6321C] bg-[#E6321C]/8 text-[#E6321C]'
+                    : 'border-[#DDD3C5] bg-white text-[#171717] hover:border-[#171717] hover:bg-[#FAF8F5]'
+                }`}
               >
-                <span className="inline-flex items-center gap-1.5">
-                  <Heart size={14} className={inWishlist ? 'fill-white text-white' : 'text-current'} />
-                  <span>{inWishlist ? 'SAVED' : 'SAVE'}</span>
-                </span>
+                <Heart
+                  size={15}
+                  className={inWishlist ? 'fill-[#E6321C] text-[#E6321C]' : 'text-[#171717]'}
+                />
+                <span>{inWishlist ? 'SAVED TO WISHLIST' : 'SAVE TO WISHLIST'}</span>
               </button>
             </div>
 
@@ -608,7 +766,8 @@ export function ProductPage() {
 
           <div>
             <p className="max-w-[700px] text-[12px] sm:text-[13px] leading-[1.8] text-[#6f6a63] m-0">
-              Designed for everyday movement and built around effortless styling. The Classic Logo Tee combines premium cotton, a relaxed silhouette and the signature BINGOOO identity.
+              {product?.description ||
+                'Designed for everyday movement and built around effortless styling. Combining premium cotton, a relaxed silhouette and the signature BINGOOO identity.'}
             </p>
 
             <div className="mt-[35px] grid grid-cols-1 sm:grid-cols-2 gap-[1px] bg-[#ddd3c5]">
@@ -617,7 +776,7 @@ export function ProductPage() {
                   Fabric
                 </h3>
                 <p className="m-0 text-[10px] text-[#6f6a63] leading-[1.6]">
-                  Premium 240 GSM combed cotton jersey with a soft, breathable finish.
+                  {product?.fabric || 'Premium 240 GSM combed cotton jersey with a soft, breathable finish.'}
                 </p>
               </div>
 
@@ -626,7 +785,7 @@ export function ProductPage() {
                   Fit
                 </h3>
                 <p className="m-0 text-[10px] text-[#6f6a63] leading-[1.6]">
-                  Relaxed everyday fit with comfortable proportions and drop shoulder drape.
+                  {product?.fit || 'Relaxed everyday fit with comfortable proportions and drop shoulder drape.'}
                 </p>
               </div>
 
@@ -635,7 +794,9 @@ export function ProductPage() {
                   Design
                 </h3>
                 <p className="m-0 text-[10px] text-[#6f6a63] leading-[1.6]">
-                  Signature Bingooo branding with clean minimal chest and collar detailing.
+                  {product?.design_details ||
+                    product?.designDetails ||
+                    'Signature Bingooo branding with clean minimal chest and collar detailing.'}
                 </p>
               </div>
 
@@ -644,7 +805,9 @@ export function ProductPage() {
                   Care
                 </h3>
                 <p className="m-0 text-[10px] text-[#6f6a63] leading-[1.6]">
-                  Machine wash cold. Wash inside out. Do not iron directly on print.
+                  {product?.care_instructions ||
+                    product?.careInstructions ||
+                    'Machine wash cold. Wash inside out. Do not iron directly on print.'}
                 </p>
               </div>
             </div>
@@ -931,11 +1094,18 @@ export function ProductPage() {
               <article key={item.id} className="group flex flex-col">
                 <div className="relative aspect-[4/5] overflow-hidden bg-[#ede0cc]">
                   <Link to={item.link} className="block h-full w-full">
-                    <img
-                      src={item.image}
-                      alt={item.name}
-                      className="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.04]"
-                    />
+                    {item.image ? (
+                      <img
+                        src={item.image}
+                        alt={item.name}
+                        className="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.04]"
+                        onError={(e) => {
+                          e.currentTarget.style.display = 'none';
+                        }}
+                      />
+                    ) : (
+                      <div className="h-full w-full bg-[#ede0cc]" />
+                    )}
                   </Link>
                 </div>
 
@@ -1032,32 +1202,18 @@ export function ProductPage() {
       )}
 
       {/* =======================================================
-           MOBILE STICKY CART (<520px)
+           MOBILE IMMERSIVE STICKY ACTION BAR (<768px)
       ======================================================= */}
-      <div className="fixed sm:hidden grid grid-cols-2 gap-2 bottom-0 left-0 right-0 z-40 p-2.5 bg-[#f7eedb]/95 border-t border-[#ddd3c5] backdrop-blur-md">
-        <button
-          type="button"
-          onClick={handleAddToCart}
-          className="btn btn-black h-[46px] w-full text-[10px]"
-        >
-          {isAddedFeedback ? (
-            <span className="inline-flex items-center gap-1">
-              <span>ADDED</span>
-              <Check size={12} />
-            </span>
-          ) : (
-            'ADD TO CART'
-          )}
-        </button>
-
-        <button
-          type="button"
-          onClick={handleBuyNow}
-          className="btn btn-red h-[46px] w-full text-[10px]"
-        >
-          BUY NOW
-        </button>
-      </div>
+      {product && (
+        <StickyMobileActionBar
+          product={product}
+          selectedSize={selectedSize}
+          inWishlist={inWishlist}
+          onAddToCart={handleAddToCart}
+          onToggleWishlist={handleToggleWishlist}
+          isAdding={isAdding}
+        />
+      )}
     </main>
   );
 }

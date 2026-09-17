@@ -2,6 +2,7 @@ import { Controller, Get, Post, Patch, Delete, Param, Body, UseGuards, HttpCode,
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { CollectionsService } from './collections.service';
 import { AuthGuard } from '../common/guards/auth.guard';
+import { Cacheable } from '../common/interceptors/cache.interceptor';
 
 @ApiTags('Collections')
 @Controller('collections')
@@ -9,12 +10,14 @@ export class CollectionsController {
   constructor(private readonly collectionsService: CollectionsService) {}
 
   @Get()
+  @Cacheable(60000)
   @ApiOperation({ summary: 'List all active collections with product counts' })
   findAll() {
     return this.collectionsService.findAll();
   }
 
   @Get(':slug')
+  @Cacheable(60000)
   @ApiOperation({ summary: 'Get collection by slug' })
   findBySlug(@Param('slug') slug: string) {
     return this.collectionsService.findBySlug(slug);
@@ -39,9 +42,9 @@ export class CollectionsController {
   @Delete(':id')
   @UseGuards(AuthGuard)
   @ApiBearerAuth()
-  @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({ summary: 'Delete collection (admin)' })
   remove(@Param('id') id: string) {
     this.collectionsService.remove(id);
+    return { success: true, message: 'Collection deleted successfully' };
   }
 }

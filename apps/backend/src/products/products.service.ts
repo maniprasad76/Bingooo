@@ -2,6 +2,17 @@ import { Injectable, NotFoundException, ConflictException } from '@nestjs/common
 import { v4 as uuidv4 } from 'uuid';
 import { db, saveDb } from '../common/database/store';
 import { ProductQueryDto, CreateProductDto, UpdateProductDto, CreateVariantDto } from './dto/product.dto';
+import {
+  getProductById,
+  getProductBySlug,
+  getCategoryById,
+  getCategoryBySlug,
+  getCollectionBySlug,
+  getVariantsByProductId,
+  getImagesByProductId,
+  getProductIdsByCollectionId,
+  getReviewsByProductId,
+} from '../common/database/db-index.service';
 
 
 @Injectable()
@@ -21,18 +32,16 @@ export class ProductsService {
 
     // Filter: category
     if (query.categorySlug) {
-      const cat = db.categories.find((c) => c.slug === query.categorySlug);
+      const cat = getCategoryBySlug(query.categorySlug);
       if (cat) items = items.filter((p) => p.category_id === cat.id);
       else items = [];
     }
 
     // Filter: collection
     if (query.collectionSlug) {
-      const col = db.collections.find((c) => c.slug === query.collectionSlug);
+      const col = getCollectionBySlug(query.collectionSlug);
       if (col) {
-        const productIds = db.product_collections
-          .filter((pc) => pc.collection_id === col.id)
-          .map((pc) => pc.product_id);
+        const productIds = getProductIdsByCollectionId(col.id);
         items = items.filter((p) => productIds.includes(p.id));
       } else {
         items = [];
@@ -63,16 +72,16 @@ export class ProductsService {
     if (query.sizes) {
       const sizes = query.sizes.split(',').map((s) => s.trim().toUpperCase());
       items = items.filter((p) =>
-        db.product_variants.some(
-          (v) => v.product_id === p.id && v.is_active && sizes.includes(v.size?.toUpperCase()),
+        getVariantsByProductId(p.id).some(
+          (v) => v.is_active && sizes.includes(v.size?.toUpperCase()),
         ),
       );
     }
     if (query.colors) {
       const colors = query.colors.split(',').map((c) => c.trim().toLowerCase());
       items = items.filter((p) =>
-        db.product_variants.some(
-          (v) => v.product_id === p.id && v.is_active && colors.includes(v.color?.toLowerCase()),
+        getVariantsByProductId(p.id).some(
+          (v) => v.is_active && colors.includes(v.color?.toLowerCase()),
         ),
       );
     }
@@ -146,16 +155,16 @@ export class ProductsService {
       .map((product) => this.enrichProduct(product));
   }
 
-  /** Get single product by slug */
-  findBySlug(slug: string) {
-    const product = db.products.find((p) => p.slug === slug);
-    if (!product) throw new NotFoundException({ code: 'PRODUCT_NOT_FOUND', message: `Product "${slug}" not found` });
+  /** Get single product by slug or ID */
+  findBySlug(slugOrId: string) {
+    const product = getProductBySlug(slugOrId) || getProductById(slugOrId);
+    if (!product) throw new NotFoundException({ code: 'PRODUCT_NOT_FOUND', message: `Product "${slugOrId}" not found` });
     return this.enrichProduct(product);
   }
 
   /** Get single product by ID */
   findById(id: string) {
-    const product = db.products.find((p) => p.id === id);
+    const product = getProductById(id);
     if (!product) throw new NotFoundException({ code: 'PRODUCT_NOT_FOUND', message: `Product not found` });
     return this.enrichProduct(product);
   }
@@ -178,6 +187,17 @@ export class ProductsService {
       customization_enabled: dto.customizationEnabled ?? false,
       seo_title: dto.seoTitle || null,
       seo_description: dto.seoDescription || null,
+      fabric: dto.fabric || null,
+      gsm: dto.gsm || null,
+      fit: dto.fit || null,
+      design_details: dto.designDetails || null,
+      care_instructions: dto.careInstructions || null,
+      tags: dto.tags || [],
+      featured: dto.featured ?? false,
+      bestseller: dto.bestseller ?? false,
+      is_sale: dto.isSale ?? false,
+      sale_tag: dto.saleTag || null,
+      badge_text: dto.badgeText || null,
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
     };
@@ -209,6 +229,26 @@ export class ProductsService {
       });
     }
 
+    // Save variants if provided
+    if (dto.variants && dto.variants.length > 0) {
+      dto.variants.forEach((v) => {
+        db.product_variants.push({
+          id: v.id || uuidv4(),
+          product_id: product.id,
+          sku: v.sku || `${product.slug}-${v.size || 'STD'}-${v.color || 'DEF'}`.toUpperCase().replace(/\s+/g, '-'),
+          size: v.size || null,
+          color: v.color || null,
+          color_hex: v.colorHex || null,
+          price: v.price !== undefined ? v.price : product.base_price,
+          stock_quantity: v.stockQuantity !== undefined ? v.stockQuantity : 10,
+          reserved_quantity: 0,
+          is_active: true,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        });
+      });
+    }
+
     saveDb();
     return this.enrichProduct(product);
   }
@@ -235,6 +275,17 @@ export class ProductsService {
       ...(dto.customizationEnabled !== undefined && { customization_enabled: dto.customizationEnabled }),
       ...(dto.seoTitle !== undefined && { seo_title: dto.seoTitle }),
       ...(dto.seoDescription !== undefined && { seo_description: dto.seoDescription }),
+      ...(dto.fabric !== undefined && { fabric: dto.fabric }),
+      ...(dto.gsm !== undefined && { gsm: dto.gsm }),
+      ...(dto.fit !== undefined && { fit: dto.fit }),
+      ...(dto.designDetails !== undefined && { design_details: dto.designDetails }),
+      ...(dto.careInstructions !== undefined && { care_instructions: dto.careInstructions }),
+      ...(dto.tags !== undefined && { tags: dto.tags }),
+      ...(dto.featured !== undefined && { featured: dto.featured }),
+      ...(dto.bestseller !== undefined && { bestseller: dto.bestseller }),
+      ...(dto.isSale !== undefined && { is_sale: dto.isSale }),
+      ...(dto.saleTag !== undefined && { sale_tag: dto.saleTag }),
+      ...(dto.badgeText !== undefined && { badge_text: dto.badgeText }),
       ...(dto.status !== undefined && { status: dto.status }),
       updated_at: new Date().toISOString(),
     };
@@ -273,6 +324,27 @@ export class ProductsService {
       });
     }
 
+    // Update variants if provided
+    if (dto.variants !== undefined) {
+      db.product_variants = db.product_variants.filter((v: any) => v.product_id !== id);
+      dto.variants.forEach((v) => {
+        db.product_variants.push({
+          id: v.id || uuidv4(),
+          product_id: id,
+          sku: v.sku || `${updated.slug}-${v.size || 'STD'}-${v.color || 'DEF'}`.toUpperCase().replace(/\s+/g, '-'),
+          size: v.size || null,
+          color: v.color || null,
+          color_hex: v.colorHex || null,
+          price: v.price !== undefined ? v.price : updated.base_price,
+          stock_quantity: v.stockQuantity !== undefined ? v.stockQuantity : 10,
+          reserved_quantity: 0,
+          is_active: true,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        });
+      });
+    }
+
     saveDb();
     return this.enrichProduct(updated);
   }
@@ -303,6 +375,12 @@ export class ProductsService {
     db.product_variants = db.product_variants.filter((v) => v.product_id !== id);
     db.product_images = db.product_images.filter((i) => i.product_id !== id);
     db.product_collections = db.product_collections.filter((pc) => pc.product_id !== id);
+    if (db.wishlists) {
+      db.wishlists = db.wishlists.filter((w) => w.product_id !== id);
+    }
+    if (db.reviews) {
+      db.reviews = db.reviews.filter((r) => r.product_id !== id);
+    }
     saveDb();
   }
 
@@ -338,14 +416,14 @@ export class ProductsService {
   getFilters(categorySlug?: string) {
     let products = db.products.filter((p) => p.status === 'active');
     if (categorySlug) {
-      const cat = db.categories.find((c) => c.slug === categorySlug);
+      const cat = getCategoryBySlug(categorySlug);
       if (cat) products = products.filter((p) => p.category_id === cat.id);
     }
 
-    const productIds = products.map((p) => p.id);
-    const variants = db.product_variants.filter(
-      (v) => productIds.includes(v.product_id) && v.is_active,
-    );
+    const variants: any[] = [];
+    for (const p of products) {
+      variants.push(...getVariantsByProductId(p.id).filter((v) => v.is_active));
+    }
 
     const sizes = [...new Set(variants.map((v) => v.size).filter(Boolean))] as string[];
     const colors = [...new Set(variants.map((v) => v.color).filter(Boolean))] as string[];
@@ -357,16 +435,21 @@ export class ProductsService {
     return { sizes, colors, priceRange };
   }
 
-  /** Enrich product with relations */
+  /** Enrich product with relations — uses O(1) index lookups */
   private enrichProduct(product: any) {
-    const category = db.categories.find((c) => c.id === product.category_id);
-    const variants = db.product_variants.filter((v) => v.product_id === product.id);
-    const images = db.product_images.filter((i) => i.product_id === product.id);
-    const collectionIds = db.product_collections
+    const category = getCategoryById(product.category_id);
+    const variants = getVariantsByProductId(product.id);
+    const images = getImagesByProductId(product.id);
+    const collectionIds = getProductIdsByCollectionId(product.id); // note: reuse via mapping
+    // For collections, we still need to look up from product_collections since index is collection→products
+    const pcCollectionIds = db.product_collections
       .filter((pc) => pc.product_id === product.id)
       .map((pc) => pc.collection_id);
-    const collections = db.collections.filter((c) => collectionIds.includes(c.id));
-    const reviews = db.reviews.filter((r) => r.product_id === product.id && r.status === 'approved');
+    const collections = pcCollectionIds.map((cid) => {
+      const c = require('../common/database/db-index.service').getCollectionById(cid);
+      return c ? { id: c.id, name: c.name, slug: c.slug } : null;
+    }).filter(Boolean);
+    const reviews = getReviewsByProductId(product.id).filter((r) => r.status === 'approved');
     const avgRating = reviews.length > 0
       ? reviews.reduce((sum: number, r: any) => sum + r.rating, 0) / reviews.length
       : null;
@@ -385,8 +468,8 @@ export class ProductsService {
         stockQuantity: v.stock_quantity,
         reservedQuantity: v.reserved_quantity,
       })),
-      images: images.sort((a: any, b: any) => a.sort_order - b.sort_order),
-      collections: collections.map((c) => ({ id: c.id, name: c.name, slug: c.slug })),
+      images: [...images].sort((a: any, b: any) => a.sort_order - b.sort_order),
+      collections,
       reviewCount: reviews.length,
       avgRating,
     };

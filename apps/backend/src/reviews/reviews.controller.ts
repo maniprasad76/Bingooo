@@ -11,6 +11,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
+import { Throttle } from '@nestjs/throttler';
 import { ReviewsService } from './reviews.service';
 import { CreateReviewDto, UpdateReviewStatusDto } from './dto/review.dto';
 import { AuthGuard } from '../common/guards/auth.guard';
@@ -36,7 +37,8 @@ export class ReviewsController {
   }
 
   @Post()
-  @ApiOperation({ summary: 'Submit product review' })
+  @Throttle({ default: { limit: 5, ttl: 60000 } })
+  @ApiOperation({ summary: 'Submit product review (Rate limited: 5 req/min)' })
   create(
     @Req() req: any,
     @Body() dto: CreateReviewDto,

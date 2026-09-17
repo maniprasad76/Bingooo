@@ -75,10 +75,19 @@ export class CheckoutService {
     }
 
     const discountedSubtotal = Math.max(0, subtotal - discount);
+
+    // Apply prepaid discount if applicable
+    let prepaidDiscount = 0;
+    if (dto.paymentMethod === 'prepaid') {
+      const prepaidPct = Number(db.settings.prepaid_discount_percentage) || 5;
+      prepaidDiscount = Math.round(discountedSubtotal * (prepaidPct / 100));
+    }
+
+    const finalSubtotal = Math.max(0, discountedSubtotal - prepaidDiscount);
     const freeShippingThreshold = db.settings.free_shipping_threshold || 999;
-    const shippingFee = discountedSubtotal >= freeShippingThreshold || discountedSubtotal === 0 ? 0 : (db.settings.shipping_fee_default || 99);
-    const tax = Math.round(discountedSubtotal * 0.05); // 5% GST
-    const total = discountedSubtotal + shippingFee + tax;
+    const shippingFee = finalSubtotal >= freeShippingThreshold || finalSubtotal === 0 ? 0 : (db.settings.shipping_fee_default || 99);
+    const tax = Math.round(finalSubtotal * 0.05); // 5% GST
+    const total = finalSubtotal + shippingFee + tax;
 
     // COD calculation
     let codDeposit = 0;
@@ -118,6 +127,7 @@ export class CheckoutService {
       itemCount: validatedItems.reduce((sum, i) => sum + i.quantity, 0),
       subtotal,
       discount,
+      prepaidDiscount,
       coupon: couponInfo,
       shippingFee,
       tax,

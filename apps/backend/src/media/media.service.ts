@@ -37,7 +37,7 @@ export class MediaService {
       throw new BadRequestException({ code: 'NO_FILE_PROVIDED', message: 'No file was uploaded' });
     }
 
-    const maxMb = 25;
+    const maxMb = 10;
     if (file.size > maxMb * 1024 * 1024) {
       throw new BadRequestException({
         code: 'FILE_TOO_LARGE',
@@ -135,7 +135,7 @@ export class MediaService {
 
   /** Generate presigned upload URL for Cloudflare R2 / S3 */
   getPresignedUrl(fileName: string, fileType: string, fileSize?: number) {
-    const maxMb = 25;
+    const maxMb = 10;
     if (fileSize && fileSize > maxMb * 1024 * 1024) {
       throw new BadRequestException({ code: 'FILE_TOO_LARGE', message: `File exceeds maximum allowed size of ${maxMb}MB` });
     }

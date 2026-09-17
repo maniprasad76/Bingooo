@@ -1,0 +1,2068 @@
+{
+  "_meta": {
+    "backupId": "backup-2026-09-15T06-45-02-474Z",
+    "createdAt": "2026-09-15T06:45:02.474Z",
+    "label": "rotation-7",
+    "uploadsManifest": {
+      "count": 11,
+      "totalSizeBytes": 190053,
+      "files": [
+        "1788862365903-446f911b-test-heavyweight-tee.png",
+        "1788862365917-be36dd14-tokyo-cyber-vector.png",
+        "1788862395768-f34d3a5f-test-heavyweight-tee.png",
+        "1788862395782-77b95353-tokyo-cyber-vector.png",
+        "1789033892965-b3ae8478-SD_03_T11_2146M_E4_X_EC_0.jpg",
+        "1789034004884-f973ad10-1_2f010df6-b303-46ee-a234-20890ee12cd0_500x.jpg",
+        "1789034157539-2505d68f-01_fc8eb547-9d4b-46b9-a7a8-f91184a25b69.jpg",
+        "1789034893980-dd970762-01_fc8eb547-9d4b-46b9-a7a8-f91184a25b69.jpg",
+        "1789035012706-1fb93f96-1_abf4cf4f-6347-4c54-b267-f1bdacba4308_500x.jpg",
+        "1789035188682-08fc4978-1_0785b0ab-c0ed-49ab-8796-e385e9534192_500x.jpg",
+        "1789035475400-b12f1724-1_0785b0ab-c0ed-49ab-8796-e385e9534192_500x.jpg"
+      ]
+    }
+  },
+  "store": {
+    "categories": [
+      {
+        "id": "c84b5a5d-517a-4630-9eb7-42ba0481bd88",
+        "name": "T-Shirts",
+        "slug": "t-shirts",
+        "parent_id": null,
+        "image_key": null,
+        "is_active": true,
+        "created_at": "2026-09-10T10:35:47.741Z",
+        "updated_at": "2026-09-10T10:35:47.741Z"
+      },
+      {
+        "id": "af43a6b0-e988-48d1-9c3a-d0d54e842140",
+        "name": "Hoodies",
+        "slug": "hoodies",
+        "parent_id": null,
+        "image_key": null,
+        "is_active": true,
+        "created_at": "2026-09-10T10:35:47.741Z",
+        "updated_at": "2026-09-10T10:35:47.741Z"
+      },
+      {
+        "id": "996cfa15-0e87-47e2-9ca5-14687259c61a",
+        "name": "Sweatshirts",
+        "slug": "sweatshirts",
+        "parent_id": null,
+        "image_key": null,
+        "is_active": true,
+        "created_at": "2026-09-10T10:35:47.741Z",
+        "updated_at": "2026-09-10T10:35:47.741Z"
+      },
+      {
+        "id": "fb3babe0-da16-4c0b-9720-14ef5b4bc41b",
+        "name": "Caps",
+        "slug": "caps",
+        "parent_id": null,
+        "image_key": null,
+        "is_active": true,
+        "created_at": "2026-09-10T10:35:47.741Z",
+        "updated_at": "2026-09-10T10:35:47.741Z"
+      },
+      {
+        "id": "de829cab-63d6-4b9b-95b4-247cf7ce8309",
+        "name": "Accessories",
+        "slug": "accessories",
+        "parent_id": null,
+        "image_key": null,
+        "is_active": true,
+        "created_at": "2026-09-10T10:35:47.741Z",
+        "updated_at": "2026-09-10T10:35:47.741Z"
+      }
+    ],
+    "collections": [
+      {
+        "id": "518431b3-ec78-45a3-a2c9-18c32663c8bc",
+        "name": "Summer 2025",
+        "slug": "summer-2025",
+        "description": "Fresh summer collection with bold prints and light fabrics.",
+        "banner_key": null,
+        "is_active": true,
+        "created_at": "2026-09-10T10:35:47.741Z",
+        "updated_at": "2026-09-10T10:35:47.741Z"
+      },
+      {
+        "id": "32fa7d60-b3ed-4182-8468-3703618f19db",
+        "name": "Streetwear Essentials",
+        "slug": "streetwear-essentials",
+        "description": "Core streetwear pieces for everyday style.",
+        "banner_key": null,
+        "is_active": true,
+        "created_at": "2026-09-10T10:35:47.741Z",
+        "updated_at": "2026-09-10T10:35:47.741Z"
+      },
+      {
+        "id": "b08f2466-8540-4758-876c-c79805584670",
+        "name": "Custom Favourites",
+        "slug": "custom-favourites",
+        "description": "Most popular customizable products.",
+        "banner_key": null,
+        "is_active": true,
+        "created_at": "2026-09-10T10:35:47.741Z",
+        "updated_at": "2026-09-10T10:35:47.741Z"
+      },
+      {
+        "id": "556c19fe-f381-4d43-924c-fce110277b04",
+        "name": "Best Sellers",
+        "slug": "best-sellers",
+        "description": "Our top-selling products.",
+        "banner_key": null,
+        "is_active": true,
+        "created_at": "2026-09-10T10:35:47.741Z",
+        "updated_at": "2026-09-10T10:35:47.741Z"
+      }
+    ],
+    "products": [
+      {
+        "id": "681d0a97-540e-41dc-8bbe-24fb01b8df03",
+        "category_id": "c84b5a5d-517a-4630-9eb7-42ba0481bd88",
+        "title": "Classic Oversized Tee",
+        "slug": "classic-oversized-tee",
+        "description": "Premium 220 GSM cotton oversized tee with dropped shoulders. Perfect canvas for custom designs.",
+        "status": "active",
+        "base_price": 1299,
+        "compare_at_price": 1599,
+        "customization_enabled": true,
+        "seo_title": "Classic Oversized Tee — Bingooo",
+        "seo_description": "Premium oversized tee in 220 GSM cotton. Customize with your own design or wear it plain.",
+        "created_at": "2026-09-10T10:35:47.741Z",
+        "updated_at": "2026-09-10T10:35:47.741Z"
+      },
+      {
+        "id": "94f50b34-cb33-48bf-a0b8-79c00a3c0b64",
+        "category_id": "c84b5a5d-517a-4630-9eb7-42ba0481bd88",
+        "title": "Graphic Print Tee — Midnight",
+        "slug": "graphic-print-tee-midnight",
+        "description": "Bold midnight-themed graphic print on soft cotton.",
+        "status": "active",
+        "base_price": 1499,
+        "compare_at_price": null,
+        "customization_enabled": false,
+        "seo_title": "Graphic Print Tee Midnight — Bingooo",
+        "seo_description": "Stand out with our midnight graphic print on premium cotton.",
+        "created_at": "2026-09-10T10:35:47.741Z",
+        "updated_at": "2026-09-10T10:35:47.741Z"
+      },
+      {
+        "id": "80be4506-2309-407a-ae15-87344f3b7c90",
+        "category_id": "af43a6b0-e988-48d1-9c3a-d0d54e842140",
+        "title": "Essential Pullover Hoodie",
+        "slug": "essential-pullover-hoodie",
+        "description": "Cozy 350 GSM fleece-lined hoodie. Adjustable hood, kangaroo pocket, ribbed cuffs.",
+        "status": "active",
+        "base_price": 2499,
+        "compare_at_price": 2999,
+        "customization_enabled": true,
+        "seo_title": "Essential Pullover Hoodie — Bingooo",
+        "seo_description": "Warm and customizable pullover hoodie in premium fleece.",
+        "created_at": "2026-09-10T10:35:47.741Z",
+        "updated_at": "2026-09-10T10:35:47.741Z"
+      }
+    ],
+    "product_images": [
+      {
+        "id": "70f008e7-5891-4418-b2c6-9d3a7505c7ad",
+        "product_id": "681d0a97-540e-41dc-8bbe-24fb01b8df03",
+        "url": "/custom/tshirt-step-1.png",
+        "object_key": "/custom/tshirt-step-1.png",
+        "alt_text": "Classic Oversized Tee in Natural Beige",
+        "sort_order": 0,
+        "is_primary": true
+      },
+      {
+        "id": "860b8a94-9b32-4cb1-84d3-8845156ee572",
+        "product_id": "94f50b34-cb33-48bf-a0b8-79c00a3c0b64",
+        "url": "/custom/tshirt-step-3-black.png",
+        "object_key": "/custom/tshirt-step-3-black.png",
+        "alt_text": "Graphic Print Tee in Midnight Obsidian",
+        "sort_order": 0,
+        "is_primary": true
+      },
+      {
+        "id": "fcb1753c-f3ae-4be3-a2ba-783ff48effe9",
+        "product_id": "80be4506-2309-407a-ae15-87344f3b7c90",
+        "url": "/custom/tshirt-step-2.png",
+        "object_key": "/custom/tshirt-step-2.png",
+        "alt_text": "Essential Custom Apparel in Sandstone",
+        "sort_order": 0,
+        "is_primary": true
+      }
+    ],
+    "product_variants": [
+      {
+        "id": "5d5c0d0b-e10a-472e-847c-1ed76925bcba",
+        "product_id": "681d0a97-540e-41dc-8bbe-24fb01b8df03",
+        "sku": "COT-S-BLK",
+        "size": "S",
+        "color": "Black",
+        "color_hex": "#111111",
+        "price": 1299,
+        "stock_quantity": 22,
+        "reserved_quantity": 0,
+        "is_active": true,
+        "created_at": "2026-09-10T10:35:47.740Z",
+        "updated_at": "2026-09-10T10:35:47.740Z"
+      },
+      {
+        "id": "24512cd1-e4de-4dba-960a-a94778447f27",
+        "product_id": "681d0a97-540e-41dc-8bbe-24fb01b8df03",
+        "sku": "COT-S-WHT",
+        "size": "S",
+        "color": "White",
+        "color_hex": "#FFFFFF",
+        "price": 1299,
+        "stock_quantity": 25,
+        "reserved_quantity": 0,
+        "is_active": true,
+        "created_at": "2026-09-10T10:35:47.741Z",
+        "updated_at": "2026-09-10T10:35:47.741Z"
+      },
+      {
+        "id": "fdbfeb8a-aee2-4033-a853-b30a31dc54ac",
+        "product_id": "681d0a97-540e-41dc-8bbe-24fb01b8df03",
+        "sku": "COT-S-SNS",
+        "size": "S",
+        "color": "Sandstone",
+        "color_hex": "#D4C4A8",
+        "price": 1299,
+        "stock_quantity": 25,
+        "reserved_quantity": 0,
+        "is_active": true,
+        "created_at": "2026-09-10T10:35:47.741Z",
+        "updated_at": "2026-09-10T10:35:47.741Z"
+      },
+      {
+        "id": "4c817d2d-04dc-48a7-ac8a-1c17d92a25b8",
+        "product_id": "681d0a97-540e-41dc-8bbe-24fb01b8df03",
+        "sku": "COT-M-BLK",
+        "size": "M",
+        "color": "Black",
+        "color_hex": "#111111",
+        "price": 1299,
+        "stock_quantity": 25,
+        "reserved_quantity": 0,
+        "is_active": true,
+        "created_at": "2026-09-10T10:35:47.741Z",
+        "updated_at": "2026-09-10T10:35:47.741Z"
+      },
+      {
+        "id": "de2a5075-54c2-4f21-9a27-94e6ace45ad0",
+        "product_id": "681d0a97-540e-41dc-8bbe-24fb01b8df03",
+        "sku": "COT-M-WHT",
+        "size": "M",
+        "color": "White",
+        "color_hex": "#FFFFFF",
+        "price": 1299,
+        "stock_quantity": 25,
+        "reserved_quantity": 0,
+        "is_active": true,
+        "created_at": "2026-09-10T10:35:47.741Z",
+        "updated_at": "2026-09-10T10:35:47.741Z"
+      },
+      {
+        "id": "0fb0b563-272b-4141-98fa-ca311e3f0f75",
+        "product_id": "681d0a97-540e-41dc-8bbe-24fb01b8df03",
+        "sku": "COT-M-SNS",
+        "size": "M",
+        "color": "Sandstone",
+        "color_hex": "#D4C4A8",
+        "price": 1299,
+        "stock_quantity": 25,
+        "reserved_quantity": 0,
+        "is_active": true,
+        "created_at": "2026-09-10T10:35:47.741Z",
+        "updated_at": "2026-09-10T10:35:47.741Z"
+      },
+      {
+        "id": "67c3c446-bffe-4d72-8854-7874f1ea8258",
+        "product_id": "681d0a97-540e-41dc-8bbe-24fb01b8df03",
+        "sku": "COT-L-BLK",
+        "size": "L",
+        "color": "Black",
+        "color_hex": "#111111",
+        "price": 1299,
+        "stock_quantity": 25,
+        "reserved_quantity": 0,
+        "is_active": true,
+        "created_at": "2026-09-10T10:35:47.741Z",
+        "updated_at": "2026-09-10T10:35:47.741Z"
+      },
+      {
+        "id": "a71a7fb0-72d7-462a-8db2-cc445b1584e4",
+        "product_id": "681d0a97-540e-41dc-8bbe-24fb01b8df03",
+        "sku": "COT-L-WHT",
+        "size": "L",
+        "color": "White",
+        "color_hex": "#FFFFFF",
+        "price": 1299,
+        "stock_quantity": 25,
+        "reserved_quantity": 0,
+        "is_active": true,
+        "created_at": "2026-09-10T10:35:47.741Z",
+        "updated_at": "2026-09-10T10:35:47.741Z"
+      },
+      {
+        "id": "85b07321-9722-4789-b41d-8f7a40206399",
+        "product_id": "681d0a97-540e-41dc-8bbe-24fb01b8df03",
+        "sku": "COT-L-SNS",
+        "size": "L",
+        "color": "Sandstone",
+        "color_hex": "#D4C4A8",
+        "price": 1299,
+        "stock_quantity": 25,
+        "reserved_quantity": 0,
+        "is_active": true,
+        "created_at": "2026-09-10T10:35:47.741Z",
+        "updated_at": "2026-09-10T10:35:47.741Z"
+      },
+      {
+        "id": "1ee87098-e106-4f9a-8cfc-b803727e6fc0",
+        "product_id": "681d0a97-540e-41dc-8bbe-24fb01b8df03",
+        "sku": "COT-XL-BLK",
+        "size": "XL",
+        "color": "Black",
+        "color_hex": "#111111",
+        "price": 1299,
+        "stock_quantity": 25,
+        "reserved_quantity": 0,
+        "is_active": true,
+        "created_at": "2026-09-10T10:35:47.741Z",
+        "updated_at": "2026-09-10T10:35:47.741Z"
+      },
+      {
+        "id": "551e2c2a-f8e3-4be9-af85-e7d87d2c2c8d",
+        "product_id": "681d0a97-540e-41dc-8bbe-24fb01b8df03",
+        "sku": "COT-XL-WHT",
+        "size": "XL",
+        "color": "White",
+        "color_hex": "#FFFFFF",
+        "price": 1299,
+        "stock_quantity": 25,
+        "reserved_quantity": 0,
+        "is_active": true,
+        "created_at": "2026-09-10T10:35:47.741Z",
+        "updated_at": "2026-09-10T10:35:47.741Z"
+      },
+      {
+        "id": "0fae6552-f634-468b-a907-c35a96ac9849",
+        "product_id": "681d0a97-540e-41dc-8bbe-24fb01b8df03",
+        "sku": "COT-XL-SNS",
+        "size": "XL",
+        "color": "Sandstone",
+        "color_hex": "#D4C4A8",
+        "price": 1299,
+        "stock_quantity": 25,
+        "reserved_quantity": 0,
+        "is_active": true,
+        "created_at": "2026-09-10T10:35:47.741Z",
+        "updated_at": "2026-09-10T10:35:47.741Z"
+      },
+      {
+        "id": "08b5ff36-19c8-45c0-b37c-1fb0b504565f",
+        "product_id": "681d0a97-540e-41dc-8bbe-24fb01b8df03",
+        "sku": "COT-XXL-BLK",
+        "size": "XXL",
+        "color": "Black",
+        "color_hex": "#111111",
+        "price": 1299,
+        "stock_quantity": 25,
+        "reserved_quantity": 0,
+        "is_active": true,
+        "created_at": "2026-09-10T10:35:47.741Z",
+        "updated_at": "2026-09-10T10:35:47.741Z"
+      },
+      {
+        "id": "18a3db83-5187-41f3-89ab-ec459ff8f866",
+        "product_id": "681d0a97-540e-41dc-8bbe-24fb01b8df03",
+        "sku": "COT-XXL-WHT",
+        "size": "XXL",
+        "color": "White",
+        "color_hex": "#FFFFFF",
+        "price": 1299,
+        "stock_quantity": 25,
+        "reserved_quantity": 0,
+        "is_active": true,
+        "created_at": "2026-09-10T10:35:47.741Z",
+        "updated_at": "2026-09-10T10:35:47.741Z"
+      },
+      {
+        "id": "e684f631-9cba-4c0a-b115-cd9aa90306d3",
+        "product_id": "681d0a97-540e-41dc-8bbe-24fb01b8df03",
+        "sku": "COT-XXL-SNS",
+        "size": "XXL",
+        "color": "Sandstone",
+        "color_hex": "#D4C4A8",
+        "price": 1299,
+        "stock_quantity": 25,
+        "reserved_quantity": 0,
+        "is_active": true,
+        "created_at": "2026-09-10T10:35:47.741Z",
+        "updated_at": "2026-09-10T10:35:47.741Z"
+      },
+      {
+        "id": "558c1258-907e-4069-90ad-3ee0be0087eb",
+        "product_id": "94f50b34-cb33-48bf-a0b8-79c00a3c0b64",
+        "sku": "GPT-S-BLK",
+        "size": "S",
+        "color": "Black",
+        "color_hex": "#111111",
+        "price": 1499,
+        "stock_quantity": 15,
+        "reserved_quantity": 0,
+        "is_active": true,
+        "created_at": "2026-09-10T10:35:47.741Z",
+        "updated_at": "2026-09-10T10:35:47.741Z"
+      },
+      {
+        "id": "76c21f04-2151-4dd6-a6e5-9f3804623059",
+        "product_id": "94f50b34-cb33-48bf-a0b8-79c00a3c0b64",
+        "sku": "GPT-M-BLK",
+        "size": "M",
+        "color": "Black",
+        "color_hex": "#111111",
+        "price": 1499,
+        "stock_quantity": 15,
+        "reserved_quantity": 0,
+        "is_active": true,
+        "created_at": "2026-09-10T10:35:47.741Z",
+        "updated_at": "2026-09-10T10:35:47.741Z"
+      },
+      {
+        "id": "91c5a422-00f3-42c1-a7f2-ba78c4235ddd",
+        "product_id": "94f50b34-cb33-48bf-a0b8-79c00a3c0b64",
+        "sku": "GPT-L-BLK",
+        "size": "L",
+        "color": "Black",
+        "color_hex": "#111111",
+        "price": 1499,
+        "stock_quantity": 15,
+        "reserved_quantity": 0,
+        "is_active": true,
+        "created_at": "2026-09-10T10:35:47.741Z",
+        "updated_at": "2026-09-10T10:35:47.741Z"
+      },
+      {
+        "id": "23842f3e-c9f7-42e8-9db9-2fbaebe34bfa",
+        "product_id": "94f50b34-cb33-48bf-a0b8-79c00a3c0b64",
+        "sku": "GPT-XL-BLK",
+        "size": "XL",
+        "color": "Black",
+        "color_hex": "#111111",
+        "price": 1499,
+        "stock_quantity": 15,
+        "reserved_quantity": 0,
+        "is_active": true,
+        "created_at": "2026-09-10T10:35:47.741Z",
+        "updated_at": "2026-09-10T10:35:47.741Z"
+      },
+      {
+        "id": "d37485cf-550e-49e8-9e97-21434bba1254",
+        "product_id": "80be4506-2309-407a-ae15-87344f3b7c90",
+        "sku": "EPH-S-CHR",
+        "size": "S",
+        "color": "Charcoal",
+        "color_hex": "#333333",
+        "price": 2499,
+        "stock_quantity": 10,
+        "reserved_quantity": 0,
+        "is_active": true,
+        "created_at": "2026-09-10T10:35:47.741Z",
+        "updated_at": "2026-09-10T10:35:47.741Z"
+      },
+      {
+        "id": "f0c02ca5-7726-42e0-b8b9-e14220807c48",
+        "product_id": "80be4506-2309-407a-ae15-87344f3b7c90",
+        "sku": "EPH-S-OAT",
+        "size": "S",
+        "color": "Oatmeal",
+        "color_hex": "#E8DCC8",
+        "price": 2499,
+        "stock_quantity": 10,
+        "reserved_quantity": 0,
+        "is_active": true,
+        "created_at": "2026-09-10T10:35:47.741Z",
+        "updated_at": "2026-09-10T10:35:47.741Z"
+      },
+      {
+        "id": "8f256c1c-4b77-446f-b6fc-095d2ad088d0",
+        "product_id": "80be4506-2309-407a-ae15-87344f3b7c90",
+        "sku": "EPH-M-CHR",
+        "size": "M",
+        "color": "Charcoal",
+        "color_hex": "#333333",
+        "price": 2499,
+        "stock_quantity": 10,
+        "reserved_quantity": 0,
+        "is_active": true,
+        "created_at": "2026-09-10T10:35:47.741Z",
+        "updated_at": "2026-09-10T10:35:47.741Z"
+      },
+      {
+        "id": "9d88e41e-58db-448e-9fd1-05c5ab806b95",
+        "product_id": "80be4506-2309-407a-ae15-87344f3b7c90",
+        "sku": "EPH-M-OAT",
+        "size": "M",
+        "color": "Oatmeal",
+        "color_hex": "#E8DCC8",
+        "price": 2499,
+        "stock_quantity": 10,
+        "reserved_quantity": 0,
+        "is_active": true,
+        "created_at": "2026-09-10T10:35:47.741Z",
+        "updated_at": "2026-09-10T10:35:47.741Z"
+      },
+      {
+        "id": "f93ff93a-902a-49cc-b393-4918a812f74c",
+        "product_id": "80be4506-2309-407a-ae15-87344f3b7c90",
+        "sku": "EPH-L-CHR",
+        "size": "L",
+        "color": "Charcoal",
+        "color_hex": "#333333",
+        "price": 2499,
+        "stock_quantity": 10,
+        "reserved_quantity": 0,
+        "is_active": true,
+        "created_at": "2026-09-10T10:35:47.741Z",
+        "updated_at": "2026-09-10T10:35:47.741Z"
+      },
+      {
+        "id": "6257bef5-cfec-409e-99d1-3864c9e35587",
+        "product_id": "80be4506-2309-407a-ae15-87344f3b7c90",
+        "sku": "EPH-L-OAT",
+        "size": "L",
+        "color": "Oatmeal",
+        "color_hex": "#E8DCC8",
+        "price": 2499,
+        "stock_quantity": 10,
+        "reserved_quantity": 0,
+        "is_active": true,
+        "created_at": "2026-09-10T10:35:47.741Z",
+        "updated_at": "2026-09-10T10:35:47.741Z"
+      },
+      {
+        "id": "f110de19-de68-4671-9824-1d5713298f17",
+        "product_id": "80be4506-2309-407a-ae15-87344f3b7c90",
+        "sku": "EPH-XL-CHR",
+        "size": "XL",
+        "color": "Charcoal",
+        "color_hex": "#333333",
+        "price": 2499,
+        "stock_quantity": 10,
+        "reserved_quantity": 0,
+        "is_active": true,
+        "created_at": "2026-09-10T10:35:47.741Z",
+        "updated_at": "2026-09-10T10:35:47.741Z"
+      },
+      {
+        "id": "701c4093-47c4-4669-b5c2-675d1106a638",
+        "product_id": "80be4506-2309-407a-ae15-87344f3b7c90",
+        "sku": "EPH-XL-OAT",
+        "size": "XL",
+        "color": "Oatmeal",
+        "color_hex": "#E8DCC8",
+        "price": 2499,
+        "stock_quantity": 10,
+        "reserved_quantity": 0,
+        "is_active": true,
+        "created_at": "2026-09-10T10:35:47.741Z",
+        "updated_at": "2026-09-10T10:35:47.741Z"
+      },
+      {
+        "id": "881f1a43-99cc-49fa-8fa7-ed87379ac144",
+        "product_id": "80be4506-2309-407a-ae15-87344f3b7c90",
+        "sku": "EPH-XXL-CHR",
+        "size": "XXL",
+        "color": "Charcoal",
+        "color_hex": "#333333",
+        "price": 2499,
+        "stock_quantity": 10,
+        "reserved_quantity": 0,
+        "is_active": true,
+        "created_at": "2026-09-10T10:35:47.741Z",
+        "updated_at": "2026-09-10T10:35:47.741Z"
+      },
+      {
+        "id": "aced77a1-fc78-4732-8648-aff0b5fd7260",
+        "product_id": "80be4506-2309-407a-ae15-87344f3b7c90",
+        "sku": "EPH-XXL-OAT",
+        "size": "XXL",
+        "color": "Oatmeal",
+        "color_hex": "#E8DCC8",
+        "price": 2499,
+        "stock_quantity": 10,
+        "reserved_quantity": 0,
+        "is_active": true,
+        "created_at": "2026-09-10T10:35:47.741Z",
+        "updated_at": "2026-09-10T10:35:47.741Z"
+      }
+    ],
+    "product_collections": [
+      {
+        "product_id": "681d0a97-540e-41dc-8bbe-24fb01b8df03",
+        "collection_id": "32fa7d60-b3ed-4182-8468-3703618f19db"
+      },
+      {
+        "product_id": "681d0a97-540e-41dc-8bbe-24fb01b8df03",
+        "collection_id": "b08f2466-8540-4758-876c-c79805584670"
+      },
+      {
+        "product_id": "681d0a97-540e-41dc-8bbe-24fb01b8df03",
+        "collection_id": "556c19fe-f381-4d43-924c-fce110277b04"
+      },
+      {
+        "product_id": "94f50b34-cb33-48bf-a0b8-79c00a3c0b64",
+        "collection_id": "518431b3-ec78-45a3-a2c9-18c32663c8bc"
+      },
+      {
+        "product_id": "80be4506-2309-407a-ae15-87344f3b7c90",
+        "collection_id": "32fa7d60-b3ed-4182-8468-3703618f19db"
+      },
+      {
+        "product_id": "80be4506-2309-407a-ae15-87344f3b7c90",
+        "collection_id": "b08f2466-8540-4758-876c-c79805584670"
+      }
+    ],
+    "users": [
+      {
+        "id": "usr-admin-1",
+        "email": "admin@bingooo.in",
+        "password_hash": "761a5f614714797131834bd1b84be483:de13a2b9265be7125e297479cf6090001b31044333bbc3b1b9d53234c822557a03916f0262076cd6463d7c964fac37f91825ad326965084a112523802f3c2fbf",
+        "full_name": "Mani P.",
+        "phone": "+91 98765 43210",
+        "role": "SUPER_ADMIN",
+        "status": "active",
+        "avatar_key": null,
+        "created_at": "2026-08-11T10:35:47.741Z",
+        "updated_at": "2026-09-10T10:35:47.741Z"
+      },
+      {
+        "id": "usr-staff-2",
+        "email": "siddharth@bingooo.in",
+        "password_hash": "761a5f614714797131834bd1b84be483:de13a2b9265be7125e297479cf6090001b31044333bbc3b1b9d53234c822557a03916f0262076cd6463d7c964fac37f91825ad326965084a112523802f3c2fbf",
+        "full_name": "Siddharth Rao",
+        "phone": "+91 98111 22334",
+        "role": "ORDER_MANAGER",
+        "status": "active",
+        "avatar_key": null,
+        "created_at": "2026-08-21T10:35:47.741Z",
+        "updated_at": "2026-09-10T10:35:47.741Z"
+      },
+      {
+        "id": "usr-staff-3",
+        "email": "ananya.d@bingooo.in",
+        "password_hash": "761a5f614714797131834bd1b84be483:de13a2b9265be7125e297479cf6090001b31044333bbc3b1b9d53234c822557a03916f0262076cd6463d7c964fac37f91825ad326965084a112523802f3c2fbf",
+        "full_name": "Ananya Deshmukh",
+        "phone": "+91 99200 44556",
+        "role": "PRODUCT_MANAGER",
+        "status": "active",
+        "avatar_key": null,
+        "created_at": "2026-08-26T10:35:47.741Z",
+        "updated_at": "2026-09-10T10:35:47.741Z"
+      },
+      {
+        "id": "usr-cust-1",
+        "email": "customer@bingooo.in",
+        "password_hash": "46e2c1466283e090b9a838537ea60558:61e9bd6e6aace9b240978a04f8291c53fee14b503297ce34ccad53cbdb07f88063e861cccb6c511d09869d96969e1517afa888721bf65dffcfb98a1274ebfa63",
+        "full_name": "Aditi Sharma",
+        "phone": "+91 98765 43210",
+        "role": "CUSTOMER",
+        "status": "active",
+        "avatar_key": null,
+        "created_at": "2026-08-31T10:35:47.741Z",
+        "updated_at": "2026-09-10T10:35:47.741Z"
+      },
+      {
+        "id": "usr-cust-2",
+        "email": "akash.verma@example.com",
+        "password_hash": "46e2c1466283e090b9a838537ea60558:61e9bd6e6aace9b240978a04f8291c53fee14b503297ce34ccad53cbdb07f88063e861cccb6c511d09869d96969e1517afa888721bf65dffcfb98a1274ebfa63",
+        "full_name": "Akash Verma",
+        "phone": "+91 98222 33445",
+        "role": "CUSTOMER",
+        "status": "active",
+        "avatar_key": null,
+        "created_at": "2026-09-02T10:35:47.741Z",
+        "updated_at": "2026-09-10T10:35:47.741Z"
+      },
+      {
+        "id": "usr-cust-3",
+        "email": "devika.pillai@outlook.com",
+        "password_hash": "46e2c1466283e090b9a838537ea60558:61e9bd6e6aace9b240978a04f8291c53fee14b503297ce34ccad53cbdb07f88063e861cccb6c511d09869d96969e1517afa888721bf65dffcfb98a1274ebfa63",
+        "full_name": "Devika Pillai",
+        "phone": "+91 97333 44556",
+        "role": "CUSTOMER",
+        "status": "active",
+        "avatar_key": null,
+        "created_at": "2026-09-05T10:35:47.741Z",
+        "updated_at": "2026-09-10T10:35:47.741Z"
+      },
+      {
+        "id": "17a2cd0f-0869-46a9-bb24-345fa6cd616e",
+        "email": "user_a_1789451887797@example.com",
+        "password_hash": "pbkdf2$100000$db2167177dfd61bb2b2fbb4141759a5c$786e26ac039fbb01765191f730cf02b9f9faf69a6d75a7e812877682a6f9168b10a38d53a4b62e37696008816c92a5cd3ffb26070a657bfe25c2edecf2dd881f",
+        "full_name": "Alice Walker",
+        "phone": "+919999900001",
+        "role": "CUSTOMER",
+        "status": "active",
+        "avatar_key": null,
+        "created_at": "2026-09-15T05:58:07.870Z",
+        "updated_at": "2026-09-15T05:58:07.870Z"
+      },
+      {
+        "id": "095abc62-f859-49b7-a856-8bb5c67ca3ff",
+        "email": "user_b_1789451887874@example.com",
+        "password_hash": "pbkdf2$100000$d721b3f44d744799d0b1bb0926ac94cb$d209cbe83e962bdbf2d102e183bed2089c800d9d39dc1c4ad60c019f6559cb8e606b80ba1744e8daf8538dbb4b71e22d6e53554e8607fe3cac4c9c2d5bbe2da0",
+        "full_name": "Bob Smith",
+        "phone": "+919999900002",
+        "role": "CUSTOMER",
+        "status": "active",
+        "avatar_key": null,
+        "created_at": "2026-09-15T05:58:07.945Z",
+        "updated_at": "2026-09-15T05:58:07.945Z"
+      },
+      {
+        "id": "43ab46d7-1fe6-4a5f-b10b-75cc6979620a",
+        "email": "user_a_1789452180784@example.com",
+        "password_hash": "pbkdf2$100000$861e27e25f082908b9c4c222adf2686c$b7fa6208a05cd36d100a7a22ecef77034fddf117dabab5b3000a8d217567ff5f82ed4b2e0726b1a9639cb1c916a01ed8fa74176f18e6b0a03253e5f9f513b5c2",
+        "full_name": "Alice Walker",
+        "phone": "+919999900001",
+        "role": "CUSTOMER",
+        "status": "active",
+        "avatar_key": null,
+        "created_at": "2026-09-15T06:03:00.856Z",
+        "updated_at": "2026-09-15T06:03:00.856Z"
+      },
+      {
+        "id": "90d177d1-0ace-4203-80f3-d020872902b1",
+        "email": "user_b_1789452180860@example.com",
+        "password_hash": "pbkdf2$100000$65c722580ec196d9c564edf810b6188d$4cb3fde9d92de465078438524d137b7f5b00d00e9a39ff79cce5d6d7a7eae3aa2955716c2b0b6cfbda9352dcfd5dbc1a81a3551670631cbe20e06d7838384957",
+        "full_name": "Bob Smith",
+        "phone": "+919999900002",
+        "role": "CUSTOMER",
+        "status": "active",
+        "avatar_key": null,
+        "created_at": "2026-09-15T06:03:00.927Z",
+        "updated_at": "2026-09-15T06:03:00.927Z"
+      },
+      {
+        "id": "c56cb0e6-1b0a-45a3-a3d9-a8a28f3b6bd5",
+        "email": "user_a_1789452259017@example.com",
+        "password_hash": "pbkdf2$100000$7915476569b22df5f4649b5a2b3b21e7$864582e25f020061d9f61c796ce01202a296b92ad451ba7310e6f2c9256c1d659c20092f5138f1bcc3c3ce972d2909aa30a550396a3381633d7863a8e3f0ba47",
+        "full_name": "Alice Walker",
+        "phone": "+919999900001",
+        "role": "CUSTOMER",
+        "status": "active",
+        "avatar_key": null,
+        "created_at": "2026-09-15T06:04:19.089Z",
+        "updated_at": "2026-09-15T06:04:19.089Z"
+      },
+      {
+        "id": "231e569c-8904-4a50-a41b-fd62458dbc5b",
+        "email": "user_b_1789452259092@example.com",
+        "password_hash": "pbkdf2$100000$65379ef8d05b0172a9c0dba26fef196f$7b087b9d0436892dff0807a79799404086c3576645c9f450529e980dd45c6f15aa0ea6fef0768a40b797c5c9fe03b60c3885d5592fa240cb527427d078b18f99",
+        "full_name": "Bob Smith",
+        "phone": "+919999900002",
+        "role": "CUSTOMER",
+        "status": "active",
+        "avatar_key": null,
+        "created_at": "2026-09-15T06:04:19.161Z",
+        "updated_at": "2026-09-15T06:04:19.161Z"
+      }
+    ],
+    "roles": [
+      {
+        "id": "role-super-admin",
+        "name": "Super Admin",
+        "code": "SUPER_ADMIN",
+        "description": "Full unrestricted system and database access.",
+        "is_system": true,
+        "permissions": [
+          "*"
+        ]
+      },
+      {
+        "id": "role-admin",
+        "name": "Admin",
+        "code": "ADMIN",
+        "description": "Comprehensive store management excluding master server environment configurations.",
+        "is_system": true,
+        "permissions": [
+          "products.read",
+          "products.create",
+          "products.update",
+          "products.delete",
+          "orders.read",
+          "orders.update",
+          "customizations.review",
+          "payments.read",
+          "refunds.manage",
+          "inventory.read",
+          "inventory.update",
+          "reviews.manage",
+          "banners.manage",
+          "coupons.manage"
+        ]
+      },
+      {
+        "id": "role-order-manager",
+        "name": "Order Manager",
+        "code": "ORDER_MANAGER",
+        "description": "Handle order verification, fulfillment status, and logistics dispatch.",
+        "is_system": false,
+        "permissions": [
+          "orders.read",
+          "orders.update",
+          "customizations.review",
+          "payments.read"
+        ]
+      },
+      {
+        "id": "role-product-manager",
+        "name": "Product Manager",
+        "code": "PRODUCT_MANAGER",
+        "description": "Manage catalog, garments, descriptions, inventory, and banner campaigns.",
+        "is_system": false,
+        "permissions": [
+          "products.read",
+          "products.create",
+          "products.update",
+          "inventory.read",
+          "inventory.update",
+          "banners.manage"
+        ]
+      },
+      {
+        "id": "role-support",
+        "name": "Customer Support",
+        "code": "SUPPORT",
+        "description": "Assist customers with orders, returns, and reviews.",
+        "is_system": false,
+        "permissions": [
+          "orders.read",
+          "reviews.manage",
+          "returns.manage"
+        ]
+      },
+      {
+        "id": "role-customer",
+        "name": "Customer",
+        "code": "CUSTOMER",
+        "description": "End customer permissions for shopping, orders, reviews, and customization.",
+        "is_system": true,
+        "permissions": [
+          "orders.own",
+          "profile.own",
+          "reviews.create",
+          "customizations.create"
+        ]
+      }
+    ],
+    "permissions": [
+      {
+        "key": "products.read",
+        "label": "View Products & Catalog",
+        "group": "Products"
+      },
+      {
+        "key": "products.create",
+        "label": "Create New Garments",
+        "group": "Products"
+      },
+      {
+        "key": "products.update",
+        "label": "Update Pricing & Specs",
+        "group": "Products"
+      },
+      {
+        "key": "products.delete",
+        "label": "Archive / Delete Garments",
+        "group": "Products"
+      },
+      {
+        "key": "orders.read",
+        "label": "View Customer Orders",
+        "group": "Orders"
+      },
+      {
+        "key": "orders.update",
+        "label": "Update Fulfillment & Status",
+        "group": "Orders"
+      },
+      {
+        "key": "customizations.review",
+        "label": "Review Custom Artwork",
+        "group": "Custom Studio"
+      },
+      {
+        "key": "payments.read",
+        "label": "View Payment Ledgers",
+        "group": "Finance"
+      },
+      {
+        "key": "refunds.manage",
+        "label": "Issue & Authorize Refunds",
+        "group": "Finance"
+      },
+      {
+        "key": "users.manage",
+        "label": "Manage Staff Members",
+        "group": "Team"
+      },
+      {
+        "key": "roles.manage",
+        "label": "Modify Permissions Matrix",
+        "group": "Team"
+      },
+      {
+        "key": "settings.manage",
+        "label": "Configure Store Parameters",
+        "group": "Settings"
+      }
+    ],
+    "inventory_movements": [
+      {
+        "id": "0828e8bb-057a-422c-b89b-b7ac2eadc387",
+        "variant_id": "5d5c0d0b-e10a-472e-847c-1ed76925bcba",
+        "type": "sale",
+        "quantity": -1,
+        "reference_type": "order",
+        "reference_id": "1f7776ff-58de-45f4-99c6-f64e7e626cbe",
+        "created_by": "17a2cd0f-0869-46a9-bb24-345fa6cd616e",
+        "created_at": "2026-09-15T05:58:08.051Z"
+      },
+      {
+        "id": "ee2a2d78-3eb2-460e-b74d-47adf9535b6c",
+        "variant_id": "5d5c0d0b-e10a-472e-847c-1ed76925bcba",
+        "type": "sale",
+        "quantity": -1,
+        "reference_type": "order",
+        "reference_id": "be87a9dd-e592-4d75-a3f6-1b1bbc9274fa",
+        "created_by": "43ab46d7-1fe6-4a5f-b10b-75cc6979620a",
+        "created_at": "2026-09-15T06:03:01.030Z"
+      },
+      {
+        "id": "ddca1eee-1322-4e03-baa9-5abda6569b61",
+        "variant_id": "5d5c0d0b-e10a-472e-847c-1ed76925bcba",
+        "type": "sale",
+        "quantity": -1,
+        "reference_type": "order",
+        "reference_id": "d7846215-a21a-49aa-83ed-7792a18af3e3",
+        "created_by": "c56cb0e6-1b0a-45a3-a3d9-a8a28f3b6bd5",
+        "created_at": "2026-09-15T06:04:19.263Z"
+      }
+    ],
+    "wishlists": [
+      {
+        "id": "cf9a8e5a-14a2-4da0-b2ad-6f49a4138de0",
+        "user_id": "usr-cust-1",
+        "product_id": "80be4506-2309-407a-ae15-87344f3b7c90",
+        "created_at": "2026-09-10T10:35:47.741Z"
+      }
+    ],
+    "carts": [
+      {
+        "id": "5c11bc8a-5f49-4607-bc64-c805f3bec521",
+        "user_id": "17a2cd0f-0869-46a9-bb24-345fa6cd616e",
+        "session_id": null,
+        "status": "active",
+        "created_at": "2026-09-15T05:58:08.047Z",
+        "updated_at": "2026-09-15T05:58:08.047Z"
+      },
+      {
+        "id": "fe4e8087-b397-4e3d-9af1-c72cbb798de9",
+        "user_id": "43ab46d7-1fe6-4a5f-b10b-75cc6979620a",
+        "session_id": null,
+        "status": "active",
+        "created_at": "2026-09-15T06:03:01.027Z",
+        "updated_at": "2026-09-15T06:03:01.027Z"
+      },
+      {
+        "id": "4972162b-e0bb-4610-9b85-7d22e9d30688",
+        "user_id": "c56cb0e6-1b0a-45a3-a3d9-a8a28f3b6bd5",
+        "session_id": null,
+        "status": "active",
+        "created_at": "2026-09-15T06:04:19.260Z",
+        "updated_at": "2026-09-15T06:04:19.260Z"
+      }
+    ],
+    "cart_items": [],
+    "orders": [
+      {
+        "id": "ord-1028",
+        "order_number": "BING-89419",
+        "user_id": "usr-cust-3",
+        "status": "shipped",
+        "payment_status": "paid",
+        "payment_method": "prepaid",
+        "currency": "INR",
+        "subtotal": 1299,
+        "discount": 200,
+        "shipping_fee": 100,
+        "tax": 0,
+        "total": 1199,
+        "coupon_code": "FLAT200",
+        "cod_deposit": null,
+        "notes": null,
+        "shipping_address": {
+          "name": "Devika Pillai",
+          "phone": "9733344556",
+          "line1": "House #12, Palm Grove Enclave",
+          "line2": "Panampilly Nagar",
+          "city": "Kochi",
+          "state": "Kerala",
+          "postal_code": "682036",
+          "country": "IN"
+        },
+        "tracking_number": "DELHIVERY-99210419",
+        "carrier": "Delhivery",
+        "created_at": "2026-09-10T02:35:47.741Z",
+        "updated_at": "2026-09-10T06:35:47.741Z"
+      },
+      {
+        "id": "ord-1027",
+        "order_number": "BING-89412",
+        "user_id": "usr-cust-1",
+        "status": "delivered",
+        "payment_status": "paid",
+        "payment_method": "prepaid",
+        "currency": "INR",
+        "subtotal": 3499,
+        "discount": 0,
+        "shipping_fee": 0,
+        "tax": 0,
+        "total": 3499,
+        "coupon_code": null,
+        "cod_deposit": null,
+        "notes": null,
+        "shipping_address": {
+          "name": "Aditi Sharma",
+          "phone": "9876543210",
+          "line1": "124, Indiranagar 100ft Road",
+          "line2": "Flat 4B, Silicon Heights",
+          "city": "Bengaluru",
+          "state": "Karnataka",
+          "postal_code": "560038",
+          "country": "IN"
+        },
+        "tracking_number": "BLUEDART-88219001",
+        "carrier": "BlueDart",
+        "created_at": "2026-09-08T10:35:47.741Z",
+        "updated_at": "2026-09-09T10:35:47.741Z"
+      },
+      {
+        "id": "1f7776ff-58de-45f4-99c6-f64e7e626cbe",
+        "order_number": "BGO-20260915-5696",
+        "user_id": "17a2cd0f-0869-46a9-bb24-345fa6cd616e",
+        "status": "processing",
+        "payment_status": "pending",
+        "payment_method": "cod",
+        "subtotal": 1299,
+        "discount": 0,
+        "shipping_fee": 0,
+        "tax": 65,
+        "total": 1364,
+        "currency": "INR",
+        "shipping_address": {
+          "name": "Alice Walker",
+          "phone": "+919999900001",
+          "line1": "123 Fashion Blvd",
+          "city": "Bengaluru",
+          "state": "Karnataka",
+          "postalCode": "560001",
+          "country": "IN"
+        },
+        "address_snapshot_json": {
+          "name": "Alice Walker",
+          "phone": "+919999900001",
+          "line1": "123 Fashion Blvd",
+          "city": "Bengaluru",
+          "state": "Karnataka",
+          "postalCode": "560001",
+          "country": "IN"
+        },
+        "cod_deposit": null,
+        "cod_remaining": 1364,
+        "coupon_code": null,
+        "notes": null,
+        "tracking_number": null,
+        "carrier": null,
+        "created_at": "2026-09-15T05:58:08.050Z",
+        "updated_at": "2026-09-15T05:58:08.050Z"
+      },
+      {
+        "id": "be87a9dd-e592-4d75-a3f6-1b1bbc9274fa",
+        "order_number": "BGO-20260915-1608",
+        "user_id": "43ab46d7-1fe6-4a5f-b10b-75cc6979620a",
+        "status": "processing",
+        "payment_status": "pending",
+        "payment_method": "cod",
+        "subtotal": 1299,
+        "discount": 0,
+        "shipping_fee": 0,
+        "tax": 65,
+        "total": 1364,
+        "currency": "INR",
+        "shipping_address": {
+          "name": "Alice Walker",
+          "phone": "+919999900001",
+          "line1": "123 Fashion Blvd",
+          "city": "Bengaluru",
+          "state": "Karnataka",
+          "postalCode": "560001",
+          "country": "IN"
+        },
+        "address_snapshot_json": {
+          "name": "Alice Walker",
+          "phone": "+919999900001",
+          "line1": "123 Fashion Blvd",
+          "city": "Bengaluru",
+          "state": "Karnataka",
+          "postalCode": "560001",
+          "country": "IN"
+        },
+        "cod_deposit": null,
+        "cod_remaining": 1364,
+        "coupon_code": null,
+        "notes": null,
+        "tracking_number": null,
+        "carrier": null,
+        "created_at": "2026-09-15T06:03:01.030Z",
+        "updated_at": "2026-09-15T06:03:01.030Z"
+      },
+      {
+        "id": "d7846215-a21a-49aa-83ed-7792a18af3e3",
+        "order_number": "BGO-20260915-1543",
+        "user_id": "c56cb0e6-1b0a-45a3-a3d9-a8a28f3b6bd5",
+        "status": "processing",
+        "payment_status": "pending",
+        "payment_method": "cod",
+        "subtotal": 1299,
+        "discount": 0,
+        "shipping_fee": 0,
+        "tax": 65,
+        "total": 1364,
+        "currency": "INR",
+        "shipping_address": {
+          "name": "Alice Walker",
+          "phone": "+919999900001",
+          "line1": "123 Fashion Blvd",
+          "city": "Bengaluru",
+          "state": "Karnataka",
+          "postalCode": "560001",
+          "country": "IN"
+        },
+        "address_snapshot_json": {
+          "name": "Alice Walker",
+          "phone": "+919999900001",
+          "line1": "123 Fashion Blvd",
+          "city": "Bengaluru",
+          "state": "Karnataka",
+          "postalCode": "560001",
+          "country": "IN"
+        },
+        "cod_deposit": null,
+        "cod_remaining": 1364,
+        "coupon_code": null,
+        "notes": null,
+        "tracking_number": null,
+        "carrier": null,
+        "created_at": "2026-09-15T06:04:19.263Z",
+        "updated_at": "2026-09-15T06:04:19.263Z"
+      }
+    ],
+    "order_items": [
+      {
+        "id": "f0acfe3f-696d-4ec4-9b0f-5dcad29ae6f0",
+        "order_id": "ord-1028",
+        "variant_id": "558c1258-907e-4069-90ad-3ee0be0087eb",
+        "product_id": "94f50b34-cb33-48bf-a0b8-79c00a3c0b64",
+        "customization_id": null,
+        "quantity": 1,
+        "unit_price": 1499,
+        "total_price": 1499,
+        "title_snapshot": "Graphic Print Heavyweight Tee",
+        "variant_snapshot_json": {
+          "size": "L",
+          "color": "Black",
+          "sku": "GPT-L-BLK"
+        },
+        "created_at": "2026-09-10T02:35:47.741Z"
+      },
+      {
+        "id": "236d3c80-4097-43cf-96de-e4553b3cdcc0",
+        "order_id": "ord-1027",
+        "variant_id": "d37485cf-550e-49e8-9e97-21434bba1254",
+        "product_id": "80be4506-2309-407a-ae15-87344f3b7c90",
+        "customization_id": null,
+        "quantity": 1,
+        "unit_price": 2499,
+        "total_price": 2499,
+        "title_snapshot": "Essential Pullover Hoodie",
+        "variant_snapshot_json": {
+          "size": "XL",
+          "color": "Charcoal",
+          "sku": "EPH-XL-CHR"
+        },
+        "created_at": "2026-09-08T10:35:47.741Z"
+      },
+      {
+        "id": "78276f18-24b2-43f4-b44d-b4fdffa84eb5",
+        "order_id": "1f7776ff-58de-45f4-99c6-f64e7e626cbe",
+        "product_id": "681d0a97-540e-41dc-8bbe-24fb01b8df03",
+        "variant_id": "5d5c0d0b-e10a-472e-847c-1ed76925bcba",
+        "customization_id": null,
+        "sku": "COT-S-BLK",
+        "title_snapshot": "Classic Oversized Tee",
+        "variant_snapshot_json": {
+          "size": "S",
+          "color": "Black",
+          "colorHex": "#111111"
+        },
+        "quantity": 1,
+        "unit_price": 1299,
+        "total": 1299,
+        "created_at": "2026-09-15T05:58:08.050Z"
+      },
+      {
+        "id": "f764ab10-df05-4554-9f21-168fc906b0db",
+        "order_id": "be87a9dd-e592-4d75-a3f6-1b1bbc9274fa",
+        "product_id": "681d0a97-540e-41dc-8bbe-24fb01b8df03",
+        "variant_id": "5d5c0d0b-e10a-472e-847c-1ed76925bcba",
+        "customization_id": null,
+        "sku": "COT-S-BLK",
+        "title_snapshot": "Classic Oversized Tee",
+        "variant_snapshot_json": {
+          "size": "S",
+          "color": "Black",
+          "colorHex": "#111111"
+        },
+        "quantity": 1,
+        "unit_price": 1299,
+        "total": 1299,
+        "created_at": "2026-09-15T06:03:01.030Z"
+      },
+      {
+        "id": "e9ecd7c0-0a5d-48a8-9dcc-7e2ea902a802",
+        "order_id": "d7846215-a21a-49aa-83ed-7792a18af3e3",
+        "product_id": "681d0a97-540e-41dc-8bbe-24fb01b8df03",
+        "variant_id": "5d5c0d0b-e10a-472e-847c-1ed76925bcba",
+        "customization_id": null,
+        "sku": "COT-S-BLK",
+        "title_snapshot": "Classic Oversized Tee",
+        "variant_snapshot_json": {
+          "size": "S",
+          "color": "Black",
+          "colorHex": "#111111"
+        },
+        "quantity": 1,
+        "unit_price": 1299,
+        "total": 1299,
+        "created_at": "2026-09-15T06:04:19.263Z"
+      }
+    ],
+    "payments": [
+      {
+        "id": "pay-902",
+        "order_id": "ord-1028",
+        "provider": "razorpay",
+        "provider_order_id": "order_Nz75Kl02Aa34W1",
+        "provider_payment_id": "pay_Nz75Kl02Aa34W1",
+        "status": "paid",
+        "amount": 1199,
+        "currency": "INR",
+        "method": "HDFC Credit Card (Visa)",
+        "raw_event_id": null,
+        "idempotency_key": "8c37eee3-8941-4261-a45f-6098120502a7",
+        "customer_name": "Devika Pillai",
+        "customer_email": "devika.pillai@outlook.com",
+        "order_number": "BING-89419",
+        "created_at": "2026-09-10T02:35:47.741Z",
+        "updated_at": "2026-09-10T02:35:47.741Z"
+      },
+      {
+        "id": "pay-903",
+        "order_id": "ord-1027",
+        "provider": "razorpay",
+        "provider_order_id": "order_Nz61Mn99Zq00P9",
+        "provider_payment_id": "pay_Nz61Mn99Zq00P9",
+        "status": "paid",
+        "amount": 3499,
+        "currency": "INR",
+        "method": "ICICI NetBanking",
+        "raw_event_id": null,
+        "idempotency_key": "95616436-2bb8-44d8-a08e-20dc4555ac70",
+        "customer_name": "Aditi Sharma",
+        "customer_email": "customer@bingooo.in",
+        "order_number": "BING-89412",
+        "created_at": "2026-09-08T10:35:47.741Z",
+        "updated_at": "2026-09-08T10:35:47.741Z"
+      }
+    ],
+    "refunds": [],
+    "returns": [
+      {
+        "id": "ret-101",
+        "order_id": "ord-1027",
+        "order_number": "BING-89412",
+        "user_id": "usr-cust-1",
+        "customer_name": "Aditi Sharma",
+        "customer_phone": "+91 98765 43210",
+        "garment_title": "Classic Oversized Heavyweight Tee",
+        "size": "XL",
+        "reason": "size_fit",
+        "comments": "Need size L instead. The oversized boxy cut is larger than expected.",
+        "refund_amount": 1299,
+        "status": "reviewing",
+        "created_at": "2026-09-09T22:35:47.741Z",
+        "updated_at": "2026-09-10T10:35:47.741Z"
+      },
+      {
+        "id": "ret-102",
+        "order_id": "ord-1029",
+        "order_number": "BING-89421",
+        "user_id": "usr-cust-2",
+        "customer_name": "Akash Verma",
+        "customer_phone": "+91 98222 33445",
+        "garment_title": "Essential Pullover Hoodie - Charcoal",
+        "size": "M",
+        "reason": "print_defect",
+        "comments": "Custom studio backprint has a slight smudge on the bottom left corner.",
+        "refund_amount": 2499,
+        "status": "pickup_scheduled",
+        "created_at": "2026-09-08T10:35:47.741Z",
+        "updated_at": "2026-09-10T10:35:47.741Z"
+      }
+    ],
+    "coupons": [
+      {
+        "id": "36091186-46d8-4c5a-af59-f8855f8e52db",
+        "code": "WELCOME10",
+        "type": "percentage",
+        "value": 10,
+        "min_order_value": 500,
+        "max_discount": 200,
+        "usage_limit": 100,
+        "usage_count": 5,
+        "starts_at": null,
+        "ends_at": null,
+        "is_active": true,
+        "created_at": "2026-09-10T10:35:47.741Z",
+        "updated_at": "2026-09-10T10:35:47.741Z"
+      },
+      {
+        "id": "ba3e81d9-de90-4cbb-adeb-8f2a24f0213b",
+        "code": "FLAT200",
+        "type": "fixed",
+        "value": 200,
+        "min_order_value": 1000,
+        "max_discount": null,
+        "usage_limit": 50,
+        "usage_count": 12,
+        "starts_at": null,
+        "ends_at": null,
+        "is_active": true,
+        "created_at": "2026-09-10T10:35:47.741Z",
+        "updated_at": "2026-09-10T10:35:47.741Z"
+      },
+      {
+        "id": "c57909ce-721b-48b2-add3-ec99d2433d38",
+        "code": "STREETWEAR25",
+        "type": "percentage",
+        "value": 25,
+        "min_order_value": 1999,
+        "max_discount": 750,
+        "usage_limit": 200,
+        "usage_count": 18,
+        "starts_at": null,
+        "ends_at": null,
+        "is_active": true,
+        "created_at": "2026-09-10T10:35:47.741Z",
+        "updated_at": "2026-09-10T10:35:47.741Z"
+      }
+    ],
+    "coupon_redemptions": [],
+    "custom_requirements": [
+      {
+        "id": "cr-101",
+        "customerName": "Karthik Raman",
+        "customerEmail": "karthik.r@techcorp.in",
+        "customerPhone": "+91 99001 22334",
+        "garmentType": "Heavyweight Boxy Tees (240 GSM)",
+        "quantity": 50,
+        "printPlacements": [
+          "Front Left Chest (Embroidery)",
+          "Full Back (Screen Print)"
+        ],
+        "targetDate": "2026-09-25",
+        "estimatedBudget": 45000,
+        "status": "new",
+        "description": "Corporate tech hackathon team t-shirts. Need premium charcoal fabric with high density puff print on back.",
+        "attachmentName": "TechCorp_Hackathon_Vectors.pdf",
+        "attachmentUrl": "/sample-vector.pdf",
+        "internalNotes": "Contacted vendor for high-density puff ink sample.",
+        "created_at": "2026-09-09T10:35:47.741Z",
+        "updated_at": "2026-09-10T10:35:47.741Z"
+      },
+      {
+        "id": "cr-102",
+        "customerName": "Samir Sheikh",
+        "customerEmail": "samir.sheikh@musiccollective.com",
+        "customerPhone": "+91 98200 55443",
+        "garmentType": "Oversized Zip Hoodies (380 GSM Fleece)",
+        "quantity": 30,
+        "printPlacements": [
+          "Oversized Back Graphic (DTG)",
+          "Sleeve Tag Print"
+        ],
+        "targetDate": "2026-10-02",
+        "estimatedBudget": 60000,
+        "status": "reviewing",
+        "description": "Band merch for nationwide tour drop. Double-layered hood, custom silver metal zip pulls if possible.",
+        "attachmentName": "Album_Tour_Artwork_HiRes.ai",
+        "attachmentUrl": "/sample-vector.ai",
+        "internalNotes": "Sample garment sent to client for fit check.",
+        "created_at": "2026-09-07T10:35:47.741Z",
+        "updated_at": "2026-09-10T10:35:47.741Z"
+      },
+      {
+        "id": "cr-103",
+        "customerName": "Arjun Nambiar",
+        "customerEmail": "arjun@crossfitarena.in",
+        "customerPhone": "+91 97400 88991",
+        "garmentType": "Drop Cut Gym Tanks & Boxy Tees",
+        "quantity": 100,
+        "printPlacements": [
+          "Center Chest Vinyl Heat Transfer"
+        ],
+        "targetDate": "2026-09-18",
+        "estimatedBudget": 75000,
+        "status": "approved",
+        "description": "Annual championship fitness drop. Sweat-wicking combed cotton blend with reflective logo.",
+        "attachmentName": "CrossFit_Championship_Branding.svg",
+        "attachmentUrl": "/sample-vector.svg",
+        "internalNotes": "Quote accepted at Rs. 750/unit. Awaiting advance payment link.",
+        "created_at": "2026-09-04T10:35:47.741Z",
+        "updated_at": "2026-09-10T10:35:47.741Z"
+      }
+    ],
+    "reviews": [
+      {
+        "id": "rev-1",
+        "product_id": "681d0a97-540e-41dc-8bbe-24fb01b8df03",
+        "user_id": "usr-cust-2",
+        "customer_name": "Aman Deep",
+        "product_title": "Classic Oversized Heavyweight Tee",
+        "rating": 5,
+        "title": "Incredible heavyweight drape and fit",
+        "body": "The 240 GSM weight is real. Thick ribbed collar does not bacon after wash. Very high quality streetwear silhouette.",
+        "status": "approved",
+        "verified_buyer": true,
+        "image_url": "https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=500",
+        "created_at": "2026-09-07T10:35:47.741Z"
+      },
+      {
+        "id": "rev-2",
+        "product_id": "80be4506-2309-407a-ae15-87344f3b7c90",
+        "user_id": "usr-cust-3",
+        "customer_name": "Varun Joshi",
+        "product_title": "Essential Pullover Hoodie",
+        "rating": 5,
+        "title": "Custom DTG print came out very crisp",
+        "body": "Designed my own artwork in the Bingooo Studio. Colors on fabric matched my monitor very closely. Soft fleece lining.",
+        "status": "approved",
+        "verified_buyer": true,
+        "image_url": null,
+        "created_at": "2026-09-05T10:35:47.741Z"
+      },
+      {
+        "id": "rev-3",
+        "product_id": "94f50b34-cb33-48bf-a0b8-79c00a3c0b64",
+        "user_id": "usr-cust-1",
+        "customer_name": "Pooja Sethi",
+        "product_title": "Graphic Print Heavyweight Tee",
+        "rating": 4,
+        "title": "Great streetwear cut, runs oversized",
+        "body": "Love the graphic print sharpness. It runs oversized as advertised, recommend going true to size for boxy fit.",
+        "status": "approved",
+        "verified_buyer": true,
+        "image_url": null,
+        "created_at": "2026-09-03T10:35:47.741Z"
+      }
+    ],
+    "customizations": [
+      {
+        "id": "cust-101",
+        "user_id": "usr-cust-1",
+        "product_id": "681d0a97-540e-41dc-8bbe-24fb01b8df03",
+        "product_title": "Classic Oversized Heavyweight Tee",
+        "status": "approved",
+        "print_status": "ready_to_print",
+        "design_json": {
+          "garmentColor": "Obsidian Black",
+          "layers": [
+            {
+              "type": "text",
+              "content": "BINGOOO STUDIO",
+              "fontSize": 32,
+              "color": "#FFFFFF",
+              "position": {
+                "x": 50,
+                "y": 35
+              }
+            },
+            {
+              "type": "image",
+              "url": "/custom/tshirt-step-3-black.png",
+              "position": {
+                "x": 50,
+                "y": 55
+              }
+            }
+          ]
+        },
+        "preview_url": "/custom/tshirt-step-3-black.png",
+        "print_spec": {
+          "method": "DTG (Direct-to-Garment)",
+          "placement": "Back Print (300mm x 420mm)",
+          "resolutionDPI": 300,
+          "colorSpace": "CMYK"
+        },
+        "customer_name": "Aditi Sharma",
+        "customer_email": "customer@bingooo.in",
+        "created_at": "2026-09-09T10:35:47.741Z",
+        "updated_at": "2026-09-10T10:35:47.741Z"
+      }
+    ],
+    "customization_assets": [],
+    "shipments": [],
+    "notifications": [
+      {
+        "id": "notif-1789452259263",
+        "category": "order",
+        "severity": "info",
+        "title": "New Order Placed (#BGO-20260915-1543)",
+        "description": "Order for ₹1364 placed via COD",
+        "link_href": "/orders",
+        "link_text": "View Order →",
+        "is_read": false,
+        "created_at": "2026-09-15T06:04:19.263Z"
+      },
+      {
+        "id": "notif-1789452181030",
+        "category": "order",
+        "severity": "info",
+        "title": "New Order Placed (#BGO-20260915-1608)",
+        "description": "Order for ₹1364 placed via COD",
+        "link_href": "/orders",
+        "link_text": "View Order →",
+        "is_read": false,
+        "created_at": "2026-09-15T06:03:01.030Z"
+      },
+      {
+        "id": "notif-1789451888051",
+        "category": "order",
+        "severity": "info",
+        "title": "New Order Placed (#BGO-20260915-5696)",
+        "description": "Order for ₹1364 placed via COD",
+        "link_href": "/orders",
+        "link_text": "View Order →",
+        "is_read": false,
+        "created_at": "2026-09-15T05:58:08.051Z"
+      },
+      {
+        "id": "notif-1",
+        "category": "stock",
+        "severity": "critical",
+        "title": "Low Stock Alert: Classic Heavyweight Tee (S, Black)",
+        "description": "Only 3 units remain in warehouse stock. Low threshold is 5 units.",
+        "link_href": "/inventory",
+        "link_text": "Adjust Stock in Inventory →",
+        "is_read": false,
+        "created_at": "2026-09-10T09:35:47.741Z"
+      },
+      {
+        "id": "notif-2",
+        "category": "custom",
+        "severity": "warning",
+        "title": "New Custom Studio Print Submission (#BING-CUST-9102)",
+        "description": "Customer uploaded 300 DPI backprint artwork awaiting DTG production approval.",
+        "link_href": "/custom-orders",
+        "link_text": "Review in Custom Queue →",
+        "is_read": false,
+        "created_at": "2026-09-10T07:35:47.741Z"
+      },
+      {
+        "id": "notif-3",
+        "category": "order",
+        "severity": "info",
+        "title": "New High-Value Order Placed (#BING-89421)",
+        "description": "Order total of ₹2,498 confirmed via Razorpay UPI.",
+        "link_href": "/orders",
+        "link_text": "View Order →",
+        "is_read": true,
+        "created_at": "2026-09-10T05:35:47.741Z"
+      }
+    ],
+    "audit_logs": [
+      {
+        "id": "log-1789037335049",
+        "admin_email": "admin@bingooo.in",
+        "action": "order.deleted",
+        "resource": "orders",
+        "resource_id": "BING-89421",
+        "details": "Order #BING-89421 was permanently removed.",
+        "ip_address": "127.0.0.1",
+        "created_at": "2026-09-10T10:48:55.049Z"
+      },
+      {
+        "id": "log-101",
+        "admin_email": "admin@bingooo.in",
+        "action": "product.price_update",
+        "resource": "products",
+        "resource_id": "681d0a97-540e-41dc-8bbe-24fb01b8df03",
+        "details": "Base price updated from ₹1,199 to ₹1,299",
+        "ip_address": "103.24.12.89",
+        "created_at": "2026-09-10T08:35:47.741Z"
+      },
+      {
+        "id": "log-102",
+        "admin_email": "siddharth@bingooo.in",
+        "action": "order.status_update",
+        "resource": "orders",
+        "resource_id": "BING-89421",
+        "details": "Fulfillment moved to processing with BlueDart AWB# BLUEDART-88219412",
+        "ip_address": "49.36.18.204",
+        "created_at": "2026-09-10T05:35:47.741Z"
+      },
+      {
+        "id": "log-103",
+        "admin_email": "admin@bingooo.in",
+        "action": "payment.captured",
+        "resource": "payments",
+        "resource_id": "pay-901",
+        "details": "Payment of ₹2,498 verified and captured via Razorpay gateway",
+        "ip_address": "103.24.12.89",
+        "created_at": "2026-09-09T10:35:47.741Z"
+      }
+    ],
+    "addresses": [
+      {
+        "id": "addr-1",
+        "user_id": "usr-cust-1",
+        "name": "Aditi Sharma",
+        "phone": "9876543210",
+        "line1": "124, Indiranagar 100ft Road",
+        "line2": "Flat 4B, Silicon Heights",
+        "city": "Bengaluru",
+        "state": "Karnataka",
+        "postal_code": "560038",
+        "country": "IN",
+        "is_default": true,
+        "created_at": "2026-09-10T10:35:47.741Z",
+        "updated_at": "2026-09-10T10:35:47.741Z"
+      },
+      {
+        "id": "addr-2",
+        "user_id": "usr-cust-1",
+        "name": "Aditi Sharma (Work)",
+        "phone": "9876543210",
+        "line1": "Tower B, Bagmane Tech Park",
+        "line2": "CV Raman Nagar",
+        "city": "Bengaluru",
+        "state": "Karnataka",
+        "postal_code": "560093",
+        "country": "IN",
+        "is_default": false,
+        "created_at": "2026-09-10T10:35:47.741Z",
+        "updated_at": "2026-09-10T10:35:47.741Z"
+      },
+      {
+        "id": "4f4332a1-0cd8-4531-bf33-d1d950c40b4b",
+        "user_id": "17a2cd0f-0869-46a9-bb24-345fa6cd616e",
+        "name": "Alice Home",
+        "phone": "+919999900001",
+        "line1": "123 Fashion Blvd",
+        "line2": null,
+        "city": "Bengaluru",
+        "state": "Karnataka",
+        "postal_code": "560001",
+        "country": "IN",
+        "is_default": true,
+        "created_at": "2026-09-15T05:58:08.032Z",
+        "updated_at": "2026-09-15T05:58:08.032Z"
+      },
+      {
+        "id": "5569e0fe-c334-4714-9426-fc95a834a2f8",
+        "user_id": "43ab46d7-1fe6-4a5f-b10b-75cc6979620a",
+        "name": "Alice Home",
+        "phone": "+919999900001",
+        "line1": "123 Fashion Blvd",
+        "line2": null,
+        "city": "Bengaluru",
+        "state": "Karnataka",
+        "postal_code": "560001",
+        "country": "IN",
+        "is_default": true,
+        "created_at": "2026-09-15T06:03:01.011Z",
+        "updated_at": "2026-09-15T06:03:01.011Z"
+      },
+      {
+        "id": "5025f4c6-3371-404d-a8b9-272bf1377cdd",
+        "user_id": "c56cb0e6-1b0a-45a3-a3d9-a8a28f3b6bd5",
+        "name": "Alice Home",
+        "phone": "+919999900001",
+        "line1": "123 Fashion Blvd",
+        "line2": null,
+        "city": "Bengaluru",
+        "state": "Karnataka",
+        "postal_code": "560001",
+        "country": "IN",
+        "is_default": true,
+        "created_at": "2026-09-15T06:04:19.246Z",
+        "updated_at": "2026-09-15T06:04:19.246Z"
+      }
+    ],
+    "profiles": [
+      {
+        "id": "usr-cust-1",
+        "email": "customer@bingooo.in",
+        "full_name": "Aditi Sharma",
+        "phone": "+91 98765 43210",
+        "avatar_key": null,
+        "created_at": "2026-09-10T10:35:47.741Z",
+        "updated_at": "2026-09-10T10:35:47.741Z"
+      },
+      {
+        "id": "usr-admin-1",
+        "email": "admin@bingooo.in",
+        "full_name": "Mani P.",
+        "phone": "+91 98765 43210",
+        "avatar_key": null,
+        "created_at": "2026-09-10T10:35:47.741Z",
+        "updated_at": "2026-09-10T10:35:47.741Z"
+      },
+      {
+        "id": "17a2cd0f-0869-46a9-bb24-345fa6cd616e",
+        "email": "user_a_1789451887797@example.com",
+        "full_name": "Alice Walker",
+        "phone": "+919999900001",
+        "avatar_key": null,
+        "created_at": "2026-09-15T05:58:07.870Z",
+        "updated_at": "2026-09-15T05:58:07.870Z"
+      },
+      {
+        "id": "095abc62-f859-49b7-a856-8bb5c67ca3ff",
+        "email": "user_b_1789451887874@example.com",
+        "full_name": "Bob Smith",
+        "phone": "+919999900002",
+        "avatar_key": null,
+        "created_at": "2026-09-15T05:58:07.945Z",
+        "updated_at": "2026-09-15T05:58:07.945Z"
+      },
+      {
+        "id": "43ab46d7-1fe6-4a5f-b10b-75cc6979620a",
+        "email": "user_a_1789452180784@example.com",
+        "full_name": "Alice Walker",
+        "phone": "+919999900001",
+        "avatar_key": null,
+        "created_at": "2026-09-15T06:03:00.856Z",
+        "updated_at": "2026-09-15T06:03:00.856Z"
+      },
+      {
+        "id": "90d177d1-0ace-4203-80f3-d020872902b1",
+        "email": "user_b_1789452180860@example.com",
+        "full_name": "Bob Smith",
+        "phone": "+919999900002",
+        "avatar_key": null,
+        "created_at": "2026-09-15T06:03:00.927Z",
+        "updated_at": "2026-09-15T06:03:00.927Z"
+      },
+      {
+        "id": "c56cb0e6-1b0a-45a3-a3d9-a8a28f3b6bd5",
+        "email": "user_a_1789452259017@example.com",
+        "full_name": "Alice Walker",
+        "phone": "+919999900001",
+        "avatar_key": null,
+        "created_at": "2026-09-15T06:04:19.089Z",
+        "updated_at": "2026-09-15T06:04:19.089Z"
+      },
+      {
+        "id": "231e569c-8904-4a50-a41b-fd62458dbc5b",
+        "email": "user_b_1789452259092@example.com",
+        "full_name": "Bob Smith",
+        "phone": "+919999900002",
+        "avatar_key": null,
+        "created_at": "2026-09-15T06:04:19.161Z",
+        "updated_at": "2026-09-15T06:04:19.161Z"
+      }
+    ],
+    "banners": [
+      {
+        "id": "ban-1",
+        "title": "Wear What Feels Like You",
+        "subtitle": "Streetwear silhouettes. Heavyweight 240 GSM combed cotton.",
+        "ctaText": "Shop Men's Wear",
+        "targetUrl": "/shop",
+        "desktopImageUrl": "/hero-banner.png",
+        "mobileImageUrl": "/hero-banner.png",
+        "badge": "DROP 01 • OVERSIZED FIT",
+        "priority": 1,
+        "isActive": true,
+        "created_at": "2026-09-10T10:35:47.741Z",
+        "updated_at": "2026-09-10T10:35:47.741Z"
+      },
+      {
+        "id": "ban-2",
+        "title": "Everyday Luxury. Built to Last.",
+        "subtitle": "Minimalist cuts crafted from premium combed cotton. Elevated aesthetics.",
+        "ctaText": "Explore Drop 02",
+        "targetUrl": "/shop",
+        "desktopImageUrl": "/hero-banner-2.jpg",
+        "mobileImageUrl": "/hero-banner-2.jpg",
+        "badge": "STUDIO DROP • ARCHITECTURAL EDIT",
+        "priority": 2,
+        "isActive": true,
+        "created_at": "2026-09-10T10:35:47.741Z",
+        "updated_at": "2026-09-10T10:35:47.741Z"
+      },
+      {
+        "id": "ban-3",
+        "title": "Tailored Statement Menswear",
+        "subtitle": "Signature back prints, relaxed drape, and confident proportions.",
+        "ctaText": "Shop The Look",
+        "targetUrl": "/shop",
+        "desktopImageUrl": "/hero-banner-3.jpg",
+        "mobileImageUrl": "/hero-banner-3.jpg",
+        "badge": "CAMPAIGN 2026 • SIGNATURE FIT",
+        "priority": 3,
+        "isActive": true,
+        "created_at": "2026-09-10T10:35:47.741Z",
+        "updated_at": "2026-09-10T10:35:47.741Z"
+      },
+      {
+        "id": "ban-4",
+        "title": "Natural Earth Tones & Minimalism",
+        "subtitle": "Warm cream streetwear essentials with precision embroidery.",
+        "ctaText": "Discover Essentials",
+        "targetUrl": "/shop",
+        "desktopImageUrl": "/hero-banner-4.jpg",
+        "mobileImageUrl": "/hero-banner-4.jpg",
+        "badge": "LIMITED EDITION • NATURAL PALETTE",
+        "priority": 4,
+        "isActive": true,
+        "created_at": "2026-09-10T10:35:47.741Z",
+        "updated_at": "2026-09-10T10:35:47.741Z"
+      },
+      {
+        "id": "ban-5",
+        "title": "Heavyweight Crimson Collection",
+        "subtitle": "Ultra-warm drop-shoulder hoodies with iconic distressed B artwork.",
+        "ctaText": "Create Your Design",
+        "targetUrl": "/customize",
+        "desktopImageUrl": "/hero-banner-5.jpg",
+        "mobileImageUrl": "/hero-banner-5.jpg",
+        "badge": "CUSTOM STUDIO • HOODIES & TEES",
+        "priority": 5,
+        "isActive": true,
+        "created_at": "2026-09-10T10:35:47.741Z",
+        "updated_at": "2026-09-10T10:35:47.741Z"
+      }
+    ],
+    "settings": {
+      "store_name": "Bingooo Luxury Streetwear",
+      "store_email": "care@bingooo.in",
+      "store_phone": "+91 98765 43210",
+      "support_hours": "Mon - Sat: 10:00 AM - 7:00 PM IST",
+      "cod_enabled": true,
+      "partial_cod_enabled": true,
+      "partial_cod_advance_amount": 79,
+      "max_cod_limit": 5000,
+      "cod_deposit_percentage": 30,
+      "shipping_fee_default": 99,
+      "free_shipping_threshold": 999,
+      "tax_rate_percentage": 5,
+      "max_upload_size_mb": 15,
+      "currency": "INR",
+      "return_window_days": 7,
+      "dtg_print_lead_days": 3
+    },
+    "media_assets": [
+      {
+        "id": "asset-1",
+        "name": "heavyweight-tee-black-front.jpg",
+        "category": "products",
+        "url": "https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=800&auto=format&fit=crop",
+        "sizeBytes": 840000,
+        "dimensions": "1600x2000",
+        "uploaded_at": "2026-09-08T10:35:47.741Z"
+      },
+      {
+        "id": "asset-2",
+        "name": "oversized-hoodie-bone-white.jpg",
+        "category": "products",
+        "url": "https://images.unsplash.com/photo-1556905055-8f358a7a47b2?w=800&auto=format&fit=crop",
+        "sizeBytes": 1200000,
+        "dimensions": "1600x2000",
+        "uploaded_at": "2026-09-06T10:35:47.741Z"
+      },
+      {
+        "id": "asset-3",
+        "name": "summer-drop-hero-banner-desktop.jpg",
+        "category": "banners",
+        "url": "https://images.unsplash.com/photo-1490481651871-ab68de25d43d?w=1200&auto=format&fit=crop",
+        "sizeBytes": 2450000,
+        "dimensions": "2880x1200",
+        "uploaded_at": "2026-09-02T10:35:47.741Z"
+      },
+      {
+        "id": "asset-4",
+        "name": "tokyo-cyber-custom-graphic.png",
+        "category": "designs",
+        "url": "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=800&auto=format&fit=crop",
+        "sizeBytes": 650000,
+        "dimensions": "1200x1200",
+        "uploaded_at": "2026-09-09T10:35:47.741Z"
+      },
+      {
+        "id": "asset-5",
+        "name": "cargo-pants-styling-lookbook.jpg",
+        "category": "lookbook",
+        "url": "https://images.unsplash.com/photo-1517445312882-bc9910d016b7?w=800&auto=format&fit=crop",
+        "sizeBytes": 1800000,
+        "dimensions": "1800x2400",
+        "uploaded_at": "2026-08-29T10:35:47.741Z"
+      }
+    ],
+    "customizer_config": {
+      "garments": [
+        {
+          "id": "tshirt",
+          "name": "T-SHIRT",
+          "price": 999,
+          "description": "100% Combed Cotton Classic Crewneck",
+          "isActive": true,
+          "colors": [
+            {
+              "id": "black",
+              "name": "Black",
+              "hex": "#171717",
+              "textContrast": "#FFFFFF",
+              "frontImageUrl": "",
+              "isActive": true
+            },
+            {
+              "id": "white",
+              "name": "White",
+              "hex": "#FFFFFF",
+              "textContrast": "#171717",
+              "frontImageUrl": "",
+              "isActive": true
+            },
+            {
+              "id": "beige",
+              "name": "Beige",
+              "hex": "#D8C8B1",
+              "textContrast": "#171717",
+              "frontImageUrl": "",
+              "isActive": true
+            },
+            {
+              "id": "red",
+              "name": "Red",
+              "hex": "#E6321C",
+              "textContrast": "#FFFFFF",
+              "frontImageUrl": "",
+              "isActive": true
+            }
+          ]
+        },
+        {
+          "id": "oversized",
+          "name": "OVERSIZED",
+          "price": 1299,
+          "description": "240 GSM Heavyweight Drop-Shoulder Fit",
+          "isActive": true,
+          "colors": [
+            {
+              "id": "black",
+              "name": "Black",
+              "hex": "#171717",
+              "textContrast": "#FFFFFF",
+              "frontImageUrl": "",
+              "isActive": true
+            },
+            {
+              "id": "white",
+              "name": "White",
+              "hex": "#FFFFFF",
+              "textContrast": "#171717",
+              "frontImageUrl": "",
+              "isActive": true
+            },
+            {
+              "id": "beige",
+              "name": "Beige",
+              "hex": "#D8C8B1",
+              "textContrast": "#171717",
+              "frontImageUrl": "",
+              "isActive": true
+            },
+            {
+              "id": "red",
+              "name": "Red",
+              "hex": "#E6321C",
+              "textContrast": "#FFFFFF",
+              "frontImageUrl": "",
+              "isActive": true
+            }
+          ]
+        },
+        {
+          "id": "hoodie",
+          "name": "HOODIE",
+          "price": 2499,
+          "description": "350 GSM Brushed Fleece Pullover Hoodie",
+          "isActive": true,
+          "colors": [
+            {
+              "id": "black",
+              "name": "Black",
+              "hex": "#171717",
+              "textContrast": "#FFFFFF",
+              "frontImageUrl": "",
+              "isActive": true
+            },
+            {
+              "id": "white",
+              "name": "White",
+              "hex": "#FFFFFF",
+              "textContrast": "#171717",
+              "frontImageUrl": "",
+              "isActive": true
+            },
+            {
+              "id": "beige",
+              "name": "Beige",
+              "hex": "#D8C8B1",
+              "textContrast": "#171717",
+              "frontImageUrl": "",
+              "isActive": true
+            },
+            {
+              "id": "red",
+              "name": "Red",
+              "hex": "#E6321C",
+              "textContrast": "#FFFFFF",
+              "frontImageUrl": "",
+              "isActive": true
+            }
+          ]
+        }
+      ],
+      "updatedAt": "2026-09-15T05:58:00.923Z"
+    }
+  }
+}

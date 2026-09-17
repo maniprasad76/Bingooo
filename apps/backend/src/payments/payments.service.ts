@@ -86,6 +86,7 @@ export class PaymentsService {
       max_cod_limit: Number(db.settings.max_cod_limit) || 5000,
       free_shipping_threshold: Number(db.settings.free_shipping_threshold) || 999,
       shipping_fee_default: Number(db.settings.shipping_fee_default) || 99,
+      prepaid_discount_percentage: Number(db.settings.prepaid_discount_percentage) || 5,
       currency: db.settings.currency || 'INR',
       key_id: process.env.RAZORPAY_KEY_ID || 'rzp_test_TYDFxO8bZagWG6',
     };
@@ -122,6 +123,28 @@ export class PaymentsService {
       if (!order) {
         throw new NotFoundException({ code: 'ORDER_NOT_FOUND', message: 'Order not found' });
       }
+      if (order.payment_status === 'captured') {
+        throw new BadRequestException({
+          code: 'ORDER_ALREADY_PAID',
+          message: `Order #${order.order_number} has already been paid.`,
+        });
+      }
+
+      // Prevent duplicate payments: reuse existing pending Razorpay order if present
+      const existingPayment = db.payments.find(
+        (p) => p.order_id === order.id && p.status === 'pending' && p.provider_order_id,
+      );
+      if (existingPayment) {
+        return {
+          order_id: existingPayment.provider_order_id,
+          amount: Math.round(existingPayment.amount * 100),
+          currency: existingPayment.currency,
+          razorpayOrderId: existingPayment.provider_order_id,
+          orderNumber: order.order_number,
+          keyId: process.env.RAZORPAY_KEY_ID,
+        };
+      }
+
       const payableAmount =
         order.payment_method === 'partial_cod' ? (order.cod_deposit || order.total) : order.total;
       amountInPaise = dto.amount !== undefined ? Math.round(dto.amount) : Math.round(payableAmount * 100);
@@ -252,6 +275,20 @@ export class PaymentsService {
     }
 
     if (payment) {
+      // If already captured, return immediately (Idempotent response)
+      if (payment.status === 'captured') {
+        return {
+          success: true,
+          verified: true,
+          order_id: orderId,
+          payment_id: payment.provider_payment_id || paymentId,
+          orderNumber: payment?.order_number,
+          paymentId: payment?.id,
+          status: 'captured',
+          idempotent: true,
+        };
+      }
+
       payment.status = 'captured';
       payment.provider_payment_id = paymentId;
       payment.updated_at = new Date().toISOString();

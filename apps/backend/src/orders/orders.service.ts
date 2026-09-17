@@ -2,6 +2,7 @@ import { Injectable, NotFoundException, BadRequestException } from '@nestjs/comm
 import { v4 as uuidv4 } from 'uuid';
 import { db, saveDb } from '../common/database/store';
 import { CheckoutService, CheckoutValidationDto } from '../checkout/checkout.service';
+import { getOrderById, getOrderByOrderNumber } from '../common/database/db-index.service';
 
 
 export interface CreateOrderDto extends CheckoutValidationDto {
@@ -29,6 +30,7 @@ export class OrdersService {
       payment_method: dto.paymentMethod,
       subtotal: calculation.subtotal,
       discount: calculation.discount,
+      prepaid_discount: calculation.prepaidDiscount || 0,
       shipping_fee: calculation.shippingFee,
       tax: calculation.tax,
       total: calculation.total,
@@ -124,9 +126,7 @@ export class OrdersService {
   }
 
   findByOrderNumberOrId(identifier: string) {
-    const order = db.orders.find(
-      (o) => o.order_number === identifier || o.id === identifier,
-    );
+    const order = getOrderById(identifier) || getOrderByOrderNumber(identifier);
     if (!order) throw new NotFoundException({ code: 'ORDER_NOT_FOUND', message: `Order "${identifier}" not found` });
     return this.enrichOrder(order);
   }

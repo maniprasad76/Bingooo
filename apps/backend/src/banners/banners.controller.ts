@@ -12,6 +12,7 @@ import {
 } from '@nestjs/common';
 import { ApiTags, ApiOperation } from '@nestjs/swagger';
 import { BannersService, BannerItem } from './banners.service';
+import { Cacheable } from '../common/interceptors/cache.interceptor';
 
 @ApiTags('Banners')
 @Controller('banners')
@@ -19,6 +20,7 @@ export class BannersController {
   constructor(private readonly bannersService: BannersService) {}
 
   @Get()
+  @Cacheable(60000)
   @ApiOperation({ summary: 'Get all active banners for storefront hero carousel' })
   findAllActive() {
     return this.bannersService.findAllActive();

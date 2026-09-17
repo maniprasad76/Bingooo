@@ -9,6 +9,7 @@ export function TermsPage() {
         title="Terms of Service — BINGOOO"
         description="Review the terms and conditions governing apparel purchases, custom printing atelier guidelines, and website usage at Bingooo."
         canonical="https://bingooo.in/terms"
+        ogImage="/terms-hero.jpg"
       />
 
       {/* =======================================================
@@ -41,11 +42,11 @@ export function TermsPage() {
           </div>
         </div>
 
-        <div className="h-[400px] sm:h-[500px] lg:h-auto overflow-hidden">
+        <div className="h-[400px] sm:h-[500px] lg:h-auto overflow-hidden bg-[#ede0cc]">
           <img
-            src="https://images.unsplash.com/photo-1556821840-3a63f95609a7?auto=format&fit=crop&w=1600&q=90"
-            alt="Bingooo terms and craftsmanship"
-            className="w-full h-full object-cover grayscale"
+            src="/terms-hero.jpg"
+            alt="Bingooo Terms & Conditions"
+            className="w-full h-full object-cover object-center"
           />
         </div>
       </section>
@@ -139,9 +140,9 @@ export function TermsPage() {
       <section className="grid grid-cols-1 lg:grid-cols-[55%_45%] min-h-[550px] lg:min-h-[600px]">
         <div className="min-h-[380px] lg:min-h-full overflow-hidden">
           <img
-            src="https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?auto=format&fit=crop&w=1500&q=90"
-            alt="Bingooo Studio terms"
-            className="w-full h-full object-cover grayscale"
+            src="/custom-studio.jpg"
+            alt="Bingooo Custom Studio workshop"
+            className="w-full h-full object-cover object-center"
           />
         </div>
 

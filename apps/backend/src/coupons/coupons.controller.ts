@@ -1,5 +1,6 @@
 import { Controller, Get, Post, Patch, Delete, Param, Body } from '@nestjs/common';
 import { ApiTags, ApiOperation } from '@nestjs/swagger';
+import { Throttle } from '@nestjs/throttler';
 import { CouponsService } from './coupons.service';
 
 @ApiTags('Coupons')
@@ -8,7 +9,8 @@ export class CouponsController {
   constructor(private readonly couponsService: CouponsService) {}
 
   @Post('validate')
-  @ApiOperation({ summary: 'Validate coupon and calculate discount' })
+  @Throttle({ default: { limit: 10, ttl: 60000 } })
+  @ApiOperation({ summary: 'Validate coupon and calculate discount (Rate limited: 10 req/min)' })
   validate(@Body() body: { code: string; orderSubtotal: number }) {
     return this.couponsService.validateCoupon(body.code, body.orderSubtotal);
   }

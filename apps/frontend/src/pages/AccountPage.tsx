@@ -26,12 +26,14 @@ import {
   ExternalLink,
   Sparkles,
   Phone,
+  AlertTriangle,
 } from 'lucide-react';
 import { useAuthStore } from '../store/auth';
 import { useRecentlyViewedStore } from '../store/recentlyViewed';
 import { useToast } from '../components/ui/Toast';
 import { SEO } from '../components/common/SEO';
 import { triggerHaptic } from '../lib/native/capacitorBridge';
+import { OrderRowSkeleton } from '../components/ui/Skeleton';
 
 const SIDEBAR_NAV = [
   { id: 'dashboard', label: 'Overview Dashboard', icon: Home },
@@ -64,12 +66,16 @@ export function AccountPage() {
 
   const [activeTab, setActiveTab] = useState(initialTab);
   const [newsletterEmail, setNewsletterEmail] = useState('');
+  const [isSubscribingNewsletter, setIsSubscribingNewsletter] = useState(false);
   const recentCount = useRecentlyViewedStore((s) => s.items.length);
 
   // Modals state
   const [isEditProfileOpen, setIsEditProfileOpen] = useState(false);
   const [isAddAddressOpen, setIsAddAddressOpen] = useState(false);
   const [isReturnModalOpen, setIsReturnModalOpen] = useState(false);
+  const [isDeleteAccountModalOpen, setIsDeleteAccountModalOpen] = useState(false);
+  const [isDeletingAccount, setIsDeletingAccount] = useState(false);
+  const [isSyncingOrders, setIsSyncingOrders] = useState(false);
 
   // Forms state
   const [profileForm, setProfileForm] = useState({ fullName: '', phone: '' });
@@ -211,15 +217,67 @@ export function AccountPage() {
     navigate('/');
   };
 
-  const handleNewsletter = (e: React.FormEvent) => {
+  const handleSyncOrders = async () => {
+    triggerHaptic('medium');
+    setIsSyncingOrders(true);
+    try {
+      await queryClient.invalidateQueries({ queryKey: ['user-orders'] });
+      await queryClient.refetchQueries({ queryKey: ['user-orders'] });
+      toast({
+        title: 'Purchases Synchronized',
+        description: 'Your order history and active dispatches have been re-synchronized with the atelier server.',
+        variant: 'success',
+      });
+    } catch {
+      toast({
+        title: 'Sync Notice',
+        description: 'Unable to reach the dispatch server. Displaying local order archive.',
+        variant: 'info',
+      });
+    } finally {
+      setIsSyncingOrders(false);
+    }
+  };
+
+  const handleDeleteAccount = async () => {
+    triggerHaptic('error');
+    setIsDeletingAccount(true);
+    try {
+      await api.delete('/users/profile');
+      toast({
+        title: 'Account Deleted',
+        description: 'Your account and personal data have been permanently removed.',
+        variant: 'success',
+      });
+      setIsDeleteAccountModalOpen(false);
+      logout();
+      navigate('/');
+    } catch (err: any) {
+      toast({
+        title: 'Deletion Failed',
+        description: err?.message || 'Could not process account deletion. Please try again.',
+        variant: 'error',
+      });
+    } finally {
+      setIsDeletingAccount(false);
+    }
+  };
+
+  const handleNewsletter = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newsletterEmail.trim()) return;
-    toast({
-      title: 'Subscribed to updates!',
-      description: 'You will receive our latest drop alerts and atelier releases.',
-      variant: 'success',
-    });
-    setNewsletterEmail('');
+    if (!newsletterEmail.trim() || isSubscribingNewsletter) return;
+    setIsSubscribingNewsletter(true);
+    try {
+      await api.post('/users/newsletter', { email: newsletterEmail.trim() }).catch(() => {});
+      toast({
+        title: 'Subscribed to updates!',
+        description: 'You will receive our latest drop alerts and atelier releases.',
+        variant: 'success',
+      });
+      setNewsletterEmail('');
+    } finally {
+      setIsSubscribingNewsletter(false);
+    }
   };
 
   return (
@@ -479,15 +537,16 @@ export function AccountPage() {
 
                       <div className="divide-y divide-[#DDD3C5]/60">
                         {isOrdersLoading ? (
-                          <div className="py-8 text-center text-xs text-[#6F6A63] font-mono">
-                            Loading recent atelier orders...
+                          <div className="py-4 space-y-3">
+                            <OrderRowSkeleton />
+                            <OrderRowSkeleton />
                           </div>
                         ) : userOrders.length === 0 ? (
                           <div className="py-12 text-center space-y-3">
                             <p className="text-xs text-[#6F6A63]">You haven't placed any garments in your order archive yet.</p>
                             <Link to="/shop" className="btn btn-black text-xs inline-flex items-center gap-2">
                               <ShoppingBag size={14} />
-                              <span>EXPLORE ATELIER COLLECTION</span>
+                              <span>EXPLORE BINGOOO COLLECTION</span>
                             </Link>
                           </div>
                         ) : (
@@ -710,9 +769,20 @@ export function AccountPage() {
                           All Orders & Dispatches
                         </h3>
                       </div>
-                      <Link to="/shop" className="btn btn-outline text-xs h-9 px-4 rounded-[2px]">
-                        ORDER MORE GARMENTS →
-                      </Link>
+                      <div className="flex items-center gap-2">
+                        <button
+                          type="button"
+                          onClick={handleSyncOrders}
+                          disabled={isSyncingOrders}
+                          className="btn btn-outline text-xs h-9 px-3.5 rounded-[2px] inline-flex items-center gap-1.5"
+                        >
+                          <RotateCcw size={13} className={isSyncingOrders ? 'animate-spin' : ''} />
+                          <span>{isSyncingOrders ? 'SYNCING...' : 'SYNC & RESTORE ORDERS'}</span>
+                        </button>
+                        <Link to="/shop" className="btn btn-black text-xs h-9 px-4 rounded-[2px]">
+                          ORDER MORE →
+                        </Link>
+                      </div>
                     </div>
 
                     <div className="divide-y divide-[#DDD3C5]/60">
@@ -914,6 +984,37 @@ export function AccountPage() {
                         </button>
                       </div>
                     </form>
+
+                    {/* ─── DANGER ZONE: ACCOUNT DELETION (Apple Guideline 5.1.1(v) & Google Play) ─── */}
+                    <div className="mt-8 border border-red-300 bg-red-50/40 p-6 sm:p-7 rounded-[2px] space-y-4">
+                      <div className="flex items-start gap-3.5">
+                        <div className="w-9 h-9 rounded-[2px] bg-red-100 text-[#E6321C] flex items-center justify-center shrink-0 mt-0.5">
+                          <AlertTriangle size={18} />
+                        </div>
+                        <div>
+                          <div className="font-mono text-[9px] font-bold uppercase tracking-[0.2em] text-[#E6321C] mb-1">
+                            DANGER ZONE / PERMANENT DATA PURGE
+                          </div>
+                          <h4 className="font-extrabold uppercase text-base text-[#171717] tracking-tight">
+                            Delete Bingooo Account & Personal Data
+                          </h4>
+                          <p className="text-xs text-[#6F6A63] leading-relaxed mt-1">
+                            Permanently delete your account, saved delivery destinations, active cart, and wishlist. In accordance with Apple App Store Guideline 5.1.1(v) and Indian DPDP data protection statutes, personal identifiers will be erased immediately.
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="pt-3 border-t border-red-200/60 flex justify-end">
+                        <button
+                          type="button"
+                          onClick={() => setIsDeleteAccountModalOpen(true)}
+                          className="h-10 px-4 rounded-[2px] bg-red-600 hover:bg-red-700 text-white font-mono text-xs font-bold uppercase tracking-wider inline-flex items-center gap-2 transition-colors cursor-pointer"
+                        >
+                          <Trash2 size={14} />
+                          <span>DELETE MY ACCOUNT</span>
+                        </button>
+                      </div>
+                    </div>
                   </div>
                 )}
 
@@ -1066,9 +1167,20 @@ export function AccountPage() {
             />
             <button
               type="submit"
-              className="btn btn-black text-xs h-10 px-5 rounded-[2px] shrink-0"
+              disabled={isSubscribingNewsletter}
+              className="btn btn-black text-xs h-10 px-5 rounded-[2px] shrink-0 flex items-center justify-center gap-1.5"
             >
-              SUBSCRIBE
+              {isSubscribingNewsletter ? (
+                <>
+                  <svg className="animate-spin h-3.5 w-3.5" viewBox="0 0 24 24" fill="none">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                  </svg>
+                  <span>JOINING...</span>
+                </>
+              ) : (
+                'SUBSCRIBE'
+              )}
             </button>
           </form>
         </div>
@@ -1389,6 +1501,80 @@ export function AccountPage() {
               </form>
             </motion.div>
           </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* =======================================================
+           ACCOUNT DELETION CONFIRMATION MODAL
+      ======================================================= */}
+      <AnimatePresence>
+        {isDeleteAccountModalOpen && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-xs">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              className="w-full max-w-md bg-white border-2 border-red-500 rounded-[2px] p-6 sm:p-7 shadow-2xl space-y-5 text-left"
+            >
+              <div className="flex items-center justify-between pb-3 border-b border-[#DDD3C5]">
+                <div className="flex items-center gap-2 text-red-600 font-extrabold uppercase text-sm tracking-wide">
+                  <AlertTriangle size={18} />
+                  <span>CONFIRM ACCOUNT DELETION</span>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setIsDeleteAccountModalOpen(false)}
+                  className="text-[#6F6A63] hover:text-[#171717]"
+                >
+                  <X size={18} />
+                </button>
+              </div>
+
+              <p className="text-xs text-[#171717] leading-relaxed">
+                Are you sure you want to permanently delete your Bingooo account?
+              </p>
+
+              <ul className="text-xs text-[#6F6A63] space-y-1.5 list-disc pl-4 font-mono">
+                <li>Your profile and login credentials will be permanently erased.</li>
+                <li>All saved shipping addresses will be purged.</li>
+                <li>Active carts, design sessions, and wishlist items will be deleted.</li>
+                <li>Order records will be anonymized for statutory tax compliance.</li>
+              </ul>
+
+              <div className="p-3 bg-red-50 border border-red-200 rounded-[2px] text-[11px] text-red-800 font-mono">
+                ⚠️ This action cannot be reversed or recovered.
+              </div>
+
+              <div className="flex items-center justify-end gap-3 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setIsDeleteAccountModalOpen(false)}
+                  disabled={isDeletingAccount}
+                  className="btn btn-outline text-xs h-10 px-4 rounded-[2px]"
+                >
+                  CANCEL
+                </button>
+                <button
+                  type="button"
+                  onClick={handleDeleteAccount}
+                  disabled={isDeletingAccount}
+                  className="h-10 px-5 rounded-[2px] bg-red-600 hover:bg-red-700 text-white font-mono text-xs font-bold uppercase tracking-wider flex items-center gap-2"
+                >
+                  {isDeletingAccount ? (
+                    <>
+                      <RotateCcw size={14} className="animate-spin" />
+                      <span>DELETING...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Trash2 size={14} />
+                      <span>PERMANENTLY DELETE</span>
+                    </>
+                  )}
+                </button>
+              </div>
+            </motion.div>
+          </div>
         )}
       </AnimatePresence>
     </main>

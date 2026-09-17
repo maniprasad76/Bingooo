@@ -1,32 +1,84 @@
 # Bingooo Menswear - Robots.txt
 # https://bingooo.in
+# Last updated: 2026-09-15
 
-User-agent: *
+# ── Googlebot: Full crawl access ──
+User-agent: Googlebot
 Allow: /
-
-# Disallow private customer accounts and checkout funnels
-Disallow: /admin
 Disallow: /admin/
-Disallow: /account
 Disallow: /account/
-Disallow: /orders
-Disallow: /orders/
 Disallow: /cart
 Disallow: /checkout
 Disallow: /order-success
-Disallow: /saved-designs
-Disallow: /wishlist
-Disallow: /recently-viewed
 Disallow: /login
 Disallow: /signup
 Disallow: /api/
+Disallow: /*.json$
 
-# Allow major bots
-User-agent: Googlebot
-Allow: /
-
+# ── Bingbot: Full crawl access ──
 User-agent: Bingbot
 Allow: /
+Disallow: /admin/
+Disallow: /account/
+Disallow: /cart
+Disallow: /checkout
+Disallow: /order-success
+Disallow: /login
+Disallow: /signup
+Disallow: /api/
+Disallow: /*.json$
 
-# Sitemap Index
+# ── DuckDuckBot ──
+User-agent: DuckDuckBot
+Allow: /
+Disallow: /admin/
+Disallow: /account/
+Disallow: /cart
+Disallow: /checkout
+Disallow: /api/
+
+# ── SEO crawlers: Crawl-delay to save server bandwidth ──
+User-agent: AhrefsBot
+Crawl-delay: 10
+Disallow: /admin/
+Disallow: /account/
+Disallow: /api/
+Disallow: /*?*
+
+User-agent: SemrushBot
+Crawl-delay: 10
+Disallow: /admin/
+Disallow: /account/
+Disallow: /api/
+Disallow: /*?*
+
+User-agent: MJ12bot
+Crawl-delay: 30
+Disallow: /
+
+User-agent: DotBot
+Crawl-delay: 30
+Disallow: /
+
+# ── All other crawlers: Restrict private + parameterised URLs ──
+User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /account/
+Disallow: /cart
+Disallow: /checkout
+Disallow: /order-success
+Disallow: /orders/
+Disallow: /saved-designs
+Disallow: /recently-viewed
+Disallow: /login
+Disallow: /signup
+Disallow: /reset-password
+Disallow: /forgot-password
+Disallow: /api/
+# Block parameterised URLs to save crawl budget (filter/sort combos are not unique content)
+Disallow: /*?*
+Disallow: /*.json$
+
+# ── Sitemap ──
 Sitemap: https://bingooo.in/sitemap.xml

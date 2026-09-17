@@ -9,6 +9,7 @@ export function PrivacyPolicyPage() {
         title="Privacy Policy — BINGOOO"
         description="Learn how Bingooo protects your personal information, secures payment transactions, and safeguards custom design studio uploads."
         canonical="https://bingooo.in/privacy-policy"
+        ogImage="/privacy-hero.jpg"
       />
 
       {/* =======================================================
@@ -41,11 +42,11 @@ export function PrivacyPolicyPage() {
           </div>
         </div>
 
-        <div className="h-[400px] sm:h-[500px] lg:h-auto overflow-hidden">
+        <div className="h-[400px] sm:h-[500px] lg:h-auto overflow-hidden bg-[#ede0cc]">
           <img
-            src="https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?auto=format&fit=crop&w=1600&q=90"
-            alt="Bingooo privacy and trust editorial"
-            className="w-full h-full object-cover grayscale"
+            src="/privacy-hero.jpg"
+            alt="Bingooo - Your Privacy Matters"
+            className="w-full h-full object-cover object-center"
           />
         </div>
       </section>
@@ -227,9 +228,9 @@ export function PrivacyPolicyPage() {
       <section className="grid grid-cols-1 lg:grid-cols-[55%_45%] min-h-[550px] lg:min-h-[600px]">
         <div className="min-h-[380px] lg:min-h-full overflow-hidden">
           <img
-            src="https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&w=1500&q=90"
-            alt="Bingooo studio intellectual property"
-            className="w-full h-full object-cover grayscale"
+            src="/custom-studio.jpg"
+            alt="Bingooo Custom Studio atelier"
+            className="w-full h-full object-cover object-center"
           />
         </div>
 
@@ -346,14 +347,14 @@ export function PrivacyPolicyPage() {
             {/* Clause 5 */}
             <article className="py-10 grid grid-cols-1 md:grid-cols-[240px_1fr] gap-6 items-start">
               <div className="font-mono text-[11px] font-bold uppercase text-[#171717] tracking-wider">
-                05. RETENTION & ERASURE
+                05. RETENTION & IN-APP ACCOUNT DELETION
               </div>
               <div className="space-y-3 text-[13px] leading-[1.8] text-[#6f6a63]">
                 <p>
-                  Your profile and custom designs remain preserved in your account for easy reorders. You have the absolute right to request complete data erasure.
+                  Your profile and custom design studio configurations remain preserved in your account for easy reorders. You have the absolute right to request complete data erasure at any time.
                 </p>
                 <p>
-                  Upon receiving your deletion request, all account credentials and uploaded graphics are permanently scrubbed from our active databases within 7 business days, excluding statutory tax records required by Indian law.
+                  <strong className="text-[#171717]">In-App Account Deletion (Apple Guideline 5.1.1(v) & Google Play Compliant):</strong> You can permanently delete your account and personal data directly from within the app at any moment. Simply go to <strong className="text-[#171717]">My Account → Security & Password → Danger Zone → Delete My Account</strong>. Upon confirmation, your profile, authentication credentials, saved shipping destinations, shopping bag, and wishlist are immediately and permanently erased. Transactional order figures are anonymized for statutory tax and accounting regulations under Indian law.
                 </p>
               </div>
             </article>
@@ -365,9 +366,10 @@ export function PrivacyPolicyPage() {
               </div>
               <div className="space-y-3 text-[13px] leading-[1.8] text-[#6f6a63]">
                 <p>
-                  Under the Digital Personal Data Protection Act (DPDPA 2023), you hold the right to:
+                  Under the Digital Personal Data Protection Act (DPDPA 2023) and global store standards, you hold the right to:
                 </p>
                 <ul className="list-disc pl-5 space-y-1.5">
+                  <li>Initiate immediate in-app account and data erasure via account settings.</li>
                   <li>Request a portable summary of all personal data held by BINGOOO.</li>
                   <li>Correct any inaccurate contact numbers or shipping addresses.</li>
                   <li>Withdraw consent for marketing newsletters at any time via a single click.</li>

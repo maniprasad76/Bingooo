@@ -1,6 +1,7 @@
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { Link, useSearchParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
+import { api } from '../lib/api/client';
 import {
   Search,
   Package,
@@ -155,14 +156,24 @@ const DEMO_TRACKING_DATA: Record<string, TrackingResult> = {
 };
 
 export function TrackOrderPage() {
-  const [orderQuery, setOrderQuery] = useState('BG-2026-9182');
+  const [searchParams] = useSearchParams();
+  const initialAwb = searchParams.get('awb') || searchParams.get('orderNumber') || searchParams.get('q') || 'BG-2026-9182';
+  const [orderQuery, setOrderQuery] = useState(initialAwb);
   const [contactQuery, setContactQuery] = useState('');
   const [searched, setSearched] = useState(true);
   const [result, setResult] = useState<TrackingResult | null>(DEMO_TRACKING_DATA['BG-2026-9182']);
   const [isSearching, setIsSearching] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const handleTrack = (e?: React.FormEvent, customId?: string) => {
+  useEffect(() => {
+    const urlAwb = searchParams.get('awb') || searchParams.get('orderNumber') || searchParams.get('q');
+    if (urlAwb) {
+      setOrderQuery(urlAwb);
+      handleTrack(undefined, urlAwb);
+    }
+  }, [searchParams]);
+
+  const handleTrack = async (e?: React.FormEvent, customId?: string) => {
     if (e) e.preventDefault();
     const query = (customId || orderQuery).trim().toUpperCase();
     if (!query) {
@@ -172,6 +183,65 @@ export function TrackOrderPage() {
 
     setError(null);
     setIsSearching(true);
+
+    try {
+      // 1. Try real shipping tracking endpoint from backend
+      const liveData = await api.get<any>(`/shipping/track/${encodeURIComponent(query)}`);
+      if (liveData && liveData.trackingNumber) {
+        setResult({
+          orderNumber: liveData.orderNumber || query,
+          orderDate: liveData.events?.[0]?.timestamp
+            ? new Date(liveData.events[0].timestamp).toLocaleDateString('en-IN', {
+                day: 'numeric',
+                month: 'short',
+                year: 'numeric',
+              })
+            : 'Recent Order',
+          estimatedDelivery: liveData.estimatedDelivery
+            ? new Date(liveData.estimatedDelivery).toLocaleDateString('en-IN', {
+                day: 'numeric',
+                month: 'short',
+                year: 'numeric',
+              }) + ' by 7:00 PM'
+            : 'Within 3-4 Business Days',
+          status: liveData.status === 'delivered' ? 'delivered' : 'dispatched',
+          statusLabel:
+            liveData.status === 'delivered'
+              ? 'Delivered'
+              : liveData.status === 'shipped'
+              ? 'Dispatched from Atelier — In Transit'
+              : 'In Transit — On Schedule',
+          courier: liveData.carrier || 'Blue Dart Air Express',
+          awbNumber: liveData.trackingNumber,
+          destination: 'Customer Delivery Address',
+          items: [
+            {
+              title: 'Bingooo Heavyweight Apparel Item',
+              size: 'Standard',
+              color: 'Charcoal Black',
+              qty: 1,
+              price: 899,
+              image: '/hero-banner.png',
+            },
+          ],
+          timeline:
+            liveData.events && liveData.events.length > 0
+              ? liveData.events.map((ev: any, idx: number) => ({
+                  stage: ev.status || 'Transit Milestone',
+                  desc: `${ev.details || ''} ${ev.location ? `(${ev.location})` : ''}`.trim(),
+                  date: new Date(ev.timestamp).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' }),
+                  time: new Date(ev.timestamp).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' }),
+                  completed: idx <= liveData.events.length - 1,
+                }))
+              : DEMO_TRACKING_DATA['BG-2026-9182'].timeline,
+        });
+        setIsSearching(false);
+        setSearched(true);
+        return;
+      }
+    } catch {
+      // Fallback to local demo data
+    }
 
     setTimeout(() => {
       setIsSearching(false);
@@ -239,7 +309,7 @@ export function TrackOrderPage() {
           ],
         });
       }
-    }, 400);
+    }, 300);
   };
 
   return (

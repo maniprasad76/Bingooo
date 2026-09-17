@@ -18,6 +18,9 @@ export interface ProductCardProps {
   category?: { name: string; slug: string } | null;
   variants?: Array<{ id: string; color?: string; colorHex?: string; size?: string; inStock?: boolean }>;
   images?: Array<{ url?: string; object_key?: string; alt_text?: string }>;
+  bestseller?: boolean;
+  saleTag?: string | null;
+  badgeText?: string | null;
 }
 
 export function ProductCard({
@@ -30,6 +33,9 @@ export function ProductCard({
   category,
   variants = [],
   images = [],
+  bestseller = false,
+  saleTag,
+  badgeText,
 }: ProductCardProps) {
   const { toggleWishlist } = useWishlist();
   const { data: wishlistData } = useIsInWishlist(id);
@@ -55,13 +61,7 @@ export function ProductCard({
     images?.[0]?.url ||
     images?.[0]?.object_key ||
     (typeof images?.[0] === 'string' ? images[0] : null) ||
-    (slug.includes('graphic')
-      ? '/custom/tshirt-step-3-black.png'
-      : slug.includes('classic')
-      ? '/custom/tshirt-step-1.png'
-      : slug.includes('hoodie')
-      ? '/custom/tshirt-step-2.png'
-      : '/custom/tshirt-step-1.png');
+    '';
 
   const handleQuickAdd = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -90,30 +90,52 @@ export function ProductCard({
           {/* Product Image Showcase */}
           <div className="relative aspect-[4/5] w-full bg-[#EDE0CC] flex items-center justify-center p-2 sm:p-4 overflow-hidden">
             <Link to={`/product/${slug}`} className="w-full h-full flex items-center justify-center">
-              <img
-                src={mainImage}
-                alt={title}
-                className="h-full w-full object-contain p-1 sm:p-2 transition-transform duration-700 ease-out group-hover:scale-105"
-                loading="lazy"
-              />
+              {mainImage ? (
+                <img
+                  src={mainImage}
+                  alt={title}
+                  className="h-full w-full object-contain p-1 sm:p-2 transition-transform duration-700 ease-out group-hover:scale-105"
+                  loading="lazy"
+                  onError={(e) => {
+                    e.currentTarget.style.display = 'none';
+                  }}
+                />
+              ) : (
+                <div className="w-full h-full bg-[#EDE0CC]" />
+              )}
             </Link>
 
             {/* Badges Top-Left */}
             <div className="absolute top-2 left-2 sm:top-3.5 sm:left-3.5 flex flex-col gap-1 z-10">
-              <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-[#171717] text-white text-[8px] sm:text-[9px] font-sans font-bold uppercase tracking-wider shadow-sm">
-                ESSENTIAL
-              </span>
+              {bestseller && (
+                <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-amber-500 text-black text-[8px] sm:text-[9px] font-sans font-extrabold uppercase tracking-wider shadow-sm">
+                  BESTSELLER
+                </span>
+              )}
+              {badgeText ? (
+                <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-[#171717] text-white text-[8px] sm:text-[9px] font-sans font-bold uppercase tracking-wider shadow-sm">
+                  {badgeText}
+                </span>
+              ) : !bestseller && (
+                <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-[#171717] text-white text-[8px] sm:text-[9px] font-sans font-bold uppercase tracking-wider shadow-sm">
+                  ESSENTIAL
+                </span>
+              )}
               {customizationEnabled && (
                 <span className="inline-flex items-center gap-1 px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-full bg-[#E6321C] text-white text-[8px] sm:text-[10px] font-sans font-bold uppercase tracking-wider shadow-sm">
                   <Sparkles size={10} />
                   Custom
                 </span>
               )}
-              {discountPct && (
+              {saleTag ? (
+                <span className="inline-flex items-center px-1.5 py-0.5 sm:px-2 rounded-full bg-[#E6321C] text-white text-[8px] sm:text-[10px] font-sans font-bold tracking-wider shadow-sm">
+                  {saleTag}
+                </span>
+              ) : discountPct ? (
                 <span className="inline-flex items-center px-1.5 py-0.5 sm:px-2 rounded-full bg-[#E6321C] text-white text-[8px] sm:text-[10px] font-sans font-bold tracking-wider shadow-sm">
                   {discountPct}% OFF
                 </span>
-              )}
+              ) : null}
             </div>
 
             {/* Top-Right Quick View & Wishlist Buttons */}

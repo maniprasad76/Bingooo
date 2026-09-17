@@ -1,16 +1,45 @@
 import 'reflect-metadata';
-import { NestFactory } from '@nestjs/core';
+import { NestFactory, Reflector } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import helmet from 'helmet';
 import cookieParser from 'cookie-parser';
+import compression from 'compression';
+import express from 'express';
 import { AppModule } from './app.module';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
 import { ResponseInterceptor } from './common/interceptors/response.interceptor';
 import { RequestIdInterceptor } from './common/interceptors/request-id.interceptor';
+import { IdempotencyInterceptor } from './common/interceptors/idempotency.interceptor';
+import { LoggingInterceptor } from './common/interceptors/logging.interceptor';
+import { CacheInterceptor } from './common/interceptors/cache.interceptor';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+
+  // ── Payload & Body Limits ──
+  app.use(express.json({ limit: '10mb' }));
+  app.use(express.urlencoded({ limit: '10mb', extended: true }));
+
+  // ── Response Compression (gzip/deflate for responses > 1KB) ──
+  app.use(compression({ threshold: 1024 }));
+
+  // ── Server Timeout Protection (30 seconds) ──
+  app.use((req: any, res: any, next: any) => {
+    req.setTimeout(30000, () => {
+      if (!res.headersSent) {
+        res.status(408).json({
+          success: false,
+          error: {
+            code: 'REQUEST_TIMEOUT',
+            message: 'Server request timed out after 30 seconds.',
+          },
+          requestId: req.requestId || 'timeout',
+        });
+      }
+    });
+    next();
+  });
 
   // ── Security ──
   app.use(
@@ -56,8 +85,15 @@ async function bootstrap() {
   );
 
   // ── Global filters & interceptors ──
+  const reflector = app.get(Reflector);
   app.useGlobalFilters(new HttpExceptionFilter());
-  app.useGlobalInterceptors(new RequestIdInterceptor(), new ResponseInterceptor());
+  app.useGlobalInterceptors(
+    new RequestIdInterceptor(),
+    new LoggingInterceptor(),
+    new CacheInterceptor(reflector),
+    new ResponseInterceptor(),
+    new IdempotencyInterceptor(),
+  );
 
   // ── Swagger / OpenAPI ──
   const swaggerConfig = new DocumentBuilder()
@@ -69,11 +105,16 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, swaggerConfig);
   SwaggerModule.setup('api/docs', app, document);
 
+  // ── Graceful Shutdown for Cloud Run / Container Lifecycle ──
+  app.enableShutdownHooks();
+
   // ── Start ──
-  const port = process.env.PORT || 3000;
-  await app.listen(port);
-  console.log(`🚀 Bingooo API running on http://localhost:${port}`);
-  console.log(`📖 Swagger docs at http://localhost:${port}/api/docs`);
+  const port = Number(process.env.PORT) || 8080;
+  const host = '0.0.0.0';
+  await app.listen(port, host);
+  console.log(`🚀 Bingooo API running on http://${host}:${port}`);
+  console.log(`📖 Swagger docs at http://${host}:${port}/api/docs`);
 }
 
 bootstrap();
+

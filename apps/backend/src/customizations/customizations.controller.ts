@@ -1,5 +1,6 @@
-import { Controller, Get, Post, Patch, Param, Body, Query, Req } from '@nestjs/common';
+import { Controller, Get, Post, Put, Patch, Delete, Param, Body, Query, Req } from '@nestjs/common';
 import { ApiTags, ApiOperation } from '@nestjs/swagger';
+import { Throttle } from '@nestjs/throttler';
 import { CustomizationsService } from './customizations.service';
 
 @ApiTags('Customizations')
@@ -7,8 +8,50 @@ import { CustomizationsService } from './customizations.service';
 export class CustomizationsController {
   constructor(private readonly customizationsService: CustomizationsService) {}
 
+  // ── Customizer Studio Configuration ──
+  @Get('studio/config')
+  @ApiOperation({ summary: 'Get customizer studio garments and color mockups' })
+  getStudioConfig() {
+    return this.customizationsService.getStudioConfig();
+  }
+
+  @Put('studio/config')
+  @ApiOperation({ summary: 'Update entire customizer studio configuration' })
+  updateStudioConfig(@Body() body: any) {
+    return this.customizationsService.updateStudioConfig(body);
+  }
+
+  @Post('studio/garments/:garmentId/colors')
+  @ApiOperation({ summary: 'Add a new color and photo mockup to a garment' })
+  addColor(
+    @Param('garmentId') garmentId: string,
+    @Body() body: { name: string; hex: string; frontImageUrl: string; backImageUrl?: string; textContrast?: string; isActive?: boolean },
+  ) {
+    return this.customizationsService.addColorToGarment(garmentId, body);
+  }
+
+  @Patch('studio/garments/:garmentId/colors/:colorId')
+  @ApiOperation({ summary: 'Update a garment color and mockup photo' })
+  updateColor(
+    @Param('garmentId') garmentId: string,
+    @Param('colorId') colorId: string,
+    @Body() body: any,
+  ) {
+    return this.customizationsService.updateGarmentColor(garmentId, colorId, body);
+  }
+
+  @Delete('studio/garments/:garmentId/colors/:colorId')
+  @ApiOperation({ summary: 'Delete a color and mockup from a garment' })
+  deleteColor(
+    @Param('garmentId') garmentId: string,
+    @Param('colorId') colorId: string,
+  ) {
+    return this.customizationsService.deleteGarmentColor(garmentId, colorId);
+  }
+
   @Post()
-  @ApiOperation({ summary: 'Save new custom design project' })
+  @Throttle({ default: { limit: 25, ttl: 60000 } })
+  @ApiOperation({ summary: 'Save new custom design project (Rate limited: 25 req/min)' })
   save(
     @Req() req: any,
     @Body()
@@ -40,7 +83,8 @@ export class CustomizationsController {
   }
 
   @Post('requirements')
-  @ApiOperation({ summary: 'Submit new custom requirement' })
+  @Throttle({ default: { limit: 10, ttl: 60000 } })
+  @ApiOperation({ summary: 'Submit new custom requirement (Rate limited: 10 req/min)' })
   createRequirement(@Body() body: any) {
     return this.customizationsService.createRequirement(body);
   }

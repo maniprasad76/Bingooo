@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { useToast } from '../components/Toast';
 import {
   Mail,
   Lock,
@@ -15,6 +16,7 @@ import {
 import { adminLogin, loginAsDevAdmin } from '../lib/auth';
 
 export function LoginPage() {
+  const { toast } = useToast();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -30,9 +32,12 @@ export function LoginPage() {
     setLoading(true);
     try {
       await adminLogin(email, password);
+      toast.success('Welcome Back', 'Signed in to Bingooo Atelier Console.');
       navigate(from, { replace: true });
     } catch (err: any) {
-      setError(err.message || 'Authentication failed. Please verify your credentials.');
+      const msg = err.message || 'Authentication failed. Please verify your credentials.';
+      setError(msg);
+      toast.error('Sign In Failed', msg);
     } finally {
       setLoading(false);
     }
@@ -40,6 +45,7 @@ export function LoginPage() {
 
   const handleDevLogin = () => {
     loginAsDevAdmin();
+    toast.success('Dev Access Granted', 'Signed in as Administrator.');
     navigate('/dashboard', { replace: true });
   };
 
@@ -52,9 +58,9 @@ export function LoginPage() {
         {/* Background Workshop Image Overlay */}
         <div className="absolute inset-0 z-0">
           <img
-            src="https://images.unsplash.com/photo-1551488831-00ddcb6c6bd3?auto=format&fit=crop&w=1600&q=90"
-            alt="Bingooo atelier production and logistics hub"
-            className="w-full h-full object-cover grayscale opacity-25 contrast-125"
+            src="/custom-studio.jpg"
+            alt="Bingooo atelier workshop production and logistics hub"
+            className="w-full h-full object-cover opacity-25 contrast-125"
           />
           <div className="absolute inset-0 bg-gradient-to-r from-[#121212] via-[#121212]/90 to-[#121212]/95" />
         </div>

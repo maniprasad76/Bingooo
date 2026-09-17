@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { v4 as uuidv4 } from 'uuid';
-import { db } from '../common/database/store';
+import { db, saveDb } from '../common/database/store';
 
 @Injectable()
 export class CustomizationsService {
@@ -169,6 +169,110 @@ export class CustomizationsService {
     if (data.internalNotes !== undefined) req.internalNotes = data.internalNotes;
     req.updated_at = new Date().toISOString();
     return req;
+  }
+
+  /** Studio Customizer Garments & Color Mockup Configuration */
+  getStudioConfig() {
+    if (!db.customizer_config) {
+      db.customizer_config = {
+        garments: [],
+        updatedAt: new Date().toISOString(),
+      };
+    }
+    return db.customizer_config;
+  }
+
+  updateStudioConfig(data: any) {
+    db.customizer_config = {
+      ...db.customizer_config,
+      ...data,
+      updatedAt: new Date().toISOString(),
+    };
+    saveDb();
+    return db.customizer_config;
+  }
+
+  addColorToGarment(
+    garmentId: string,
+    colorData: {
+      id?: string;
+      name: string;
+      hex: string;
+      textContrast?: string;
+      frontImageUrl: string;
+      backImageUrl?: string;
+      isActive?: boolean;
+    },
+  ) {
+    const config = this.getStudioConfig();
+    const garment = config.garments.find((g: any) => g.id === garmentId);
+    if (!garment) {
+      throw new NotFoundException({ code: 'GARMENT_NOT_FOUND', message: `Garment ${garmentId} not found` });
+    }
+
+    const colorId =
+      colorData.id ||
+      colorData.name.toLowerCase().replace(/[^a-z0-9]/g, '-') ||
+      `col-${Date.now()}`;
+
+    const hex = colorData.hex.replace('#', '');
+    const r = parseInt(hex.substring(0, 2) || '0', 16);
+    const g = parseInt(hex.substring(2, 4) || '0', 16);
+    const b = parseInt(hex.substring(4, 6) || '0', 16);
+    const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+    const computedContrast = brightness > 140 ? '#171717' : '#FFFFFF';
+
+    const newColor = {
+      id: colorId,
+      name: colorData.name,
+      hex: colorData.hex.startsWith('#') ? colorData.hex : `#${colorData.hex}`,
+      textContrast: colorData.textContrast || computedContrast,
+      frontImageUrl: colorData.frontImageUrl,
+      backImageUrl: colorData.backImageUrl || '',
+      isActive: colorData.isActive !== false,
+    };
+
+    const existingIndex = garment.colors.findIndex((c: any) => c.id === newColor.id);
+    if (existingIndex >= 0) {
+      garment.colors[existingIndex] = { ...garment.colors[existingIndex], ...newColor };
+    } else {
+      garment.colors.push(newColor);
+    }
+
+    config.updatedAt = new Date().toISOString();
+    saveDb();
+    return { garment, color: newColor };
+  }
+
+  updateGarmentColor(garmentId: string, colorId: string, colorData: any) {
+    const config = this.getStudioConfig();
+    const garment = config.garments.find((g: any) => g.id === garmentId);
+    if (!garment) {
+      throw new NotFoundException({ code: 'GARMENT_NOT_FOUND', message: `Garment ${garmentId} not found` });
+    }
+
+    const color = garment.colors.find((c: any) => c.id === colorId);
+    if (!color) {
+      throw new NotFoundException({ code: 'COLOR_NOT_FOUND', message: `Color ${colorId} not found` });
+    }
+
+    Object.assign(color, colorData);
+    config.updatedAt = new Date().toISOString();
+    saveDb();
+    return { garment, color };
+  }
+
+  deleteGarmentColor(garmentId: string, colorId: string) {
+    const config = this.getStudioConfig();
+    const garment = config.garments.find((g: any) => g.id === garmentId);
+    if (!garment) {
+      throw new NotFoundException({ code: 'GARMENT_NOT_FOUND', message: `Garment ${garmentId} not found` });
+    }
+
+    garment.colors = garment.colors.filter((c: any) => c.id !== colorId);
+    config.updatedAt = new Date().toISOString();
+    saveDb();
+    return { success: true, garment };
   }
 }
 

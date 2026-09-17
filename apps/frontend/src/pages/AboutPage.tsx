@@ -41,12 +41,15 @@ export function AboutPage() {
           </div>
         </div>
 
-        <div className="h-[400px] sm:h-[500px] lg:h-auto overflow-hidden">
+        <div className="h-[400px] sm:h-[500px] lg:h-auto overflow-hidden relative">
           <img
-            src="https://images.unsplash.com/photo-1529139574466-a303027c1d8b?auto=format&fit=crop&w=1600&q=90"
-            alt="Bingooo fashion editorial"
-            className="w-full h-full object-cover grayscale"
+            src="/about-atelier.jpg"
+            alt="Bingooo Atelier — Wear What Feels Like You"
+            className="w-full h-full object-cover object-center"
           />
+          <div className="absolute bottom-4 left-4 bg-[#171717]/85 backdrop-blur-sm text-[#f7eedb] text-[9px] font-mono font-bold uppercase tracking-[0.16em] px-3 py-1.5 rounded border border-[#ddd3c5]/20 shadow-md">
+            ATELIER 01 &bull; EST. 2026
+          </div>
         </div>
       </section>
 
@@ -228,9 +231,9 @@ export function AboutPage() {
       <section className="grid grid-cols-1 lg:grid-cols-[55%_45%] min-h-[550px] lg:min-h-[600px]">
         <div className="min-h-[380px] lg:min-h-full overflow-hidden">
           <img
-            src="https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&w=1500&q=90"
-            alt="Custom Bingooo clothing"
-            className="w-full h-full object-cover grayscale"
+            src="/custom-studio.jpg"
+            alt="Bingooo Custom Studio atelier workshop"
+            className="w-full h-full object-cover object-center"
           />
         </div>
 

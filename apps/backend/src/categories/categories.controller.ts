@@ -1,9 +1,10 @@
-import { Controller, Get, Post, Patch, Delete, Param, Body, UseGuards, HttpCode, HttpStatus } from '@nestjs/common';
+import { Controller, Get, Post, Patch, Delete, Param, Body, Query, UseGuards, HttpCode, HttpStatus } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { CategoriesService } from './categories.service';
 import { AuthGuard } from '../common/guards/auth.guard';
 import { RolesGuard } from '../common/guards/roles.guard';
 import { Permissions } from '../common/decorators/permissions.decorator';
+import { Cacheable } from '../common/interceptors/cache.interceptor';
 
 @ApiTags('Categories')
 @Controller('categories')
@@ -11,12 +12,14 @@ export class CategoriesController {
   constructor(private readonly categoriesService: CategoriesService) {}
 
   @Get()
+  @Cacheable(60000)
   @ApiOperation({ summary: 'List all active categories with product counts' })
-  findAll() {
-    return this.categoriesService.findAll();
+  findAll(@Query('all') all?: string) {
+    return this.categoriesService.findAll(all === 'true');
   }
 
   @Get(':slug')
+  @Cacheable(60000)
   @ApiOperation({ summary: 'Get category by slug' })
   findBySlug(@Param('slug') slug: string) {
     return this.categoriesService.findBySlug(slug);
@@ -44,9 +47,9 @@ export class CategoriesController {
   @UseGuards(AuthGuard, RolesGuard)
   @Permissions('categories.delete')
   @ApiBearerAuth()
-  @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({ summary: 'Delete category (admin)' })
   remove(@Param('id') id: string) {
     this.categoriesService.remove(id);
+    return { success: true, message: 'Category deleted successfully' };
   }
 }

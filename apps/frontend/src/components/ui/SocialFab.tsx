@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Plus, X } from 'lucide-react';
+import { useUIStore } from '../../store/ui';
 import {
   WhatsAppIcon,
   InstagramIcon,
@@ -68,6 +69,12 @@ const SOCIAL_ITEMS: SocialItem[] = [
 export function SocialFab() {
   const [isOpen, setIsOpen] = useState(false);
   const fabRef = useRef<HTMLDivElement>(null);
+  const mobileMenuOpen = useUIStore((s) => s.mobileMenuOpen);
+
+  // Hide floating action button when mobile menu is open
+  if (mobileMenuOpen) {
+    return null;
+  }
 
   // Close on outside click
   useEffect(() => {

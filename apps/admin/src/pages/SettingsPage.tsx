@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { api } from '../lib/api';
+import { useToast } from '../components/Toast';
 import { Settings, Save, CheckCircle, AlertCircle, LoaderCircle, Store, Truck, CreditCard } from 'lucide-react';
 
 interface StoreSettings {
@@ -19,6 +20,7 @@ interface StoreSettings {
   max_upload_size_mb: number;
   return_window_days: number;
   dtg_print_lead_days: number;
+  prepaid_discount_percentage: number;
 }
 
 const DEFAULT_SETTINGS: StoreSettings = {
@@ -29,18 +31,20 @@ const DEFAULT_SETTINGS: StoreSettings = {
   currency: 'INR',
   cod_enabled: true,
   partial_cod_enabled: true,
-  partial_cod_advance_amount: 79,
+  partial_cod_advance_amount: 199,
   max_cod_limit: 5000,
-  cod_deposit_percentage: 30,
+  cod_deposit_percentage: 15,
   shipping_fee_default: 99,
-  free_shipping_threshold: 999,
-  tax_rate_percentage: 5,
-  max_upload_size_mb: 15,
+  free_shipping_threshold: 1999,
+  tax_rate_percentage: 18,
+  max_upload_size_mb: 25,
   return_window_days: 7,
   dtg_print_lead_days: 3,
+  prepaid_discount_percentage: 5,
 };
 
 export function SettingsPage() {
+  const { toast } = useToast();
   const [settings, setSettings] = useState<StoreSettings>(DEFAULT_SETTINGS);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -68,9 +72,11 @@ export function SettingsPage() {
       const updated = await api.put<StoreSettings>('/admin/settings', settings);
       if (updated) setSettings({ ...DEFAULT_SETTINGS, ...updated });
       setSuccess('Settings saved successfully.');
+      toast.success('Settings Saved', 'Store configuration and checkout rules updated.');
       setTimeout(() => setSuccess(''), 4000);
     } catch (err: any) {
       setError(err?.message || 'Failed to update store settings.');
+      toast.error('Save Failed', err?.message || 'Failed to update store settings.');
     } finally {
       setSaving(false);
     }
@@ -226,6 +232,22 @@ export function SettingsPage() {
                 className="admin-input"
                 value={settings.max_cod_limit}
                 onChange={(e) => setSettings({ ...settings, max_cod_limit: Number(e.target.value) })}
+              />
+            </div>
+
+            <div className="sm:col-span-2 flex items-center justify-between p-3.5 rounded-lg border border-emerald-200 bg-emerald-50/40">
+              <div>
+                <p className="text-xs font-bold text-ink">Prepaid Discount (%)</p>
+                <p className="text-[11px] text-muted">Flat percentage discount for customers who pay online (UPI / Cards)</p>
+              </div>
+              <input
+                type="number"
+                min={0}
+                max={50}
+                step={1}
+                className="admin-input w-20 text-center"
+                value={settings.prepaid_discount_percentage}
+                onChange={(e) => setSettings({ ...settings, prepaid_discount_percentage: Number(e.target.value) })}
               />
             </div>
           </div>

@@ -1,6 +1,20 @@
 import { useEffect, useState } from 'react';
 import { api } from '../lib/api';
-import { Plus, Pencil, Trash2, ToggleLeft, ToggleRight, X, LoaderCircle, Image as ImageIcon, ExternalLink } from 'lucide-react';
+import { useToast } from '../components/Toast';
+import { ConfirmModal } from '../components/ConfirmModal';
+import {
+  Plus,
+  Pencil,
+  Trash2,
+  ToggleLeft,
+  ToggleRight,
+  X,
+  LoaderCircle,
+  Image as ImageIcon,
+  ExternalLink,
+  RefreshCw,
+  Sparkles,
+} from 'lucide-react';
 
 interface BannerItem {
   id: string;
@@ -32,16 +46,20 @@ const EMPTY_FORM: Omit<BannerItem, 'id'> = {
 };
 
 export function BannersPage() {
+  const { toast } = useToast();
   const [banners, setBanners] = useState<BannerItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [editId, setEditId] = useState<string | null>(null);
   const [form, setForm] = useState(EMPTY_FORM);
   const [saving, setSaving] = useState(false);
+  const [bannerToDelete, setBannerToDelete] = useState<BannerItem | null>(null);
+  const [deleting, setDeleting] = useState(false);
 
   const fetchBanners = () => {
     setLoading(true);
-    api.get<BannerItem[]>('/banners/all')
+    api
+      .get<BannerItem[]>('/banners/all')
       .then((data) => setBanners(data || []))
       .catch(() => setBanners([]))
       .finally(() => setLoading(false));
@@ -84,102 +102,148 @@ export function BannersPage() {
     try {
       if (editId) {
         await api.patch(`/banners/${editId}`, form);
+        toast.success('Banner Updated', `"${form.title}" was saved.`);
       } else {
         await api.post('/banners', form);
+        toast.success('Banner Created', `"${form.title}" is now active.`);
       }
       setShowModal(false);
       setEditId(null);
       setForm(EMPTY_FORM);
       fetchBanners();
     } catch (err: any) {
-      alert(err.message || 'Failed to save banner');
+      toast.error('Failed to save banner', err?.message || 'Check inputs and try again.');
     } finally {
       setSaving(false);
     }
   };
 
-  const handleToggle = async (id: string, currentStatus: boolean) => {
+  const handleToggle = async (id: string, currentStatus: boolean, title: string) => {
     try {
       await api.patch(`/banners/${id}`, { isActive: !currentStatus });
+      toast.success(
+        'Banner Status Changed',
+        `"${title || 'Banner'}" is now ${!currentStatus ? 'active' : 'draft'}.`
+      );
       fetchBanners();
-    } catch {}
+    } catch (err: any) {
+      toast.error('Toggle Failed', err?.message || 'Failed to update banner status.');
+    }
   };
 
-  const handleDelete = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this hero banner?')) return;
+  const handleConfirmDelete = async () => {
+    if (!bannerToDelete) return;
+    setDeleting(true);
     try {
-      await api.delete(`/banners/${id}`);
+      await api.delete(`/banners/${bannerToDelete.id}`);
+      toast.success('Banner Deleted', `"${bannerToDelete.title || 'Banner'}" was removed.`);
+      setBannerToDelete(null);
       fetchBanners();
-    } catch {}
+    } catch (err: any) {
+      toast.error('Delete Failed', err?.message || 'Failed to delete banner.');
+    } finally {
+      setDeleting(false);
+    }
   };
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+      {/* Editorial Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-xl font-extrabold uppercase tracking-wide text-ink">Hero Banners</h1>
+          <div className="flex items-center gap-2">
+            <span className="text-[10px] font-mono font-bold uppercase tracking-[0.2em] text-brand-red">
+              CAMPAIGN WORKSHOP
+            </span>
+            <span className="text-muted/40 font-mono">•</span>
+            <span className="text-[10px] font-mono font-bold uppercase tracking-widest text-muted">
+              {banners.filter((b) => b.isActive).length} LIVE HERO SLIDES
+            </span>
+          </div>
+          <h1 className="text-2xl font-black uppercase tracking-tight text-ink font-sans mt-0.5">
+            Storefront Banners & Campaigns
+          </h1>
           <p className="text-xs text-muted mt-0.5">
-            Manage carousel banners, announcements, and promotional hero slides on the storefront.
+            Manage full-width carousel slides, seasonal campaign drops, and promotional call-to-actions.
           </p>
         </div>
-        <button onClick={openCreate} className="btn-primary">
-          <Plus size={15} />
-          <span>New Banner</span>
-        </button>
+
+        <div className="flex items-center gap-2.5">
+          <button
+            onClick={fetchBanners}
+            className="btn-outline p-2.5"
+            disabled={loading}
+            title="Refresh banners"
+          >
+            <RefreshCw size={14} className={loading ? 'animate-spin' : ''} />
+          </button>
+          <button onClick={openCreate} className="btn-primary">
+            <Plus size={15} />
+            <span>New Hero Slide</span>
+          </button>
+        </div>
       </div>
 
       {/* Content */}
       {loading ? (
-        <div className="flex items-center justify-center py-20">
-          <LoaderCircle size={28} className="animate-spin text-brand-red" />
+        <div className="flex flex-col items-center justify-center py-20 gap-2">
+          <RefreshCw size={24} className="animate-spin text-brand-red" />
+          <span className="text-xs font-mono uppercase tracking-widest text-muted">
+            Loading Hero Carousel…
+          </span>
         </div>
       ) : banners.length === 0 ? (
-        <div className="admin-card p-12 text-center">
+        <div className="admin-card p-16 text-center">
           <ImageIcon size={36} className="mx-auto text-muted/40 mb-3" />
-          <p className="text-sm font-semibold text-ink">No banners created yet</p>
-          <p className="text-xs text-muted mt-1">Create your first hero banner for the homepage.</p>
+          <p className="text-sm font-bold text-ink">No hero slides configured</p>
+          <p className="text-xs text-muted mt-1">
+            Create your first visual drop banner to greet storefront visitors.
+          </p>
           <button onClick={openCreate} className="btn-primary mt-4">
             <Plus size={14} />
             <span>Create Banner</span>
           </button>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {banners.map((b) => (
             <div
               key={b.id}
-              className={`admin-card overflow-hidden flex flex-col justify-between transition-all ${
+              className={`admin-card overflow-hidden flex flex-col justify-between transition-all group hover:shadow-card-hover ${
                 !b.isActive ? 'opacity-65' : ''
               }`}
             >
               {/* Banner Image Preview Container */}
-              <div className="relative aspect-[16/8] w-full bg-stone-900 overflow-hidden group">
+              <div className="relative aspect-[16/8] w-full bg-[#141414] overflow-hidden">
                 <img
                   src={b.desktopImageUrl}
                   alt={b.title}
-                  className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-300"
+                  className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500"
                   onError={(e) => {
-                    // Fallback to placeholder if broken link
-                    (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=800&auto=format&fit=crop';
+                    (e.target as HTMLImageElement).src =
+                      'https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=800&auto=format&fit=crop';
                   }}
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent p-4 flex flex-col justify-between">
+                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent p-5 flex flex-col justify-between">
                   <div className="flex items-center justify-between">
-                    {b.badge && (
-                      <span className="badge bg-brand-red text-white text-[9px] font-extrabold tracking-wider uppercase">
-                        {b.badge}
+                    {b.badge ? (
+                      <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-brand-red text-white text-[9px] font-mono font-bold tracking-widest uppercase shadow-xs">
+                        <Sparkles size={10} /> {b.badge}
                       </span>
-                    )}
-                    <span className="badge bg-white/90 text-ink text-[10px] font-bold font-mono ml-auto">
-                      Priority: {b.priority}
+                    ) : <span />}
+                    <span className="px-2 py-0.5 rounded-full bg-white/90 backdrop-blur-md text-ink text-[10px] font-bold font-mono">
+                      PRIORITY #{b.priority}
                     </span>
                   </div>
 
                   <div>
-                    <h3 className="text-white text-base font-extrabold line-clamp-1">{b.title || 'Untitled Banner'}</h3>
+                    <h3 className="text-white text-lg font-black uppercase tracking-tight line-clamp-1 font-sans">
+                      {b.title || 'Untitled Banner'}
+                    </h3>
                     {b.subtitle && (
-                      <p className="text-white/80 text-xs line-clamp-1 mt-0.5">{b.subtitle}</p>
+                      <p className="text-white/80 text-xs line-clamp-1 mt-0.5">
+                        {b.subtitle}
+                      </p>
                     )}
                   </div>
                 </div>
@@ -188,30 +252,36 @@ export function BannersPage() {
               {/* Details & Actions */}
               <div className="p-4 space-y-3">
                 <div className="flex items-center justify-between text-xs">
-                  <span className="text-muted font-medium flex items-center gap-1">
-                    Link: <span className="font-mono text-ink font-semibold">{b.targetUrl}</span>
+                  <span className="text-muted font-medium flex items-center gap-1.5">
+                    Target:{' '}
+                    <span className="font-mono text-ink font-bold bg-beige/60 px-2 py-0.5 rounded">
+                      {b.targetUrl}
+                    </span>
                     <ExternalLink size={12} className="text-muted" />
                   </span>
                   <span className="text-muted font-medium">
-                    CTA: <span className="text-ink font-semibold">{b.ctaText}</span>
+                    CTA:{' '}
+                    <span className="text-ink font-bold font-mono text-[11px]">
+                      "{b.ctaText}"
+                    </span>
                   </span>
                 </div>
 
-                <div className="flex items-center justify-between pt-2 border-t border-border">
+                <div className="flex items-center justify-between pt-2.5 border-t border-border/60">
                   <div className="flex items-center gap-2">
                     <button
-                      onClick={() => handleToggle(b.id, b.isActive)}
-                      className="inline-flex items-center gap-1.5 text-xs font-semibold"
+                      onClick={() => handleToggle(b.id, b.isActive, b.title)}
+                      className="inline-flex items-center gap-2 text-xs font-semibold"
                       title={b.isActive ? 'Active — click to disable' : 'Inactive — click to enable'}
                     >
                       {b.isActive ? (
                         <>
-                          <ToggleRight size={22} className="text-brand-red" />
-                          <span className="badge badge-success text-[9px]">Active</span>
+                          <ToggleRight size={24} className="text-emerald-600" />
+                          <span className="badge badge-success text-[9px]">Live On Store</span>
                         </>
                       ) : (
                         <>
-                          <ToggleLeft size={22} className="text-muted" />
+                          <ToggleLeft size={24} className="text-muted" />
                           <span className="badge badge-neutral text-[9px]">Draft</span>
                         </>
                       )}
@@ -221,14 +291,14 @@ export function BannersPage() {
                   <div className="flex items-center gap-1">
                     <button
                       onClick={() => openEdit(b)}
-                      className="p-1.5 text-muted hover:text-ink rounded hover:bg-beige transition-colors"
+                      className="btn-ghost p-2 text-muted hover:text-ink hover:bg-beige"
                       title="Edit banner"
                     >
                       <Pencil size={15} />
                     </button>
                     <button
-                      onClick={() => handleDelete(b.id)}
-                      className="p-1.5 text-muted hover:text-danger rounded hover:bg-danger-light transition-colors"
+                      onClick={() => setBannerToDelete(b)}
+                      className="btn-ghost p-2 text-rose-500 hover:text-rose-700 hover:bg-rose-50"
                       title="Delete banner"
                     >
                       <Trash2 size={15} />
@@ -243,23 +313,28 @@ export function BannersPage() {
 
       {/* Modal */}
       {showModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-xs">
-          <div className="bg-white rounded-xl shadow-elevated w-full max-w-lg max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between p-5 border-b border-border">
-              <h2 className="text-base font-bold text-ink">
-                {editId ? 'Edit Hero Banner' : 'Create Hero Banner'}
-              </h2>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="bg-white rounded-3xl shadow-2xl border border-border/80 w-full max-w-lg max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between p-6 border-b border-border/70">
+              <div>
+                <h2 className="text-base font-black uppercase tracking-wide text-ink font-sans">
+                  {editId ? 'Edit Hero Banner' : 'Create Hero Banner'}
+                </h2>
+                <span className="text-xs text-muted">
+                  Configure storefront slide graphics, headline copy, and destination URL.
+                </span>
+              </div>
               <button
                 onClick={() => setShowModal(false)}
-                className="p-1 text-muted hover:text-ink rounded hover:bg-beige transition-colors"
+                className="w-7 h-7 rounded-full bg-beige/60 hover:bg-beige flex items-center justify-center text-muted hover:text-ink font-bold"
               >
-                <X size={18} />
+                <X size={15} />
               </button>
             </div>
 
-            <form onSubmit={handleSave} className="p-5 space-y-4">
+            <form onSubmit={handleSave} className="p-6 space-y-4">
               <div>
-                <label className="admin-label">Headline Title</label>
+                <label className="admin-label">Headline Title *</label>
                 <input
                   type="text"
                   required
@@ -283,7 +358,7 @@ export function BannersPage() {
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="admin-label">CTA Button Label</label>
+                  <label className="admin-label">CTA Button Label *</label>
                   <input
                     type="text"
                     required
@@ -294,11 +369,11 @@ export function BannersPage() {
                   />
                 </div>
                 <div>
-                  <label className="admin-label">Target URL</label>
+                  <label className="admin-label">Target URL *</label>
                   <input
                     type="text"
                     required
-                    placeholder="/shop or /custom/design"
+                    placeholder="/shop or /customizer"
                     value={form.targetUrl}
                     onChange={(e) => setForm({ ...form, targetUrl: e.target.value })}
                     className="admin-input font-mono text-xs"
@@ -307,7 +382,7 @@ export function BannersPage() {
               </div>
 
               <div>
-                <label className="admin-label">Desktop Image URL</label>
+                <label className="admin-label">Desktop Image URL *</label>
                 <input
                   type="text"
                   required
@@ -322,7 +397,7 @@ export function BannersPage() {
                 <label className="admin-label">Mobile Image URL (Optional)</label>
                 <input
                   type="text"
-                  placeholder="Leave empty to use desktop image"
+                  placeholder="Leave empty to inherit desktop image"
                   value={form.mobileImageUrl}
                   onChange={(e) => setForm({ ...form, mobileImageUrl: e.target.value })}
                   className="admin-input font-mono text-xs"
@@ -337,7 +412,7 @@ export function BannersPage() {
                     placeholder="EXCLUSIVE DROP"
                     value={form.badge}
                     onChange={(e) => setForm({ ...form, badge: e.target.value })}
-                    className="admin-input"
+                    className="admin-input uppercase font-mono text-xs"
                   />
                 </div>
                 <div>
@@ -352,24 +427,24 @@ export function BannersPage() {
                 </div>
               </div>
 
-              <div className="flex items-center gap-2 pt-2">
+              <div className="flex items-center gap-2 pt-1">
                 <input
                   type="checkbox"
                   id="bannerIsActive"
                   checked={form.isActive}
                   onChange={(e) => setForm({ ...form, isActive: e.target.checked })}
-                  className="rounded border-border text-brand-red focus:ring-brand-red h-4 w-4"
+                  className="w-4 h-4 rounded border-border text-brand-red focus:ring-brand-red"
                 />
-                <label htmlFor="bannerIsActive" className="text-xs font-semibold text-ink cursor-pointer">
-                  Active (display on storefront)
+                <label htmlFor="bannerIsActive" className="text-xs font-bold text-ink cursor-pointer">
+                  Active (display on storefront carousel immediately)
                 </label>
               </div>
 
-              <div className="flex justify-end gap-2 pt-4 border-t border-border">
+              <div className="flex justify-end gap-2.5 pt-4 border-t border-border/70">
                 <button
                   type="button"
                   onClick={() => setShowModal(false)}
-                  className="btn-secondary"
+                  className="btn-outline"
                 >
                   Cancel
                 </button>
@@ -379,13 +454,26 @@ export function BannersPage() {
                   className="btn-primary"
                 >
                   {saving && <LoaderCircle size={14} className="animate-spin" />}
-                  <span>{saving ? 'Saving…' : editId ? 'Update Banner' : 'Create Banner'}</span>
+                  <span>{saving ? 'Saving…' : editId ? 'Update Slide' : 'Publish Slide'}</span>
                 </button>
               </div>
             </form>
           </div>
         </div>
       )}
+
+      {/* Delete Banner Modal */}
+      <ConfirmModal
+        isOpen={bannerToDelete !== null}
+        title="Delete Hero Banner"
+        message={`Are you sure you want to delete "${bannerToDelete?.title || 'Untitled'}"? It will be removed from the storefront hero slider immediately.`}
+        confirmText="Delete Banner"
+        cancelText="Cancel"
+        isDestructive={true}
+        loading={deleting}
+        onConfirm={handleConfirmDelete}
+        onCancel={() => setBannerToDelete(null)}
+      />
     </div>
   );
 }

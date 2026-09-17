@@ -46,17 +46,29 @@ async function request<T = unknown>(path: string, opts: ReqOptions = {}): Promis
     body: body ? JSON.stringify(body) : undefined,
   });
 
-  const json = await res.json();
+  if (res.status === 204) {
+    return null as T;
+  }
 
-  if (!res.ok || json.success === false) {
+  const text = await res.text();
+  let json: any = null;
+  if (text) {
+    try {
+      json = JSON.parse(text);
+    } catch {
+      json = null;
+    }
+  }
+
+  if (!res.ok || (json && json.success === false)) {
     throw new ApiError(
       res.status,
-      json.error?.code || 'UNKNOWN',
-      json.error?.message || res.statusText,
+      json?.error?.code || 'UNKNOWN',
+      json?.error?.message || res.statusText || 'Request failed',
     );
   }
 
-  return json.data as T;
+  return (json?.data !== undefined ? json.data : json) as T;
 }
 
 export const api = {
@@ -70,4 +82,26 @@ export const api = {
     request<T>(path, { method: 'PUT', body }),
   delete: <T = unknown>(path: string) =>
     request<T>(path, { method: 'DELETE' }),
+  upload: async (file: File, category = 'products'): Promise<{ url: string; name?: string; id?: string }> => {
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('category', category);
+    const token = localStorage.getItem('bingooo_auth_token');
+    const headers: Record<string, string> = {};
+    if (token) headers['Authorization'] = `Bearer ${token}`;
+    const res = await fetch(`${API_BASE}/media/upload`, {
+      method: 'POST',
+      headers,
+      body: formData,
+    });
+    const json = await res.json();
+    if (!res.ok || json.success === false) {
+      throw new ApiError(
+        res.status,
+        json.error?.code || 'UPLOAD_FAILED',
+        json.error?.message || 'Failed to upload image',
+      );
+    }
+    return json.data || json;
+  },
 };

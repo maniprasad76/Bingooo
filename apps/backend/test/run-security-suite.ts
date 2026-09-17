@@ -384,6 +384,29 @@ async function runSecuritySuite() {
       `Observed response statuses: ${statuses.join(', ')}`,
     );
 
+    // Test coupon code brute-force defense (/coupons/validate)
+    console.log('  Testing coupon code brute-force defense (/coupons/validate)...');
+    const couponRequests = [];
+    for (let i = 0; i < 14; i++) {
+      couponRequests.push(
+        fetch(`${BASE_URL}/coupons/validate`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ code: `DISCOUNT_${i}`, orderSubtotal: 1000 }),
+        }),
+      );
+    }
+    const couponResponses = await Promise.all(couponRequests);
+    const couponStatuses = couponResponses.map((r) => r.status);
+    const couponThrottled = couponStatuses.filter((s) => s === 429).length;
+
+    assert(
+      couponThrottled > 0,
+      'Rate Limiting',
+      `Anti-coupon brute-force throttles rapid enumeration with HTTP 429 (${couponThrottled} requests blocked)`,
+      `Observed response statuses: ${couponStatuses.join(', ')}`,
+    );
+
     console.log('\n======================================================');
     const totalPassed = results.filter((r) => r.passed).length;
     const totalFailed = results.filter((r) => !r.passed).length;

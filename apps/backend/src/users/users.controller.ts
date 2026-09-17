@@ -43,6 +43,14 @@ export class UsersController {
     return this.usersService.updateProfile(req.user.id, body);
   }
 
+  @Delete('profile')
+  @UseGuards(AuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Permanently delete user account and personal data (App Store 5.1.1(v) compliance)' })
+  deleteProfile(@Req() req: any) {
+    return this.usersService.deleteAccount(req.user.id);
+  }
+
   @Get('addresses')
   @UseGuards(AuthGuard)
   @ApiBearerAuth()

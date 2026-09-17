@@ -314,6 +314,9 @@ export function SearchPage() {
                   category={prod.category}
                   variants={prod.variants}
                   images={prod.images}
+                  bestseller={prod.bestseller}
+                  saleTag={prod.sale_tag || prod.saleTag}
+                  badgeText={prod.badge_text || prod.badgeText}
                 />
               ))}
             </div>
@@ -327,9 +330,9 @@ export function SearchPage() {
       <section className="grid grid-cols-1 lg:grid-cols-[55%_45%] min-h-[520px] lg:min-h-[580px]">
         <div className="min-h-[360px] lg:min-h-full overflow-hidden">
           <img
-            src="https://images.unsplash.com/photo-1551488831-00ddcb6c6bd3?auto=format&fit=crop&w=1500&q=90"
-            alt="Bingooo custom atelier"
-            className="w-full h-full object-cover grayscale"
+            src="/custom-studio.jpg"
+            alt="Bingooo Custom Studio atelier workshop"
+            className="w-full h-full object-cover object-center"
           />
         </div>
 

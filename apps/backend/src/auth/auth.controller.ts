@@ -90,8 +90,9 @@ export class AuthController {
 
   @Post('change-password')
   @UseGuards(AuthGuard)
+  @Throttle({ default: { limit: 5, ttl: 60000 } })
   @ApiBearerAuth()
-  @ApiOperation({ summary: 'Change password for current user' })
+  @ApiOperation({ summary: 'Change password for current user (Rate limited: 5 req/min)' })
   changePassword(@Req() req: any, @Body() body: ChangePasswordDto) {
     return this.authService.changePassword(req.user.id, body);
   }

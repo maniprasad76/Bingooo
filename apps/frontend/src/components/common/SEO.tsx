@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { generateBreadcrumbsSchema, type BreadcrumbItem } from '../../lib/seo/schema';
 
 export interface SEOProps {
   title?: string;
@@ -8,8 +9,12 @@ export interface SEOProps {
   noindex?: boolean;
   ogType?: 'website' | 'article' | 'product';
   ogImage?: string;
+  /** Product price in INR — emits product:price OG tags when ogType="product" */
+  productPrice?: number;
   schema?: Record<string, any> | Array<Record<string, any>>;
   hreflang?: boolean | Array<{ lang: string; href: string }>;
+  /** Auto-generates BreadcrumbList schema and appends it to schema output */
+  breadcrumbs?: BreadcrumbItem[];
 }
 
 const DEFAULT_TITLE = "Bingooo — Premium Heavyweight Men's Wear";
@@ -69,8 +74,10 @@ export function useSEO({
   noindex = false,
   ogType = 'website',
   ogImage = DEFAULT_IMAGE,
+  productPrice,
   schema,
   hreflang = true,
+  breadcrumbs,
 }: SEOProps) {
   useEffect(() => {
     const fullTitle = formatSeoTitle(title);
@@ -139,16 +146,29 @@ export function useSEO({
       });
     }
 
-    // JSON-LD Schema structured data
+    // Product price OG tags (Google Shopping / Facebook Shops)
+    if (ogType === 'product' && productPrice) {
+      setMetaTag('property', 'product:price:amount', String(productPrice));
+      setMetaTag('property', 'product:price:currency', 'INR');
+    }
+
+    // JSON-LD Schema structured data — merge breadcrumbs automatically
     const existingScript = document.getElementById('bingooo-json-ld');
     if (existingScript) {
       existingScript.remove();
     }
-    if (schema && !noindex) {
+    const breadcrumbSchema = breadcrumbs && breadcrumbs.length > 0
+      ? generateBreadcrumbsSchema(breadcrumbs)
+      : null;
+    const allSchemas = [
+      ...(schema ? (Array.isArray(schema) ? schema : [schema]) : []),
+      ...(breadcrumbSchema ? [breadcrumbSchema] : []),
+    ];
+    if (allSchemas.length > 0 && !noindex) {
       const script = document.createElement('script');
       script.id = 'bingooo-json-ld';
       script.type = 'application/ld+json';
-      script.text = JSON.stringify(schema);
+      script.text = JSON.stringify(allSchemas.length === 1 ? allSchemas[0] : allSchemas);
       document.head.appendChild(script);
     }
 
@@ -165,8 +185,10 @@ export function useSEO({
     noindex,
     ogType,
     ogImage,
+    productPrice,
     schema,
     hreflang,
+    breadcrumbs,
   ]);
 }
 
@@ -180,6 +202,14 @@ export function SEO(props: SEOProps) {
     `${BASE_URL}${typeof window !== 'undefined' ? window.location.pathname : ''}`;
   const ogImg = props.ogImage || DEFAULT_IMAGE;
   const fullImg = ogImg.startsWith('http') ? ogImg : `${BASE_URL}${ogImg}`;
+
+  const breadcrumbSchema = props.breadcrumbs && props.breadcrumbs.length > 0
+    ? generateBreadcrumbsSchema(props.breadcrumbs)
+    : null;
+  const allSchemas = [
+    ...(props.schema ? (Array.isArray(props.schema) ? props.schema : [props.schema]) : []),
+    ...(breadcrumbSchema ? [breadcrumbSchema] : []),
+  ];
 
   return (
     <>
@@ -196,15 +226,27 @@ export function SEO(props: SEOProps) {
       <link rel="canonical" href={resolvedCanonical} />
       <meta property="og:title" content={fullTitle} />
       <meta property="og:description" content={desc} />
+      <meta property="og:type" content={props.ogType || 'website'} />
       <meta property="og:image" content={fullImg} />
       <meta property="og:url" content={resolvedCanonical} />
+      <meta property="og:site_name" content="Bingooo Men's Wear" />
+      <meta property="og:locale" content="en_IN" />
+      {props.ogType === 'product' && props.productPrice && (
+        <>
+          <meta property="product:price:amount" content={String(props.productPrice)} />
+          <meta property="product:price:currency" content="INR" />
+        </>
+      )}
+      <meta name="twitter:card" content="summary_large_image" />
       <meta name="twitter:title" content={fullTitle} />
       <meta name="twitter:description" content={desc} />
       <meta name="twitter:image" content={fullImg} />
-      {props.schema && !props.noindex && (
+      {allSchemas.length > 0 && !props.noindex && (
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(props.schema) }}
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(allSchemas.length === 1 ? allSchemas[0] : allSchemas),
+          }}
         />
       )}
     </>

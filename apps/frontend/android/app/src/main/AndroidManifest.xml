@@ -35,8 +35,9 @@
         </provider>
     </application>
 
-    <!-- Permissions -->
-
+    <!-- ── Minimal Permissions (Google Play Policy Compliance) ── -->
+    <!-- INTERNET: Access atelier REST API, product images, and secure payment gateway -->
     <uses-permission android:name="android.permission.INTERNET" />
+    <!-- VIBRATE: Tactile micro-haptic feedback on garment buttons and studio customization -->
     <uses-permission android:name="android.permission.VIBRATE" />
 </manifest>

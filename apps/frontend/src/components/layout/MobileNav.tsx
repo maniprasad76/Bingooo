@@ -1,22 +1,38 @@
 import { Link, useLocation } from 'react-router-dom';
 import { Home, LayoutGrid, Sparkles, ShoppingBag, User } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '../../lib/utils';
 import { useCartStore } from '../../store/cart';
+import { useUIStore } from '../../store/ui';
 import { triggerHaptic } from '../../lib/native/capacitorBridge';
 
 export function MobileNav() {
   const location = useLocation();
   const itemCount = useCartStore((s) => s.itemCount);
   const openDrawer = useCartStore((s) => s.openDrawer);
+  const mobileMenuOpen = useUIStore((s) => s.mobileMenuOpen);
 
   const getActiveTab = () => {
     const path = location.pathname;
     if (path === '/') return 'home';
-    if (path.startsWith('/shop') || path.startsWith('/category') || path.startsWith('/product')) return 'shop';
+    if (
+      path.startsWith('/shop') ||
+      path.startsWith('/category') ||
+      path.startsWith('/product') ||
+      path.startsWith('/collection')
+    ) {
+      return 'shop';
+    }
     if (path.startsWith('/customize')) return 'custom';
     if (path.startsWith('/cart') || path.startsWith('/checkout')) return 'bag';
-    if (path.startsWith('/account') || path.startsWith('/login') || path.startsWith('/signup')) return 'profile';
+    if (
+      path.startsWith('/account') ||
+      path.startsWith('/login') ||
+      path.startsWith('/signup') ||
+      path.startsWith('/wishlist')
+    ) {
+      return 'profile';
+    }
     return '';
   };
 
@@ -31,96 +47,109 @@ export function MobileNav() {
     },
     {
       id: 'shop',
-      label: 'Shop',
+      label: 'Shop Catalog',
       href: '/shop',
       icon: LayoutGrid,
     },
     {
       id: 'custom',
-      label: 'Custom',
+      label: 'Custom Studio',
       href: '/customize',
       icon: Sparkles,
       isHighlight: true,
     },
     {
       id: 'bag',
-      label: 'Bag',
+      label: 'Shopping Bag',
       onClick: openDrawer,
       icon: ShoppingBag,
       badge: itemCount,
     },
     {
       id: 'profile',
-      label: 'Profile',
+      label: 'Account',
       href: '/account',
       icon: User,
     },
   ];
 
-  // In the Atelier Customizer, hide global mobile nav to yield space to MobileCustomizerBar
-  if (location.pathname.startsWith('/customize')) {
+  // In the Atelier Customizer or when mobile menu drawer is open, hide global mobile nav
+  if (location.pathname.startsWith('/customize') || mobileMenuOpen) {
     return null;
   }
 
   return (
     <nav
-      className="fixed bottom-0 inset-x-0 z-40 w-full bg-[#FAF8F5]/95 backdrop-blur-md border-t border-[#DDD3C5] shadow-[0_-4px_20px_rgba(23,23,23,0.06)] md:hidden"
-      style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}
+      className="fixed left-1/2 -translate-x-1/2 z-40 w-[calc(100%-28px)] max-w-[364px] md:hidden select-none pointer-events-none"
+      style={{ bottom: 'calc(env(safe-area-inset-bottom, 0px) + 12px)' }}
       aria-label="Mobile Navigation"
     >
-      <div className="flex h-15 w-full items-center justify-around px-1">
+      <div className="pointer-events-auto h-14 w-full bg-[#171717]/92 backdrop-blur-xl border border-white/15 rounded-full px-2 py-1.5 flex items-center justify-between shadow-[0_16px_36px_rgba(0,0,0,0.35),0_2px_8px_rgba(0,0,0,0.2)] ring-1 ring-white/5">
         {navItems.map((item) => {
           const isActive = activeTab === item.id;
           const Icon = item.icon;
 
-          const content = (
+          const buttonContent = (
             <motion.div
-              whileTap={{ scale: 0.9 }}
+              whileTap={{ scale: 0.86 }}
               className={cn(
-                'relative flex flex-col items-center justify-center w-full h-full py-1 transition-colors duration-150 select-none',
-                isActive ? 'text-[#E6321C]' : 'text-[#6F6A63] hover:text-[#171717]'
+                'relative flex h-11 w-full items-center justify-center rounded-full transition-colors duration-200',
+                isActive ? 'text-white' : 'text-[#9E988F] hover:text-white'
               )}
             >
-              {/* Active top indicator pill */}
+              {/* Smooth active sliding capsule pill */}
               {isActive && (
-                <motion.span
-                  layoutId="mobile-nav-top-pill"
-                  transition={{ type: 'spring', stiffness: 450, damping: 35 }}
-                  className="absolute top-0 h-[2.5px] w-7 bg-[#E6321C] rounded-full"
+                <motion.div
+                  layoutId="mobile-nav-active-pill"
+                  transition={{ type: 'spring', stiffness: 450, damping: 32 }}
+                  className="absolute inset-0 rounded-full bg-white/12 border border-white/15 shadow-inner"
                 />
               )}
 
-              {/* Icon Container with optional cart badge */}
-              <div className="relative flex items-center justify-center pt-1 pb-0.5">
+              {/* Icon Container with Badge */}
+              <div className="relative flex items-center justify-center">
                 <Icon
                   size={20}
                   className={cn(
-                    'transition-transform duration-200',
-                    isActive ? 'scale-105 stroke-[2.2]' : 'stroke-[1.8]',
-                    item.isHighlight && !isActive && 'text-[#E6321C]'
+                    'transition-all duration-200',
+                    isActive
+                      ? 'scale-110 stroke-[2.2]'
+                      : 'stroke-[1.8]',
+                    item.isHighlight && !isActive && 'text-[#E6321C] stroke-[2]'
                   )}
                 />
 
-                {/* Cart Badge */}
-                {item.id === 'bag' && typeof item.badge === 'number' && item.badge > 0 && (
-                  <span className="absolute -top-1 -right-2.5 flex h-4 min-w-4 px-1 items-center justify-center rounded-full bg-[#E6321C] text-[9px] font-extrabold text-white shadow-xs">
-                    {item.badge}
-                  </span>
+                {/* Cart Badge with smooth pop animation */}
+                {item.id === 'bag' && (
+                  <AnimatePresence>
+                    {typeof item.badge === 'number' && item.badge > 0 && (
+                      <motion.span
+                        initial={{ scale: 0, opacity: 0 }}
+                        animate={{ scale: 1, opacity: 1 }}
+                        exit={{ scale: 0, opacity: 0 }}
+                        transition={{ type: 'spring', stiffness: 500, damping: 28 }}
+                        className="absolute -top-1.5 -right-2 flex h-[18px] min-w-[18px] px-1 items-center justify-center rounded-full bg-[#E6321C] text-[10px] font-black text-white font-mono shadow-[0_2px_8px_rgba(230,50,28,0.6)]"
+                      >
+                        {item.badge > 99 ? '99+' : item.badge}
+                      </motion.span>
+                    )}
+                  </AnimatePresence>
                 )}
 
-                {/* Custom Studio highlight pulse */}
+                {/* Custom Studio highlight dot when inactive */}
                 {item.isHighlight && !isActive && (
-                  <span className="absolute -top-0.5 -right-1 h-1.5 w-1.5 rounded-full bg-[#E6321C]" />
+                  <span className="absolute -top-0.5 -right-1 h-1.5 w-1.5 rounded-full bg-[#E6321C] shadow-[0_0_6px_#E6321C]" />
                 )}
               </div>
 
-              {/* Label */}
-              <span className={cn(
-                'text-[10px] font-heading uppercase tracking-wider mt-0.5 leading-none',
-                isActive ? 'font-bold text-[#E6321C]' : 'font-medium text-[#6F6A63]'
-              )}>
-                {item.label}
-              </span>
+              {/* Active Signal Red Micro-Dot */}
+              {isActive && (
+                <motion.span
+                  layoutId="mobile-nav-red-dot"
+                  transition={{ type: 'spring', stiffness: 500, damping: 35 }}
+                  className="absolute bottom-1 w-1 h-1 rounded-full bg-[#E6321C] shadow-[0_0_6px_#E6321C]"
+                />
+              )}
             </motion.div>
           );
 
@@ -133,10 +162,11 @@ export function MobileNav() {
                   triggerHaptic('light');
                   item.onClick!();
                 }}
-                className="flex-1 h-full flex items-center justify-center focus:outline-none focus-visible:ring-2 focus-visible:ring-[#E6321C] focus-visible:ring-inset"
+                className="relative flex-1 h-full flex items-center justify-center focus:outline-none focus-visible:ring-2 focus-visible:ring-[#E6321C] focus-visible:ring-offset-1 focus-visible:ring-offset-[#171717] rounded-full"
                 aria-label={item.label}
+                title={item.label}
               >
-                {content}
+                {buttonContent}
               </button>
             );
           }
@@ -146,11 +176,12 @@ export function MobileNav() {
               key={item.id}
               to={item.href!}
               onClick={() => triggerHaptic('selection')}
-              className="flex-1 h-full flex items-center justify-center focus:outline-none focus-visible:ring-2 focus-visible:ring-[#E6321C] focus-visible:ring-inset"
+              className="relative flex-1 h-full flex items-center justify-center focus:outline-none focus-visible:ring-2 focus-visible:ring-[#E6321C] focus-visible:ring-offset-1 focus-visible:ring-offset-[#171717] rounded-full"
               aria-label={item.label}
+              title={item.label}
               aria-current={isActive ? 'page' : undefined}
             >
-              {content}
+              {buttonContent}
             </Link>
           );
         })}
@@ -158,4 +189,5 @@ export function MobileNav() {
     </nav>
   );
 }
+
 

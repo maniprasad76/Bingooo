@@ -1,135 +1,117 @@
 // ─────────────────────────────────────────────────────────
-// Bingooo Atelier Progressive Web App Service Worker (v1.0)
+// Bingooo Atelier Progressive Web App Service Worker
+// Cache-First for static assets, Network-First for API data
 // ─────────────────────────────────────────────────────────
 
-const CACHE_NAME = 'bingooo-cache-v4';
+const CACHE_NAME = 'bingooo-cache-v1';
 const STATIC_ASSETS = [
   '/',
   '/index.html',
-  '/manifest.webmanifest',
-  '/custom/tshirt-step-1.png',
-  '/custom/tshirt-step-2.png',
-  '/custom/tshirt-step-3-black.png',
-  '/custom/tshirt-step-1-beige.png',
+  '/manifest.json',
+  '/favicon.ico',
 ];
 
-// 1. Install: Pre-cache core shell & garment assets
+// Install: pre-cache critical shell assets
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll(STATIC_ASSETS).catch((err) => {
-        console.warn('[PWA SW] Pre-cache partial failure:', err);
+      return cache.addAll(STATIC_ASSETS).catch(() => {
+        // Continue even if some optional shell assets fail
       });
     }).then(() => self.skipWaiting())
   );
 });
 
-// 2. Activate: Clean stale caches immediately
+// Activate: clean up outdated caches
 self.addEventListener('activate', (event) => {
   event.waitUntil(
-    caches.keys().then((cacheNames) => {
+    caches.keys().then((keys) => {
       return Promise.all(
-        cacheNames
-          .filter((name) => name !== CACHE_NAME)
-          .map((name) => caches.delete(name))
+        keys.map((key) => {
+          if (key !== CACHE_NAME) {
+            return caches.delete(key);
+          }
+        })
       );
     }).then(() => self.clients.claim())
   );
 });
 
-// 3. Fetch: Context-aware caching strategies
+// Fetch: smart caching strategy
 self.addEventListener('fetch', (event) => {
   const { request } = event;
   const url = new URL(request.url);
 
-  // Skip non-GET requests or browser extension requests
-  if (request.method !== 'GET' || !url.protocol.startsWith('http')) {
+  // Only handle GET requests
+  if (request.method !== 'GET') return;
+
+  // Ignore non-http(s) requests (e.g. chrome-extension://)
+  if (!url.protocol.startsWith('http')) return;
+
+  // 1. API GET requests: Network-first, fallback to cache
+  if (url.pathname.startsWith('/api/v1/')) {
+    event.respondWith(
+      fetch(request)
+        .then((networkResponse) => {
+          if (networkResponse.ok) {
+            const clone = networkResponse.clone();
+            caches.open(CACHE_NAME).then((cache) => {
+              cache.put(request, clone);
+            });
+          }
+          return networkResponse;
+        })
+        .catch(() => {
+          // Offline fallback from cache
+          return caches.match(request).then((cached) => {
+            if (cached) return cached;
+            return new Response(
+              JSON.stringify({
+                success: false,
+                offline: true,
+                message: 'You are currently offline. Showing cached snapshot if available.',
+              }),
+              {
+                status: 200,
+                headers: { 'Content-Type': 'application/json' },
+              }
+            );
+          });
+        })
+    );
     return;
   }
 
-  // Always fetch favicons, logos, and manifests straight from network (never serve stale)
+  // 2. Static assets (CSS, JS, WebP, SVG, Fonts, Woff2): Cache-first, fallback to network
   if (
-    url.pathname.includes('favicon') ||
-    url.pathname.includes('logo') ||
-    url.pathname.includes('icon') ||
-    url.pathname.includes('manifest')
+    url.pathname.match(/\.(js|css|webp|png|jpg|jpeg|svg|woff2|ttf)$/) ||
+    url.origin.includes('fonts.googleapis.com') ||
+    url.origin.includes('fonts.gstatic.com')
   ) {
-    return;
-  }
-
-  // A. Google Fonts: Cache-First
-  if (url.origin.includes('fonts.googleapis.com') || url.origin.includes('fonts.gstatic.com')) {
     event.respondWith(
       caches.match(request).then((cached) => {
         if (cached) return cached;
-        return fetch(request).then((networkRes) => {
-          if (networkRes.status === 200) {
-            const resClone = networkRes.clone();
-            caches.open(CACHE_NAME).then((c) => c.put(request, resClone));
+        return fetch(request).then((networkResponse) => {
+          if (networkResponse.ok) {
+            const clone = networkResponse.clone();
+            caches.open(CACHE_NAME).then((cache) => {
+              cache.put(request, clone);
+            });
           }
-          return networkRes;
+          return networkResponse;
         });
       })
     );
     return;
   }
 
-  // B. Static Images & Garment Mockups: Cache-First
-  if (
-    request.destination === 'image' ||
-    url.pathname.match(/\.(png|jpg|jpeg|svg|webp|ico)$/i)
-  ) {
+  // 3. Navigation requests (HTML document): Network-first, fallback to cached index.html
+  if (request.mode === 'navigate') {
     event.respondWith(
-      caches.match(request).then((cached) => {
-        if (cached) return cached;
-        return fetch(request).then((networkRes) => {
-          if (networkRes.status === 200) {
-            const resClone = networkRes.clone();
-            caches.open(CACHE_NAME).then((c) => c.put(request, resClone));
-          }
-          return networkRes;
-        }).catch(() => caches.match('/favicon.svg'));
+      fetch(request).catch(() => {
+        return caches.match('/index.html') || caches.match('/');
       })
     );
     return;
   }
-
-  // C. Catalog API: Network-First with Cache Fallback
-  if (url.pathname.startsWith('/api/v1/products') || url.pathname.startsWith('/api/v1/categories')) {
-    event.respondWith(
-      fetch(request)
-        .then((networkRes) => {
-          if (networkRes.status === 200) {
-            const resClone = networkRes.clone();
-            caches.open(CACHE_NAME).then((c) => c.put(request, resClone));
-          }
-          return networkRes;
-        })
-        .catch(() => caches.match(request))
-    );
-    return;
-  }
-
-  // D. App Shell / Navigation: Network-First falling back to cached index.html
-  if (request.mode === 'navigate') {
-    event.respondWith(
-      fetch(request).catch(() => caches.match('/index.html'))
-    );
-    return;
-  }
-
-  // E. Bundled JS / CSS: Stale-While-Revalidate
-  event.respondWith(
-    caches.match(request).then((cached) => {
-      const fetchPromise = fetch(request).then((networkRes) => {
-        if (networkRes.status === 200) {
-          const resClone = networkRes.clone();
-          caches.open(CACHE_NAME).then((c) => c.put(request, resClone));
-        }
-        return networkRes;
-      }).catch(() => null);
-
-      return cached || fetchPromise;
-    })
-  );
 });

@@ -5,6 +5,7 @@ import { ProductQueryDto, CreateProductDto, UpdateProductDto, CreateVariantDto }
 import { AuthGuard } from '../common/guards/auth.guard';
 import { RolesGuard } from '../common/guards/roles.guard';
 import { Permissions } from '../common/decorators/permissions.decorator';
+import { Cacheable } from '../common/interceptors/cache.interceptor';
 
 @ApiTags('Products')
 @Controller('products')
@@ -12,12 +13,14 @@ export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
 
   @Get()
+  @Cacheable(30000)
   @ApiOperation({ summary: 'List products with filters, search, sort, pagination' })
   findAll(@Query() query: ProductQueryDto) {
     return this.productsService.findAll(query);
   }
 
   @Get('filters')
+  @Cacheable(60000)
   @ApiOperation({ summary: 'Get available filter values (sizes, colors, price range)' })
   getFilters(@Query('categorySlug') categorySlug?: string) {
     return this.productsService.getFilters(categorySlug);
@@ -33,6 +36,7 @@ export class ProductsController {
   }
 
   @Get(':slug')
+  @Cacheable(60000)
   @ApiOperation({ summary: 'Get product by slug' })
   findBySlug(@Param('slug') slug: string) {
     return this.productsService.findBySlug(slug);
@@ -60,10 +64,10 @@ export class ProductsController {
   @UseGuards(AuthGuard, RolesGuard)
   @Permissions('products.delete')
   @ApiBearerAuth()
-  @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({ summary: 'Delete product (admin)' })
   remove(@Param('id') id: string) {
     this.productsService.remove(id);
+    return { success: true, message: 'Product deleted successfully' };
   }
 
   @Post(':id/variants')

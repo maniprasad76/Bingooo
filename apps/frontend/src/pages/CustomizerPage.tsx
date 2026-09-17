@@ -1,17 +1,52 @@
-import { useState, useRef, useMemo, useEffect } from 'react';
-import { Check, ArrowRight } from 'lucide-react';
+import { useState, useRef, useEffect } from 'react';
+import { motion, useMotionValue } from 'framer-motion';
+import {
+  Check,
+  ArrowRight,
+  ZoomIn,
+  ZoomOut,
+  RotateCcw,
+  Type,
+  Upload,
+  Image as ImageIcon,
+  Bold,
+  Italic,
+  Move,
+  Maximize2,
+  Crosshair,
+  ShoppingBag,
+} from 'lucide-react';
 import { useCart } from '../hooks/useCart';
 import { useToast } from '../components/ui/Toast';
 import { triggerHaptic } from '../lib/native/capacitorBridge';
 import { SEO } from '../components/common/SEO';
 import { getWhatsAppUrl, WhatsAppIcon } from '../components/ui/SocialIcons';
 
+interface ColorOption {
+  id?: string;
+  name: string;
+  hex: string;
+  textContrast: string;
+  frontImageUrl?: string;
+  backImageUrl?: string;
+  isActive?: boolean;
+}
+
 interface GarmentType {
-  id: 'tshirt' | 'oversized' | 'hoodie';
+  id: string;
   name: string;
   price: number;
   description: string;
+  isActive?: boolean;
+  colors?: ColorOption[];
 }
+
+const COLORS: ColorOption[] = [
+  { id: 'black', name: 'Black', hex: '#171717', textContrast: '#FFFFFF', frontImageUrl: '' },
+  { id: 'white', name: 'White', hex: '#FFFFFF', textContrast: '#171717', frontImageUrl: '' },
+  { id: 'beige', name: 'Beige', hex: '#D8C8B1', textContrast: '#171717', frontImageUrl: '' },
+  { id: 'red', name: 'Red', hex: '#E6321C', textContrast: '#FFFFFF', frontImageUrl: '' },
+];
 
 const GARMENTS: GarmentType[] = [
   {
@@ -19,75 +54,314 @@ const GARMENTS: GarmentType[] = [
     name: 'T-SHIRT',
     price: 999,
     description: '100% Combed Cotton Classic Crewneck',
+    colors: [
+      { id: 'black', name: 'Black', hex: '#171717', textContrast: '#FFFFFF', frontImageUrl: '' },
+      { id: 'white', name: 'White', hex: '#FFFFFF', textContrast: '#171717', frontImageUrl: '' },
+      { id: 'beige', name: 'Beige', hex: '#D8C8B1', textContrast: '#171717', frontImageUrl: '' },
+      { id: 'red', name: 'Red', hex: '#E6321C', textContrast: '#FFFFFF', frontImageUrl: '' },
+    ],
   },
   {
     id: 'oversized',
     name: 'OVERSIZED',
     price: 1299,
     description: '240 GSM Heavyweight Drop-Shoulder Fit',
+    colors: [
+      { id: 'black', name: 'Black', hex: '#171717', textContrast: '#FFFFFF', frontImageUrl: '' },
+      { id: 'white', name: 'White', hex: '#FFFFFF', textContrast: '#171717', frontImageUrl: '' },
+      { id: 'beige', name: 'Beige', hex: '#D8C8B1', textContrast: '#171717', frontImageUrl: '' },
+      { id: 'red', name: 'Red', hex: '#E6321C', textContrast: '#FFFFFF', frontImageUrl: '' },
+    ],
   },
   {
     id: 'hoodie',
     name: 'HOODIE',
     price: 2499,
     description: '350 GSM Brushed Fleece Pullover Hoodie',
+    colors: [
+      { id: 'black', name: 'Black', hex: '#171717', textContrast: '#FFFFFF', frontImageUrl: '' },
+      { id: 'white', name: 'White', hex: '#FFFFFF', textContrast: '#171717', frontImageUrl: '' },
+      { id: 'beige', name: 'Beige', hex: '#D8C8B1', textContrast: '#171717', frontImageUrl: '' },
+      { id: 'red', name: 'Red', hex: '#E6321C', textContrast: '#FFFFFF', frontImageUrl: '' },
+    ],
   },
-];
-
-interface ColorOption {
-  name: string;
-  hex: string;
-  textContrast: string;
-}
-
-const COLORS: ColorOption[] = [
-  { name: 'Black', hex: '#171717', textContrast: '#FFFFFF' },
-  { name: 'White', hex: '#FFFFFF', textContrast: '#171717' },
-  { name: 'Beige', hex: '#D8C8B1', textContrast: '#171717' },
-  { name: 'Red', hex: '#E6321C', textContrast: '#FFFFFF' },
 ];
 
 const SIZES = ['XS', 'S', 'M', 'L', 'XL'];
 
-type Position = 'CENTER' | 'LEFT CHEST' | 'BACK';
+// ─── 17 Curated Font Styles Across 3 Design Aesthetics ───────────────────────
+interface FontOption {
+  id: string;
+  name: string;
+  label: string;
+  family: string;
+  category: 'street' | 'luxury' | 'creative';
+  preview: string;
+}
+
+const FONT_CATEGORIES = [
+  { id: 'all', label: 'All Styles (17)' },
+  { id: 'street', label: 'Street & Cyber' },
+  { id: 'luxury', label: 'Luxury & Serif' },
+  { id: 'creative', label: 'Creative & Retro' },
+];
+
+const FONT_OPTIONS: FontOption[] = [
+  // Street & Cyber
+  { id: 'manrope', name: 'Manrope', label: 'Clean Modern', family: "'Manrope', sans-serif", category: 'street', preview: 'BINGOOO' },
+  { id: 'outfit', name: 'Outfit', label: 'High-End Street', family: "'Outfit', sans-serif", category: 'street', preview: 'STREET' },
+  { id: 'anton', name: 'Anton', label: 'Ultra Heavy', family: "'Anton', sans-serif", category: 'street', preview: 'HEAVY' },
+  { id: 'bebas', name: 'Bebas Neue', label: 'Bold Headline', family: "'Bebas Neue', sans-serif", category: 'street', preview: 'HEADLINE' },
+  { id: 'space', name: 'Space Grotesk', label: 'Brutalist Tech', family: "'Space Grotesk', sans-serif", category: 'street', preview: 'BRUTAL' },
+  { id: 'russo', name: 'Russo One', label: 'Impact Block', family: "'Russo One', sans-serif", category: 'street', preview: 'IMPACT' },
+  { id: 'bungee', name: 'Bungee', label: 'Cyber Arcade', family: "'Bungee', cursive", category: 'street', preview: 'ARCADE' },
+
+  // Luxury & Serif
+  { id: 'playfair', name: 'Playfair', label: 'Vogue Editorial', family: "'Playfair Display', serif", category: 'luxury', preview: 'Atelier' },
+  { id: 'cinzel', name: 'Cinzel', label: 'Royal Roman', family: "'Cinzel', serif", category: 'luxury', preview: 'IMPERIAL' },
+  { id: 'prata', name: 'Prata', label: 'Haute Couture', family: "'Prata', serif", category: 'luxury', preview: 'Elegance' },
+  { id: 'cormorant', name: 'Cormorant', label: 'Archival Serif', family: "'Cormorant Garamond', serif", category: 'luxury', preview: 'Archival' },
+  { id: 'syne', name: 'Syne', label: 'Avant-Garde', family: "'Syne', sans-serif", category: 'luxury', preview: 'AVANT' },
+
+  // Creative & Retro
+  { id: 'marker', name: 'Permanent Marker', label: 'Graffiti Tag', family: "'Permanent Marker', cursive", category: 'creative', preview: 'GRAFFITI' },
+  { id: 'caveat', name: 'Caveat', label: 'Artisan Script', family: "'Caveat', cursive", category: 'creative', preview: 'Handwritten' },
+  { id: 'righteous', name: 'Righteous', label: 'Retro 80s', family: "'Righteous', cursive", category: 'creative', preview: 'SYNTHWAVE' },
+  { id: 'mono', name: 'Plex Mono', label: 'Technical Spec', family: "'IBM Plex Mono', monospace", category: 'creative', preview: '240_GSM' },
+  { id: 'majormono', name: 'Major Mono', label: 'Glitch Monospace', family: "'Major Mono Display', monospace", category: 'creative', preview: '001//BIO' },
+];
+
+const TEXT_COLORS = [
+  { name: 'Auto', hex: '' },
+  { name: 'White', hex: '#FFFFFF' },
+  { name: 'Charcoal', hex: '#171717' },
+  { name: 'Cream', hex: '#F7EEDB' },
+  { name: 'Sand', hex: '#D8C8B1' },
+  { name: 'Brand Red', hex: '#E6321C' },
+  { name: 'Gold', hex: '#B7791F' },
+  { name: 'Royal Navy', hex: '#1D3557' },
+];
+
+const SPACING_OPTIONS = [
+  { label: 'Normal', value: '0.02em' },
+  { label: 'Wide', value: '0.12em' },
+  { label: 'Ultra', value: '0.28em' },
+];
 
 export function CustomizerPage() {
   const { addItem, isAdding } = useCart();
   const { toast } = useToast();
 
-  // Customizer State
+  // Garment Customizer State — Synced dynamically with Admin Panel
+  const [garmentsList, setGarmentsList] = useState<GarmentType[]>(GARMENTS);
   const [selectedGarment, setSelectedGarment] = useState<GarmentType>(GARMENTS[1]); // Default Oversized
-  const [selectedColor, setSelectedColor] = useState<ColorOption>(COLORS[0]); // Default Black
-  const [selectedSize, setSelectedSize] = useState<string>('S');
-  const [selectedPosition, setSelectedPosition] = useState<Position>('CENTER');
-  const [viewSide, setViewSide] = useState<'FRONT' | 'BACK'>('FRONT');
+  const [selectedColor, setSelectedColor] = useState<ColorOption>(GARMENTS[1].colors?.[0] || COLORS[0]); // Default Black
 
-  // Artwork & text state
-  const [uploadedImage, setUploadedImage] = useState<string | null>(null);
+  // Dynamically load customizer configuration (garments, custom colors & uploaded mockups from Admin)
+  useEffect(() => {
+    fetch('/api/v1/customizations/studio/config')
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        const config = data?.data || data;
+        if (config && Array.isArray(config.garments) && config.garments.length > 0) {
+          setGarmentsList(config.garments);
+          const currentG =
+            config.garments.find((g: any) => g.id === selectedGarment.id) || config.garments[0];
+          setSelectedGarment(currentG);
+          if (currentG.colors && currentG.colors.length > 0) {
+            const matched =
+              currentG.colors.find((c: any) => c.name.toLowerCase() === selectedColor.name.toLowerCase()) ||
+              currentG.colors[0];
+            setSelectedColor(matched);
+          }
+        }
+      })
+      .catch(() => {});
+  }, []);
+
+  const getGarmentImageSrc = (garmentId: string, colorName: string, view: 'FRONT' | 'BACK' = 'FRONT'): string => {
+    const garment = garmentsList.find((g) => g.id === garmentId);
+    if (garment?.colors && garment.colors.length > 0) {
+      const match = garment.colors.find(
+        (c) =>
+          c.name.toLowerCase() === colorName.toLowerCase() ||
+          (c.id && c.id.toLowerCase() === colorName.toLowerCase())
+      );
+      if (match) {
+        if (view === 'BACK' && match.backImageUrl) {
+          return match.backImageUrl;
+        }
+        if (match.frontImageUrl) {
+          return match.frontImageUrl;
+        }
+      }
+    }
+    return '';
+  };
+
+  const [selectedSize, setSelectedSize] = useState<string>('S');
+  const [viewSide, setViewSide] = useState<'FRONT' | 'BACK'>('FRONT');
+  const [activePlacementTag, setActivePlacementTag] = useState<string>('CENTER');
+
+  // Design Mode & Content State: Upload from Gallery or Custom Text
+  const [designMode, setDesignMode] = useState<'upload' | 'text'>('upload');
   const [customText, setCustomText] = useState<string>('BINGOOO');
+  const [selectedFont, setSelectedFont] = useState<string>('manrope');
+  const [selectedFontCategory, setSelectedFontCategory] = useState<string>('all');
+
+  const [isBold, setIsBold] = useState<boolean>(true);
+  const [isItalic, setIsItalic] = useState<boolean>(false);
+  const [isUppercase, setIsUppercase] = useState<boolean>(true);
+  const [textColor, setTextColor] = useState<string>('');
+  const [letterSpacing, setLetterSpacing] = useState<string>('0.05em');
+
+  // Interactive Zoom & Scale State (from 0.4x to 2.5x)
+  const [zoomScale, setZoomScale] = useState<number>(1.0);
+
+  // Artwork State (Uploaded by user from Gallery / Photos)
+  const [uploadedImage, setUploadedImage] = useState<string | null>(null);
+
   const [isSizeModalOpen, setIsSizeModalOpen] = useState<boolean>(false);
   const [isAddedFeedback, setIsAddedFeedback] = useState<boolean>(false);
 
+  // Motion drag coordinates for free element placement anywhere
+  const dragX = useMotionValue(0);
+  const dragY = useMotionValue(0);
+
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const canvasRef = useRef<HTMLDivElement | null>(null);
+  const mockupRef = useRef<HTMLDivElement | null>(null);
 
-  // When position is set to BACK, auto-switch preview to BACK view
+  // Active Font Reference
+  const activeFont = FONT_OPTIONS.find((f) => f.id === selectedFont) || FONT_OPTIONS[0];
+
+  // Filtered fonts
+  const filteredFonts = FONT_OPTIONS.filter((f) =>
+    selectedFontCategory === 'all' ? true : f.category === selectedFontCategory
+  );
+
+  // ── Two-Finger Touch Pinch Zoom Handlers with non-passive native support ──
   useEffect(() => {
-    if (selectedPosition === 'BACK') {
-      setViewSide('BACK');
-    } else {
-      setViewSide('FRONT');
-    }
-  }, [selectedPosition]);
+    const canvas = canvasRef.current;
+    if (!canvas) return;
 
-  // Handle File Upload
+    let startDistance = 0;
+    let baseZoom = 1.0;
+
+    const onTouchStart = (e: TouchEvent) => {
+      if (e.touches.length === 2) {
+        startDistance = Math.hypot(
+          e.touches[0].clientX - e.touches[1].clientX,
+          e.touches[0].clientY - e.touches[1].clientY
+        );
+        baseZoom = zoomScale;
+      }
+    };
+
+    const onTouchMove = (e: TouchEvent) => {
+      if (e.touches.length === 2 && startDistance > 0) {
+        // Prevent native browser viewport zoom on 2 fingers
+        if (e.cancelable) e.preventDefault();
+
+        const currentDist = Math.hypot(
+          e.touches[0].clientX - e.touches[1].clientX,
+          e.touches[0].clientY - e.touches[1].clientY
+        );
+        const scale = (currentDist / startDistance) * baseZoom;
+        const clampedScale = Math.min(2.5, Math.max(0.4, +scale.toFixed(2)));
+        setZoomScale(clampedScale);
+      }
+    };
+
+    const onTouchEnd = (e: TouchEvent) => {
+      if (e.touches.length < 2) {
+        startDistance = 0;
+      }
+    };
+
+    canvas.addEventListener('touchstart', onTouchStart, { passive: true });
+    canvas.addEventListener('touchmove', onTouchMove, { passive: false });
+    canvas.addEventListener('touchend', onTouchEnd, { passive: true });
+    canvas.addEventListener('touchcancel', onTouchEnd, { passive: true });
+
+    return () => {
+      canvas.removeEventListener('touchstart', onTouchStart);
+      canvas.removeEventListener('touchmove', onTouchMove);
+      canvas.removeEventListener('touchend', onTouchEnd);
+      canvas.removeEventListener('touchcancel', onTouchEnd);
+    };
+  }, [zoomScale]);
+
+  // ── Mouse Wheel / Trackpad Zoom ──
+  const handleWheel = (e: React.WheelEvent) => {
+    if (e.ctrlKey || e.metaKey) {
+      e.preventDefault();
+      const delta = -e.deltaY * 0.005;
+      setZoomScale((prev) => Math.min(2.5, Math.max(0.4, +(prev + delta).toFixed(2))));
+    }
+  };
+
+  // Discrete micro-zoom actions for fast one-tap adjustment
+  const handleZoomIn = () => {
+    triggerHaptic('light');
+    setZoomScale((z) => Math.min(2.5, +(z + 0.1).toFixed(1)));
+  };
+
+  const handleZoomOut = () => {
+    triggerHaptic('light');
+    setZoomScale((z) => Math.max(0.4, +(z - 0.1).toFixed(1)));
+  };
+
+  const handleZoomReset = () => {
+    triggerHaptic('light');
+    setZoomScale(1.0);
+  };
+
+  // ── Placement Snap Presets ──
+  const applyPresetPlacement = (placement: 'CENTER' | 'LEFT_CHEST' | 'BACK' | 'LOWER_HEM') => {
+    triggerHaptic('light');
+    setActivePlacementTag(placement);
+
+    if (placement === 'CENTER') {
+      dragX.set(0);
+      dragY.set(0);
+      if (viewSide === 'BACK') setViewSide('FRONT');
+    } else if (placement === 'LEFT_CHEST') {
+      dragX.set(-48);
+      dragY.set(-38);
+      if (viewSide === 'BACK') setViewSide('FRONT');
+    } else if (placement === 'BACK') {
+      dragX.set(0);
+      dragY.set(-20);
+      setViewSide('BACK');
+    } else if (placement === 'LOWER_HEM') {
+      dragX.set(45);
+      dragY.set(85);
+      if (viewSide === 'BACK') setViewSide('FRONT');
+    }
+  };
+
+  const handleResetPosition = () => {
+    triggerHaptic('light');
+    dragX.set(0);
+    dragY.set(0);
+    setActivePlacementTag('CENTER');
+    toast({
+      title: 'Centered on garment',
+      description: 'You can drag it anywhere on the shirt anytime.',
+      variant: 'default',
+    });
+  };
+
+  // Handle File Upload from Device / Phone Gallery
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
 
-    if (file.size > 10 * 1024 * 1024) {
+    if (file.size > 15 * 1024 * 1024) {
       toast({
         title: 'File too large',
-        description: 'File must be smaller than 10MB.',
+        description: 'Please pick an image under 15MB.',
         variant: 'danger',
       });
       if (fileInputRef.current) fileInputRef.current.value = '';
@@ -98,10 +372,11 @@ export function CustomizerPage() {
     reader.onload = (e) => {
       const result = e.target?.result as string;
       setUploadedImage(result);
-      triggerHaptic('light');
+      setDesignMode('upload');
+      triggerHaptic('medium');
       toast({
-        title: 'Artwork uploaded',
-        description: `${file.name} placed on your garment canvas.`,
+        title: 'Artwork loaded from gallery!',
+        description: 'Drag anywhere to position • 2 fingers to zoom.',
         variant: 'success',
       });
     };
@@ -111,6 +386,11 @@ export function CustomizerPage() {
   const handleClearArtwork = () => {
     setUploadedImage(null);
     if (fileInputRef.current) fileInputRef.current.value = '';
+    toast({
+      title: 'Artwork removed',
+      description: 'Upload another design from gallery or type custom text.',
+      variant: 'default',
+    });
   };
 
   // Handle Add to Cart
@@ -153,30 +433,11 @@ export function CustomizerPage() {
     };
   }, [isSizeModalOpen]);
 
-  // Dynamic positioning styling for design-area
-  const designAreaStyle = useMemo(() => {
-    if (selectedPosition === 'LEFT CHEST') {
-      return {
-        top: '28%',
-        left: '40%',
-        transform: 'scale(0.65)',
-        maxWidth: '30%',
-      };
-    }
-    // CENTER & BACK
-    return {
-      top: '34%',
-      left: '50%',
-      transform: 'translateX(-50%)',
-      maxWidth: '36%',
-    };
-  }, [selectedPosition]);
-
   return (
-    <main className="bg-[#f7eedb] text-[#171717] font-sans antialiased">
+    <main className="bg-[#f7eedb] text-[#171717] font-sans antialiased pb-28 lg:pb-0">
       <SEO
         title="Custom Studio — BINGOOO"
-        description="Design your custom T-shirt, oversized tee or hoodie with high-definition DTF printing. Choose colors, sizes, and upload your artwork."
+        description="Design your custom T-shirt, oversized tee or hoodie with high-definition DTF printing. Upload whatever you want from your gallery or choose custom typography with 17 fonts."
         canonical="https://bingooo.in/customize"
       />
 
@@ -194,8 +455,8 @@ export function CustomizerPage() {
           WEAR.
         </h1>
 
-        <p className="max-w-[520px] mx-auto text-[#6f6a63] text-[13px] leading-[1.7]">
-          Start with a blank canvas. Upload your design, choose your fit and create something that's completely yours.
+        <p className="max-w-[560px] mx-auto text-[#6f6a63] text-[13px] leading-[1.7]">
+          Upload any design, photo, or logo from your gallery, or write custom text. Drag anywhere on the shirt, and use two fingers to zoom in or out.
         </p>
       </section>
 
@@ -213,8 +474,8 @@ export function CustomizerPage() {
 
           <div className="w-[30px] sm:w-[65px] h-[1px] mx-2 sm:mx-3 bg-[#ddd3c5]" />
 
-          <div className={`flex items-center gap-[9px] text-[9px] font-bold uppercase whitespace-nowrap ${uploadedImage ? 'text-[#171717]' : 'text-[#6f6a63]'}`}>
-            <span className={`w-7 h-7 rounded-full grid place-items-center text-[10px] ${uploadedImage ? 'bg-[#171717] text-white' : 'bg-[#ede0cc] text-[#171717]'}`}>
+          <div className={`flex items-center gap-[9px] text-[9px] font-bold uppercase whitespace-nowrap ${uploadedImage || customText ? 'text-[#171717]' : 'text-[#6f6a63]'}`}>
+            <span className={`w-7 h-7 rounded-full grid place-items-center text-[10px] ${uploadedImage || customText ? 'bg-[#171717] text-white' : 'bg-[#ede0cc] text-[#171717]'}`}>
               02
             </span>
             CUSTOMIZE
@@ -234,113 +495,264 @@ export function CustomizerPage() {
       {/* =======================================================
            CUSTOM BUILDER
       ======================================================= */}
-      <section className="container-bingooo grid grid-cols-1 lg:grid-cols-[1fr_420px] gap-[30px] items-start pb-[100px]">
+      <section className="container-bingooo grid grid-cols-1 lg:grid-cols-[1fr_450px] gap-[30px] items-start pb-[80px]">
 
-        {/* ── PREVIEW PANEL ── */}
-        <div className="min-h-[460px] sm:min-h-[580px] lg:min-h-[690px] p-5 sm:p-[35px] bg-[#ede0cc] border border-[#ddd3c5] relative flex items-center justify-center overflow-hidden">
-          <div className="absolute top-[18px] left-5 text-[9px] font-bold tracking-[0.16em] uppercase">
-            LIVE PREVIEW
-          </div>
-
-          <div className="absolute top-[18px] right-5 flex items-center gap-2">
-            <button
-              type="button"
-              onClick={() => {
-                triggerHaptic('light');
-                setViewSide(viewSide === 'FRONT' ? 'BACK' : 'FRONT');
-              }}
-              className="text-[9px] font-bold tracking-[0.1em] text-[#6f6a63] hover:text-[#171717] transition-colors border-b border-dashed border-[#6f6a63]"
-            >
-              {viewSide} VIEW ↻
-            </button>
-          </div>
-
-          {/* Realistic Garment Mockup Vector */}
-          <div className="relative w-[min(85%,540px)] aspect-[0.86] flex items-center justify-center select-none">
-            {/* Sleeves */}
-            <div
-              className="absolute w-[28%] h-[28%] top-[16%] left-[4%] transition-colors duration-300"
-              style={{
-                backgroundColor: selectedColor.hex,
-                transform: 'rotate(22deg) skewY(-8deg)',
-                boxShadow: selectedColor.hex === '#FFFFFF' ? 'inset 0 0 0 1px #ddd3c5' : undefined,
-              }}
-            />
-            <div
-              className="absolute w-[28%] h-[28%] top-[16%] right-[4%] transition-colors duration-300"
-              style={{
-                backgroundColor: selectedColor.hex,
-                transform: 'rotate(-22deg) skewY(8deg)',
-                boxShadow: selectedColor.hex === '#FFFFFF' ? 'inset 0 0 0 1px #ddd3c5' : undefined,
-              }}
-            />
-
-            {/* Torso Body */}
-            <div
-              className="absolute w-[63%] h-[70%] top-[15%] rounded-t-[7px] rounded-b-[18px] transition-colors duration-300"
-              style={{
-                backgroundColor: selectedColor.hex,
-                boxShadow: selectedColor.hex === '#FFFFFF'
-                  ? '0 25px 40px rgba(0,0,0,0.08), inset 0 0 0 1px #ddd3c5'
-                  : '0 25px 40px rgba(0,0,0,0.13)',
-              }}
-            >
-              {/* Collar Notch */}
-              <div
-                className="absolute w-[35%] h-[15%] left-[32.5%] -top-[6%] rounded-full transition-colors duration-300"
-                style={{
-                  backgroundColor: selectedColor.hex,
-                  boxShadow: selectedColor.hex === '#FFFFFF' ? 'inset 0 0 0 1px #ddd3c5' : undefined,
-                }}
-              />
-
-              {/* Hoodie Pocket Simulation if Hoodie selected */}
-              {selectedGarment.id === 'hoodie' && viewSide === 'FRONT' && (
-                <div
-                  className="absolute bottom-[8%] left-[16%] right-[16%] h-[24%] rounded-[6px] border border-black/10 opacity-70"
-                  style={{
-                    backgroundColor: selectedColor.hex,
-                    filter: 'brightness(0.96)',
-                  }}
-                />
-              )}
+        {/* ── PREVIEW PANEL WITH PINCH-TO-ZOOM & DRAG-ANYWHERE CANVAS ── */}
+        <div className="flex flex-col gap-2.5">
+          <div
+            ref={canvasRef}
+            onWheel={handleWheel}
+            className="min-h-[360px] sm:min-h-[520px] lg:min-h-[690px] p-4 sm:p-[35px] bg-[#ede0cc] border border-[#ddd3c5] relative flex items-center justify-center overflow-hidden rounded-xl shadow-xs touch-pan-y select-none"
+          >
+            {/* Top Indicators */}
+            <div className="absolute top-[16px] left-4 sm:left-5 flex items-center gap-2">
+              <span className="text-[9px] font-mono font-bold tracking-[0.16em] uppercase text-[#171717]">
+                LIVE CANVAS
+              </span>
+              <span className="px-2 py-0.5 rounded-full bg-[#171717] text-[#f7eedb] text-[8px] font-bold uppercase tracking-wider flex items-center gap-1">
+                <Move size={9} />
+                Drag to place
+              </span>
             </div>
 
-            {/* Design Printable Area */}
+            <div className="absolute top-[16px] right-4 sm:right-5 flex items-center gap-2 z-20">
+              <button
+                type="button"
+                onClick={() => {
+                  triggerHaptic('light');
+                  setViewSide(viewSide === 'FRONT' ? 'BACK' : 'FRONT');
+                }}
+                className="px-2.5 py-1 rounded bg-[#FAF8F5]/90 border border-[#ddd3c5] text-[9px] font-bold tracking-[0.1em] text-[#171717] hover:bg-white transition-colors cursor-pointer shadow-xs flex items-center gap-1"
+              >
+                <span>{viewSide} VIEW</span>
+                <span>↻</span>
+              </button>
+            </div>
+
+            {/* Floating Gesture Hint Pill */}
+            <div className="absolute top-12 left-1/2 -translate-x-1/2 z-20 pointer-events-none transition-opacity">
+              <div className="flex items-center gap-1.5 sm:gap-2 bg-[#171717]/85 text-[#f7eedb] backdrop-blur-md px-3 py-1 sm:px-3.5 sm:py-1.5 rounded-full text-[9px] sm:text-[10px] font-mono tracking-wide shadow-md border border-white/10 whitespace-nowrap">
+                <span>✋ Drag anywhere</span>
+                <span className="text-[#E6321C]">•</span>
+                <span>✌️ 2 fingers zoom</span>
+              </div>
+            </div>
+
+            {/* Floating On-Canvas Discrete Zoom Controls (Desktop / Tablet) */}
+            <div className="hidden sm:flex absolute bottom-4 right-4 z-20 items-center bg-[#FAF8F5]/94 backdrop-blur-md rounded-lg shadow-md border border-[#ddd3c5] p-1 gap-1">
+              <button
+                type="button"
+                onClick={handleZoomOut}
+                disabled={zoomScale <= 0.4}
+                className="w-7 h-7 flex items-center justify-center rounded hover:bg-[#ede0cc] text-[#171717] disabled:opacity-40 transition-colors cursor-pointer"
+                title="Zoom Out"
+                aria-label="Zoom Out"
+              >
+                <ZoomOut size={13} />
+              </button>
+              <span className="text-[10px] font-mono font-bold text-[#171717] px-1.5 min-w-[42px] text-center select-none">
+                {Math.round(zoomScale * 100)}%
+              </span>
+              <button
+                type="button"
+                onClick={handleZoomIn}
+                disabled={zoomScale >= 2.5}
+                className="w-7 h-7 flex items-center justify-center rounded hover:bg-[#ede0cc] text-[#171717] disabled:opacity-40 transition-colors cursor-pointer"
+                title="Zoom In"
+                aria-label="Zoom In"
+              >
+                <ZoomIn size={13} />
+              </button>
+              <div className="h-4 w-[1px] bg-[#ddd3c5] mx-0.5" />
+              <button
+                type="button"
+                onClick={handleZoomReset}
+                className="w-7 h-7 flex items-center justify-center rounded hover:bg-[#ede0cc] text-[#6f6a63] hover:text-[#171717] transition-colors cursor-pointer"
+                title="Reset Zoom (100%)"
+                aria-label="Reset Zoom"
+              >
+                <RotateCcw size={12} />
+              </button>
+              <button
+                type="button"
+                onClick={handleResetPosition}
+                className="px-2 h-7 rounded text-[9px] font-bold text-[#171717] hover:bg-[#ede0cc] transition-colors cursor-pointer flex items-center gap-1"
+                title="Center Design"
+              >
+                <Crosshair size={11} />
+                <span>Center</span>
+              </button>
+            </div>
+
+            {/* Real-Life Photorealistic Apparel Mockup Container */}
             <div
-              className="absolute z-10 flex flex-col justify-center items-center text-center transition-all duration-300"
-              style={{
-                ...designAreaStyle,
-                color: selectedColor.textContrast,
-              }}
+              ref={mockupRef}
+              className="relative w-[min(90%,500px)] aspect-square flex items-center justify-center select-none"
             >
-              {uploadedImage ? (
-                <div className="relative group">
+              {/* Real-Life Studio Garment Photo Mockup OR Clean Vector Silhouette */}
+              <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                {getGarmentImageSrc(selectedGarment.id, selectedColor.name, viewSide) ? (
                   <img
-                    src={uploadedImage}
-                    alt="Uploaded custom artwork"
-                    className="max-w-full max-h-[140px] sm:max-h-[180px] object-contain drop-shadow-md"
+                    src={getGarmentImageSrc(selectedGarment.id, selectedColor.name, viewSide)}
+                    alt={`Real-life ${selectedColor.name} ${selectedGarment.name} Mockup`}
+                    className={`w-full h-full max-h-[500px] object-contain select-none transition-all duration-300 drop-shadow-[0_16px_36px_rgba(0,0,0,0.12)] ${
+                      viewSide === 'BACK' && !selectedColor.backImageUrl ? 'scale-x-[-1]' : ''
+                    }`}
+                    draggable={false}
                   />
-                  <button
-                    type="button"
-                    onClick={handleClearArtwork}
-                    className="absolute -top-2 -right-2 w-5 h-5 bg-[#171717] text-white rounded-full text-[10px] font-bold flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
-                    title="Remove artwork"
+                ) : (
+                  <div className="w-full h-full max-h-[500px]" />
+                )}
+                {/* Authentic back neckline detail when viewed from back */}
+                {viewSide === 'BACK' && getGarmentImageSrc(selectedGarment.id, selectedColor.name, viewSide) && (
+                  <div className="absolute top-[16%] inset-x-0 mx-auto w-16 h-4 rounded-b-full bg-black/10 border-b border-black/25 flex items-center justify-center pointer-events-none z-0">
+                    <span className="text-[7px] font-mono font-bold text-black/60 tracking-wider">
+                      {selectedGarment.id === 'hoodie' ? '350 GSM' : '240 GSM'}
+                    </span>
+                  </div>
+                )}
+              </div>
+
+              {/* ── DRAGGABLE & PINCH-ZOOMABLE DESIGN ELEMENT ── */}
+              <motion.div
+                drag
+                dragConstraints={mockupRef}
+                dragElastic={0.06}
+                dragMomentum={false}
+                onDragStart={() => {
+                  triggerHaptic('light');
+                  setActivePlacementTag('CUSTOM');
+                }}
+                style={{
+                  x: dragX,
+                  y: dragY,
+                  scale: zoomScale,
+                }}
+                className="absolute z-10 flex flex-col justify-center items-center text-center origin-center cursor-grab active:cursor-grabbing group p-2 touch-none select-none"
+              >
+                {/* Subtle hover/drag guide border */}
+                <div className="absolute -inset-1.5 border border-dashed border-[#E6321C]/50 rounded-lg opacity-0 group-hover:opacity-100 group-active:opacity-100 transition-opacity pointer-events-none">
+                  <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-[#E6321C] text-white text-[7px] font-bold px-1.5 py-0.5 rounded-full uppercase tracking-wider whitespace-nowrap shadow-xs">
+                    Drag to Move
+                  </div>
+                </div>
+
+                {uploadedImage ? (
+                  <div className="relative flex items-center justify-center">
+                    <img
+                      src={uploadedImage}
+                      alt="Uploaded artwork from gallery"
+                      className="max-w-[220px] max-h-[170px] sm:max-h-[210px] object-contain drop-shadow-md select-none pointer-events-none"
+                    />
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleClearArtwork();
+                      }}
+                      className="absolute -top-3 -right-3 w-6 h-6 bg-[#171717] hover:bg-[#E6321C] text-white rounded-full text-xs font-bold flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all shadow-md cursor-pointer"
+                      title="Remove design"
+                    >
+                      ×
+                    </button>
+                  </div>
+                ) : designMode === 'upload' ? (
+                  <div
+                    onClick={() => fileInputRef.current?.click()}
+                    className="px-4 py-3 rounded-lg border-2 border-dashed border-[#171717]/40 bg-white/50 hover:bg-white/80 transition-colors cursor-pointer flex flex-col items-center justify-center text-center shadow-xs select-none backdrop-blur-xs"
                   >
-                    ×
-                  </button>
-                </div>
-              ) : (
-                <div className="text-[18px] sm:text-[22px] font-extrabold tracking-[-0.05em] uppercase px-2 py-1 select-none">
-                  {customText || 'BINGOOO'}
-                </div>
-              )}
+                    <Upload size={18} className="text-[#E6321C] mb-1" />
+                    <span className="text-[10px] font-bold uppercase text-[#171717]">
+                      Choose From Gallery
+                    </span>
+                    <span className="text-[8px] text-[#6f6a63]">
+                      Tap to upload artwork
+                    </span>
+                  </div>
+                ) : (
+                  <div
+                    className="px-3 py-1 select-none leading-tight break-words text-center"
+                    style={{
+                      fontFamily: activeFont.family,
+                      fontWeight: isBold ? 800 : 500,
+                      fontStyle: isItalic ? 'italic' : 'normal',
+                      textTransform: isUppercase ? 'uppercase' : 'none',
+                      letterSpacing: letterSpacing,
+                      color: textColor || selectedColor.textContrast,
+                      fontSize: 'clamp(20px, 2.8vw, 32px)',
+                      textShadow: (textColor === '#FFFFFF' || (!textColor && selectedColor.textContrast === '#FFFFFF'))
+                        ? '0 1px 3px rgba(0,0,0,0.35)'
+                        : undefined,
+                    }}
+                  >
+                    {customText || 'BINGOOO'}
+                  </div>
+                )}
+              </motion.div>
+            </div>
+          </div>
+
+          {/* Mobile Quick Action Strip (Easy 1-thumb touch controls on phone) */}
+          <div className="sm:hidden flex items-center justify-between gap-1.5 p-2 bg-[#FAF8F5] border border-[#ddd3c5] rounded-lg shadow-xs">
+            <div className="flex items-center gap-1">
+              <button
+                type="button"
+                onClick={handleZoomOut}
+                disabled={zoomScale <= 0.4}
+                className="w-8 h-8 rounded border border-[#ddd3c5] bg-white flex items-center justify-center text-[#171717] active:bg-[#ede0cc] disabled:opacity-40 cursor-pointer shadow-xs"
+                title="Zoom Out"
+                aria-label="Zoom Out"
+              >
+                <ZoomOut size={13} />
+              </button>
+              <span className="font-mono text-[10px] font-bold text-center min-w-[38px] select-none">
+                {Math.round(zoomScale * 100)}%
+              </span>
+              <button
+                type="button"
+                onClick={handleZoomIn}
+                disabled={zoomScale >= 2.5}
+                className="w-8 h-8 rounded border border-[#ddd3c5] bg-white flex items-center justify-center text-[#171717] active:bg-[#ede0cc] disabled:opacity-40 cursor-pointer shadow-xs"
+                title="Zoom In"
+                aria-label="Zoom In"
+              >
+                <ZoomIn size={13} />
+              </button>
+              <button
+                type="button"
+                onClick={handleZoomReset}
+                className="h-8 px-2 rounded border border-[#ddd3c5] bg-white text-[9px] font-bold text-[#6f6a63] active:text-[#171717] cursor-pointer shadow-xs"
+              >
+                100%
+              </button>
+            </div>
+
+            <div className="flex items-center gap-1">
+              <button
+                type="button"
+                onClick={handleResetPosition}
+                className="h-8 px-2 rounded border border-[#ddd3c5] bg-white text-[9px] font-bold text-[#171717] flex items-center gap-1 active:bg-[#ede0cc] cursor-pointer shadow-xs"
+                title="Center Design"
+              >
+                <Crosshair size={11} />
+                <span>Center</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  triggerHaptic('light');
+                  setViewSide(viewSide === 'FRONT' ? 'BACK' : 'FRONT');
+                }}
+                className="h-8 px-2.5 rounded bg-[#171717] text-white text-[9px] font-bold flex items-center gap-1 active:bg-black cursor-pointer shadow-xs"
+              >
+                <span>{viewSide === 'FRONT' ? 'Back ↻' : 'Front ↻'}</span>
+              </button>
             </div>
           </div>
         </div>
 
         {/* ── CONTROLS PANEL ── */}
-        <aside className="bg-white border border-[#ddd3c5] rounded-[12px] p-5 sm:p-[25px]">
+        <aside className="bg-white border border-[#ddd3c5] rounded-[12px] p-5 sm:p-[25px] shadow-xs">
 
           {/* 01 / Choose Product */}
           <div className="pb-[25px] mb-[25px] border-b border-[#ddd3c5]">
@@ -349,13 +761,18 @@ export function CustomizerPage() {
             </div>
 
             <div className="grid grid-cols-3 gap-2">
-              {GARMENTS.map((garment) => (
+              {garmentsList.map((garment) => (
                 <button
                   key={garment.id}
                   type="button"
                   onClick={() => {
                     triggerHaptic('light');
                     setSelectedGarment(garment);
+                    const garmentColors = garment.colors && garment.colors.length > 0 ? garment.colors : COLORS;
+                    const matched =
+                      garmentColors.find((c) => c.name.toLowerCase() === selectedColor.name.toLowerCase()) ||
+                      garmentColors[0];
+                    if (matched) setSelectedColor(matched);
                   }}
                   className={`border bg-[#f7eedb] p-2 sm:p-2.5 text-center transition-all cursor-pointer ${
                     selectedGarment.id === garment.id
@@ -363,15 +780,16 @@ export function CustomizerPage() {
                       : 'border-[#ddd3c5] hover:border-[#171717]'
                   }`}
                 >
-                  <div className="h-[70px] sm:h-[90px] flex justify-center items-center">
-                    {garment.id === 'tshirt' && (
-                      <div className="mini-shirt bg-[#181818] before:bg-[#181818]" />
-                    )}
-                    {garment.id === 'oversized' && (
-                      <div className="mini-shirt bg-[#e7dcc9] before:bg-[#e7dcc9]" />
-                    )}
-                    {garment.id === 'hoodie' && (
-                      <div className="mini-hoodie" />
+                  <div className="h-[70px] sm:h-[90px] flex justify-center items-center p-1">
+                    {getGarmentImageSrc(garment.id, selectedColor.name) ? (
+                      <img
+                        src={getGarmentImageSrc(garment.id, selectedColor.name)}
+                        alt={garment.name}
+                        className="max-h-full max-w-full object-contain drop-shadow-xs transition-transform duration-200"
+                        draggable={false}
+                      />
+                    ) : (
+                      <div className="w-full h-full" />
                     )}
                   </div>
                   <div className="text-[10px] font-bold tracking-[0.05em] uppercase mt-1">
@@ -382,69 +800,318 @@ export function CustomizerPage() {
             </div>
           </div>
 
-          {/* 02 / Add Your Design */}
+          {/* 02 / Design & Artwork (Upload From Gallery or Custom Text) */}
           <div className="pb-[25px] mb-[25px] border-b border-[#ddd3c5]">
-            <div className="flex justify-between items-center mb-[13px] text-[11px] font-bold uppercase">
-              <span>02 / Add Your Design</span>
-              <span className="text-[#6f6a63] text-[10px]">PNG / JPG</span>
+            <div className="flex justify-between items-center mb-3 text-[11px] font-bold uppercase">
+              <span>02 / Design & Artwork</span>
+              <span className="text-[#e6321c] font-mono text-[10px]">
+                {designMode === 'upload' ? (uploadedImage ? 'GALLERY ARTWORK LOADED' : 'UPLOAD FROM GALLERY') : 'CUSTOM TEXT'}
+              </span>
             </div>
 
-            <div className="border border-dashed border-[#bdb3a4] bg-[#faf7f0] p-5 sm:p-[25px_15px] text-center transition-colors hover:border-[#171717]">
-              <div className="text-[25px] mb-[9px] leading-none">
-                ↑
-              </div>
-              <strong className="block mb-[5px] text-[11px] font-bold">
-                {uploadedImage ? 'Artwork loaded on canvas' : 'Upload your artwork'}
-              </strong>
-              <span className="text-[#6f6a63] text-[9px]">
-                PNG, JPG or WEBP · Max 10MB
-              </span>
-              <br />
+            {/* Design Mode Selector Tabs */}
+            <div className="grid grid-cols-2 gap-1.5 p-1 bg-[#ede0cc] rounded-lg mb-4 text-center">
+              <button
+                type="button"
+                onClick={() => {
+                  triggerHaptic('light');
+                  setDesignMode('upload');
+                }}
+                className={`py-2 px-2 text-[10px] font-bold uppercase rounded transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
+                  designMode === 'upload'
+                    ? 'bg-white text-[#171717] shadow-xs'
+                    : 'text-[#6f6a63] hover:text-[#171717]'
+                }`}
+              >
+                <Upload size={13} />
+                <span>Upload From Gallery</span>
+              </button>
 
-              <div className="flex items-center justify-center gap-2 mt-[14px]">
-                <button
-                  type="button"
+              <button
+                type="button"
+                onClick={() => {
+                  triggerHaptic('light');
+                  setDesignMode('text');
+                }}
+                className={`py-2 px-2 text-[10px] font-bold uppercase rounded transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
+                  designMode === 'text'
+                    ? 'bg-white text-[#171717] shadow-xs'
+                    : 'text-[#6f6a63] hover:text-[#171717]'
+                }`}
+              >
+                <Type size={13} />
+                <span>Custom Text / Font</span>
+              </button>
+            </div>
+
+            {/* ── SUB-PANEL: UPLOAD FROM GALLERY ── */}
+            {designMode === 'upload' && (
+              <div className="space-y-3">
+                <div
                   onClick={() => fileInputRef.current?.click()}
-                  className="min-h-[40px] px-[18px] border-0 bg-[#171717] text-white text-[9px] font-bold uppercase hover:bg-black transition-colors"
+                  className={`border-2 border-dashed rounded-xl p-5 text-center transition-all cursor-pointer ${
+                    uploadedImage
+                      ? 'border-[#171717] bg-[#FAF8F5]'
+                      : 'border-[#bdb3a4] bg-[#faf7f0] hover:border-[#171717] hover:bg-white'
+                  }`}
                 >
-                  {uploadedImage ? 'REPLACE FILE' : 'CHOOSE FILE'}
-                </button>
+                  {uploadedImage ? (
+                    <div className="flex flex-col items-center">
+                      <div className="w-20 h-20 rounded-lg border border-[#ddd3c5] bg-white p-1 mb-2.5 flex items-center justify-center overflow-hidden shadow-xs">
+                        <img
+                          src={uploadedImage}
+                          alt="Uploaded artwork"
+                          className="max-h-full max-w-full object-contain"
+                        />
+                      </div>
+                      <span className="text-[11px] font-bold text-[#171717] uppercase tracking-wide mb-1">
+                        Artwork Placed on Garment
+                      </span>
+                      <p className="text-[9px] text-[#6f6a63] max-w-[280px] mb-3">
+                        Drag anywhere on the shirt to adjust placement • Pinch with 2 fingers to zoom
+                      </p>
+                      <div className="flex gap-2">
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            fileInputRef.current?.click();
+                          }}
+                          className="px-3.5 py-1.5 rounded bg-[#171717] text-white text-[9px] font-bold uppercase hover:bg-black transition-colors cursor-pointer shadow-xs"
+                        >
+                          Change Image
+                        </button>
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleClearArtwork();
+                          }}
+                          className="px-3.5 py-1.5 rounded border border-[#ddd3c5] bg-white text-[#171717] text-[9px] font-bold uppercase hover:border-[#E6321C] hover:text-[#E6321C] transition-colors cursor-pointer shadow-xs"
+                        >
+                          Remove
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="flex flex-col items-center">
+                      <div className="w-12 h-12 rounded-full bg-[#ede0cc] flex items-center justify-center text-[#171717] mb-2.5">
+                        <ImageIcon size={22} className="text-[#E6321C]" />
+                      </div>
+                      <strong className="block text-[12px] font-extrabold uppercase tracking-wide text-[#171717] mb-1">
+                        Upload Your Own Design
+                      </strong>
+                      <p className="text-[#6f6a63] text-[10px] max-w-[300px] mb-3 leading-relaxed">
+                        Pick any artwork, photo, anime graphic, or logo from your phone gallery or computer.
+                      </p>
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          fileInputRef.current?.click();
+                        }}
+                        className="px-5 py-2.5 rounded-lg bg-[#E6321C] text-white text-[10px] font-bold uppercase hover:bg-[#b91f12] active:scale-[0.98] transition-all flex items-center gap-1.5 shadow-md cursor-pointer"
+                      >
+                        <Upload size={13} />
+                        <span>Choose From Gallery / Photos</span>
+                      </button>
+                      <span className="text-[8px] font-mono text-[#8a847b] mt-2.5">
+                        PNG (transparent recommended), JPG, WEBP, SVG • Max 15MB
+                      </span>
+                    </div>
+                  )}
 
-                {uploadedImage && (
-                  <button
-                    type="button"
-                    onClick={handleClearArtwork}
-                    className="min-h-[40px] px-3 border border-[#ddd3c5] bg-white text-[#171717] text-[9px] font-bold uppercase hover:border-[#171717] transition-colors"
-                  >
-                    REMOVE
-                  </button>
-                )}
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/png,image/jpeg,image/webp,image/svg+xml,image/*"
+                    onChange={handleFileChange}
+                    className="hidden"
+                  />
+                </div>
+
+                <div className="p-2.5 bg-[#f7eedb] rounded-lg border border-[#ddd3c5] text-[9px] text-[#6f6a63] flex items-center gap-2">
+                  <span className="text-base">✨</span>
+                  <span><strong>High-Definition DTF Printing:</strong> Your artwork will be printed with vivid, durable direct-to-film colors directly onto the garment.</span>
+                </div>
               </div>
+            )}
 
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept="image/png,image/jpeg,image/webp"
-                onChange={handleFileChange}
-                className="hidden"
-              />
-
-              {!uploadedImage && (
-                <div className="mt-3 pt-3 border-t border-[#ddd3c5]/60 text-left">
-                  <label className="block text-[9px] font-bold text-[#6f6a63] uppercase mb-1">
-                    Or Enter Text:
+            {/* ── SUB-PANEL: TYPE CUSTOM TEXT & EXPANDED 17 FONT STYLES ── */}
+            {designMode === 'text' && (
+              <div className="space-y-4">
+                {/* Text Input */}
+                <div>
+                  <label className="block text-[10px] font-bold uppercase tracking-wider text-[#6f6a63] mb-1.5">
+                    Your Text / Slogan
                   </label>
                   <input
                     type="text"
                     value={customText}
-                    onChange={(e) => setCustomText(e.target.value.toUpperCase())}
+                    onChange={(e) => setCustomText(isUppercase ? e.target.value.toUpperCase() : e.target.value)}
                     placeholder="E.G. BINGOOO"
-                    maxLength={15}
-                    className="w-full h-8 px-2.5 bg-white border border-[#ddd3c5] text-[10px] font-bold uppercase outline-none focus:border-[#171717]"
+                    maxLength={24}
+                    className="w-full h-9 px-3 bg-[#faf7f0] border border-[#ddd3c5] rounded-md text-xs font-bold outline-none focus:border-[#171717] transition-colors"
                   />
                 </div>
-              )}
-            </div>
+
+                {/* Font Category Filter Pills */}
+                <div>
+                  <div className="flex justify-between items-center mb-1.5">
+                    <label className="text-[10px] font-bold uppercase tracking-wider text-[#6f6a63]">
+                      Select Font Style
+                    </label>
+                    <span className="text-[9px] font-mono text-[#E6321C]">
+                      {filteredFonts.length} FONTS
+                    </span>
+                  </div>
+
+                  <div className="flex gap-1 overflow-x-auto pb-1.5 mb-2 scrollbar-none">
+                    {FONT_CATEGORIES.map((cat) => (
+                      <button
+                        key={cat.id}
+                        type="button"
+                        onClick={() => setSelectedFontCategory(cat.id)}
+                        className={`px-2.5 py-1 rounded-full text-[9px] font-bold uppercase whitespace-nowrap transition-all cursor-pointer ${
+                          selectedFontCategory === cat.id
+                            ? 'bg-[#171717] text-white'
+                            : 'bg-[#ede0cc] text-[#6f6a63] hover:text-[#171717]'
+                        }`}
+                      >
+                        {cat.label}
+                      </button>
+                    ))}
+                  </div>
+
+                  {/* Font Style Grid */}
+                  <div className="grid grid-cols-2 gap-1.5 max-h-[220px] overflow-y-auto pr-1">
+                    {filteredFonts.map((font) => (
+                      <button
+                        key={font.id}
+                        type="button"
+                        onClick={() => {
+                          triggerHaptic('light');
+                          setSelectedFont(font.id);
+                        }}
+                        className={`p-2 rounded border text-left transition-all cursor-pointer flex flex-col justify-between ${
+                          selectedFont === font.id
+                            ? 'border-2 border-[#171717] bg-[#f7eedb]'
+                            : 'border-[#ddd3c5] bg-white hover:border-[#171717]'
+                        }`}
+                      >
+                        <span
+                          className="text-sm truncate select-none block"
+                          style={{ fontFamily: font.family }}
+                        >
+                          {font.preview}
+                        </span>
+                        <div className="flex items-center justify-between mt-1">
+                          <span className="text-[9px] font-bold uppercase tracking-wider text-[#171717]">
+                            {font.name}
+                          </span>
+                          <span className="text-[8px] text-[#6f6a63]">
+                            {font.label}
+                          </span>
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Typography Controls (Bold, Italic, All-Caps, Spacing) */}
+                <div className="grid grid-cols-2 gap-2 pt-1">
+                  <div>
+                    <span className="block text-[9px] font-bold uppercase text-[#6f6a63] mb-1">Style</span>
+                    <div className="flex gap-1">
+                      <button
+                        type="button"
+                        onClick={() => setIsBold(!isBold)}
+                        className={`w-8 h-7 rounded text-xs font-black border transition-all cursor-pointer flex items-center justify-center ${
+                          isBold ? 'bg-[#171717] text-white border-[#171717]' : 'border-[#ddd3c5] text-[#171717]'
+                        }`}
+                        title="Bold"
+                      >
+                        <Bold size={12} />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setIsItalic(!isItalic)}
+                        className={`w-8 h-7 rounded text-xs font-serif italic border transition-all cursor-pointer flex items-center justify-center ${
+                          isItalic ? 'bg-[#171717] text-white border-[#171717]' : 'border-[#ddd3c5] text-[#171717]'
+                        }`}
+                        title="Italic"
+                      >
+                        <Italic size={12} />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const next = !isUppercase;
+                          setIsUppercase(next);
+                          if (next) setCustomText((t) => t.toUpperCase());
+                        }}
+                        className={`px-2 h-7 rounded text-[10px] font-bold border transition-all cursor-pointer ${
+                          isUppercase ? 'bg-[#171717] text-white border-[#171717]' : 'border-[#ddd3c5] text-[#171717]'
+                        }`}
+                        title="Uppercase"
+                      >
+                        AA
+                      </button>
+                    </div>
+                  </div>
+
+                  <div>
+                    <span className="block text-[9px] font-bold uppercase text-[#6f6a63] mb-1">Letter Spacing</span>
+                    <div className="flex gap-1">
+                      {SPACING_OPTIONS.map((opt) => (
+                        <button
+                          key={opt.label}
+                          type="button"
+                          onClick={() => setLetterSpacing(opt.value)}
+                          className={`flex-1 h-7 rounded text-[9px] font-bold uppercase border transition-all cursor-pointer ${
+                            letterSpacing === opt.value
+                              ? 'bg-[#171717] text-white border-[#171717]'
+                              : 'border-[#ddd3c5] text-[#6f6a63]'
+                          }`}
+                        >
+                          {opt.label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Text Color Swatches */}
+                <div>
+                  <span className="block text-[9px] font-bold uppercase text-[#6f6a63] mb-1.5">Print Color</span>
+                  <div className="flex flex-wrap gap-1.5">
+                    {TEXT_COLORS.map((col) => (
+                      <button
+                        key={col.name}
+                        type="button"
+                        onClick={() => {
+                          triggerHaptic('light');
+                          setTextColor(col.hex);
+                        }}
+                        className={`px-2 py-1 rounded text-[9px] font-bold uppercase border transition-all cursor-pointer flex items-center gap-1 ${
+                          textColor === col.hex
+                            ? 'border-2 border-[#171717] bg-[#f7eedb] text-[#171717]'
+                            : 'border-[#ddd3c5] bg-white text-[#6f6a63]'
+                        }`}
+                      >
+                        {col.hex && (
+                          <span
+                            className="w-2.5 h-2.5 rounded-full border border-black/20"
+                            style={{ backgroundColor: col.hex }}
+                          />
+                        )}
+                        <span>{col.name}</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
 
           {/* 03 / Garment Color */}
@@ -454,24 +1121,25 @@ export function CustomizerPage() {
               <span className="text-[#6f6a63] text-[10px] font-normal">{selectedColor.name}</span>
             </div>
 
-            <div className="flex gap-[10px]">
-              {COLORS.map((color) => (
+            <div className="flex flex-wrap gap-[10px]">
+              {(selectedGarment.colors && selectedGarment.colors.length > 0 ? selectedGarment.colors : COLORS).map((color) => (
                 <button
-                  key={color.name}
+                  key={color.id || color.name}
                   type="button"
                   onClick={() => {
                     triggerHaptic('light');
                     setSelectedColor(color);
                   }}
                   className={`w-8 h-8 rounded-full border-2 border-transparent transition-all cursor-pointer ${
-                    selectedColor.name === color.name
+                    selectedColor.name.toLowerCase() === color.name.toLowerCase()
                       ? 'shadow-[0_0_0_2px_#f7eedb,0_0_0_3px_#171717]'
                       : 'hover:scale-105'
                   }`}
                   style={{
                     backgroundColor: color.hex,
-                    border: color.hex === '#FFFFFF' ? '1px solid #cfc7bb' : 'none',
+                    border: color.hex.toLowerCase() === '#ffffff' ? '1px solid #cfc7bb' : 'none',
                   }}
+                  title={color.name}
                   aria-label={color.name}
                 />
               ))}
@@ -512,30 +1180,70 @@ export function CustomizerPage() {
             </div>
           </div>
 
-          {/* 05 / Design Position */}
+          {/* 05 / Free Placement & Quick Snaps */}
           <div className="pb-[25px] mb-[25px] border-b border-[#ddd3c5]">
-            <div className="flex justify-between items-center mb-[13px] text-[11px] font-bold uppercase">
-              <span>05 / Design Position</span>
+            <div className="flex justify-between items-center mb-[10px] text-[11px] font-bold uppercase">
+              <span>05 / Garment Placement</span>
+              <span className="text-[9px] font-mono text-[#E6321C]">
+                {activePlacementTag}
+              </span>
             </div>
 
-            <div className="grid grid-cols-3 gap-1.5">
-              {(['CENTER', 'LEFT CHEST', 'BACK'] as Position[]).map((pos) => (
-                <button
-                  key={pos}
-                  type="button"
-                  onClick={() => {
-                    triggerHaptic('light');
-                    setSelectedPosition(pos);
-                  }}
-                  className={`min-h-[38px] border text-[9px] font-semibold uppercase transition-all cursor-pointer ${
-                    selectedPosition === pos
-                      ? 'bg-[#171717] text-white border-[#171717]'
-                      : 'border-[#ddd3c5] bg-transparent hover:border-[#171717]'
-                  }`}
-                >
-                  {pos}
-                </button>
-              ))}
+            <p className="text-[10px] text-[#6f6a63] mb-2.5">
+              Drag directly on the shirt to place anywhere, or pick a quick snap:
+            </p>
+
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5">
+              <button
+                type="button"
+                onClick={() => applyPresetPlacement('CENTER')}
+                className={`min-h-[36px] px-2 border text-[9px] font-bold uppercase transition-all cursor-pointer flex items-center justify-center gap-1 ${
+                  activePlacementTag === 'CENTER'
+                    ? 'bg-[#171717] text-white border-[#171717]'
+                    : 'border-[#ddd3c5] bg-white hover:border-[#171717]'
+                }`}
+              >
+                <Crosshair size={11} />
+                <span>Center</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => applyPresetPlacement('LEFT_CHEST')}
+                className={`min-h-[36px] px-2 border text-[9px] font-bold uppercase transition-all cursor-pointer flex items-center justify-center gap-1 ${
+                  activePlacementTag === 'LEFT_CHEST'
+                    ? 'bg-[#171717] text-white border-[#171717]'
+                    : 'border-[#ddd3c5] bg-white hover:border-[#171717]'
+                }`}
+              >
+                <Move size={11} />
+                <span>Left Chest</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => applyPresetPlacement('BACK')}
+                className={`min-h-[36px] px-2 border text-[9px] font-bold uppercase transition-all cursor-pointer flex items-center justify-center gap-1 ${
+                  activePlacementTag === 'BACK'
+                    ? 'bg-[#171717] text-white border-[#171717]'
+                    : 'border-[#ddd3c5] bg-white hover:border-[#171717]'
+                }`}
+              >
+                <Maximize2 size={11} />
+                <span>Back</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => applyPresetPlacement('LOWER_HEM')}
+                className={`min-h-[36px] px-2 border text-[9px] font-bold uppercase transition-all cursor-pointer flex items-center justify-center gap-1 ${
+                  activePlacementTag === 'LOWER_HEM'
+                    ? 'bg-[#171717] text-white border-[#171717]'
+                    : 'border-[#ddd3c5] bg-white hover:border-[#171717]'
+                }`}
+              >
+                <span>Lower Hem</span>
+              </button>
             </div>
           </div>
 
@@ -547,7 +1255,7 @@ export function CustomizerPage() {
                   YOUR CUSTOM {selectedGarment.name}
                 </div>
                 <div className="text-[#6f6a63] text-[9px] mt-1">
-                  Includes custom printing
+                  Includes HD DTF custom printing
                 </div>
               </div>
               <div className="text-[21px] font-extrabold">
@@ -561,17 +1269,22 @@ export function CustomizerPage() {
             type="button"
             onClick={handleAddToCart}
             disabled={isAdding}
-            className="w-full min-h-[54px] border-0 rounded-[7px] bg-[#e6321c] text-white text-[11px] font-bold uppercase hover:bg-[#b91f12] active:scale-[0.99] transition-all cursor-pointer disabled:opacity-50 flex items-center justify-center gap-2"
+            className={`w-full min-h-[56px] border-0 rounded-[10px] text-white text-[12px] font-extrabold uppercase tracking-[0.06em] active:scale-[0.99] transition-all cursor-pointer disabled:opacity-50 flex items-center justify-center gap-2.5 group ${
+              isAddedFeedback
+                ? 'bg-[#238636] shadow-[0_6px_20px_rgba(35,134,54,0.35)]'
+                : 'bg-[#E6321C] hover:bg-[#B91F12] shadow-[0_6px_22px_rgba(230,50,28,0.35)] hover:shadow-[0_8px_28px_rgba(230,50,28,0.45)]'
+            }`}
           >
             {isAddedFeedback ? (
               <>
+                <Check className="w-5 h-5" strokeWidth={2.5} />
                 <span>ADDED TO CART</span>
-                <Check className="w-4 h-4" />
               </>
             ) : (
               <>
+                <ShoppingBag className="w-5 h-5" />
                 <span>ADD CUSTOM DESIGN TO CART</span>
-                <ArrowRight className="w-4 h-4" />
+                <ArrowRight className="w-4 h-4 transition-transform duration-200 group-hover:translate-x-1" />
               </>
             )}
           </button>
@@ -627,10 +1340,10 @@ export function CustomizerPage() {
                 02
               </div>
               <h3 className="my-4 mb-2 text-[17px] font-bold text-white uppercase">
-                Make it yours.
+                Upload from Gallery.
               </h3>
               <p className="m-0 text-[#aaaaaa] text-[11px] leading-[1.7]">
-                Upload your artwork and decide exactly where you want your design printed.
+                Upload any artwork, photo, or logo from your phone or device. Drag and pinch to size it.
               </p>
             </article>
 
@@ -642,7 +1355,7 @@ export function CustomizerPage() {
                 Preview & wear.
               </h3>
               <p className="m-0 text-[#aaaaaa] text-[11px] leading-[1.7]">
-                Check your design, select your size and add your custom piece to the cart.
+                Check your custom piece, select your size, and add to cart for HD DTF printing.
               </p>
             </article>
           </div>
@@ -732,6 +1445,39 @@ export function CustomizerPage() {
           </div>
         </div>
       )}
+
+      {/* =======================================================
+           MOBILE STICKY ACTION BAR (1-Tap Checkout on Mobile)
+      ======================================================= */}
+      <div className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-[#FAF8F5]/96 backdrop-blur-md border-t border-[#ddd3c5] p-3 px-4 flex items-center justify-between shadow-[0_-4px_20px_rgba(0,0,0,0.08)]">
+        <div>
+          <div className="text-[9px] font-mono font-bold uppercase tracking-wider text-[#6f6a63]">
+            {selectedGarment.name} • {selectedSize} • {selectedColor.name}
+          </div>
+          <div className="text-[19px] font-extrabold text-[#171717] leading-none mt-1">
+            ₹{selectedGarment.price.toLocaleString('en-IN')}
+          </div>
+        </div>
+
+        <button
+          type="button"
+          onClick={handleAddToCart}
+          disabled={isAdding}
+          className="min-h-[46px] px-5 rounded-lg bg-[#e6321c] text-white text-[11px] font-bold uppercase hover:bg-[#b91f12] active:scale-[0.98] transition-all flex items-center gap-2 shadow-md cursor-pointer disabled:opacity-50"
+        >
+          {isAddedFeedback ? (
+            <>
+              <span>ADDED!</span>
+              <Check className="w-4 h-4" />
+            </>
+          ) : (
+            <>
+              <span>ADD TO CART</span>
+              <ArrowRight className="w-4 h-4" />
+            </>
+          )}
+        </button>
+      </div>
     </main>
   );
 }

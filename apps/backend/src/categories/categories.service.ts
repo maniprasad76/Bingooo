@@ -4,8 +4,9 @@ import { db, saveDb } from '../common/database/store';
 
 @Injectable()
 export class CategoriesService {
-  findAll() {
-    return db.categories.filter((c) => c.is_active).map((c) => ({
+  findAll(includeInactive = false) {
+    const list = includeInactive ? db.categories : db.categories.filter((c) => c.is_active);
+    return list.map((c) => ({
       ...c,
       productCount: db.products.filter((p) => p.category_id === c.id && p.status === 'active').length,
     }));

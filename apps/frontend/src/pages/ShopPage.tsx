@@ -1,11 +1,14 @@
 import { useState, useMemo, useEffect } from 'react';
 import { Link, useSearchParams, useParams } from 'react-router-dom';
-import { Heart, Check, Star } from 'lucide-react';
+import { Heart, Check, Star, SlidersHorizontal, ArrowUpDown } from 'lucide-react';
 import { SEO } from '../components/common/SEO';
+import { generateItemListSchema } from '../lib/seo/schema';
 import { useProducts } from '../hooks/useProducts';
 import { useCart } from '../hooks/useCart';
 import { useWishlist } from '../hooks/useWishlist';
 import { triggerHaptic } from '../lib/native/capacitorBridge';
+import { ProductCardSkeleton } from '../components/ui/Skeleton';
+import { prefetchProduct } from '../lib/utils/preloader';
 
 interface ShopProduct {
   id: string;
@@ -45,7 +48,7 @@ const DEFAULT_SHOP_PRODUCTS: ShopProduct[] = [
     isNew: true,
     colors: ['#171717', '#FFFFFF', '#D9CBB8'],
     sizes: ['S', 'M', 'L', 'XL'],
-    image: 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&w=900&q=85',
+    image: '',
   },
   {
     id: 'prod-2',
@@ -61,7 +64,7 @@ const DEFAULT_SHOP_PRODUCTS: ShopProduct[] = [
     isBestseller: true,
     colors: ['#171717', '#77736D', '#FFFFFF'],
     sizes: ['XS', 'S', 'M', 'L'],
-    image: 'https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?auto=format&fit=crop&w=900&q=85',
+    image: '',
   },
   {
     id: 'prod-3',
@@ -78,7 +81,7 @@ const DEFAULT_SHOP_PRODUCTS: ShopProduct[] = [
     badgeType: 'light',
     stock: 'ONLY 5 LEFT',
     sizes: ['M', 'L', 'XL'],
-    image: 'https://images.unsplash.com/photo-1556821840-3a63f95609a7?auto=format&fit=crop&w=900&q=85',
+    image: '',
   },
   {
     id: 'prod-4',
@@ -91,7 +94,7 @@ const DEFAULT_SHOP_PRODUCTS: ShopProduct[] = [
     reviewsCount: 57,
     colors: ['#171717', '#E6321C'],
     sizes: ['S', 'M', 'L'],
-    image: 'https://images.unsplash.com/photo-1583743814966-8936f37f7996?auto=format&fit=crop&w=900&q=85',
+    image: '',
   },
   {
     id: 'prod-5',
@@ -107,7 +110,7 @@ const DEFAULT_SHOP_PRODUCTS: ShopProduct[] = [
     badge: '-20%',
     badgeType: 'red',
     sizes: ['XS', 'S', 'M', 'L', 'XL'],
-    image: 'https://images.unsplash.com/photo-1551488831-00ddcb6c6bd3?auto=format&fit=crop&w=900&q=85',
+    image: '',
   },
   {
     id: 'prod-6',
@@ -123,7 +126,7 @@ const DEFAULT_SHOP_PRODUCTS: ShopProduct[] = [
     isNew: true,
     colors: ['#D9CBB8', '#171717'],
     sizes: ['M', 'L', 'XL'],
-    image: 'https://images.unsplash.com/photo-1529139574466-a303027c1d8b?auto=format&fit=crop&w=900&q=85',
+    image: '',
   },
   {
     id: 'prod-7',
@@ -135,7 +138,7 @@ const DEFAULT_SHOP_PRODUCTS: ShopProduct[] = [
     rating: 4,
     reviewsCount: 38,
     sizes: ['S', 'M', 'L'],
-    image: 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=900&q=85',
+    image: '',
   },
   {
     id: 'prod-8',
@@ -151,7 +154,7 @@ const DEFAULT_SHOP_PRODUCTS: ShopProduct[] = [
     badge: 'SALE',
     badgeType: 'red',
     sizes: ['XS', 'S', 'M', 'L', 'XL'],
-    image: 'https://images.unsplash.com/photo-1618354691373-d851c5c3a990?auto=format&fit=crop&w=900&q=85',
+    image: '',
   },
   {
     id: 'prod-9',
@@ -166,7 +169,7 @@ const DEFAULT_SHOP_PRODUCTS: ShopProduct[] = [
     badgeType: 'black',
     isBestseller: true,
     sizes: ['S', 'M', 'L', 'XL'],
-    image: 'https://images.unsplash.com/photo-1506629905607-d9a4b8c2b1c0?auto=format&fit=crop&w=900&q=85',
+    image: '',
   },
 ];
 
@@ -258,7 +261,7 @@ export function ShopPage() {
   }, [slug]);
 
   // Fetch products from API (with fallback)
-  const { data: apiProductsData } = useProducts({
+  const { data: apiProductsData, isLoading } = useProducts({
     categorySlug: activeTab !== 'all' ? activeTab : undefined,
     sort: sortOption.toLowerCase().includes('low') ? 'price_asc' : sortOption.toLowerCase().includes('high') ? 'price_desc' : 'newest',
     limit: 24,
@@ -280,9 +283,12 @@ export function ShopPage() {
           : undefined,
         rating: p.rating || 5,
         reviewsCount: p.reviews_count || 48,
-        image: p.images?.[0]?.url || p.images?.[0] || DEFAULT_SHOP_PRODUCTS[idx % DEFAULT_SHOP_PRODUCTS.length].image,
-        badge: idx === 0 ? 'NEW' : idx === 1 ? 'BESTSELLER' : undefined,
-        badgeType: idx === 0 ? 'red' : 'black',
+        image: p.images?.[0]?.url || p.images?.[0] || '',
+        isBestseller: !!p.bestseller,
+        badge: p.bestseller
+          ? 'BESTSELLER'
+          : p.badge_text || p.badgeText || (p.is_sale || p.isSale ? (p.sale_tag || p.saleTag || 'SALE') : undefined),
+        badgeType: p.is_sale || p.isSale ? 'red' : p.bestseller ? 'black' : 'light',
         sizes: p.variants?.map((v: any) => v.size) || ['S', 'M', 'L'],
         colors: p.variants?.map((v: any) => v.colorHex || '#171717') || ['#171717'],
       }));
@@ -398,7 +404,14 @@ export function ShopPage() {
     }, 1500);
   };
 
-  // Close mobile filter on escape
+  // Ensure body scroll is never left locked on unmount
+  useEffect(() => {
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, []);
+
+  // Close mobile filter on escape and manage body overflow cleanly
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
@@ -421,9 +434,17 @@ export function ShopPage() {
   return (
     <main className="bg-[#f7eedb] text-[#171717] font-sans antialiased min-h-screen">
       <SEO
-        title="Shop — BINGOOO"
+        title={slug ? `${slug.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase())} — BINGOOO` : 'Shop — BINGOOO'}
         description="Everyday essentials, statement pieces and custom clothing made for people who want to wear what defines them."
-        canonical="https://bingooo.in/shop"
+        canonical={slug ? `https://bingooo.in/category/${slug}` : 'https://bingooo.in/shop'}
+        breadcrumbs={[
+          { name: 'Home', url: 'https://bingooo.in/' },
+          { name: slug ? slug.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase()) : 'Shop', url: slug ? `https://bingooo.in/category/${slug}` : 'https://bingooo.in/shop' },
+        ]}
+        schema={filteredProducts.length > 0 ? generateItemListSchema(
+          filteredProducts.slice(0, 10).map((p) => ({ name: p.name, slug: p.slug, price: p.price, image: p.image })),
+          slug ? `${slug.replace(/-/g, ' ')} Collection — Bingooo` : 'Bingooo Streetwear Collection',
+        ) : undefined}
       />
 
       {/* =======================================================
@@ -453,9 +474,9 @@ export function ShopPage() {
       </section>
 
       {/* =======================================================
-           CATEGORY NAV
+           CATEGORY NAV (HORIZONTALLY SCROLLABLE ON MOBILE)
       ======================================================= */}
-      <nav className="border-b border-[#ddd3c5] overflow-x-auto">
+      <nav className="border-b border-[#ddd3c5] overflow-x-auto no-scrollbar scroll-smooth">
         <div className="container-bingooo flex gap-[30px] min-w-max">
           {CATEGORY_TABS.map((tab) => (
             <button
@@ -527,18 +548,19 @@ export function ShopPage() {
         </div>
 
         {/* =======================================================
-             MOBILE TOOLBAR
+             MOBILE TOOLBAR (CLEAN & TOUCH-OPTIMIZED)
         ======================================================= */}
-        <div className="grid grid-cols-2 gap-2 my-5 md:hidden">
+        <div className="grid grid-cols-2 gap-2.5 my-4 md:hidden">
           <button
             type="button"
             onClick={() => {
               triggerHaptic('light');
               setIsMobileFilterOpen(true);
             }}
-            className="h-[43px] border border-[#ddd3c5] bg-transparent text-[9px] font-bold uppercase text-[#171717]"
+            className="h-11 border border-[#ddd3c5] bg-white rounded-md text-[10px] font-bold tracking-wider uppercase text-[#171717] flex items-center justify-center gap-1.5 shadow-2xs active:bg-[#ede0cc]"
           >
-            FILTER {selectedCategories.length + selectedSizes.length > 0 && `(${selectedCategories.length + selectedSizes.length})`}
+            <SlidersHorizontal size={13} className="text-[#E6321C]" />
+            <span>FILTER {selectedCategories.length + selectedSizes.length > 0 ? `(${selectedCategories.length + selectedSizes.length})` : ''}</span>
           </button>
 
           <button
@@ -547,19 +569,20 @@ export function ShopPage() {
               triggerHaptic('light');
               setIsMobileSortOpen(true);
             }}
-            className="h-[43px] border border-[#171717] bg-[#171717] text-white text-[9px] font-bold uppercase"
+            className="h-11 border border-[#171717] bg-[#171717] text-white rounded-md text-[10px] font-bold tracking-wider uppercase flex items-center justify-center gap-1.5 shadow-2xs active:bg-[#252525]"
           >
-            SORT: {sortOption}
+            <ArrowUpDown size={13} />
+            <span className="truncate">SORT: {sortOption}</span>
           </button>
         </div>
 
         {/* =======================================================
              SHOP LAYOUT (SIDEBAR + GRID)
         ======================================================= */}
-        <div className="grid grid-cols-1 md:grid-cols-[235px_minmax(0,1fr)] gap-[35px] pb-[100px]">
+        <div className="grid grid-cols-1 md:grid-cols-[235px_minmax(0,1fr)] gap-6 lg:gap-10 pb-[100px]">
 
-          {/* ── DESKTOP FILTERS SIDEBAR ── */}
-          <aside className="hidden md:block sticky top-5 self-start">
+          {/* ── DESKTOP FILTERS SIDEBAR (Sticky Below Header) ── */}
+          <aside className="hidden md:block sticky top-24 self-start max-h-[calc(100vh-120px)] overflow-y-auto pr-2 no-scrollbar">
             <div className="flex justify-between items-center pb-[17px] border-b border-[#ddd3c5]">
               <h2 className="m-0 text-[12px] font-bold uppercase">
                 Filters
@@ -713,7 +736,13 @@ export function ShopPage() {
 
           {/* ── PRODUCT GRID & PAGINATION ── */}
           <div>
-            {filteredProducts.length === 0 ? (
+            {isLoading ? (
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-y-[35px] gap-x-[18px]">
+                {Array.from({ length: 6 }).map((_, idx) => (
+                  <ProductCardSkeleton key={idx} />
+                ))}
+              </div>
+            ) : filteredProducts.length === 0 ? (
               <div className="p-12 text-center bg-white border border-[#ddd3c5]">
                 <h3 className="text-[16px] font-bold uppercase mb-2">No matching products</h3>
                 <p className="text-[#6f6a63] text-[11px] mb-5">Try resetting your filters to explore our complete collection.</p>
@@ -732,7 +761,12 @@ export function ShopPage() {
                   const isQuickAdded = quickAddedId === product.id;
 
                   return (
-                    <article key={product.id} className="min-w-0 group">
+                    <article
+                      key={product.id}
+                      className="min-w-0 group"
+                      onMouseEnter={() => prefetchProduct(product.slug)}
+                      onTouchStart={() => prefetchProduct(product.slug)}
+                    >
                       {/* Product Image Container */}
                       <div className="relative aspect-[4/5] overflow-hidden bg-[#ede0cc]">
                         {/* Badges */}
@@ -771,12 +805,19 @@ export function ShopPage() {
 
                         {/* Image Link */}
                         <Link to={`/product/${product.slug}`} className="block w-full h-full">
-                          <img
-                            src={product.image}
-                            alt={product.name}
-                            loading="lazy"
-                            className="w-full h-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.035]"
-                          />
+                          {product.image ? (
+                            <img
+                              src={product.image}
+                              alt={product.name}
+                              loading="lazy"
+                              className="w-full h-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.035]"
+                              onError={(e) => {
+                                e.currentTarget.style.display = 'none';
+                              }}
+                            />
+                          ) : (
+                            <div className="w-full h-full bg-[#ede0cc]" />
+                          )}
                         </Link>
 
                         {/* Quick Add Button */}

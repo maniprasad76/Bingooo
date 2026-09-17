@@ -18,6 +18,7 @@ import {
   AlertCircle,
   Zap,
   Check,
+  BadgePercent,
 } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { useCart } from '../hooks/useCart';
@@ -82,12 +83,14 @@ export function CheckoutPage() {
         partial_cod_enabled: boolean;
         partial_cod_advance_amount: number;
         max_cod_limit: number;
+        prepaid_discount_percentage: number;
       }>('/payments/config'),
     staleTime: 30000,
   });
 
   const isCodEnabled = paymentConfig?.cod_enabled !== false;
   const isPartialCodEnabled = paymentConfig?.partial_cod_enabled !== false;
+  const prepaidDiscountPct = Number(paymentConfig?.prepaid_discount_percentage) || 5;
   const partialCodAdvance = Number(paymentConfig?.partial_cod_advance_amount) || 79;
   const maxCodLimit = Number(paymentConfig?.max_cod_limit) || 5000;
 
@@ -158,15 +161,25 @@ export function CheckoutPage() {
   };
 
   const subtotal = cart?.subtotal || 0;
-  const shippingFee = subtotal >= 999 || subtotal === 0 ? 0 : 99;
-  const tax = Math.round(subtotal * 0.05);
-  const total = subtotal + shippingFee + tax;
+  const isPrepaid = paymentMethod === 'upi' || paymentMethod === 'cards';
+  const prepaidDiscount = isPrepaid ? Math.round(subtotal * (prepaidDiscountPct / 100)) : 0;
+  const afterDiscount = Math.max(0, subtotal - prepaidDiscount);
+  const shippingFee = afterDiscount >= 999 || afterDiscount === 0 ? 0 : 99;
+  const tax = Math.round(afterDiscount * 0.05);
+  const total = afterDiscount + shippingFee + tax;
 
   const hasCustomItems = cart?.items?.some((i: any) => Boolean(i.customization || i.customizationId));
   const effectivePartialAdvance = Math.min(partialCodAdvance, total);
   const partialCodRemaining = Math.max(0, total - effectivePartialAdvance);
 
+  // Non-discounted total for COD display (no prepaid discount)
+  const codSubtotal = subtotal;
+  const codShippingFee = codSubtotal >= 999 || codSubtotal === 0 ? 0 : 99;
+  const codTax = Math.round(codSubtotal * 0.05);
+  const codTotal = codSubtotal + codShippingFee + codTax;
+
   const onSubmit = async (addressData: AddressFormData) => {
+    if (isProcessing) return;
     if (!cart?.id || !cart.items || cart.items.length === 0) {
       toast({ title: 'Cart is empty', variant: 'danger' });
       return;
@@ -441,7 +454,7 @@ export function CheckoutPage() {
               </span>
               {isMobileSummaryOpen ? <ChevronUp size={15} /> : <ChevronDown size={15} />}
             </div>
-            <span className="text-sm font-extrabold text-accent">₹{total}</span>
+            <span className="text-sm font-extrabold text-accent">₹{isPrepaid ? total : codTotal}</span>
           </button>
 
           <AnimatePresence>
@@ -486,15 +499,24 @@ export function CheckoutPage() {
                       <span>Subtotal</span>
                       <span className="font-medium text-ink">₹{subtotal}</span>
                     </div>
+                    {isPrepaid && prepaidDiscount > 0 && (
+                      <div className="flex justify-between text-emerald-600 font-bold">
+                        <span className="flex items-center gap-1">
+                          <BadgePercent size={12} />
+                          Prepaid Discount ({prepaidDiscountPct}%)
+                        </span>
+                        <span>−₹{prepaidDiscount}</span>
+                      </div>
+                    )}
                     <div className="flex justify-between text-muted">
                       <span>Shipping Fee</span>
                       <span className="font-medium text-ink">
-                        {shippingFee === 0 ? 'FREE' : `₹${shippingFee}`}
+                        {(isPrepaid ? shippingFee : codShippingFee) === 0 ? 'FREE' : `₹${isPrepaid ? shippingFee : codShippingFee}`}
                       </span>
                     </div>
                     <div className="flex justify-between text-muted">
                       <span>GST / Taxes (5%)</span>
-                      <span className="font-medium text-ink">₹{tax}</span>
+                      <span className="font-medium text-ink">₹{isPrepaid ? tax : codTax}</span>
                     </div>
                     {paymentMethod === 'partial_cod' && (
                       <div className="border-t border-dashed border-border pt-1.5 text-xs text-accent font-bold flex justify-between">
@@ -504,7 +526,7 @@ export function CheckoutPage() {
                     )}
                     <div className="border-t border-border pt-2 flex justify-between font-black text-ink">
                       <span>Total Payable</span>
-                      <span className="text-accent">₹{total}</span>
+                      <span className="text-accent">₹{isPrepaid ? total : codTotal}</span>
                     </div>
                   </div>
                 </div>
@@ -648,10 +670,18 @@ export function CheckoutPage() {
                         <span className="rounded-full bg-accent px-2 py-0.5 text-[10px] font-black uppercase text-white tracking-wider">
                           Recommended
                         </span>
+                        <span className="rounded-full bg-emerald-600 px-2 py-0.5 text-[10px] font-black uppercase text-white tracking-wider flex items-center gap-0.5">
+                          <BadgePercent size={10} /> Save {prepaidDiscountPct}%
+                        </span>
                       </div>
                       <p className="text-xs text-muted mt-0.5">
                         Direct payment via your favorite UPI app. Instant refund & zero convenience fee.
                       </p>
+                      {prepaidDiscount > 0 && paymentMethod === 'upi' && (
+                        <p className="text-xs text-emerald-600 font-semibold mt-1">
+                          You save ₹{prepaidDiscount} with prepaid!
+                        </p>
+                      )}
                     </div>
                   </div>
                   <Zap size={20} className="text-accent shrink-0" />
@@ -868,10 +898,20 @@ export function CheckoutPage() {
                       className="accent-accent mt-1"
                     />
                     <div>
-                      <span className="text-body font-bold text-ink block">Debit / Credit Cards & NetBanking</span>
+                      <div className="flex items-center gap-2">
+                        <span className="text-body font-bold text-ink">Debit / Credit Cards & NetBanking</span>
+                        <span className="rounded-full bg-emerald-600 px-2 py-0.5 text-[10px] font-black uppercase text-white tracking-wider flex items-center gap-0.5">
+                          <BadgePercent size={10} /> Save {prepaidDiscountPct}%
+                        </span>
+                      </div>
                       <p className="text-xs text-muted mt-0.5">
                         Visa, Mastercard, RuPay, Maestro, Corporate Cards & all major Indian banks.
                       </p>
+                      {prepaidDiscount > 0 && paymentMethod === 'cards' && (
+                        <p className="text-xs text-emerald-600 font-semibold mt-1">
+                          You save ₹{prepaidDiscount} with prepaid!
+                        </p>
+                      )}
                     </div>
                   </div>
                   <CreditCard size={20} className="text-muted shrink-0" />
@@ -925,16 +965,36 @@ export function CheckoutPage() {
                   <span>Subtotal</span>
                   <span className="font-medium text-ink">₹{subtotal}</span>
                 </div>
+
+                {/* Prepaid Discount Line */}
+                {isPrepaid && prepaidDiscount > 0 && (
+                  <div className="flex justify-between text-emerald-600 font-bold">
+                    <span className="flex items-center gap-1.5">
+                      <BadgePercent size={14} />
+                      Prepaid Discount ({prepaidDiscountPct}%)
+                    </span>
+                    <span>−₹{prepaidDiscount}</span>
+                  </div>
+                )}
+
                 <div className="flex justify-between text-muted">
                   <span>Shipping Fee</span>
                   <span className="font-medium text-ink">
-                    {shippingFee === 0 ? 'FREE' : `₹${shippingFee}`}
+                    {(isPrepaid ? shippingFee : codShippingFee) === 0 ? 'FREE' : `₹${isPrepaid ? shippingFee : codShippingFee}`}
                   </span>
                 </div>
                 <div className="flex justify-between text-muted">
                   <span>GST / Taxes (5%)</span>
-                  <span className="font-medium text-ink">₹{tax}</span>
+                  <span className="font-medium text-ink">₹{isPrepaid ? tax : codTax}</span>
                 </div>
+
+                {/* Prepaid Savings Banner */}
+                {isPrepaid && prepaidDiscount > 0 && (
+                  <div className="rounded-lg bg-emerald-50 border border-emerald-200/60 p-2.5 flex items-center gap-2 text-xs text-emerald-700 font-semibold">
+                    <CheckCircle2 size={14} className="text-emerald-600 shrink-0" />
+                    <span>You're saving ₹{prepaidDiscount} with prepaid payment!</span>
+                  </div>
+                )}
 
                 {/* Partial COD Advance / Balance Breakdown */}
                 {paymentMethod === 'partial_cod' && (
@@ -952,12 +1012,12 @@ export function CheckoutPage() {
 
                 <div className="border-t border-border pt-3 flex justify-between text-heading font-black text-ink">
                   <span>Total Order Value</span>
-                  <span className="text-accent">₹{total}</span>
+                  <span className="text-accent">₹{isPrepaid ? total : codTotal}</span>
                 </div>
               </div>
 
               {/* Submit CTA Button */}
-              <Button type="submit" variant="primary" size="lg" fullWidth disabled={isProcessing}>
+              <Button type="submit" variant="primary" size="lg" fullWidth disabled={isProcessing} loading={isProcessing}>
                 {isProcessing ? (
                   'Securing Order...'
                 ) : paymentMethod === 'partial_cod' ? (
@@ -973,7 +1033,7 @@ export function CheckoutPage() {
                       : 'UPI'
                   }`
                 ) : paymentMethod === 'cod' ? (
-                  `Place Cash on Delivery (₹${total})`
+                  `Place Cash on Delivery (₹${codTotal})`
                 ) : (
                   `Pay ₹${total} via Cards / NetBanking`
                 )}

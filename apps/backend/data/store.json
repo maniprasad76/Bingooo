@@ -63,10 +63,516 @@
       "updated_at": "2026-09-10T10:35:47.741Z"
     }
   ],
-  "products": [],
-  "product_images": [],
-  "product_variants": [],
-  "product_collections": [],
+  "products": [
+    {
+      "id": "ead1024d-1153-4446-9e62-ded6616078f3",
+      "category_id": "d99d20a3-2e63-4998-8232-f030be087d2f",
+      "title": "Classic Oversized Tee",
+      "slug": "classic-oversized-tee",
+      "description": "Premium 220 GSM cotton oversized tee with dropped shoulders. Perfect canvas for custom designs.",
+      "status": "active",
+      "base_price": 1299,
+      "compare_at_price": 1599,
+      "customization_enabled": true,
+      "seo_title": "Classic Oversized Tee — Bingooo",
+      "seo_description": "Premium oversized tee in 220 GSM cotton. Customize with your own design or wear it plain.",
+      "created_at": "2026-09-17T09:37:42.520Z",
+      "updated_at": "2026-09-17T09:37:42.520Z"
+    },
+    {
+      "id": "1d9df779-ffde-49de-bdb2-5ce81e8bbf54",
+      "category_id": "d99d20a3-2e63-4998-8232-f030be087d2f",
+      "title": "Graphic Print Tee — Midnight",
+      "slug": "graphic-print-tee-midnight",
+      "description": "Bold midnight-themed graphic print on soft cotton.",
+      "status": "active",
+      "base_price": 1499,
+      "compare_at_price": null,
+      "customization_enabled": false,
+      "seo_title": "Graphic Print Tee Midnight — Bingooo",
+      "seo_description": "Stand out with our midnight graphic print on premium cotton.",
+      "created_at": "2026-09-17T09:37:42.520Z",
+      "updated_at": "2026-09-17T09:37:42.520Z"
+    },
+    {
+      "id": "a18a1763-6a59-4d9b-81b9-b4ae03461ddf",
+      "category_id": "86a9bc46-ff00-4bff-9dc7-9b5123caae74",
+      "title": "Essential Pullover Hoodie",
+      "slug": "essential-pullover-hoodie",
+      "description": "Cozy 350 GSM fleece-lined hoodie. Adjustable hood, kangaroo pocket, ribbed cuffs.",
+      "status": "active",
+      "base_price": 2499,
+      "compare_at_price": 2999,
+      "customization_enabled": true,
+      "seo_title": "Essential Pullover Hoodie — Bingooo",
+      "seo_description": "Warm and customizable pullover hoodie in premium fleece.",
+      "created_at": "2026-09-17T09:37:42.520Z",
+      "updated_at": "2026-09-17T09:37:42.520Z"
+    }
+  ],
+  "product_images": [
+    {
+      "id": "58bb9367-e794-4a6f-a4f2-566cebbc0ce2",
+      "product_id": "ead1024d-1153-4446-9e62-ded6616078f3",
+      "url": "/custom/tshirt-step-1.png",
+      "object_key": "/custom/tshirt-step-1.png",
+      "alt_text": "Classic Oversized Tee in Natural Beige",
+      "sort_order": 0,
+      "is_primary": true
+    },
+    {
+      "id": "6b61c246-7414-4c07-9051-48c132737fd8",
+      "product_id": "1d9df779-ffde-49de-bdb2-5ce81e8bbf54",
+      "url": "/custom/tshirt-step-3-black.png",
+      "object_key": "/custom/tshirt-step-3-black.png",
+      "alt_text": "Graphic Print Tee in Midnight Obsidian",
+      "sort_order": 0,
+      "is_primary": true
+    },
+    {
+      "id": "32065035-11bd-485d-becf-3bbf002d4666",
+      "product_id": "a18a1763-6a59-4d9b-81b9-b4ae03461ddf",
+      "url": "/custom/tshirt-step-2.png",
+      "object_key": "/custom/tshirt-step-2.png",
+      "alt_text": "Essential Custom Apparel in Sandstone",
+      "sort_order": 0,
+      "is_primary": true
+    }
+  ],
+  "product_variants": [
+    {
+      "id": "4be24ccd-295f-4efc-b7bb-b8cfc2a35936",
+      "product_id": "ead1024d-1153-4446-9e62-ded6616078f3",
+      "sku": "COT-S-BLK",
+      "size": "S",
+      "color": "Black",
+      "color_hex": "#111111",
+      "price": 1299,
+      "stock_quantity": 22,
+      "reserved_quantity": 0,
+      "is_active": true,
+      "created_at": "2026-09-17T09:37:42.519Z",
+      "updated_at": "2026-09-17T09:37:42.520Z"
+    },
+    {
+      "id": "bd7dcdb5-c946-48ad-9355-888179e58dc1",
+      "product_id": "ead1024d-1153-4446-9e62-ded6616078f3",
+      "sku": "COT-S-WHT",
+      "size": "S",
+      "color": "White",
+      "color_hex": "#FFFFFF",
+      "price": 1299,
+      "stock_quantity": 25,
+      "reserved_quantity": 0,
+      "is_active": true,
+      "created_at": "2026-09-17T09:37:42.520Z",
+      "updated_at": "2026-09-17T09:37:42.520Z"
+    },
+    {
+      "id": "eb15ab94-214e-4269-b014-8c823f0dbbda",
+      "product_id": "ead1024d-1153-4446-9e62-ded6616078f3",
+      "sku": "COT-S-SNS",
+      "size": "S",
+      "color": "Sandstone",
+      "color_hex": "#D4C4A8",
+      "price": 1299,
+      "stock_quantity": 25,
+      "reserved_quantity": 0,
+      "is_active": true,
+      "created_at": "2026-09-17T09:37:42.520Z",
+      "updated_at": "2026-09-17T09:37:42.520Z"
+    },
+    {
+      "id": "424f3b98-d99b-4a48-b49f-195b076fa8b7",
+      "product_id": "ead1024d-1153-4446-9e62-ded6616078f3",
+      "sku": "COT-M-BLK",
+      "size": "M",
+      "color": "Black",
+      "color_hex": "#111111",
+      "price": 1299,
+      "stock_quantity": 25,
+      "reserved_quantity": 0,
+      "is_active": true,
+      "created_at": "2026-09-17T09:37:42.520Z",
+      "updated_at": "2026-09-17T09:37:42.520Z"
+    },
+    {
+      "id": "9a3879ff-84b9-4fe0-bba9-7c34aab89a88",
+      "product_id": "ead1024d-1153-4446-9e62-ded6616078f3",
+      "sku": "COT-M-WHT",
+      "size": "M",
+      "color": "White",
+      "color_hex": "#FFFFFF",
+      "price": 1299,
+      "stock_quantity": 25,
+      "reserved_quantity": 0,
+      "is_active": true,
+      "created_at": "2026-09-17T09:37:42.520Z",
+      "updated_at": "2026-09-17T09:37:42.520Z"
+    },
+    {
+      "id": "d8438b35-6c5a-433d-bfb1-99fa61381572",
+      "product_id": "ead1024d-1153-4446-9e62-ded6616078f3",
+      "sku": "COT-M-SNS",
+      "size": "M",
+      "color": "Sandstone",
+      "color_hex": "#D4C4A8",
+      "price": 1299,
+      "stock_quantity": 25,
+      "reserved_quantity": 0,
+      "is_active": true,
+      "created_at": "2026-09-17T09:37:42.520Z",
+      "updated_at": "2026-09-17T09:37:42.520Z"
+    },
+    {
+      "id": "d68a418b-0cb3-4453-b342-a1d5e7c034e3",
+      "product_id": "ead1024d-1153-4446-9e62-ded6616078f3",
+      "sku": "COT-L-BLK",
+      "size": "L",
+      "color": "Black",
+      "color_hex": "#111111",
+      "price": 1299,
+      "stock_quantity": 25,
+      "reserved_quantity": 0,
+      "is_active": true,
+      "created_at": "2026-09-17T09:37:42.520Z",
+      "updated_at": "2026-09-17T09:37:42.520Z"
+    },
+    {
+      "id": "d4e7d86a-d493-4db3-8315-458cc0221234",
+      "product_id": "ead1024d-1153-4446-9e62-ded6616078f3",
+      "sku": "COT-L-WHT",
+      "size": "L",
+      "color": "White",
+      "color_hex": "#FFFFFF",
+      "price": 1299,
+      "stock_quantity": 25,
+      "reserved_quantity": 0,
+      "is_active": true,
+      "created_at": "2026-09-17T09:37:42.520Z",
+      "updated_at": "2026-09-17T09:37:42.520Z"
+    },
+    {
+      "id": "0c2af497-94d6-45a5-9202-ffa4eb59b215",
+      "product_id": "ead1024d-1153-4446-9e62-ded6616078f3",
+      "sku": "COT-L-SNS",
+      "size": "L",
+      "color": "Sandstone",
+      "color_hex": "#D4C4A8",
+      "price": 1299,
+      "stock_quantity": 25,
+      "reserved_quantity": 0,
+      "is_active": true,
+      "created_at": "2026-09-17T09:37:42.520Z",
+      "updated_at": "2026-09-17T09:37:42.520Z"
+    },
+    {
+      "id": "bd301380-4cf4-42fb-8f08-e9647b742c2c",
+      "product_id": "ead1024d-1153-4446-9e62-ded6616078f3",
+      "sku": "COT-XL-BLK",
+      "size": "XL",
+      "color": "Black",
+      "color_hex": "#111111",
+      "price": 1299,
+      "stock_quantity": 25,
+      "reserved_quantity": 0,
+      "is_active": true,
+      "created_at": "2026-09-17T09:37:42.520Z",
+      "updated_at": "2026-09-17T09:37:42.520Z"
+    },
+    {
+      "id": "c4e5049f-7c7f-4610-b89c-ea70135d1605",
+      "product_id": "ead1024d-1153-4446-9e62-ded6616078f3",
+      "sku": "COT-XL-WHT",
+      "size": "XL",
+      "color": "White",
+      "color_hex": "#FFFFFF",
+      "price": 1299,
+      "stock_quantity": 25,
+      "reserved_quantity": 0,
+      "is_active": true,
+      "created_at": "2026-09-17T09:37:42.520Z",
+      "updated_at": "2026-09-17T09:37:42.520Z"
+    },
+    {
+      "id": "5fe37dd0-03ac-4a49-895d-9400464a2f5a",
+      "product_id": "ead1024d-1153-4446-9e62-ded6616078f3",
+      "sku": "COT-XL-SNS",
+      "size": "XL",
+      "color": "Sandstone",
+      "color_hex": "#D4C4A8",
+      "price": 1299,
+      "stock_quantity": 25,
+      "reserved_quantity": 0,
+      "is_active": true,
+      "created_at": "2026-09-17T09:37:42.520Z",
+      "updated_at": "2026-09-17T09:37:42.520Z"
+    },
+    {
+      "id": "6bb29f8b-11dc-4f0e-b2ac-57a203bed729",
+      "product_id": "ead1024d-1153-4446-9e62-ded6616078f3",
+      "sku": "COT-XXL-BLK",
+      "size": "XXL",
+      "color": "Black",
+      "color_hex": "#111111",
+      "price": 1299,
+      "stock_quantity": 25,
+      "reserved_quantity": 0,
+      "is_active": true,
+      "created_at": "2026-09-17T09:37:42.520Z",
+      "updated_at": "2026-09-17T09:37:42.520Z"
+    },
+    {
+      "id": "49b3725a-983a-4c0a-973b-dc47d696ffba",
+      "product_id": "ead1024d-1153-4446-9e62-ded6616078f3",
+      "sku": "COT-XXL-WHT",
+      "size": "XXL",
+      "color": "White",
+      "color_hex": "#FFFFFF",
+      "price": 1299,
+      "stock_quantity": 25,
+      "reserved_quantity": 0,
+      "is_active": true,
+      "created_at": "2026-09-17T09:37:42.520Z",
+      "updated_at": "2026-09-17T09:37:42.520Z"
+    },
+    {
+      "id": "04853476-0ef4-4bad-8325-d83debba1a33",
+      "product_id": "ead1024d-1153-4446-9e62-ded6616078f3",
+      "sku": "COT-XXL-SNS",
+      "size": "XXL",
+      "color": "Sandstone",
+      "color_hex": "#D4C4A8",
+      "price": 1299,
+      "stock_quantity": 25,
+      "reserved_quantity": 0,
+      "is_active": true,
+      "created_at": "2026-09-17T09:37:42.520Z",
+      "updated_at": "2026-09-17T09:37:42.520Z"
+    },
+    {
+      "id": "e7a03827-ba90-480f-a0b4-0f3768b68c20",
+      "product_id": "1d9df779-ffde-49de-bdb2-5ce81e8bbf54",
+      "sku": "GPT-S-BLK",
+      "size": "S",
+      "color": "Black",
+      "color_hex": "#111111",
+      "price": 1499,
+      "stock_quantity": 15,
+      "reserved_quantity": 0,
+      "is_active": true,
+      "created_at": "2026-09-17T09:37:42.520Z",
+      "updated_at": "2026-09-17T09:37:42.520Z"
+    },
+    {
+      "id": "868070f5-7a08-4a68-85d7-78208fb42767",
+      "product_id": "1d9df779-ffde-49de-bdb2-5ce81e8bbf54",
+      "sku": "GPT-M-BLK",
+      "size": "M",
+      "color": "Black",
+      "color_hex": "#111111",
+      "price": 1499,
+      "stock_quantity": 15,
+      "reserved_quantity": 0,
+      "is_active": true,
+      "created_at": "2026-09-17T09:37:42.520Z",
+      "updated_at": "2026-09-17T09:37:42.520Z"
+    },
+    {
+      "id": "e61a803f-43c0-4a1c-b136-fb8f62bfc5dc",
+      "product_id": "1d9df779-ffde-49de-bdb2-5ce81e8bbf54",
+      "sku": "GPT-L-BLK",
+      "size": "L",
+      "color": "Black",
+      "color_hex": "#111111",
+      "price": 1499,
+      "stock_quantity": 15,
+      "reserved_quantity": 0,
+      "is_active": true,
+      "created_at": "2026-09-17T09:37:42.520Z",
+      "updated_at": "2026-09-17T09:37:42.520Z"
+    },
+    {
+      "id": "45569148-be76-45b6-a459-4821107f8d59",
+      "product_id": "1d9df779-ffde-49de-bdb2-5ce81e8bbf54",
+      "sku": "GPT-XL-BLK",
+      "size": "XL",
+      "color": "Black",
+      "color_hex": "#111111",
+      "price": 1499,
+      "stock_quantity": 15,
+      "reserved_quantity": 0,
+      "is_active": true,
+      "created_at": "2026-09-17T09:37:42.520Z",
+      "updated_at": "2026-09-17T09:37:42.520Z"
+    },
+    {
+      "id": "e19070fd-403b-4b92-b743-c9f3840afca2",
+      "product_id": "a18a1763-6a59-4d9b-81b9-b4ae03461ddf",
+      "sku": "EPH-S-CHR",
+      "size": "S",
+      "color": "Charcoal",
+      "color_hex": "#333333",
+      "price": 2499,
+      "stock_quantity": 10,
+      "reserved_quantity": 0,
+      "is_active": true,
+      "created_at": "2026-09-17T09:37:42.520Z",
+      "updated_at": "2026-09-17T09:37:42.520Z"
+    },
+    {
+      "id": "f04b2304-c12b-447b-ae43-a30776382dbc",
+      "product_id": "a18a1763-6a59-4d9b-81b9-b4ae03461ddf",
+      "sku": "EPH-S-OAT",
+      "size": "S",
+      "color": "Oatmeal",
+      "color_hex": "#E8DCC8",
+      "price": 2499,
+      "stock_quantity": 10,
+      "reserved_quantity": 0,
+      "is_active": true,
+      "created_at": "2026-09-17T09:37:42.520Z",
+      "updated_at": "2026-09-17T09:37:42.520Z"
+    },
+    {
+      "id": "e07df583-d249-47a0-a2eb-e8bb14355fbb",
+      "product_id": "a18a1763-6a59-4d9b-81b9-b4ae03461ddf",
+      "sku": "EPH-M-CHR",
+      "size": "M",
+      "color": "Charcoal",
+      "color_hex": "#333333",
+      "price": 2499,
+      "stock_quantity": 10,
+      "reserved_quantity": 0,
+      "is_active": true,
+      "created_at": "2026-09-17T09:37:42.520Z",
+      "updated_at": "2026-09-17T09:37:42.520Z"
+    },
+    {
+      "id": "0bae49c1-b678-4c82-a615-8799154f0db3",
+      "product_id": "a18a1763-6a59-4d9b-81b9-b4ae03461ddf",
+      "sku": "EPH-M-OAT",
+      "size": "M",
+      "color": "Oatmeal",
+      "color_hex": "#E8DCC8",
+      "price": 2499,
+      "stock_quantity": 10,
+      "reserved_quantity": 0,
+      "is_active": true,
+      "created_at": "2026-09-17T09:37:42.520Z",
+      "updated_at": "2026-09-17T09:37:42.520Z"
+    },
+    {
+      "id": "014085d4-fdac-4540-9116-661cd6471ea3",
+      "product_id": "a18a1763-6a59-4d9b-81b9-b4ae03461ddf",
+      "sku": "EPH-L-CHR",
+      "size": "L",
+      "color": "Charcoal",
+      "color_hex": "#333333",
+      "price": 2499,
+      "stock_quantity": 10,
+      "reserved_quantity": 0,
+      "is_active": true,
+      "created_at": "2026-09-17T09:37:42.520Z",
+      "updated_at": "2026-09-17T09:37:42.520Z"
+    },
+    {
+      "id": "42947b5a-14c8-4f70-8360-4201fa3e8e00",
+      "product_id": "a18a1763-6a59-4d9b-81b9-b4ae03461ddf",
+      "sku": "EPH-L-OAT",
+      "size": "L",
+      "color": "Oatmeal",
+      "color_hex": "#E8DCC8",
+      "price": 2499,
+      "stock_quantity": 10,
+      "reserved_quantity": 0,
+      "is_active": true,
+      "created_at": "2026-09-17T09:37:42.520Z",
+      "updated_at": "2026-09-17T09:37:42.520Z"
+    },
+    {
+      "id": "6e61361a-c19a-4a99-a0e4-d505b4d51459",
+      "product_id": "a18a1763-6a59-4d9b-81b9-b4ae03461ddf",
+      "sku": "EPH-XL-CHR",
+      "size": "XL",
+      "color": "Charcoal",
+      "color_hex": "#333333",
+      "price": 2499,
+      "stock_quantity": 10,
+      "reserved_quantity": 0,
+      "is_active": true,
+      "created_at": "2026-09-17T09:37:42.520Z",
+      "updated_at": "2026-09-17T09:37:42.520Z"
+    },
+    {
+      "id": "f21ba943-fc57-4cc0-bae5-ab5a13c0ac80",
+      "product_id": "a18a1763-6a59-4d9b-81b9-b4ae03461ddf",
+      "sku": "EPH-XL-OAT",
+      "size": "XL",
+      "color": "Oatmeal",
+      "color_hex": "#E8DCC8",
+      "price": 2499,
+      "stock_quantity": 10,
+      "reserved_quantity": 0,
+      "is_active": true,
+      "created_at": "2026-09-17T09:37:42.520Z",
+      "updated_at": "2026-09-17T09:37:42.520Z"
+    },
+    {
+      "id": "2d4291a9-a6ad-4c42-ada0-f9004750c156",
+      "product_id": "a18a1763-6a59-4d9b-81b9-b4ae03461ddf",
+      "sku": "EPH-XXL-CHR",
+      "size": "XXL",
+      "color": "Charcoal",
+      "color_hex": "#333333",
+      "price": 2499,
+      "stock_quantity": 10,
+      "reserved_quantity": 0,
+      "is_active": true,
+      "created_at": "2026-09-17T09:37:42.520Z",
+      "updated_at": "2026-09-17T09:37:42.520Z"
+    },
+    {
+      "id": "6c4b7b1a-51cc-40e1-a86a-e26be721b481",
+      "product_id": "a18a1763-6a59-4d9b-81b9-b4ae03461ddf",
+      "sku": "EPH-XXL-OAT",
+      "size": "XXL",
+      "color": "Oatmeal",
+      "color_hex": "#E8DCC8",
+      "price": 2499,
+      "stock_quantity": 10,
+      "reserved_quantity": 0,
+      "is_active": true,
+      "created_at": "2026-09-17T09:37:42.520Z",
+      "updated_at": "2026-09-17T09:37:42.520Z"
+    }
+  ],
+  "product_collections": [
+    {
+      "product_id": "ead1024d-1153-4446-9e62-ded6616078f3",
+      "collection_id": "a0e82fa6-25cb-48eb-84c2-1a1126a0bbcf"
+    },
+    {
+      "product_id": "ead1024d-1153-4446-9e62-ded6616078f3",
+      "collection_id": "11f0d7dd-7e01-4400-b7cd-bff8e8f633a7"
+    },
+    {
+      "product_id": "ead1024d-1153-4446-9e62-ded6616078f3",
+      "collection_id": "77622f0c-0658-4f99-8087-d6aff87c39ba"
+    },
+    {
+      "product_id": "1d9df779-ffde-49de-bdb2-5ce81e8bbf54",
+      "collection_id": "9b37aed6-4ca3-4c11-a7eb-44f238721b3b"
+    },
+    {
+      "product_id": "a18a1763-6a59-4d9b-81b9-b4ae03461ddf",
+      "collection_id": "a0e82fa6-25cb-48eb-84c2-1a1126a0bbcf"
+    },
+    {
+      "product_id": "a18a1763-6a59-4d9b-81b9-b4ae03461ddf",
+      "collection_id": "11f0d7dd-7e01-4400-b7cd-bff8e8f633a7"
+    }
+  ],
   "users": [
     {
       "id": "usr-admin-1",
@@ -259,6 +765,42 @@
       "avatar_key": null,
       "created_at": "2026-09-15T06:45:49.127Z",
       "updated_at": "2026-09-15T06:45:49.127Z"
+    },
+    {
+      "id": "7595ba21-9d3c-4f13-89c4-bdd4de57a8b6",
+      "email": "checkout_shopper_1789637863427@bingooo.in",
+      "password_hash": "pbkdf2$100000$e0487f399cfb633a5e1d911c8006bab5$69d8447dc637fda0360ac24832cc9738b56dabab149b0e4f8bdc18f95af1305fc3ee639a845311d28c681124ce3edfed9710aba24acc7047d86b9805e0c48f16",
+      "full_name": "Vikramaditya Rao",
+      "phone": "9845012345",
+      "role": "CUSTOMER",
+      "status": "active",
+      "avatar_key": null,
+      "created_at": "2026-09-17T09:37:43.565Z",
+      "updated_at": "2026-09-17T09:37:43.565Z"
+    },
+    {
+      "id": "15654739-f9b0-4937-9824-0abd08189aeb",
+      "email": "user_a_1789637872253@example.com",
+      "password_hash": "pbkdf2$100000$b87e22907f54b6f101fa928fc284c95c$383862963154c52d259883079d446cfd304273f16be6e7079785eafd3dfdcd3eebad7685e5050639892c1b191228692969e1a09ba81c69844290d22322753d1d",
+      "full_name": "Alice Walker",
+      "phone": "+919999900001",
+      "role": "CUSTOMER",
+      "status": "active",
+      "avatar_key": null,
+      "created_at": "2026-09-17T09:37:52.390Z",
+      "updated_at": "2026-09-17T09:37:52.390Z"
+    },
+    {
+      "id": "6d6c9ce9-4ec2-4f22-a2d5-976dbd240e66",
+      "email": "user_b_1789637872397@example.com",
+      "password_hash": "pbkdf2$100000$c5ce9f66c5981f3f47909a7a83afa95d$5a1238d8fa2855694294ef1b1e38e67ba1efa3da2927a689961372616ddeed4474a29e5eecccda0408c79e1f88b6d70ca97c79496b302c2ad3c98f6a1019c5ed",
+      "full_name": "Bob Smith",
+      "phone": "+919999900002",
+      "role": "CUSTOMER",
+      "status": "active",
+      "avatar_key": null,
+      "created_at": "2026-09-17T09:37:52.501Z",
+      "updated_at": "2026-09-17T09:37:52.501Z"
     }
   ],
   "roles": [
@@ -471,6 +1013,26 @@
       "reference_id": "90e8fc0d-5cd5-439b-bc81-03d31ac5719e",
       "created_by": null,
       "created_at": "2026-09-16T05:20:36.125Z"
+    },
+    {
+      "id": "f11ea70d-f343-448b-a2ca-47b266baab6e",
+      "variant_id": "4be24ccd-295f-4efc-b7bb-b8cfc2a35936",
+      "type": "sale",
+      "quantity": -2,
+      "reference_type": "order",
+      "reference_id": "f43e0378-7153-4257-b421-7ec4fc19aff6",
+      "created_by": "7595ba21-9d3c-4f13-89c4-bdd4de57a8b6",
+      "created_at": "2026-09-17T09:37:43.606Z"
+    },
+    {
+      "id": "43528511-3756-452c-bee1-617a44c082c5",
+      "variant_id": "4be24ccd-295f-4efc-b7bb-b8cfc2a35936",
+      "type": "sale",
+      "quantity": -1,
+      "reference_type": "order",
+      "reference_id": "7a9f307d-1c07-4bfd-a284-79648f8e0a1c",
+      "created_by": "15654739-f9b0-4937-9824-0abd08189aeb",
+      "created_at": "2026-09-17T09:37:52.760Z"
     }
   ],
   "wishlists": [
@@ -521,6 +1083,22 @@
       "status": "active",
       "created_at": "2026-09-15T06:45:40.585Z",
       "updated_at": "2026-09-15T06:45:40.585Z"
+    },
+    {
+      "id": "7fcfca7f-2460-4b0a-a29d-457e48c7b67b",
+      "user_id": "7595ba21-9d3c-4f13-89c4-bdd4de57a8b6",
+      "session_id": "sess_test_1789637863579",
+      "status": "active",
+      "created_at": "2026-09-17T09:37:43.598Z",
+      "updated_at": "2026-09-17T09:37:43.598Z"
+    },
+    {
+      "id": "dcc97ad3-ad4a-4f8a-8bd7-15ee40f6dfee",
+      "user_id": "15654739-f9b0-4937-9824-0abd08189aeb",
+      "session_id": null,
+      "status": "active",
+      "created_at": "2026-09-17T09:37:52.752Z",
+      "updated_at": "2026-09-17T09:37:52.752Z"
     }
   ],
   "cart_items": [],
@@ -827,6 +1405,90 @@
       "carrier": null,
       "created_at": "2026-09-16T05:20:36.125Z",
       "updated_at": "2026-09-16T05:20:36.125Z"
+    },
+    {
+      "id": "f43e0378-7153-4257-b421-7ec4fc19aff6",
+      "order_number": "BGO-20260917-7906",
+      "user_id": "7595ba21-9d3c-4f13-89c4-bdd4de57a8b6",
+      "status": "pending_payment",
+      "payment_status": "pending",
+      "payment_method": "prepaid",
+      "subtotal": 2598,
+      "discount": 0,
+      "prepaid_discount": 130,
+      "shipping_fee": 0,
+      "tax": 123,
+      "total": 2591,
+      "currency": "INR",
+      "shipping_address": {
+        "name": "Vikramaditya Rao",
+        "phone": "9845012345",
+        "line1": "Penthouse 1201, Sovereign Crest",
+        "line2": "Lavelle Road",
+        "city": "Bengaluru",
+        "state": "Karnataka",
+        "postalCode": "560001",
+        "country": "IN"
+      },
+      "address_snapshot_json": {
+        "name": "Vikramaditya Rao",
+        "phone": "9845012345",
+        "line1": "Penthouse 1201, Sovereign Crest",
+        "line2": "Lavelle Road",
+        "city": "Bengaluru",
+        "state": "Karnataka",
+        "postalCode": "560001",
+        "country": "IN"
+      },
+      "cod_deposit": null,
+      "cod_remaining": null,
+      "coupon_code": null,
+      "notes": null,
+      "tracking_number": null,
+      "carrier": null,
+      "created_at": "2026-09-17T09:37:43.606Z",
+      "updated_at": "2026-09-17T09:37:43.606Z"
+    },
+    {
+      "id": "7a9f307d-1c07-4bfd-a284-79648f8e0a1c",
+      "order_number": "BGO-20260917-8233",
+      "user_id": "15654739-f9b0-4937-9824-0abd08189aeb",
+      "status": "processing",
+      "payment_status": "pending",
+      "payment_method": "cod",
+      "subtotal": 1299,
+      "discount": 0,
+      "prepaid_discount": 0,
+      "shipping_fee": 0,
+      "tax": 65,
+      "total": 1364,
+      "currency": "INR",
+      "shipping_address": {
+        "name": "Alice Walker",
+        "phone": "+919999900001",
+        "line1": "123 Fashion Blvd",
+        "city": "Bengaluru",
+        "state": "Karnataka",
+        "postalCode": "560001",
+        "country": "IN"
+      },
+      "address_snapshot_json": {
+        "name": "Alice Walker",
+        "phone": "+919999900001",
+        "line1": "123 Fashion Blvd",
+        "city": "Bengaluru",
+        "state": "Karnataka",
+        "postalCode": "560001",
+        "country": "IN"
+      },
+      "cod_deposit": null,
+      "cod_remaining": 1364,
+      "coupon_code": null,
+      "notes": null,
+      "tracking_number": null,
+      "carrier": null,
+      "created_at": "2026-09-17T09:37:52.760Z",
+      "updated_at": "2026-09-17T09:37:52.760Z"
     }
   ],
   "order_items": [
@@ -971,6 +1633,42 @@
       "unit_price": 1299,
       "total": 1299,
       "created_at": "2026-09-16T05:20:36.125Z"
+    },
+    {
+      "id": "8c36577a-6966-44be-8c91-ec6ade456cf1",
+      "order_id": "f43e0378-7153-4257-b421-7ec4fc19aff6",
+      "product_id": "ead1024d-1153-4446-9e62-ded6616078f3",
+      "variant_id": "4be24ccd-295f-4efc-b7bb-b8cfc2a35936",
+      "customization_id": "cust-1789637863588",
+      "sku": "COT-S-BLK",
+      "title_snapshot": "Classic Oversized Tee",
+      "variant_snapshot_json": {
+        "size": "S",
+        "color": "Black",
+        "colorHex": "#111111"
+      },
+      "quantity": 2,
+      "unit_price": 1299,
+      "total": 2598,
+      "created_at": "2026-09-17T09:37:43.606Z"
+    },
+    {
+      "id": "27db031c-df00-4070-96c3-42834d840122",
+      "order_id": "7a9f307d-1c07-4bfd-a284-79648f8e0a1c",
+      "product_id": "ead1024d-1153-4446-9e62-ded6616078f3",
+      "variant_id": "4be24ccd-295f-4efc-b7bb-b8cfc2a35936",
+      "customization_id": null,
+      "sku": "COT-S-BLK",
+      "title_snapshot": "Classic Oversized Tee",
+      "variant_snapshot_json": {
+        "size": "S",
+        "color": "Black",
+        "colorHex": "#111111"
+      },
+      "quantity": 1,
+      "unit_price": 1299,
+      "total": 1299,
+      "created_at": "2026-09-17T09:37:52.760Z"
     }
   ],
   "payments": [
@@ -1161,6 +1859,43 @@
   ],
   "customizations": [
     {
+      "id": "cust-1789637863588",
+      "user_id": "usr-cust-1",
+      "product_id": "ead1024d-1153-4446-9e62-ded6616078f3",
+      "product_title": "Classic Oversized Tee",
+      "status": "approved",
+      "print_status": "ready_to_print",
+      "design_json": {
+        "garment": {
+          "title": "240 GSM Heavyweight Oversized Tee",
+          "color": "Obsidian Black",
+          "size": "L",
+          "gsm": 240
+        },
+        "front": {
+          "hasDesign": true,
+          "artwork": {
+            "url": "data:image/svg+xml;utf8,<svg></svg>",
+            "scale": 1
+          }
+        },
+        "isDualSided": false
+      },
+      "preview_url": "/custom/tshirt-step-3-black.png",
+      "print_file_key": null,
+      "print_spec": {
+        "method": "DTG (Direct-to-Garment)",
+        "placement": "Chest & Back Print",
+        "resolutionDPI": 300,
+        "colorSpace": "CMYK"
+      },
+      "customer_name": "Aditi Sharma",
+      "customer_email": "customer@bingooo.in",
+      "customer_notes": "Please ensure high-density red print alignment",
+      "created_at": "2026-09-17T09:37:43.588Z",
+      "updated_at": "2026-09-17T09:37:43.588Z"
+    },
+    {
       "id": "cust-1789454740578",
       "user_id": "usr-cust-1",
       "product_id": "681d0a97-540e-41dc-8bbe-24fb01b8df03",
@@ -1243,6 +1978,39 @@
   "customization_assets": [],
   "shipments": [],
   "notifications": [
+    {
+      "id": "notif-1789637872760",
+      "category": "order",
+      "severity": "info",
+      "title": "New Order Placed (#BGO-20260917-8233)",
+      "description": "Order for ₹1364 placed via COD",
+      "link_href": "/orders",
+      "link_text": "View Order →",
+      "is_read": false,
+      "created_at": "2026-09-17T09:37:52.760Z"
+    },
+    {
+      "id": "notif-1789637863606",
+      "category": "order",
+      "severity": "info",
+      "title": "New Order Placed (#BGO-20260917-7906)",
+      "description": "Order for ₹2591 placed via PREPAID",
+      "link_href": "/orders",
+      "link_text": "View Order →",
+      "is_read": false,
+      "created_at": "2026-09-17T09:37:43.606Z"
+    },
+    {
+      "id": "notif-1789637863588",
+      "category": "custom",
+      "severity": "warning",
+      "title": "New Custom Design Submitted (#cust-1789637863588)",
+      "description": "Aditi Sharma created artwork for Classic Oversized Tee",
+      "link_href": "/custom-orders",
+      "link_text": "Open Custom Print Queue →",
+      "is_read": false,
+      "created_at": "2026-09-17T09:37:43.588Z"
+    },
     {
       "id": "notif-1789536036125",
       "category": "order",
@@ -1496,6 +2264,21 @@
       "is_default": true,
       "created_at": "2026-09-15T06:45:16.178Z",
       "updated_at": "2026-09-15T06:45:16.178Z"
+    },
+    {
+      "id": "6d48a77d-59ba-497f-8a22-c60e2efd2232",
+      "user_id": "15654739-f9b0-4937-9824-0abd08189aeb",
+      "name": "Alice Home",
+      "phone": "+919999900001",
+      "line1": "123 Fashion Blvd",
+      "line2": null,
+      "city": "Bengaluru",
+      "state": "Karnataka",
+      "postal_code": "560001",
+      "country": "IN",
+      "is_default": true,
+      "created_at": "2026-09-17T09:37:52.721Z",
+      "updated_at": "2026-09-17T09:37:52.721Z"
     }
   ],
   "profiles": [
@@ -1606,6 +2389,33 @@
       "avatar_key": null,
       "created_at": "2026-09-15T06:45:49.127Z",
       "updated_at": "2026-09-15T06:45:49.127Z"
+    },
+    {
+      "id": "7595ba21-9d3c-4f13-89c4-bdd4de57a8b6",
+      "email": "checkout_shopper_1789637863427@bingooo.in",
+      "full_name": "Vikramaditya Rao",
+      "phone": "9845012345",
+      "avatar_key": null,
+      "created_at": "2026-09-17T09:37:43.565Z",
+      "updated_at": "2026-09-17T09:37:43.565Z"
+    },
+    {
+      "id": "15654739-f9b0-4937-9824-0abd08189aeb",
+      "email": "user_a_1789637872253@example.com",
+      "full_name": "Alice Walker",
+      "phone": "+919999900001",
+      "avatar_key": null,
+      "created_at": "2026-09-17T09:37:52.390Z",
+      "updated_at": "2026-09-17T09:37:52.390Z"
+    },
+    {
+      "id": "6d6c9ce9-4ec2-4f22-a2d5-976dbd240e66",
+      "email": "user_b_1789637872397@example.com",
+      "full_name": "Bob Smith",
+      "phone": "+919999900002",
+      "avatar_key": null,
+      "created_at": "2026-09-17T09:37:52.501Z",
+      "updated_at": "2026-09-17T09:37:52.501Z"
     }
   ],
   "banners": [

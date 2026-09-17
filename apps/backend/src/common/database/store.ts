@@ -1056,7 +1056,13 @@ try {
     const raw = fs.readFileSync(STORE_FILE, 'utf-8');
     const parsed = JSON.parse(raw);
     if (parsed && typeof parsed === 'object') {
-      Object.assign(db, parsed);
+      for (const [key, val] of Object.entries(parsed)) {
+        if (Array.isArray(val) && val.length === 0 && Array.isArray((db as any)[key]) && (db as any)[key].length > 0) {
+          // Preserve seed data if disk file has an empty array for seeded entities
+          continue;
+        }
+        (db as any)[key] = val;
+      }
     }
   } else {
     saveDb();

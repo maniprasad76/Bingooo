@@ -1538,43 +1538,43 @@
       "source_location": "L3"
     },
     {
-      "id": "apps_admin_src_pages_customizerstudiopage_customizerstudioconfig",
-      "label": "CustomizerStudioConfig",
+      "id": "apps_frontend_src_components_ui_brandpageloader_brandpageloaderprops",
+      "label": "BrandPageLoaderProps",
       "_callable": true,
       "_callable_class": true,
       "_origin": "ast",
       "community": 469,
-      "community_name": "CustomizerStudioPage.tsx",
+      "community_name": "client.ts",
       "file_type": "code",
-      "norm_label": "customizerstudioconfig",
-      "source_file": "apps/admin/src/pages/CustomizerStudioPage.tsx",
-      "source_location": "L41"
+      "norm_label": "brandpageloaderprops",
+      "source_file": "apps/frontend/src/components/ui/BrandPageLoader.tsx",
+      "source_location": "L3"
     },
     {
-      "id": "apps_admin_src_pages_customizerstudiopage_garmentcolor",
-      "label": "GarmentColor",
+      "id": "apps_frontend_src_lib_api_client_apierror",
+      "label": "ApiError",
       "_callable": true,
       "_callable_class": true,
       "_origin": "ast",
       "community": 469,
-      "community_name": "CustomizerStudioPage.tsx",
+      "community_name": "client.ts",
       "file_type": "code",
-      "norm_label": "garmentcolor",
-      "source_file": "apps/admin/src/pages/CustomizerStudioPage.tsx",
-      "source_location": "L22"
+      "norm_label": "apierror",
+      "source_file": "apps/frontend/src/lib/api/client.ts",
+      "source_location": "L23"
     },
     {
-      "id": "apps_admin_src_pages_customizerstudiopage_garmentitem",
-      "label": "GarmentItem",
+      "id": "apps_frontend_src_lib_api_client_requestoptions",
+      "label": "RequestOptions",
       "_callable": true,
       "_callable_class": true,
       "_origin": "ast",
       "community": 469,
-      "community_name": "CustomizerStudioPage.tsx",
+      "community_name": "client.ts",
       "file_type": "code",
-      "norm_label": "garmentitem",
-      "source_file": "apps/admin/src/pages/CustomizerStudioPage.tsx",
-      "source_location": "L32"
+      "norm_label": "requestoptions",
+      "source_file": "apps/frontend/src/lib/api/client.ts",
+      "source_location": "L14"
     },
     {
       "id": "apps_backend_src_admin_admin_module_adminmodule",
@@ -2331,16 +2331,29 @@
       "source_location": "L109"
     },
     {
-      "id": "apps_admin_src_pages_dashboardpage_dashboarddata",
-      "label": "DashboardData",
+      "id": "apps_admin_src_lib_api_apierror",
+      "label": "ApiError",
       "_callable": true,
       "_callable_class": true,
       "_origin": "ast",
       "community": 590,
-      "community_name": "DashboardPage.tsx",
+      "community_name": "lib/api.ts",
       "file_type": "code",
-      "norm_label": "dashboarddata",
-      "source_file": "apps/admin/src/pages/DashboardPage.tsx",
+      "norm_label": "apierror",
+      "source_file": "apps/admin/src/lib/api.ts",
+      "source_location": "L8"
+    },
+    {
+      "id": "apps_admin_src_lib_api_reqoptions",
+      "label": "ReqOptions",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 590,
+      "community_name": "lib/api.ts",
+      "file_type": "code",
+      "norm_label": "reqoptions",
+      "source_file": "apps/admin/src/lib/api.ts",
       "source_location": "L19"
     },
     {
@@ -2929,43 +2942,43 @@
       "source_location": "L35"
     },
     {
-      "id": "apps_frontend_src_components_ui_brandpageloader_brandpageloaderprops",
-      "label": "BrandPageLoaderProps",
+      "id": "apps_admin_src_pages_customizerstudiopage_customizerstudioconfig",
+      "label": "CustomizerStudioConfig",
       "_callable": true,
       "_callable_class": true,
       "_origin": "ast",
       "community": 656,
-      "community_name": "client.ts",
+      "community_name": "CustomizerStudioPage.tsx",
       "file_type": "code",
-      "norm_label": "brandpageloaderprops",
-      "source_file": "apps/frontend/src/components/ui/BrandPageLoader.tsx",
-      "source_location": "L3"
+      "norm_label": "customizerstudioconfig",
+      "source_file": "apps/admin/src/pages/CustomizerStudioPage.tsx",
+      "source_location": "L41"
     },
     {
-      "id": "apps_frontend_src_lib_api_client_apierror",
-      "label": "ApiError",
+      "id": "apps_admin_src_pages_customizerstudiopage_garmentcolor",
+      "label": "GarmentColor",
       "_callable": true,
       "_callable_class": true,
       "_origin": "ast",
       "community": 656,
-      "community_name": "client.ts",
+      "community_name": "CustomizerStudioPage.tsx",
       "file_type": "code",
-      "norm_label": "apierror",
-      "source_file": "apps/frontend/src/lib/api/client.ts",
-      "source_location": "L23"
+      "norm_label": "garmentcolor",
+      "source_file": "apps/admin/src/pages/CustomizerStudioPage.tsx",
+      "source_location": "L22"
     },
     {
-      "id": "apps_frontend_src_lib_api_client_requestoptions",
-      "label": "RequestOptions",
+      "id": "apps_admin_src_pages_customizerstudiopage_garmentitem",
+      "label": "GarmentItem",
       "_callable": true,
       "_callable_class": true,
       "_origin": "ast",
       "community": 656,
-      "community_name": "client.ts",
+      "community_name": "CustomizerStudioPage.tsx",
       "file_type": "code",
-      "norm_label": "requestoptions",
-      "source_file": "apps/frontend/src/lib/api/client.ts",
-      "source_location": "L14"
+      "norm_label": "garmentitem",
+      "source_file": "apps/admin/src/pages/CustomizerStudioPage.tsx",
+      "source_location": "L32"
     },
     {
       "id": "apps_admin_src_components_toast_toastcontextvalue",
@@ -3020,29 +3033,16 @@
       "source_location": "L4"
     },
     {
-      "id": "apps_admin_src_lib_api_apierror",
-      "label": "ApiError",
+      "id": "apps_admin_src_pages_dashboardpage_dashboarddata",
+      "label": "DashboardData",
       "_callable": true,
       "_callable_class": true,
       "_origin": "ast",
       "community": 667,
-      "community_name": "lib/api.ts",
+      "community_name": "DashboardPage.tsx",
       "file_type": "code",
-      "norm_label": "apierror",
-      "source_file": "apps/admin/src/lib/api.ts",
-      "source_location": "L8"
-    },
-    {
-      "id": "apps_admin_src_lib_api_reqoptions",
-      "label": "ReqOptions",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 667,
-      "community_name": "lib/api.ts",
-      "file_type": "code",
-      "norm_label": "reqoptions",
-      "source_file": "apps/admin/src/lib/api.ts",
+      "norm_label": "dashboarddata",
+      "source_file": "apps/admin/src/pages/DashboardPage.tsx",
       "source_location": "L19"
     },
     {
@@ -8688,16 +8688,52 @@
       "source_location": "L1031"
     },
     {
-      "id": "apps_admin_src_pages_customizerstudiopage_customizerstudiopage",
-      "label": "CustomizerStudioPage()",
+      "id": "apps_frontend_src_components_ui_brandpageloader_brandpageloader",
+      "label": "BrandPageLoader()",
       "_callable": true,
       "_origin": "ast",
       "community": 469,
-      "community_name": "CustomizerStudioPage.tsx",
+      "community_name": "client.ts",
       "file_type": "code",
-      "norm_label": "customizerstudiopage()",
-      "source_file": "apps/admin/src/pages/CustomizerStudioPage.tsx",
-      "source_location": "L88"
+      "norm_label": "brandpageloader()",
+      "source_file": "apps/frontend/src/components/ui/BrandPageLoader.tsx",
+      "source_location": "L10"
+    },
+    {
+      "id": "apps_frontend_src_lib_api_client_apierror_constructor",
+      "label": ".constructor()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 469,
+      "community_name": "client.ts",
+      "file_type": "code",
+      "norm_label": ".constructor()",
+      "source_file": "apps/frontend/src/lib/api/client.ts",
+      "source_location": "L29"
+    },
+    {
+      "id": "apps_frontend_src_lib_api_client_executefetch",
+      "label": "executeFetch()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 469,
+      "community_name": "client.ts",
+      "file_type": "code",
+      "norm_label": "executefetch()",
+      "source_file": "apps/frontend/src/lib/api/client.ts",
+      "source_location": "L57"
+    },
+    {
+      "id": "apps_frontend_src_lib_api_client_getguestsessionid",
+      "label": "getGuestSessionId()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 469,
+      "community_name": "client.ts",
+      "file_type": "code",
+      "norm_label": "getguestsessionid()",
+      "source_file": "apps/frontend/src/lib/api/client.ts",
+      "source_location": "L46"
     },
     {
       "id": "apps_backend_src_app_controller_appcontroller_getroot",
@@ -9208,40 +9244,28 @@
       "source_location": "L14"
     },
     {
-      "id": "apps_admin_src_pages_dashboardpage_dashboardpage",
-      "label": "DashboardPage()",
+      "id": "apps_admin_src_lib_api_apierror_constructor",
+      "label": ".constructor()",
       "_callable": true,
       "_origin": "ast",
       "community": 590,
-      "community_name": "DashboardPage.tsx",
+      "community_name": "lib/api.ts",
       "file_type": "code",
-      "norm_label": "dashboardpage()",
-      "source_file": "apps/admin/src/pages/DashboardPage.tsx",
-      "source_location": "L61"
+      "norm_label": ".constructor()",
+      "source_file": "apps/admin/src/lib/api.ts",
+      "source_location": "L11"
     },
     {
-      "id": "apps_admin_src_pages_dashboardpage_formatcurrency",
-      "label": "formatCurrency()",
+      "id": "apps_admin_src_lib_api_request",
+      "label": "request()",
       "_callable": true,
       "_origin": "ast",
       "community": 590,
-      "community_name": "DashboardPage.tsx",
+      "community_name": "lib/api.ts",
       "file_type": "code",
-      "norm_label": "formatcurrency()",
-      "source_file": "apps/admin/src/pages/DashboardPage.tsx",
-      "source_location": "L53"
-    },
-    {
-      "id": "apps_admin_src_pages_dashboardpage_formatdate",
-      "label": "formatDate()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 590,
-      "community_name": "DashboardPage.tsx",
-      "file_type": "code",
-      "norm_label": "formatdate()",
-      "source_file": "apps/admin/src/pages/DashboardPage.tsx",
-      "source_location": "L57"
+      "norm_label": "request()",
+      "source_file": "apps/admin/src/lib/api.ts",
+      "source_location": "L24"
     },
     {
       "id": "apps_frontend_src_components_home_instagramcommunity_instagramcommunity",
@@ -9469,7 +9493,7 @@
       "file_type": "code",
       "norm_label": "manualchunks()",
       "source_file": "apps/frontend/vite.config.ts",
-      "source_location": "L41"
+      "source_location": "L40"
     },
     {
       "id": "apps_admin_src_pages_returnspage_returnspage",
@@ -9532,52 +9556,16 @@
       "source_location": "L46"
     },
     {
-      "id": "apps_frontend_src_components_ui_brandpageloader_brandpageloader",
-      "label": "BrandPageLoader()",
+      "id": "apps_admin_src_pages_customizerstudiopage_customizerstudiopage",
+      "label": "CustomizerStudioPage()",
       "_callable": true,
       "_origin": "ast",
       "community": 656,
-      "community_name": "client.ts",
+      "community_name": "CustomizerStudioPage.tsx",
       "file_type": "code",
-      "norm_label": "brandpageloader()",
-      "source_file": "apps/frontend/src/components/ui/BrandPageLoader.tsx",
-      "source_location": "L10"
-    },
-    {
-      "id": "apps_frontend_src_lib_api_client_apierror_constructor",
-      "label": ".constructor()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 656,
-      "community_name": "client.ts",
-      "file_type": "code",
-      "norm_label": ".constructor()",
-      "source_file": "apps/frontend/src/lib/api/client.ts",
-      "source_location": "L29"
-    },
-    {
-      "id": "apps_frontend_src_lib_api_client_executefetch",
-      "label": "executeFetch()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 656,
-      "community_name": "client.ts",
-      "file_type": "code",
-      "norm_label": "executefetch()",
-      "source_file": "apps/frontend/src/lib/api/client.ts",
-      "source_location": "L57"
-    },
-    {
-      "id": "apps_frontend_src_lib_api_client_getguestsessionid",
-      "label": "getGuestSessionId()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 656,
-      "community_name": "client.ts",
-      "file_type": "code",
-      "norm_label": "getguestsessionid()",
-      "source_file": "apps/frontend/src/lib/api/client.ts",
-      "source_location": "L46"
+      "norm_label": "customizerstudiopage()",
+      "source_file": "apps/admin/src/pages/CustomizerStudioPage.tsx",
+      "source_location": "L88"
     },
     {
       "id": "apps_admin_src_components_toast_toastcard",
@@ -9592,28 +9580,40 @@
       "source_location": "L102"
     },
     {
-      "id": "apps_admin_src_lib_api_apierror_constructor",
-      "label": ".constructor()",
+      "id": "apps_admin_src_pages_dashboardpage_dashboardpage",
+      "label": "DashboardPage()",
       "_callable": true,
       "_origin": "ast",
       "community": 667,
-      "community_name": "lib/api.ts",
+      "community_name": "DashboardPage.tsx",
       "file_type": "code",
-      "norm_label": ".constructor()",
-      "source_file": "apps/admin/src/lib/api.ts",
-      "source_location": "L11"
+      "norm_label": "dashboardpage()",
+      "source_file": "apps/admin/src/pages/DashboardPage.tsx",
+      "source_location": "L61"
     },
     {
-      "id": "apps_admin_src_lib_api_request",
-      "label": "request()",
+      "id": "apps_admin_src_pages_dashboardpage_formatcurrency",
+      "label": "formatCurrency()",
       "_callable": true,
       "_origin": "ast",
       "community": 667,
-      "community_name": "lib/api.ts",
+      "community_name": "DashboardPage.tsx",
       "file_type": "code",
-      "norm_label": "request()",
-      "source_file": "apps/admin/src/lib/api.ts",
-      "source_location": "L24"
+      "norm_label": "formatcurrency()",
+      "source_file": "apps/admin/src/pages/DashboardPage.tsx",
+      "source_location": "L53"
+    },
+    {
+      "id": "apps_admin_src_pages_dashboardpage_formatdate",
+      "label": "formatDate()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 667,
+      "community_name": "DashboardPage.tsx",
+      "file_type": "code",
+      "norm_label": "formatdate()",
+      "source_file": "apps/admin/src/pages/DashboardPage.tsx",
+      "source_location": "L57"
     },
     {
       "id": "apps_backend_src_products_products_controller_productscontroller_addvariant",
@@ -69899,26 +69899,59 @@
       "source_location": "L2"
     },
     {
-      "id": "apps_admin_src_pages_customizerstudiopage",
-      "label": "CustomizerStudioPage.tsx",
+      "id": "apps_frontend_src_app_router_ordersuccesspage",
+      "label": "OrderSuccessPage",
       "_origin": "ast",
       "community": 469,
-      "community_name": "CustomizerStudioPage.tsx",
+      "community_name": "client.ts",
       "file_type": "code",
-      "norm_label": "customizerstudiopage.tsx",
-      "source_file": "apps/admin/src/pages/CustomizerStudioPage.tsx",
+      "norm_label": "ordersuccesspage",
+      "source_file": "apps/frontend/src/app/router.tsx",
+      "source_location": "L18"
+    },
+    {
+      "id": "apps_frontend_src_components_ui_brandpageloader",
+      "label": "BrandPageLoader.tsx",
+      "_origin": "ast",
+      "community": 469,
+      "community_name": "client.ts",
+      "file_type": "code",
+      "norm_label": "brandpageloader.tsx",
+      "source_file": "apps/frontend/src/components/ui/BrandPageLoader.tsx",
       "source_location": "L1"
     },
     {
-      "id": "apps_admin_src_pages_customizerstudiopage_default_garments",
-      "label": "DEFAULT_GARMENTS",
+      "id": "apps_frontend_src_lib_api_client",
+      "label": "client.ts",
       "_origin": "ast",
       "community": 469,
-      "community_name": "CustomizerStudioPage.tsx",
+      "community_name": "client.ts",
       "file_type": "code",
-      "norm_label": "default_garments",
-      "source_file": "apps/admin/src/pages/CustomizerStudioPage.tsx",
-      "source_location": "L46"
+      "norm_label": "client.ts",
+      "source_file": "apps/frontend/src/lib/api/client.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "apps_frontend_src_lib_api_client_configuredapiurl",
+      "label": "configuredApiUrl",
+      "_origin": "ast",
+      "community": 469,
+      "community_name": "client.ts",
+      "file_type": "code",
+      "norm_label": "configuredapiurl",
+      "source_file": "apps/frontend/src/lib/api/client.ts",
+      "source_location": "L11"
+    },
+    {
+      "id": "apps_frontend_src_pages_ordersuccesspage",
+      "label": "OrderSuccessPage.tsx",
+      "_origin": "ast",
+      "community": 469,
+      "community_name": "client.ts",
+      "file_type": "code",
+      "norm_label": "ordersuccesspage.tsx",
+      "source_file": "apps/frontend/src/pages/OrderSuccessPage.tsx",
+      "source_location": "L1"
     },
     {
       "id": "agents_skills_cloudflare_references_spectrum_api",
@@ -80541,26 +80574,26 @@
       "source_location": "L1"
     },
     {
-      "id": "apps_admin_src_pages_dashboardpage",
-      "label": "DashboardPage.tsx",
+      "id": "apps_admin_src_lib_api",
+      "label": "lib/api.ts",
       "_origin": "ast",
       "community": 590,
-      "community_name": "DashboardPage.tsx",
+      "community_name": "lib/api.ts",
       "file_type": "code",
-      "norm_label": "dashboardpage.tsx",
-      "source_file": "apps/admin/src/pages/DashboardPage.tsx",
+      "norm_label": "lib/api.ts",
+      "source_file": "apps/admin/src/lib/api.ts",
       "source_location": "L1"
     },
     {
-      "id": "apps_admin_src_pages_dashboardpage_status_badge",
-      "label": "STATUS_BADGE",
+      "id": "apps_admin_src_lib_api_configuredapiurl",
+      "label": "configuredApiUrl",
       "_origin": "ast",
       "community": 590,
-      "community_name": "DashboardPage.tsx",
+      "community_name": "lib/api.ts",
       "file_type": "code",
-      "norm_label": "status_badge",
-      "source_file": "apps/admin/src/pages/DashboardPage.tsx",
-      "source_location": "L45"
+      "norm_label": "configuredapiurl",
+      "source_file": "apps/admin/src/lib/api.ts",
+      "source_location": "L5"
     },
     {
       "id": "agents_skills_cloudflare_references_workers_for_platforms_api_1_create_upload_session",
@@ -84378,59 +84411,26 @@
       "source_location": "L136"
     },
     {
-      "id": "apps_frontend_src_app_router_ordersuccesspage",
-      "label": "OrderSuccessPage",
+      "id": "apps_admin_src_pages_customizerstudiopage",
+      "label": "CustomizerStudioPage.tsx",
       "_origin": "ast",
       "community": 656,
-      "community_name": "client.ts",
+      "community_name": "CustomizerStudioPage.tsx",
       "file_type": "code",
-      "norm_label": "ordersuccesspage",
-      "source_file": "apps/frontend/src/app/router.tsx",
-      "source_location": "L18"
-    },
-    {
-      "id": "apps_frontend_src_components_ui_brandpageloader",
-      "label": "BrandPageLoader.tsx",
-      "_origin": "ast",
-      "community": 656,
-      "community_name": "client.ts",
-      "file_type": "code",
-      "norm_label": "brandpageloader.tsx",
-      "source_file": "apps/frontend/src/components/ui/BrandPageLoader.tsx",
+      "norm_label": "customizerstudiopage.tsx",
+      "source_file": "apps/admin/src/pages/CustomizerStudioPage.tsx",
       "source_location": "L1"
     },
     {
-      "id": "apps_frontend_src_lib_api_client",
-      "label": "client.ts",
+      "id": "apps_admin_src_pages_customizerstudiopage_default_garments",
+      "label": "DEFAULT_GARMENTS",
       "_origin": "ast",
       "community": 656,
-      "community_name": "client.ts",
+      "community_name": "CustomizerStudioPage.tsx",
       "file_type": "code",
-      "norm_label": "client.ts",
-      "source_file": "apps/frontend/src/lib/api/client.ts",
-      "source_location": "L1"
-    },
-    {
-      "id": "apps_frontend_src_lib_api_client_configuredapiurl",
-      "label": "configuredApiUrl",
-      "_origin": "ast",
-      "community": 656,
-      "community_name": "client.ts",
-      "file_type": "code",
-      "norm_label": "configuredapiurl",
-      "source_file": "apps/frontend/src/lib/api/client.ts",
-      "source_location": "L11"
-    },
-    {
-      "id": "apps_frontend_src_pages_ordersuccesspage",
-      "label": "OrderSuccessPage.tsx",
-      "_origin": "ast",
-      "community": 656,
-      "community_name": "client.ts",
-      "file_type": "code",
-      "norm_label": "ordersuccesspage.tsx",
-      "source_file": "apps/frontend/src/pages/OrderSuccessPage.tsx",
-      "source_location": "L1"
+      "norm_label": "default_garments",
+      "source_file": "apps/admin/src/pages/CustomizerStudioPage.tsx",
+      "source_location": "L46"
     },
     {
       "id": "agents_skills_cloudflare_references_smart_placement_patterns_backend_worker_with_database_access",
@@ -85359,26 +85359,26 @@
       "source_location": "L1"
     },
     {
-      "id": "apps_admin_src_lib_api",
-      "label": "lib/api.ts",
+      "id": "apps_admin_src_pages_dashboardpage",
+      "label": "DashboardPage.tsx",
       "_origin": "ast",
       "community": 667,
-      "community_name": "lib/api.ts",
+      "community_name": "DashboardPage.tsx",
       "file_type": "code",
-      "norm_label": "lib/api.ts",
-      "source_file": "apps/admin/src/lib/api.ts",
+      "norm_label": "dashboardpage.tsx",
+      "source_file": "apps/admin/src/pages/DashboardPage.tsx",
       "source_location": "L1"
     },
     {
-      "id": "apps_admin_src_lib_api_configuredapiurl",
-      "label": "configuredApiUrl",
+      "id": "apps_admin_src_pages_dashboardpage_status_badge",
+      "label": "STATUS_BADGE",
       "_origin": "ast",
       "community": 667,
-      "community_name": "lib/api.ts",
+      "community_name": "DashboardPage.tsx",
       "file_type": "code",
-      "norm_label": "configuredapiurl",
-      "source_file": "apps/admin/src/lib/api.ts",
-      "source_location": "L5"
+      "norm_label": "status_badge",
+      "source_file": "apps/admin/src/pages/DashboardPage.tsx",
+      "source_location": "L45"
     },
     {
       "id": "apps_admin_vercel",
@@ -190705,7 +190705,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "apps/frontend/vite.config.ts",
-      "source_location": "L41",
+      "source_location": "L40",
       "weight": 1.0
     },
     {
@@ -204303,5 +204303,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "bb6ad74dd9dd75b7e6476cc492600e5da7db4070"
+  "built_at_commit": "f25b11df841372fa4d03eb38d252cb1b405b03fa"
 }

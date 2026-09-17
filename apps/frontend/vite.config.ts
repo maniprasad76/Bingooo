@@ -6,9 +6,8 @@ import { defineConfig } from 'vite';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const rootNodeModules = path.resolve(__dirname, '../../node_modules');
 
-export default defineConfig(({ mode }) => ({
+export default defineConfig({
   plugins: [react()],
-  esbuild: mode === 'production' ? { drop: ['console', 'debugger'] as ('console' | 'debugger')[] } : undefined,
   envPrefix: ['VITE_', 'NEXT_PUBLIC_'],
   resolve: {
     alias: {
@@ -77,4 +76,4 @@ export default defineConfig(({ mode }) => ({
       },
     },
   },
-}));
+});

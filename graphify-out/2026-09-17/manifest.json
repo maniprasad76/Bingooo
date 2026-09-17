@@ -1374,10 +1374,10 @@
     "semantic_hash": "3109bf32b6853835c4f74ea29e40d691"
   },
   "apps/frontend/src/main.tsx": {
-    "mtime": 1788370403.1506894,
-    "seen": 1789634534.2679684,
-    "ast_hash": "05382427018eb4f648b9e92626542a97",
-    "semantic_hash": "05382427018eb4f648b9e92626542a97"
+    "mtime": 1789662219.6206758,
+    "seen": 1789662242.5953262,
+    "ast_hash": "5c3e4e8d62fa0dfee53c5838a637466f",
+    "semantic_hash": ""
   },
   "apps/frontend/src/pages/AboutPage.tsx": {
     "mtime": 1789618359.7813315,
@@ -1626,10 +1626,10 @@
     "semantic_hash": "34be12b14372d5e25e07a6b60e767160"
   },
   "apps/frontend/vite.config.ts": {
-    "mtime": 1789458638.491974,
-    "seen": 1789634534.2679684,
-    "ast_hash": "4f2f3d7c62332040f8e7d4bee247b27b",
-    "semantic_hash": "4f2f3d7c62332040f8e7d4bee247b27b"
+    "mtime": 1789662539.0516348,
+    "seen": 1789662592.9863262,
+    "ast_hash": "b1393b0f537b9b62b447e09552d31467",
+    "semantic_hash": ""
   },
   "package.json": {
     "mtime": 1789224894.0035362,
@@ -4824,9 +4824,9 @@
     "semantic_hash": ""
   },
   "README.md": {
-    "mtime": 1789637447.282929,
-    "seen": 1789637526.2028568,
-    "ast_hash": "57025115ae9196ea0644f0a10fffb115",
+    "mtime": 1789662165.1627238,
+    "seen": 1789662242.6533327,
+    "ast_hash": "fb9285e3f923ba88d9c0205913baa1cf",
     "semantic_hash": ""
   },
   "design.md": {
@@ -4881,6 +4881,36 @@
     "mtime": 1789640995.2899332,
     "seen": 1789660395.0892966,
     "ast_hash": "8d594f9fd1694be629c3f28587d12956",
+    "semantic_hash": ""
+  },
+  "supabase/migrations/001_initial_schema.sql": {
+    "mtime": 1788696131.6980247,
+    "seen": 1789662626.2481868,
+    "ast_hash": "511734fbd97fdc8ec1381348db6bc7d0",
+    "semantic_hash": ""
+  },
+  "supabase/migrations/002_rls_policies.sql": {
+    "mtime": 1788696372.6242847,
+    "seen": 1789662626.2481868,
+    "ast_hash": "1287794d4f8e2c809e0b9f1b837b4eba",
+    "semantic_hash": ""
+  },
+  "supabase/migrations/003_auth_triggers_and_seed.sql": {
+    "mtime": 1788697071.165675,
+    "seen": 1789662626.2481868,
+    "ast_hash": "628af20998c57d4fd8febba5153356a1",
+    "semantic_hash": ""
+  },
+  "supabase/seed.sql": {
+    "mtime": 1788330022.1644168,
+    "seen": 1789662626.2481868,
+    "ast_hash": "7edb632f6096923dbd6081ffedff31f6",
+    "semantic_hash": ""
+  },
+  "supabase/verify_rls.sql": {
+    "mtime": 1788694551.5578887,
+    "seen": 1789662626.2481868,
+    "ast_hash": "0e2318a86d8336b1b95a55eaeffd2f19",
     "semantic_hash": ""
   }
 }

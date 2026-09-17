@@ -1626,10 +1626,10 @@
     "semantic_hash": "34be12b14372d5e25e07a6b60e767160"
   },
   "apps/frontend/vite.config.ts": {
-    "mtime": 1789458638.491974,
-    "seen": 1789634534.2679684,
-    "ast_hash": "4f2f3d7c62332040f8e7d4bee247b27b",
-    "semantic_hash": "4f2f3d7c62332040f8e7d4bee247b27b"
+    "mtime": 1789662816.613655,
+    "seen": 1789662866.129417,
+    "ast_hash": "a2262239dfb2d44fb1385a9f8a6bb6a4",
+    "semantic_hash": ""
   },
   "package.json": {
     "mtime": 1789224894.0035362,
@@ -4881,6 +4881,36 @@
     "mtime": 1789640995.2899332,
     "seen": 1789660395.0892966,
     "ast_hash": "8d594f9fd1694be629c3f28587d12956",
+    "semantic_hash": ""
+  },
+  "supabase/migrations/001_initial_schema.sql": {
+    "mtime": 1788696131.6980247,
+    "seen": 1789662626.2481868,
+    "ast_hash": "",
+    "semantic_hash": ""
+  },
+  "supabase/migrations/002_rls_policies.sql": {
+    "mtime": 1788696372.6242847,
+    "seen": 1789662626.2481868,
+    "ast_hash": "",
+    "semantic_hash": ""
+  },
+  "supabase/migrations/003_auth_triggers_and_seed.sql": {
+    "mtime": 1788697071.165675,
+    "seen": 1789662626.2481868,
+    "ast_hash": "",
+    "semantic_hash": ""
+  },
+  "supabase/seed.sql": {
+    "mtime": 1788330022.1644168,
+    "seen": 1789662626.2481868,
+    "ast_hash": "",
+    "semantic_hash": ""
+  },
+  "supabase/verify_rls.sql": {
+    "mtime": 1788694551.5578887,
+    "seen": 1789662626.2481868,
+    "ast_hash": "",
     "semantic_hash": ""
   }
 }

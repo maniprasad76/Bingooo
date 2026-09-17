@@ -1,7 +1,7 @@
 # Graph Report - bingooo  (2026-09-17)
 
 ## Corpus Check
-- 723 files · ~957,966 words
+- 723 files · ~957,950 words
 - Verdict: corpus is large enough that graph structure adds value.
 - Unclassified: 37 file(s) not represented in the graph (top: (none) 12, .xml 12, .ico 2)
 
@@ -11,7 +11,7 @@
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `bb6ad74d`
+- Built from commit: `f25b11df`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -472,7 +472,7 @@
 - Sandbox SDK — stable package
 - devDependencies
 - types/tsconfig.json
-- CustomizerStudioPage.tsx
+- client.ts
 - Observability
 - Voice (Experimental)
 - Monitoring Deliverability
@@ -562,7 +562,7 @@
 - Expression Syntax
 - Features
 - Key Concepts
-- DashboardPage.tsx
+- lib/api.ts
 - Static Assets
 - 7. DIAL DEFINITIONS (Technical Reference)
 - Next.js (App Router)
@@ -628,7 +628,7 @@
 - Best Practices
 - Smart Placement Gotchas
 - Smart Placement API
-- client.ts
+- CustomizerStudioPage.tsx
 - Smart Placement Patterns
 - Requirements & Limitations
 - Common Errors
@@ -637,7 +637,7 @@
 - Concurrency Model (CRITICAL)
 - Core Concepts
 - components/Toast.tsx
-- lib/api.ts
+- DashboardPage.tsx
 - admin/vercel.json
 - Model-Specific
 - Model Selection Decision Tree
@@ -2462,9 +2462,9 @@ Nodes (10): devDependencies, @swc/core, @swc-node/register, @types/compression, 
 Cohesion: 0.29
 Nodes (6): compilerOptions, outDir, rootDir, extends, include, ../../tsconfig.base.json
 
-### Community 469 - "CustomizerStudioPage.tsx"
-Cohesion: 0.33
-Nodes (5): CustomizerStudioConfig, CustomizerStudioPage(), DEFAULT_GARMENTS, GarmentColor, GarmentItem
+### Community 469 - "client.ts"
+Cohesion: 0.21
+Nodes (8): OrderSuccessPage, BrandPageLoader(), BrandPageLoaderProps, ApiError, configuredApiUrl, executeFetch(), getGuestSessionId(), RequestOptions
 
 ### Community 470 - "Observability"
 Cohesion: 0.33
@@ -2810,9 +2810,9 @@ Nodes (4): Core Web Vitals Debugging, Features, Rules (Advanced - Plan-dependent
 Cohesion: 0.50
 Nodes (4): CSP Requirements, Key Concepts, Proxied vs Non-Proxied Sites, SPA Mode
 
-### Community 590 - "DashboardPage.tsx"
-Cohesion: 0.47
-Nodes (5): DashboardData, DashboardPage(), formatCurrency(), formatDate(), STATUS_BADGE
+### Community 590 - "lib/api.ts"
+Cohesion: 0.40
+Nodes (4): ApiError, configuredApiUrl, ReqOptions, request()
 
 ### Community 591 - "Static Assets"
 Cohesion: 0.50
@@ -2934,9 +2934,9 @@ Nodes (10): Baseline Traffic & Analysis Time, Disabling Smart Placement, Limits,
 Cohesion: 0.22
 Nodes (9): cf-placement Header (Beta), Detecting Smart Placement in Code, Interpreting Metrics, Monitoring Commands, Placement Status API, Request Duration Metrics, Smart Placement API, Status Meanings (+1 more)
 
-### Community 656 - "client.ts"
-Cohesion: 0.21
-Nodes (8): OrderSuccessPage, BrandPageLoader(), BrandPageLoaderProps, ApiError, configuredApiUrl, executeFetch(), getGuestSessionId(), RequestOptions
+### Community 656 - "CustomizerStudioPage.tsx"
+Cohesion: 0.33
+Nodes (5): CustomizerStudioConfig, CustomizerStudioPage(), DEFAULT_GARMENTS, GarmentColor, GarmentItem
 
 ### Community 657 - "Smart Placement Patterns"
 Cohesion: 0.29
@@ -2970,9 +2970,9 @@ Nodes (7): Accessing from Workers, Class Structure, Core Concepts, ID Generation
 Cohesion: 0.33
 Nodes (5): ToastContext, ToastContextValue, ToastItem, ToastOptions, ToastVariant
 
-### Community 667 - "lib/api.ts"
-Cohesion: 0.40
-Nodes (4): ApiError, configuredApiUrl, ReqOptions, request()
+### Community 667 - "DashboardPage.tsx"
+Cohesion: 0.47
+Nodes (5): DashboardData, DashboardPage(), formatCurrency(), formatDate(), STATUS_BADGE
 
 ### Community 668 - "admin/vercel.json"
 Cohesion: 0.33

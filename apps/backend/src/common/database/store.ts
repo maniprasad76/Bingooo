@@ -7,7 +7,9 @@ import { v4 as uuidv4 } from 'uuid';
 import * as fs from 'fs';
 import * as path from 'path';
 
-const DATA_DIR = path.resolve(process.cwd(), 'data');
+const IS_VERCEL = !!process.env.VERCEL;
+const BUNDLED_STORE_FILE = path.resolve(process.cwd(), 'data', 'store.json');
+const DATA_DIR = IS_VERCEL ? path.resolve('/tmp', 'data') : path.resolve(process.cwd(), 'data');
 const STORE_FILE = path.join(DATA_DIR, 'store.json');
 
 
@@ -1052,8 +1054,15 @@ export function saveDb() {
 
 // Load persisted state from disk if available, otherwise initialize file
 try {
+  let storePathToLoad: string | null = null;
   if (fs.existsSync(STORE_FILE)) {
-    const raw = fs.readFileSync(STORE_FILE, 'utf-8');
+    storePathToLoad = STORE_FILE;
+  } else if (fs.existsSync(BUNDLED_STORE_FILE)) {
+    storePathToLoad = BUNDLED_STORE_FILE;
+  }
+
+  if (storePathToLoad) {
+    const raw = fs.readFileSync(storePathToLoad, 'utf-8');
     const parsed = JSON.parse(raw);
     if (parsed && typeof parsed === 'object') {
       for (const [key, val] of Object.entries(parsed)) {

@@ -148,7 +148,7 @@
       "color": "Black",
       "color_hex": "#111111",
       "price": 1299,
-      "stock_quantity": 19,
+      "stock_quantity": 16,
       "reserved_quantity": 0,
       "is_active": true,
       "created_at": "2026-09-17T09:37:42.519Z",
@@ -837,6 +837,42 @@
       "avatar_key": null,
       "created_at": "2026-09-17T09:44:55.948Z",
       "updated_at": "2026-09-17T09:44:55.948Z"
+    },
+    {
+      "id": "0b4ce7fe-151b-4c76-acdd-124dbe7da22a",
+      "email": "checkout_shopper_1789638870600@bingooo.in",
+      "password_hash": "pbkdf2$100000$042db2e74e1b6b389900a73f108ff15f$c33624ad4e3974d010132fd2d8f9d983c5e35524e3113e9eafe602bd3fcf3a7c04e2fb281a1ded8c18bdbad17cfadca9765d39796179e7e1f431aec3e39ea827",
+      "full_name": "Vikramaditya Rao",
+      "phone": "9845012345",
+      "role": "CUSTOMER",
+      "status": "active",
+      "avatar_key": null,
+      "created_at": "2026-09-17T09:54:30.771Z",
+      "updated_at": "2026-09-17T09:54:30.771Z"
+    },
+    {
+      "id": "7a651311-c1b3-4c59-b83d-ba92e7440289",
+      "email": "user_a_1789638880142@example.com",
+      "password_hash": "pbkdf2$100000$57b566b23d50d738d4e0259438a07d89$962d5d26b273e8732a6102dcac96fd7fd9f0d6976100d43a6f262f82730355e15539186a8ba9c792d067c0482dc06ad00587d65408dff889b638326c00010714",
+      "full_name": "Alice Walker",
+      "phone": "+919999900001",
+      "role": "CUSTOMER",
+      "status": "active",
+      "avatar_key": null,
+      "created_at": "2026-09-17T09:54:40.276Z",
+      "updated_at": "2026-09-17T09:54:40.276Z"
+    },
+    {
+      "id": "1728f627-a01a-4778-9a2c-8b7b3b05c36f",
+      "email": "user_b_1789638880282@example.com",
+      "password_hash": "pbkdf2$100000$a3c8053e243e3f27f0e9dc6340f74dc9$6fe128062a73d3180dea85280d53e9378adcee45dab36a064fd8748eb8e0f5cdd812ca4098324bbe9e28bfc445cedf07e477d0a7ed131185efe96e12578db8b5",
+      "full_name": "Bob Smith",
+      "phone": "+919999900002",
+      "role": "CUSTOMER",
+      "status": "active",
+      "avatar_key": null,
+      "created_at": "2026-09-17T09:54:40.406Z",
+      "updated_at": "2026-09-17T09:54:40.406Z"
     }
   ],
   "roles": [
@@ -1089,6 +1125,26 @@
       "reference_id": "88989a68-ba8f-403a-ba98-ab09ae4bd6de",
       "created_by": "25b253d0-c8dd-46c9-8652-46a756c0521a",
       "created_at": "2026-09-17T09:44:56.591Z"
+    },
+    {
+      "id": "57128118-a99c-4821-9da8-10136c5cde1f",
+      "variant_id": "4be24ccd-295f-4efc-b7bb-b8cfc2a35936",
+      "type": "sale",
+      "quantity": -2,
+      "reference_type": "order",
+      "reference_id": "370cf2d0-d8a3-4474-babb-fe335bf18751",
+      "created_by": "0b4ce7fe-151b-4c76-acdd-124dbe7da22a",
+      "created_at": "2026-09-17T09:54:30.818Z"
+    },
+    {
+      "id": "9437793f-3c4f-49c0-8168-ee2b2684f87f",
+      "variant_id": "4be24ccd-295f-4efc-b7bb-b8cfc2a35936",
+      "type": "sale",
+      "quantity": -1,
+      "reference_type": "order",
+      "reference_id": "807f1cb1-f990-4eed-a46d-55b47e15ae3c",
+      "created_by": "7a651311-c1b3-4c59-b83d-ba92e7440289",
+      "created_at": "2026-09-17T09:54:40.565Z"
     }
   ],
   "wishlists": [
@@ -1171,6 +1227,22 @@
       "status": "active",
       "created_at": "2026-09-17T09:44:56.572Z",
       "updated_at": "2026-09-17T09:44:56.572Z"
+    },
+    {
+      "id": "0de9df65-19b4-4c20-8755-97c2b66869f8",
+      "user_id": "0b4ce7fe-151b-4c76-acdd-124dbe7da22a",
+      "session_id": "sess_test_1789638870783",
+      "status": "active",
+      "created_at": "2026-09-17T09:54:30.807Z",
+      "updated_at": "2026-09-17T09:54:30.807Z"
+    },
+    {
+      "id": "9e05418a-5150-4708-995b-f22e93930435",
+      "user_id": "7a651311-c1b3-4c59-b83d-ba92e7440289",
+      "session_id": null,
+      "status": "active",
+      "created_at": "2026-09-17T09:54:40.558Z",
+      "updated_at": "2026-09-17T09:54:40.558Z"
     }
   ],
   "cart_items": [],
@@ -1645,6 +1717,90 @@
       "carrier": null,
       "created_at": "2026-09-17T09:44:56.591Z",
       "updated_at": "2026-09-17T09:44:56.591Z"
+    },
+    {
+      "id": "370cf2d0-d8a3-4474-babb-fe335bf18751",
+      "order_number": "BGO-20260917-4963",
+      "user_id": "0b4ce7fe-151b-4c76-acdd-124dbe7da22a",
+      "status": "pending_payment",
+      "payment_status": "pending",
+      "payment_method": "prepaid",
+      "subtotal": 2598,
+      "discount": 0,
+      "prepaid_discount": 130,
+      "shipping_fee": 0,
+      "tax": 123,
+      "total": 2591,
+      "currency": "INR",
+      "shipping_address": {
+        "name": "Vikramaditya Rao",
+        "phone": "9845012345",
+        "line1": "Penthouse 1201, Sovereign Crest",
+        "line2": "Lavelle Road",
+        "city": "Bengaluru",
+        "state": "Karnataka",
+        "postalCode": "560001",
+        "country": "IN"
+      },
+      "address_snapshot_json": {
+        "name": "Vikramaditya Rao",
+        "phone": "9845012345",
+        "line1": "Penthouse 1201, Sovereign Crest",
+        "line2": "Lavelle Road",
+        "city": "Bengaluru",
+        "state": "Karnataka",
+        "postalCode": "560001",
+        "country": "IN"
+      },
+      "cod_deposit": null,
+      "cod_remaining": null,
+      "coupon_code": null,
+      "notes": null,
+      "tracking_number": null,
+      "carrier": null,
+      "created_at": "2026-09-17T09:54:30.818Z",
+      "updated_at": "2026-09-17T09:54:30.818Z"
+    },
+    {
+      "id": "807f1cb1-f990-4eed-a46d-55b47e15ae3c",
+      "order_number": "BGO-20260917-1835",
+      "user_id": "7a651311-c1b3-4c59-b83d-ba92e7440289",
+      "status": "processing",
+      "payment_status": "pending",
+      "payment_method": "cod",
+      "subtotal": 1299,
+      "discount": 0,
+      "prepaid_discount": 0,
+      "shipping_fee": 0,
+      "tax": 65,
+      "total": 1364,
+      "currency": "INR",
+      "shipping_address": {
+        "name": "Alice Walker",
+        "phone": "+919999900001",
+        "line1": "123 Fashion Blvd",
+        "city": "Bengaluru",
+        "state": "Karnataka",
+        "postalCode": "560001",
+        "country": "IN"
+      },
+      "address_snapshot_json": {
+        "name": "Alice Walker",
+        "phone": "+919999900001",
+        "line1": "123 Fashion Blvd",
+        "city": "Bengaluru",
+        "state": "Karnataka",
+        "postalCode": "560001",
+        "country": "IN"
+      },
+      "cod_deposit": null,
+      "cod_remaining": 1364,
+      "coupon_code": null,
+      "notes": null,
+      "tracking_number": null,
+      "carrier": null,
+      "created_at": "2026-09-17T09:54:40.565Z",
+      "updated_at": "2026-09-17T09:54:40.565Z"
     }
   ],
   "order_items": [
@@ -1861,6 +2017,42 @@
       "unit_price": 1299,
       "total": 1299,
       "created_at": "2026-09-17T09:44:56.591Z"
+    },
+    {
+      "id": "5c342539-7b92-4641-bc37-9e63c1d5a749",
+      "order_id": "370cf2d0-d8a3-4474-babb-fe335bf18751",
+      "product_id": "ead1024d-1153-4446-9e62-ded6616078f3",
+      "variant_id": "4be24ccd-295f-4efc-b7bb-b8cfc2a35936",
+      "customization_id": "cust-1789638870795",
+      "sku": "COT-S-BLK",
+      "title_snapshot": "Classic Oversized Tee",
+      "variant_snapshot_json": {
+        "size": "S",
+        "color": "Black",
+        "colorHex": "#111111"
+      },
+      "quantity": 2,
+      "unit_price": 1299,
+      "total": 2598,
+      "created_at": "2026-09-17T09:54:30.818Z"
+    },
+    {
+      "id": "f36fb3bf-66bf-449a-b234-3924a253b19f",
+      "order_id": "807f1cb1-f990-4eed-a46d-55b47e15ae3c",
+      "product_id": "ead1024d-1153-4446-9e62-ded6616078f3",
+      "variant_id": "4be24ccd-295f-4efc-b7bb-b8cfc2a35936",
+      "customization_id": null,
+      "sku": "COT-S-BLK",
+      "title_snapshot": "Classic Oversized Tee",
+      "variant_snapshot_json": {
+        "size": "S",
+        "color": "Black",
+        "colorHex": "#111111"
+      },
+      "quantity": 1,
+      "unit_price": 1299,
+      "total": 1299,
+      "created_at": "2026-09-17T09:54:40.565Z"
     }
   ],
   "payments": [
@@ -2051,6 +2243,43 @@
   ],
   "customizations": [
     {
+      "id": "cust-1789638870795",
+      "user_id": "usr-cust-1",
+      "product_id": "ead1024d-1153-4446-9e62-ded6616078f3",
+      "product_title": "Classic Oversized Tee",
+      "status": "approved",
+      "print_status": "ready_to_print",
+      "design_json": {
+        "garment": {
+          "title": "240 GSM Heavyweight Oversized Tee",
+          "color": "Obsidian Black",
+          "size": "L",
+          "gsm": 240
+        },
+        "front": {
+          "hasDesign": true,
+          "artwork": {
+            "url": "data:image/svg+xml;utf8,<svg></svg>",
+            "scale": 1
+          }
+        },
+        "isDualSided": false
+      },
+      "preview_url": "/custom/tshirt-step-3-black.png",
+      "print_file_key": null,
+      "print_spec": {
+        "method": "DTG (Direct-to-Garment)",
+        "placement": "Chest & Back Print",
+        "resolutionDPI": 300,
+        "colorSpace": "CMYK"
+      },
+      "customer_name": "Aditi Sharma",
+      "customer_email": "customer@bingooo.in",
+      "customer_notes": "Please ensure high-density red print alignment",
+      "created_at": "2026-09-17T09:54:30.795Z",
+      "updated_at": "2026-09-17T09:54:30.795Z"
+    },
+    {
       "id": "cust-1789638263916",
       "user_id": "usr-cust-1",
       "product_id": "ead1024d-1153-4446-9e62-ded6616078f3",
@@ -2207,6 +2436,39 @@
   "customization_assets": [],
   "shipments": [],
   "notifications": [
+    {
+      "id": "notif-1789638880565",
+      "category": "order",
+      "severity": "info",
+      "title": "New Order Placed (#BGO-20260917-1835)",
+      "description": "Order for ₹1364 placed via COD",
+      "link_href": "/orders",
+      "link_text": "View Order →",
+      "is_read": false,
+      "created_at": "2026-09-17T09:54:40.565Z"
+    },
+    {
+      "id": "notif-1789638870818",
+      "category": "order",
+      "severity": "info",
+      "title": "New Order Placed (#BGO-20260917-4963)",
+      "description": "Order for ₹2591 placed via PREPAID",
+      "link_href": "/orders",
+      "link_text": "View Order →",
+      "is_read": false,
+      "created_at": "2026-09-17T09:54:30.818Z"
+    },
+    {
+      "id": "notif-1789638870795",
+      "category": "custom",
+      "severity": "warning",
+      "title": "New Custom Design Submitted (#cust-1789638870795)",
+      "description": "Aditi Sharma created artwork for Classic Oversized Tee",
+      "link_href": "/custom-orders",
+      "link_text": "Open Custom Print Queue →",
+      "is_read": false,
+      "created_at": "2026-09-17T09:54:30.795Z"
+    },
     {
       "id": "notif-1789638296591",
       "category": "order",
@@ -2556,6 +2818,21 @@
       "is_default": true,
       "created_at": "2026-09-17T09:44:56.501Z",
       "updated_at": "2026-09-17T09:44:56.501Z"
+    },
+    {
+      "id": "820a84a6-0eb0-46cd-891e-6f64a5293c3d",
+      "user_id": "7a651311-c1b3-4c59-b83d-ba92e7440289",
+      "name": "Alice Home",
+      "phone": "+919999900001",
+      "line1": "123 Fashion Blvd",
+      "line2": null,
+      "city": "Bengaluru",
+      "state": "Karnataka",
+      "postal_code": "560001",
+      "country": "IN",
+      "is_default": true,
+      "created_at": "2026-09-17T09:54:40.533Z",
+      "updated_at": "2026-09-17T09:54:40.533Z"
     }
   ],
   "profiles": [
@@ -2720,6 +2997,33 @@
       "avatar_key": null,
       "created_at": "2026-09-17T09:44:55.948Z",
       "updated_at": "2026-09-17T09:44:55.948Z"
+    },
+    {
+      "id": "0b4ce7fe-151b-4c76-acdd-124dbe7da22a",
+      "email": "checkout_shopper_1789638870600@bingooo.in",
+      "full_name": "Vikramaditya Rao",
+      "phone": "9845012345",
+      "avatar_key": null,
+      "created_at": "2026-09-17T09:54:30.771Z",
+      "updated_at": "2026-09-17T09:54:30.771Z"
+    },
+    {
+      "id": "7a651311-c1b3-4c59-b83d-ba92e7440289",
+      "email": "user_a_1789638880142@example.com",
+      "full_name": "Alice Walker",
+      "phone": "+919999900001",
+      "avatar_key": null,
+      "created_at": "2026-09-17T09:54:40.276Z",
+      "updated_at": "2026-09-17T09:54:40.276Z"
+    },
+    {
+      "id": "1728f627-a01a-4778-9a2c-8b7b3b05c36f",
+      "email": "user_b_1789638880282@example.com",
+      "full_name": "Bob Smith",
+      "phone": "+919999900002",
+      "avatar_key": null,
+      "created_at": "2026-09-17T09:54:40.406Z",
+      "updated_at": "2026-09-17T09:54:40.406Z"
     }
   ],
   "banners": [

@@ -2,7 +2,8 @@
 // Admin API client — connects to the shared NestJS backend
 // ─────────────────────────────────────────────────────────
 
-const API_BASE = '/api/v1';
+const configuredApiUrl = (import.meta as any).env?.VITE_API_URL?.replace(/\/$/, '');
+const API_BASE = configuredApiUrl ? `${configuredApiUrl}/api/v1` : '/api/v1';
 
 export class ApiError extends Error {
   status: number;

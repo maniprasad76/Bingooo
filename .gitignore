@@ -10,6 +10,8 @@ dist/
 build/
 **/build/
 *.tsbuildinfo
+.vercel/
+**/.vercel/
 
 # Environment
 .env
@@ -23,6 +25,7 @@ build/
 *.swp
 *.swo
 *~
+live_frontend.html
 
 # OS
 .DS_Store

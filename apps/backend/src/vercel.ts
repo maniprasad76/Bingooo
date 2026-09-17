@@ -43,14 +43,22 @@ export async function bootstrapServer(): Promise<Express> {
     logger: process.env.NODE_ENV === 'production' ? ['error', 'warn'] : ['log', 'error', 'warn'],
   });
 
-  const corsOrigins = process.env.CORS_ORIGINS?.split(',').map((o) => o.trim()) || [
+  const explicitCors = process.env.CORS_ORIGINS?.split(',').map((o) => o.trim());
+  const allowedOrigins = explicitCors || [
     'http://localhost:5173',
     'http://localhost:5174',
     'https://bingooo-frontend.vercel.app',
+    'https://bingooo-admin.vercel.app',
     'https://bingooo-admin-three.vercel.app',
   ];
   app.enableCors({
-    origin: corsOrigins.length === 1 && corsOrigins[0] === '*' ? true : corsOrigins,
+    origin: (origin, callback) => {
+      if (!origin || allowedOrigins.includes(origin) || origin.endsWith('.vercel.app') || origin.includes('localhost')) {
+        callback(null, true);
+      } else {
+        callback(null, true);
+      }
+    },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: [

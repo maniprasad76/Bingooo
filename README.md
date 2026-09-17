@@ -4,7 +4,8 @@
 
 ### 🌐 Live Deployments
 - **🛍️ Customer Storefront (Frontend):** [https://bingooo-frontend.vercel.app](https://bingooo-frontend.vercel.app)
-- **🎛️ Admin Operations Center:** [https://bingooo-admin-three.vercel.app](https://bingooo-admin-three.vercel.app)
+- **🎛️ Admin Operations Center:** [https://bingooo-admin.vercel.app](https://bingooo-admin.vercel.app)
+- **🚀 NestJS REST API (Backend):** [https://bingooo-backend.vercel.app](https://bingooo-backend.vercel.app)
 
 [![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=flat&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![React](https://img.shields.io/badge/React-20232A?style=flat&logo=react&logoColor=61DAFB)](https://reactjs.org/)

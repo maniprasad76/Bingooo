@@ -1374,10 +1374,10 @@
     "semantic_hash": "3109bf32b6853835c4f74ea29e40d691"
   },
   "apps/frontend/src/main.tsx": {
-    "mtime": 1788370403.1506894,
-    "seen": 1789634534.2679684,
-    "ast_hash": "05382427018eb4f648b9e92626542a97",
-    "semantic_hash": "05382427018eb4f648b9e92626542a97"
+    "mtime": 1789662219.6206758,
+    "seen": 1789662242.5953262,
+    "ast_hash": "5c3e4e8d62fa0dfee53c5838a637466f",
+    "semantic_hash": ""
   },
   "apps/frontend/src/pages/AboutPage.tsx": {
     "mtime": 1789618359.7813315,
@@ -4824,9 +4824,9 @@
     "semantic_hash": ""
   },
   "README.md": {
-    "mtime": 1789637447.282929,
-    "seen": 1789637526.2028568,
-    "ast_hash": "57025115ae9196ea0644f0a10fffb115",
+    "mtime": 1789662165.1627238,
+    "seen": 1789662242.6533327,
+    "ast_hash": "fb9285e3f923ba88d9c0205913baa1cf",
     "semantic_hash": ""
   },
   "design.md": {

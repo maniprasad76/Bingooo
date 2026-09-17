@@ -76,9 +76,8 @@ async function bootstrap() {
     ],
   });
 
-  // ── Global prefix ──
   app.setGlobalPrefix('api/v1', {
-    exclude: ['api/create-order', 'api/verify-payment'],
+    exclude: ['', '/', 'health', 'health/live', 'health/ready', 'api/create-order', 'api/verify-payment'],
   });
 
   // ── Global pipes ──

@@ -26,7 +26,10 @@ import { AdminModule } from './admin/admin.module';
 import { AuditModule } from './audit/audit.module';
 import { BannersModule } from './banners/banners.module';
 
+import { AppController } from './app.controller';
+
 @Module({
+  controllers: [AppController],
   imports: [
     // ── Config ──
     ConfigModule.forRoot({

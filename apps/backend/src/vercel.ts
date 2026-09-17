@@ -66,7 +66,7 @@ export async function bootstrapServer(): Promise<Express> {
   });
 
   app.setGlobalPrefix('api/v1', {
-    exclude: ['api/create-order', 'api/verify-payment', 'health', 'health/live'],
+    exclude: ['', '/', 'health', 'health/live', 'health/ready', 'api/create-order', 'api/verify-payment'],
   });
 
   app.useGlobalPipes(

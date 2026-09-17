@@ -6,11 +6,16 @@
 import * as fs from 'fs';
 import * as path from 'path';
 
-const LOG_DIR = path.resolve(process.cwd(), 'data', 'logs');
+const IS_VERCEL = !!process.env.VERCEL;
+const LOG_DIR = IS_VERCEL ? path.resolve('/tmp', 'logs') : path.resolve(process.cwd(), 'data', 'logs');
 
 // Ensure log directory exists
-if (!fs.existsSync(LOG_DIR)) {
-  fs.mkdirSync(LOG_DIR, { recursive: true });
+try {
+  if (!fs.existsSync(LOG_DIR)) {
+    fs.mkdirSync(LOG_DIR, { recursive: true });
+  }
+} catch {
+  // Gracefully continue on read-only environments
 }
 
 export type LogLevel = 'info' | 'warn' | 'error' | 'debug';
@@ -35,12 +40,27 @@ export interface LogEntry {
 }
 
 class LoggerServiceImpl {
-  private accessStream: fs.WriteStream;
-  private errorStream: fs.WriteStream;
+  private accessStream: fs.WriteStream | null = null;
+  private errorStream: fs.WriteStream | null = null;
 
   constructor() {
-    this.accessStream = fs.createWriteStream(path.join(LOG_DIR, 'access.log'), { flags: 'a' });
-    this.errorStream = fs.createWriteStream(path.join(LOG_DIR, 'error.log'), { flags: 'a' });
+    try {
+      if (!fs.existsSync(LOG_DIR)) {
+        fs.mkdirSync(LOG_DIR, { recursive: true });
+      }
+      this.accessStream = fs.createWriteStream(path.join(LOG_DIR, 'access.log'), { flags: 'a' });
+      this.accessStream.on('error', () => {
+        this.accessStream = null;
+      });
+
+      this.errorStream = fs.createWriteStream(path.join(LOG_DIR, 'error.log'), { flags: 'a' });
+      this.errorStream.on('error', () => {
+        this.errorStream = null;
+      });
+    } catch {
+      this.accessStream = null;
+      this.errorStream = null;
+    }
   }
 
   /** Log an API access entry */
@@ -50,7 +70,11 @@ class LoggerServiceImpl {
       timestamp: entry.timestamp || new Date().toISOString(),
       level: entry.level || 'info',
     });
-    this.accessStream.write(line + '\n');
+    if (this.accessStream) {
+      try {
+        this.accessStream.write(line + '\n');
+      } catch {}
+    }
   }
 
   /** Log an error entry */
@@ -60,8 +84,12 @@ class LoggerServiceImpl {
       timestamp: entry.timestamp || new Date().toISOString(),
       level: 'error',
     });
-    this.errorStream.write(line + '\n');
-    // Also log to console for immediate visibility
+    if (this.errorStream) {
+      try {
+        this.errorStream.write(line + '\n');
+      } catch {}
+    }
+    // Also log to console for immediate visibility in Vercel / Cloud Run logs
     console.error(`[ERROR] ${entry.method} ${entry.path} — ${entry.status} — ${entry.error?.message || 'Unknown error'}`);
   }
 
@@ -73,7 +101,12 @@ class LoggerServiceImpl {
       message,
       ...meta,
     });
-    this.accessStream.write(line + '\n');
+    if (this.accessStream) {
+      try {
+        this.accessStream.write(line + '\n');
+      } catch {}
+    }
+    console.warn(`[WARN] ${message}`);
   }
 
   /** Get log file paths */

@@ -13,8 +13,9 @@ const ADMIN_ROLES = ['ADMIN', 'SUPER_ADMIN', 'admin', 'super_admin'];
 export async function initAdminAuth(): Promise<void> {
   const token = localStorage.getItem(AUTH_KEY);
 
-  // Dev admin bypass
-  if (token === 'bingooo-dev-admin') {
+  // Dev admin bypass — strictly disabled in production
+  const isDevAuthAllowed = import.meta.env.DEV && (import.meta.env as any).VITE_ENABLE_DEV_AUTH === 'true';
+  if (isDevAuthAllowed && token === 'bingooo-dev-admin') {
     useAuthStore.getState().setAuth({
       id: 'usr-admin-1',
       email: 'admin@bingooo.in',

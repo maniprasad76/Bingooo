@@ -17,7 +17,9 @@ export const supabase: SupabaseClient | null =
 export async function initAuth(): Promise<void> {
   const token = localStorage.getItem(authStorageKey);
 
-  if (token === 'bingooo-dev-admin') {
+  const isDevAuthAllowed = import.meta.env.DEV && import.meta.env.VITE_ENABLE_DEV_AUTH === 'true';
+
+  if (isDevAuthAllowed && token === 'bingooo-dev-admin') {
     useAuthStore.getState().setAuth('usr-admin-1', {
       id: 'usr-admin-1',
       email: 'admin@bingooo.in',

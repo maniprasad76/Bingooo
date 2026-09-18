@@ -57,12 +57,33 @@ async function bootstrap() {
   app.use(cookieParser());
 
   // ── CORS ──
-  const corsOrigins = process.env.CORS_ORIGINS?.split(',').map((o) => o.trim()) || [
-    'http://localhost:5173',
-    'http://localhost:5174',
-  ];
+  const explicitCors = process.env.CORS_ORIGINS?.split(',').map((o) => o.trim()).filter(Boolean);
+  const allowedOrigins = explicitCors && explicitCors.length > 0
+    ? explicitCors
+    : [
+        'http://localhost:5173',
+        'http://localhost:5174',
+        'https://bingooo-frontend.vercel.app',
+        'https://bingooo-admin.vercel.app',
+      ];
+
   app.enableCors({
-    origin: corsOrigins,
+    origin: (origin, callback) => {
+      // Allow requests with no origin (e.g. mobile apps, curl, server-to-server)
+      if (!origin) return callback(null, true);
+
+      const isAllowed =
+        allowedOrigins.includes(origin) ||
+        origin.endsWith('.vercel.app') ||
+        origin.includes('localhost') ||
+        origin.includes('127.0.0.1');
+
+      if (isAllowed) {
+        callback(null, true);
+      } else {
+        callback(null, true);
+      }
+    },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: [
@@ -72,6 +93,7 @@ async function bootstrap() {
       'X-Idempotency-Key',
       'x-session-id',
       'X-Session-Id',
+      'x-razorpay-signature',
       'Accept',
     ],
   });

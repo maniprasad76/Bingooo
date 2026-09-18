@@ -59,7 +59,7 @@ async function executeFetch<T = unknown>(path: string, options: RequestOptions =
     body,
     params,
     raw,
-    timeoutMs = 15000,
+    timeoutMs = 35000,
     idempotencyKey,
     ...init
   } = options;

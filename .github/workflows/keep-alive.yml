@@ -1,0 +1,25 @@
+name: Keep Render Backend Warm
+
+on:
+  schedule:
+    # Run every 10 minutes to prevent Render free tier spin-down (spins down after 15m)
+    - cron: '*/10 * * * *'
+  workflow_dispatch:
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: Ping Render Backend Health Check
+        run: |
+          echo "Pinging Bingooo API on Render..."
+          HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" https://bingooo-1a4p.onrender.com/health/live)
+          echo "Response HTTP Status: $HTTP_STATUS"
+          if [ "$HTTP_STATUS" -eq 200 ]; then
+            echo "Render backend is alive and warm!"
+          else
+            echo "Unexpected status $HTTP_STATUS, retrying once..."
+            sleep 5
+            curl -f -s https://bingooo-1a4p.onrender.com/health/live
+          fi

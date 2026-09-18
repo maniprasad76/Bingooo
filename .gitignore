@@ -57,3 +57,5 @@ apps/backend/uploads/
 
 # Graphify cache
 graphify-out/cache/
+
+.vercel

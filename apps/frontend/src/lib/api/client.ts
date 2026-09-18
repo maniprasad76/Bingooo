@@ -8,7 +8,7 @@
  * The Vite proxy is used in local development. A deployed storefront can set
  * VITE_API_URL to point at its API without changing any application code.
  */
-const configuredApiUrl = import.meta.env.VITE_API_URL?.replace(/\/$/, '');
+const configuredApiUrl = import.meta.env.VITE_API_URL?.trim().replace(/\/$/, '');
 const API_BASE = configuredApiUrl ? `${configuredApiUrl}/api/v1` : '/api/v1';
 
 export interface RequestOptions extends Omit<RequestInit, 'body'> {

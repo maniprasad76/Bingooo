@@ -14,7 +14,8 @@ COPY packages/types/package.json ./packages/types/
 # Install dependencies cleanly
 RUN npm ci
 
-# Copy backend source & config
+# Copy packages & backend source & config
+COPY packages ./packages
 COPY apps/backend ./apps/backend
 
 # Compile TypeScript to JavaScript
@@ -40,7 +41,8 @@ COPY --from=builder --chown=bingooo:bingooo /app/apps/backend/node_modules ./app
 COPY --from=builder --chown=bingooo:bingooo /app/apps/backend/dist ./apps/backend/dist
 COPY --from=builder --chown=bingooo:bingooo /app/apps/backend/package.json ./apps/backend/package.json
 
-# Create directories with non-root ownership
+# Copy seed data and ensure runtime directories exist with non-root ownership
+COPY --from=builder --chown=bingooo:bingooo /app/apps/backend/data ./apps/backend/data
 RUN mkdir -p /app/apps/backend/data /app/apps/backend/uploads && \
     chown -R bingooo:bingooo /app/apps/backend/data /app/apps/backend/uploads
 

@@ -149,7 +149,7 @@ export function BrandIntroScreen() {
           {/* Full-Screen Immersive Video Canvas:
               Adopts 100% full screen edge-to-edge on desktop, tablets & mobile without borders or letterboxing
           */}
-          <div className="w-full h-full flex items-center justify-center bg-[#F7EEDB] p-0 m-0 overflow-hidden">
+          <div className="w-full h-full flex items-center justify-center bg-[#F7EEDB] p-0 m-0 overflow-hidden relative">
             <video
               ref={videoRef}
               key={isDesktopOrTablet ? 'desktop-video' : 'mobile-video'}
@@ -171,6 +171,36 @@ export function BrandIntroScreen() {
                 type="video/mp4"
               />
             </video>
+
+            {/* Top Right Small Skip Button */}
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                handleDismiss();
+              }}
+              className="absolute z-30 px-3 py-1.5 rounded-full bg-[#171717]/70 hover:bg-[#171717]/90 active:scale-95 text-white/90 hover:text-white border border-white/20 backdrop-blur-md shadow-md text-[10px] sm:text-[11px] font-mono font-bold tracking-wider uppercase flex items-center gap-1.5 transition-all cursor-pointer select-none"
+              style={{
+                top: 'max(16px, calc(env(safe-area-inset-top, 0px) + 12px))',
+                right: 'max(16px, calc(env(safe-area-inset-right, 0px) + 12px))',
+              }}
+              aria-label="Skip intro video"
+            >
+              <span>SKIP</span>
+              <svg
+                width="10"
+                height="10"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="translate-x-0.5"
+              >
+                <polyline points="9 18 15 12 9 6" />
+              </svg>
+            </button>
           </div>
         </motion.div>
       )}

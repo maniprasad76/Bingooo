@@ -4830,9 +4830,9 @@
     "semantic_hash": ""
   },
   "apps/frontend/src/components/brand/BrandIntroScreen.tsx": {
-    "mtime": 1789800365.1125221,
-    "seen": 1789800409.9008152,
-    "ast_hash": "83c9cfc3756436ea34f3e9e6ed7d0cc5",
+    "mtime": 1789800509.6118522,
+    "seen": 1789800556.99511,
+    "ast_hash": "a6f08ca6beac8775fa6c8a1263ebc39a",
     "semantic_hash": ""
   },
   "apps/frontend/src/components/brand/index.ts": {

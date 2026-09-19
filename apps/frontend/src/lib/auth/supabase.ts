@@ -81,7 +81,28 @@ export async function initAuth(): Promise<void> {
 }
 
 /** Sign in with email/password */
+/** Sign in with email/password */
 export async function signIn(email: string, password: string): Promise<void> {
+  if (supabase) {
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+    if (!error && data.session) {
+      localStorage.setItem(authStorageKey, data.session.access_token);
+      useAuthStore.getState().setAuth(data.session.user.id, {
+        id: data.session.user.id,
+        email: data.session.user.email || '',
+        fullName: data.session.user.user_metadata?.full_name || data.session.user.email?.split('@')[0],
+      });
+      return;
+    }
+    if (error) {
+      const isNetworkErr = error.message?.toLowerCase().includes('fetch') || error.message?.toLowerCase().includes('network');
+      if (!isNetworkErr) {
+        throw new Error(error.message);
+      }
+    }
+  }
+
+  // Fallback to backend API
   try {
     const res = await api.post<{ user: any; token: string }>('/auth/login', {
       email,
@@ -96,21 +117,7 @@ export async function signIn(email: string, password: string): Promise<void> {
       role: res.user.role,
     });
   } catch (err) {
-    // If backend is unreachable or user only in supabase, fallback to supabase
-    if (supabase) {
-      const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-      if (error) throw err;
-      if (data.session) {
-        localStorage.setItem(authStorageKey, data.session.access_token);
-        useAuthStore.getState().setAuth(data.session.user.id, {
-          id: data.session.user.id,
-          email: data.session.user.email || '',
-          fullName: data.session.user.user_metadata?.full_name,
-        });
-        return;
-      }
-    }
-    throw err;
+    throw err instanceof Error ? err : new Error('Unable to sign in. Please verify your email and password.');
   }
 }
 
@@ -121,6 +128,35 @@ export async function signUp(
   fullName: string,
   phone?: string,
 ): Promise<void> {
+  if (supabase) {
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        data: { full_name: fullName, phone: phone || '' },
+        emailRedirectTo: `${window.location.origin}/auth/callback`,
+      },
+    });
+    if (error) {
+      const isNetworkErr = error.message?.toLowerCase().includes('fetch') || error.message?.toLowerCase().includes('network');
+      if (!isNetworkErr) {
+        throw new Error(error.message);
+      }
+    }
+    if (data?.session) {
+      localStorage.setItem(authStorageKey, data.session.access_token);
+      useAuthStore.getState().setAuth(data.session.user.id, {
+        id: data.session.user.id,
+        email: data.session.user.email || '',
+        fullName,
+      });
+      return;
+    } else if (data?.user) {
+      return;
+    }
+  }
+
+  // Fallback to backend API
   try {
     const res = await api.post<{ user: any; token: string }>('/auth/signup', {
       email,
@@ -137,24 +173,7 @@ export async function signUp(
       role: res.user.role,
     });
   } catch (err) {
-    if (supabase) {
-      const { data, error } = await supabase.auth.signUp({
-        email,
-        password,
-        options: { data: { full_name: fullName } },
-      });
-      if (error) throw err;
-      if (data.session) {
-        localStorage.setItem(authStorageKey, data.session.access_token);
-        useAuthStore.getState().setAuth(data.session.user.id, {
-          id: data.session.user.id,
-          email: data.session.user.email || '',
-          fullName,
-        });
-        return;
-      }
-    }
-    throw err;
+    throw err instanceof Error ? err : new Error('Unable to create account. Please try again.');
   }
 }
 

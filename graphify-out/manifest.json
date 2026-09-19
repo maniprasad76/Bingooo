@@ -1338,9 +1338,9 @@
     "semantic_hash": ""
   },
   "apps/frontend/src/lib/auth/supabase.ts": {
-    "mtime": 1789801427.5182753,
-    "seen": 1789801529.290751,
-    "ast_hash": "e4baea8a833a0561dd9a66cbb67f734b",
+    "mtime": 1789802075.9469254,
+    "seen": 1789802131.0881355,
+    "ast_hash": "f2baf999235c20b196c6cd2112dc362f",
     "semantic_hash": ""
   },
   "apps/frontend/src/lib/native/capacitorBridge.ts": {

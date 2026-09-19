@@ -10597,7 +10597,7 @@
       "file_type": "code",
       "norm_label": "confirmpasswordreset()",
       "source_file": "apps/frontend/src/lib/auth/supabase.ts",
-      "source_location": "L202"
+      "source_location": "L221"
     },
     {
       "id": "apps_frontend_src_lib_auth_supabase_getsessiontoken",
@@ -10609,7 +10609,7 @@
       "file_type": "code",
       "norm_label": "getsessiontoken()",
       "source_file": "apps/frontend/src/lib/auth/supabase.ts",
-      "source_location": "L239"
+      "source_location": "L258"
     },
     {
       "id": "apps_frontend_src_lib_auth_supabase_loginasdevadmin",
@@ -10621,7 +10621,7 @@
       "file_type": "code",
       "norm_label": "loginasdevadmin()",
       "source_file": "apps/frontend/src/lib/auth/supabase.ts",
-      "source_location": "L227"
+      "source_location": "L246"
     },
     {
       "id": "apps_frontend_src_lib_auth_supabase_requestpasswordreset",
@@ -10633,7 +10633,7 @@
       "file_type": "code",
       "norm_label": "requestpasswordreset()",
       "source_file": "apps/frontend/src/lib/auth/supabase.ts",
-      "source_location": "L186"
+      "source_location": "L205"
     },
     {
       "id": "apps_frontend_src_lib_auth_supabase_signin",
@@ -10645,7 +10645,7 @@
       "file_type": "code",
       "norm_label": "signin()",
       "source_file": "apps/frontend/src/lib/auth/supabase.ts",
-      "source_location": "L84"
+      "source_location": "L85"
     },
     {
       "id": "apps_frontend_src_lib_auth_supabase_signinwithprovider",
@@ -10657,7 +10657,7 @@
       "file_type": "code",
       "norm_label": "signinwithprovider()",
       "source_file": "apps/frontend/src/lib/auth/supabase.ts",
-      "source_location": "L162"
+      "source_location": "L181"
     },
     {
       "id": "apps_frontend_src_lib_auth_supabase_signout",
@@ -10669,7 +10669,7 @@
       "file_type": "code",
       "norm_label": "signout()",
       "source_file": "apps/frontend/src/lib/auth/supabase.ts",
-      "source_location": "L216"
+      "source_location": "L235"
     },
     {
       "id": "apps_frontend_src_lib_auth_supabase_signup",
@@ -10681,7 +10681,7 @@
       "file_type": "code",
       "norm_label": "signup()",
       "source_file": "apps/frontend/src/lib/auth/supabase.ts",
-      "source_location": "L118"
+      "source_location": "L125"
     },
     {
       "id": "apps_frontend_src_pages_authcallbackpage_authcallbackpage",
@@ -92789,7 +92789,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "apps/frontend/src/lib/auth/supabase.ts",
-      "source_location": "L219",
+      "source_location": "L238",
       "weight": 1.0
     },
     {
@@ -92801,7 +92801,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "apps/frontend/src/lib/auth/supabase.ts",
-      "source_location": "L141",
+      "source_location": "L132",
       "weight": 1.0
     },
     {
@@ -188945,7 +188945,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "apps/frontend/src/lib/auth/supabase.ts",
-      "source_location": "L118",
+      "source_location": "L125",
       "weight": 1.0
     },
     {
@@ -188961,17 +188961,6 @@
     },
     {
       "source": "apps_frontend_src_lib_auth_supabase",
-      "target": "apps_frontend_src_lib_auth_supabase_signinwithprovider",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "apps/frontend/src/lib/auth/supabase.ts",
-      "source_location": "L162",
-      "weight": 1.0
-    },
-    {
-      "source": "apps_frontend_src_lib_auth_supabase",
       "target": "apps_frontend_src_lib_auth_supabase_initauth",
       "relation": "contains",
       "_origin": "ast",
@@ -188983,13 +188972,24 @@
     },
     {
       "source": "apps_frontend_src_lib_auth_supabase",
+      "target": "apps_frontend_src_lib_auth_supabase_signinwithprovider",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "apps/frontend/src/lib/auth/supabase.ts",
+      "source_location": "L181",
+      "weight": 1.0
+    },
+    {
+      "source": "apps_frontend_src_lib_auth_supabase",
       "target": "apps_frontend_src_lib_auth_supabase_requestpasswordreset",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "apps/frontend/src/lib/auth/supabase.ts",
-      "source_location": "L186",
+      "source_location": "L205",
       "weight": 1.0
     },
     {
@@ -189000,7 +189000,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "apps/frontend/src/lib/auth/supabase.ts",
-      "source_location": "L202",
+      "source_location": "L221",
       "weight": 1.0
     },
     {
@@ -189011,7 +189011,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "apps/frontend/src/lib/auth/supabase.ts",
-      "source_location": "L216",
+      "source_location": "L235",
       "weight": 1.0
     },
     {
@@ -189022,7 +189022,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "apps/frontend/src/lib/auth/supabase.ts",
-      "source_location": "L227",
+      "source_location": "L246",
       "weight": 1.0
     },
     {
@@ -189033,7 +189033,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "apps/frontend/src/lib/auth/supabase.ts",
-      "source_location": "L239",
+      "source_location": "L258",
       "weight": 1.0
     },
     {
@@ -189044,7 +189044,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "apps/frontend/src/lib/auth/supabase.ts",
-      "source_location": "L84",
+      "source_location": "L85",
       "weight": 1.0
     },
     {
@@ -204609,5 +204609,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "536c6f9ee3a7ec34a096d44d6705bc5ed372efe0"
+  "built_at_commit": "1c41966bfde5bf73588eed1b7297c33990756458"
 }

@@ -1,30 +1,57 @@
 // ─────────────────────────────────────────────────────────
-// Admin auth helpers — login, logout, session init
-// Uses the same backend auth endpoints as the storefront
+// Admin auth helpers — login, Google OAuth, logout, session init
+// Restricted exclusively to authorized Super Admin
 // ─────────────────────────────────────────────────────────
 
+import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 import { useAuthStore } from '../store/auth';
 import { api } from './api';
 
 const AUTH_KEY = 'bingooo_auth_token';
 const ADMIN_ROLES = ['ADMIN', 'SUPER_ADMIN', 'admin', 'super_admin'];
+export const AUTHORIZED_SUPER_ADMIN_EMAIL = 'basaprasaduu@gmail.com';
 
-/** Initialize auth on app mount — checks for existing token */
+const supabaseUrl =
+  import.meta.env.VITE_SUPABASE_URL || 'https://zqmrmgwxhrdscippanuv.supabase.co';
+const supabaseKey =
+  import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY ||
+  'sb_publishable_fHCORRNjkuYGufRUUdvHtw_T5VFXWpl';
+
+export const supabase: SupabaseClient | null =
+  supabaseUrl && supabaseKey ? createClient(supabaseUrl, supabaseKey) : null;
+
+/** Initialize auth on app mount — checks for existing token or Supabase Google OAuth */
 export async function initAdminAuth(): Promise<void> {
-  const token = localStorage.getItem(AUTH_KEY);
-
-  // Dev admin bypass — strictly disabled in production
-  const isDevAuthAllowed = import.meta.env.DEV && (import.meta.env as any).VITE_ENABLE_DEV_AUTH === 'true';
-  if (isDevAuthAllowed && token === 'bingooo-dev-admin') {
-    useAuthStore.getState().setAuth({
-      id: 'usr-admin-1',
-      email: 'admin@bingooo.in',
-      fullName: 'Mani Prasad',
-      role: 'SUPER_ADMIN',
-    });
-    return;
+  // 1. Check Supabase Google OAuth session first
+  if (supabase) {
+    try {
+      const { data } = await supabase.auth.getSession();
+      if (data.session?.user) {
+        const userEmail = data.session.user.email?.toLowerCase();
+        if (userEmail === AUTHORIZED_SUPER_ADMIN_EMAIL) {
+          localStorage.setItem(AUTH_KEY, data.session.access_token);
+          useAuthStore.getState().setAuth({
+            id: data.session.user.id,
+            email: data.session.user.email || AUTHORIZED_SUPER_ADMIN_EMAIL,
+            fullName: data.session.user.user_metadata?.full_name || 'Mani Prasad',
+            role: 'SUPER_ADMIN',
+          });
+          return;
+        } else {
+          // Unauthorized email: immediately clear session
+          await supabase.auth.signOut();
+          localStorage.removeItem(AUTH_KEY);
+          useAuthStore.getState().logout();
+          return;
+        }
+      }
+    } catch {
+      // Fall through to stored token verification
+    }
   }
 
+  // 2. Check stored token
+  const token = localStorage.getItem(AUTH_KEY);
   if (token) {
     try {
       const user = await api.get<any>('/auth/me');
@@ -49,7 +76,7 @@ export async function initAdminAuth(): Promise<void> {
   }
 }
 
-/** Admin login */
+/** Admin login via Email and Password */
 export async function adminLogin(email: string, password: string): Promise<void> {
   const res = await api.post<{ user: any; token: string }>('/auth/login', { email, password });
 
@@ -66,19 +93,34 @@ export async function adminLogin(email: string, password: string): Promise<void>
   });
 }
 
-/** Quick dev admin bypass */
-export function loginAsDevAdmin(): void {
-  localStorage.setItem(AUTH_KEY, 'bingooo-dev-admin');
-  useAuthStore.getState().setAuth({
-    id: 'usr-admin-1',
-    email: 'admin@bingooo.in',
-    fullName: 'Mani Prasad',
-    role: 'SUPER_ADMIN',
+/** Admin login via Google OAuth */
+export async function adminGoogleLogin(): Promise<void> {
+  if (!supabase) {
+    throw new Error('Google Authentication requires Supabase configuration.');
+  }
+
+  const { data, error } = await supabase.auth.signInWithOAuth({
+    provider: 'google',
+    options: {
+      redirectTo: `${window.location.origin}/dashboard`,
+    },
   });
+
+  if (error) throw error;
+  if (data?.url) {
+    window.location.href = data.url;
+  }
 }
 
-/** Sign out */
-export function adminLogout(): void {
+/** Sign out from both backend and Supabase */
+export async function adminLogout(): Promise<void> {
+  if (supabase) {
+    try {
+      await supabase.auth.signOut();
+    } catch {
+      // Silent error on signout
+    }
+  }
   localStorage.removeItem(AUTH_KEY);
   useAuthStore.getState().logout();
 }

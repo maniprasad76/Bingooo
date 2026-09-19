@@ -636,39 +636,15 @@
   "users": [
     {
       "id": "usr-admin-1",
-      "email": "admin@bingooo.in",
-      "password_hash": "761a5f614714797131834bd1b84be483:de13a2b9265be7125e297479cf6090001b31044333bbc3b1b9d53234c822557a03916f0262076cd6463d7c964fac37f91825ad326965084a112523802f3c2fbf",
-      "full_name": "Mani P.",
+      "email": "basaprasaduu@gmail.com",
+      "password_hash": "pbkdf2$100000$30774a3a26d4dfe4942bbfded236a252$a45218459964e535d8de94ea1aba06eee27dcc58a999a8117cb67094d668b7cba85bab5e8767662443c029d7112beee5bcba64632882d033610a9d64cb46cd73",
+      "full_name": "Mani Prasad",
       "phone": "+91 98765 43210",
       "role": "SUPER_ADMIN",
       "status": "active",
       "avatar_key": null,
       "created_at": "2026-08-18T10:25:37.956Z",
-      "updated_at": "2026-09-17T10:25:37.956Z"
-    },
-    {
-      "id": "usr-staff-2",
-      "email": "siddharth@bingooo.in",
-      "password_hash": "761a5f614714797131834bd1b84be483:de13a2b9265be7125e297479cf6090001b31044333bbc3b1b9d53234c822557a03916f0262076cd6463d7c964fac37f91825ad326965084a112523802f3c2fbf",
-      "full_name": "Siddharth Rao",
-      "phone": "+91 98111 22334",
-      "role": "ORDER_MANAGER",
-      "status": "active",
-      "avatar_key": null,
-      "created_at": "2026-08-28T10:25:37.956Z",
-      "updated_at": "2026-09-17T10:25:37.956Z"
-    },
-    {
-      "id": "usr-staff-3",
-      "email": "ananya.d@bingooo.in",
-      "password_hash": "761a5f614714797131834bd1b84be483:de13a2b9265be7125e297479cf6090001b31044333bbc3b1b9d53234c822557a03916f0262076cd6463d7c964fac37f91825ad326965084a112523802f3c2fbf",
-      "full_name": "Ananya Deshmukh",
-      "phone": "+91 99200 44556",
-      "role": "PRODUCT_MANAGER",
-      "status": "active",
-      "avatar_key": null,
-      "created_at": "2026-09-02T10:25:37.956Z",
-      "updated_at": "2026-09-17T10:25:37.956Z"
+      "updated_at": "2026-09-19T08:30:00.000Z"
     },
     {
       "id": "usr-cust-1",

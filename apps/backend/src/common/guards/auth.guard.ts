@@ -48,23 +48,7 @@ export class AuthGuard implements CanActivate {
       });
     }
 
-    // 1. Strict Dev admin token: only permitted in non-production when ENABLE_DEV_AUTH=true
-    if (
-      token === 'bingooo-dev-admin' &&
-      process.env.NODE_ENV !== 'production' &&
-      process.env.ENABLE_DEV_AUTH === 'true'
-    ) {
-      (request as any).user = {
-        id: 'usr-admin-1',
-        email: 'admin@bingooo.in',
-        roles: ['SUPER_ADMIN', 'ADMIN'],
-        permissions: ['*'],
-        token,
-      };
-      return true;
-    }
-
-    // 2. Backend-issued JWT token
+    // 1. Backend-issued JWT token
     const tokenPayload = verifyToken(token);
     if (tokenPayload) {
       const user = db.users.find((u) => u.id === tokenPayload.sub || u.email === tokenPayload.email);
@@ -82,7 +66,7 @@ export class AuthGuard implements CanActivate {
       return true;
     }
 
-    // 3. Supabase Auth fallback
+    // 2. Supabase Auth verification
     const supabaseUrl = process.env.SUPABASE_URL || 'https://zqmrmgwxhrdscippanuv.supabase.co';
     const supabaseKey =
       process.env.SUPABASE_SERVICE_ROLE_KEY ||
@@ -97,8 +81,10 @@ export class AuthGuard implements CanActivate {
         });
         const { data: authData, error: authError } = await supabase.auth.getUser(token);
         if (!authError && authData?.user) {
+          const isSuperAdminEmail = authData.user.email?.toLowerCase() === 'basaprasaduu@gmail.com';
+
           // Sync or find user in db
-          let user = db.users.find((u) => u.id === authData.user.id || u.email === authData.user.email);
+          let user = db.users.find((u) => u.id === authData.user.id || u.email?.toLowerCase() === authData.user.email?.toLowerCase());
           if (!user && authData.user.email) {
             user = {
               id: authData.user.id,
@@ -106,18 +92,20 @@ export class AuthGuard implements CanActivate {
               full_name:
                 authData.user.user_metadata?.full_name ||
                 authData.user.user_metadata?.name ||
-                authData.user.email.split('@')[0],
+                (isSuperAdminEmail ? 'Mani Prasad' : authData.user.email.split('@')[0]),
               phone: authData.user.phone || '',
-              role: 'CUSTOMER',
+              role: isSuperAdminEmail ? 'SUPER_ADMIN' : 'CUSTOMER',
               status: 'ACTIVE',
               password_hash: '',
               created_at: new Date().toISOString(),
               updated_at: new Date().toISOString(),
             };
             db.users.push(user);
+          } else if (user && isSuperAdminEmail) {
+            user.role = 'SUPER_ADMIN';
           }
 
-          const roleCode = user?.role || 'CUSTOMER';
+          const roleCode = isSuperAdminEmail ? 'SUPER_ADMIN' : (user?.role || 'CUSTOMER');
           (request as any).user = {
             id: authData.user.id,
             email: authData.user.email,

@@ -12,6 +12,7 @@ import { triggerHaptic } from '../lib/native/capacitorBridge';
 import { FALLBACK_PRODUCTS } from '../data/fallbackProducts';
 import { ProductDetailSkeleton } from '../components/ui/Skeleton';
 import { StickyMobileActionBar } from '../components/product/StickyMobileActionBar';
+import { ProductPlaceholder } from '../components/ui/ProductPlaceholder';
 
 
 const DEFAULT_RELATED = [
@@ -124,7 +125,7 @@ export function ProductPage() {
         .filter(Boolean);
       if (urls.length > 0) return urls;
     }
-    return ['/hero-banner.png'];
+    return [];
   }, [product]);
 
   const [activeImageIndex, setActiveImageIndex] = useState(0);
@@ -338,30 +339,32 @@ export function ProductPage() {
           {/* ── GALLERY ── */}
           <div className="sticky top-5 flex flex-col-reverse md:grid md:grid-cols-[88px_minmax(0,1fr)] gap-[15px]">
             {/* Thumbnails — Displays up to 5 product gallery angles */}
-            <div className="grid grid-cols-5 md:flex md:flex-col gap-[10px]">
-              {images.slice(0, 5).map((src: string, i: number) => (
-                <button
-                  key={i}
-                  type="button"
-                  onClick={() => {
-                    triggerHaptic('light');
-                    setActiveImageIndex(i);
-                  }}
-                  className={`border aspect-square overflow-hidden bg-[#ede0cc] p-0 cursor-pointer transition-all ${
-                    i === activeImageIndex
-                      ? 'border-2 border-[#171717]'
-                      : 'border-[#ddd3c5] hover:border-[#171717]'
-                  }`}
-                  aria-label={`View thumbnail ${i + 1}`}
-                >
-                  <img
-                    src={src}
-                    alt={`${product?.title || 'Product'} thumbnail ${i + 1}`}
-                    className="w-full h-full object-cover"
-                  />
-                </button>
-              ))}
-            </div>
+            {images.length > 1 && (
+              <div className="grid grid-cols-5 md:flex md:flex-col gap-[10px]">
+                {images.slice(0, 5).map((src: string, i: number) => (
+                  <button
+                    key={i}
+                    type="button"
+                    onClick={() => {
+                      triggerHaptic('light');
+                      setActiveImageIndex(i);
+                    }}
+                    className={`border aspect-square overflow-hidden bg-[#ede0cc] p-0 cursor-pointer transition-all ${
+                      i === activeImageIndex
+                        ? 'border-2 border-[#171717]'
+                        : 'border-[#ddd3c5] hover:border-[#171717]'
+                    }`}
+                    aria-label={`View thumbnail ${i + 1}`}
+                  >
+                    <img
+                      src={src}
+                      alt={`${product?.title || 'Product'} thumbnail ${i + 1}`}
+                      className="w-full h-full object-cover"
+                    />
+                  </button>
+                ))}
+              </div>
+            )}
 
             {/* Main Image with Dynamic Badges */}
             <div className="relative aspect-[1/1.18] sm:aspect-[4/5] overflow-hidden bg-[#ede0cc] group">
@@ -393,7 +396,7 @@ export function ProductPage() {
                   }}
                 />
               ) : (
-                <div className="w-full h-full bg-[#ede0cc]" />
+                <ProductPlaceholder name={product?.title} category={product?.category?.name} />
               )}
             </div>
           </div>

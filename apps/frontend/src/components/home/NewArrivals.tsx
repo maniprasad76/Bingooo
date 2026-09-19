@@ -1,8 +1,9 @@
 import { useRef } from 'react';
 import { Link } from 'react-router-dom';
-import { Heart, ChevronLeft, ChevronRight, Shirt } from 'lucide-react';
+import { Heart, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useProducts } from '../../hooks/useProducts';
 import { useWishlist } from '../../hooks/useWishlist';
+import { ProductPlaceholder } from '../ui/ProductPlaceholder';
 
 export interface NewArrivalItem {
   id: string;
@@ -21,7 +22,7 @@ const DEFAULT_NEW_ARRIVALS: NewArrivalItem[] = [
     title: 'Classic Oversized Tee',
     slug: 'classic-oversized-tee',
     price: 699,
-    imageUrl: '/hero-banner.png',
+    imageUrl: '',
     colors: ['#111111', '#E8DEC8', '#B0B0B0', '#FFFFFF'],
     moreColorsCount: 2,
   },
@@ -30,7 +31,7 @@ const DEFAULT_NEW_ARRIVALS: NewArrivalItem[] = [
     title: 'Create Your Own Hoodie',
     slug: 'create-your-own-hoodie',
     price: 1299,
-    imageUrl: '/custom/tshirt-step-2.png',
+    imageUrl: '',
     colors: ['#2F3E34', '#E8DEC8', '#8C8C8C', '#DDD3C5'],
     moreColorsCount: 2,
   },
@@ -39,7 +40,7 @@ const DEFAULT_NEW_ARRIVALS: NewArrivalItem[] = [
     title: 'Minimal B Tee',
     slug: 'minimal-b-tee',
     price: 699,
-    imageUrl: '/hero-banner-5.jpg',
+    imageUrl: '',
     colors: ['#B91F12', '#111111', '#FFFFFF'],
     moreColorsCount: 1,
   },
@@ -49,7 +50,7 @@ const DEFAULT_NEW_ARRIVALS: NewArrivalItem[] = [
     slug: 'graphic-anime-hoodie',
     price: 1299,
     badge: 'BEST SELLER',
-    imageUrl: '/custom/tshirt-step-3-black.png',
+    imageUrl: '',
     colors: ['#111111', '#FFFFFF', '#8C8C8C'],
     moreColorsCount: 2,
   },
@@ -58,7 +59,7 @@ const DEFAULT_NEW_ARRIVALS: NewArrivalItem[] = [
     title: 'Textured Shirt',
     slug: 'textured-shirt',
     price: 699,
-    imageUrl: '/hero-banner-2.jpg',
+    imageUrl: '',
     colors: ['#E8DEC8', '#111111', '#FFFFFF'],
     moreColorsCount: 2,
   },
@@ -176,9 +177,7 @@ export function NewArrivals() {
                         }}
                       />
                     ) : (
-                      <div className="w-full h-full flex flex-col items-center justify-center text-[#6F6A63]/50">
-                        <Shirt size={40} strokeWidth={1.2} />
-                      </div>
+                      <ProductPlaceholder name={item.title} />
                     )}
                   </Link>
                 </div>

@@ -30,4 +30,4 @@ export {
   BINGOOO_INSTAGRAM_URL,
   getWhatsAppUrl,
 } from './SocialIcons';
-
+export { ProductPlaceholder } from './ProductPlaceholder';

@@ -220,22 +220,28 @@ export function ProductsPage() {
                       (sum, v) => sum + (v.stockQuantity ?? v.stock_quantity ?? 0),
                       0
                     ) ?? 0;
-                  const primaryImg = p.images?.[0]?.url || '/hero-banner.png';
+                  const primaryImg = p.images?.[0]?.url || '';
 
                   return (
                     <tr key={p.id} className="group">
                       {/* Product details */}
                       <td>
                         <div className="flex items-center gap-3.5">
-                          <div className="w-14 h-14 rounded-xl bg-beige/50 overflow-hidden border border-border/70 shrink-0 relative shadow-2xs group-hover:border-ink/40 transition-colors">
-                            <img
-                              src={primaryImg}
-                              alt={p.title}
-                              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                              onError={(e) => {
-                                (e.target as HTMLElement).style.display = 'none';
-                              }}
-                            />
+                          <div className="w-14 h-14 rounded-xl bg-beige/50 overflow-hidden border border-border/70 shrink-0 relative shadow-2xs group-hover:border-ink/40 transition-colors flex items-center justify-center">
+                            {primaryImg ? (
+                              <img
+                                src={primaryImg}
+                                alt={p.title}
+                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                                onError={(e) => {
+                                  (e.target as HTMLElement).style.display = 'none';
+                                }}
+                              />
+                            ) : (
+                              <span className="text-[9px] font-mono font-bold text-ink/40 tracking-wider">
+                                NO IMG
+                              </span>
+                            )}
                             {p.customization_enabled && (
                               <span className="absolute bottom-1 right-1 px-1 py-0.5 rounded text-[8px] font-mono font-black uppercase bg-brand-red text-white shadow-xs">
                                 3D

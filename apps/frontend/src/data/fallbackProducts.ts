@@ -61,10 +61,7 @@ export const FALLBACK_PRODUCTS: FallbackProduct[] = [
     care_instructions: 'Machine wash cold inside out with similar colors. Do not iron directly on print. Tumble dry low.',
     rating: 4.8,
     reviews_count: 128,
-    images: [
-      { url: '/hero-banner.png', alt_text: 'Classic Oversized Tee Front' },
-      { url: '/custom/tshirt-step-1.png', alt_text: 'Classic Oversized Tee Mockup' },
-    ],
+    images: [],
     variants: [
       { id: 'v-1-s-blk', sku: 'COT-BLK-S', size: 'S', color: 'Charcoal Black', colorHex: '#111111', inStock: true, stockQuantity: 24 },
       { id: 'v-1-m-blk', sku: 'COT-BLK-M', size: 'M', color: 'Charcoal Black', colorHex: '#111111', inStock: true, stockQuantity: 42 },
@@ -94,10 +91,7 @@ export const FALLBACK_PRODUCTS: FallbackProduct[] = [
     care_instructions: 'Hand or delicate machine wash cold. Hang dry in shade. Do not bleach.',
     rating: 4.9,
     reviews_count: 84,
-    images: [
-      { url: '/custom/tshirt-step-2.png', alt_text: 'Custom Hoodie Front' },
-      { url: '/hero-banner-2.jpg', alt_text: 'Custom Hoodie Lifestyle' },
-    ],
+    images: [],
     variants: [
       { id: 'v-2-m-grn', sku: 'CYH-GRN-M', size: 'M', color: 'Forest Pine', colorHex: '#2F3E34', inStock: true, stockQuantity: 20 },
       { id: 'v-2-l-grn', sku: 'CYH-GRN-L', size: 'L', color: 'Forest Pine', colorHex: '#2F3E34', inStock: true, stockQuantity: 15 },
@@ -125,10 +119,7 @@ export const FALLBACK_PRODUCTS: FallbackProduct[] = [
     care_instructions: 'Machine wash 30°C. Low tumble dry. Cool iron.',
     rating: 4.7,
     reviews_count: 65,
-    images: [
-      { url: '/hero-banner-5.jpg', alt_text: 'Minimal B Tee' },
-      { url: '/custom/tshirt-step-1.png', alt_text: 'Minimal B Tee Mock' },
-    ],
+    images: [],
     variants: [
       { id: 'v-3-s-red', sku: 'MBT-RED-S', size: 'S', color: 'Crimson Red', colorHex: '#B91F12', inStock: true, stockQuantity: 14 },
       { id: 'v-3-m-red', sku: 'MBT-RED-M', size: 'M', color: 'Crimson Red', colorHex: '#B91F12', inStock: true, stockQuantity: 30 },
@@ -155,10 +146,7 @@ export const FALLBACK_PRODUCTS: FallbackProduct[] = [
     care_instructions: 'Gentle cycle cold wash. Do not iron printed graphics.',
     rating: 4.9,
     reviews_count: 142,
-    images: [
-      { url: '/custom/tshirt-step-3-black.png', alt_text: 'Anime Graphic Hoodie Front' },
-      { url: '/hero-banner-4.jpg', alt_text: 'Anime Graphic Hoodie Lifestyle' },
-    ],
+    images: [],
     variants: [
       { id: 'v-4-m-blk', sku: 'AH-BLK-M', size: 'M', color: 'Onyx Black', colorHex: '#111111', inStock: true, stockQuantity: 25 },
       { id: 'v-4-l-blk', sku: 'AH-BLK-L', size: 'L', color: 'Onyx Black', colorHex: '#111111', inStock: true, stockQuantity: 19 },
@@ -184,10 +172,7 @@ export const FALLBACK_PRODUCTS: FallbackProduct[] = [
     care_instructions: 'Dry clean recommended or hand wash cold. Flat dry.',
     rating: 4.6,
     reviews_count: 53,
-    images: [
-      { url: '/hero-banner-2.jpg', alt_text: 'Textured Shirt Front' },
-      { url: '/hero-banner.png', alt_text: 'Textured Shirt Model' },
-    ],
+    images: [],
     variants: [
       { id: 'v-5-m-crm', sku: 'TS-CRM-M', size: 'M', color: 'Warm Oatmeal', colorHex: '#E8DEC8', inStock: true, stockQuantity: 22 },
       { id: 'v-5-l-crm', sku: 'TS-CRM-L', size: 'L', color: 'Warm Oatmeal', colorHex: '#E8DEC8', inStock: true, stockQuantity: 18 },
@@ -213,10 +198,7 @@ export const FALLBACK_PRODUCTS: FallbackProduct[] = [
     care_instructions: 'Machine wash 40°C. Tumble dry medium. Iron medium heat.',
     rating: 4.8,
     reviews_count: 91,
-    images: [
-      { url: '/hero-banner-3.jpg', alt_text: 'Cargo Trousers Front' },
-      { url: '/hero-banner.png', alt_text: 'Cargo Trousers Fit' },
-    ],
+    images: [],
     variants: [
       { id: 'v-6-30-olv', sku: 'TC-OLV-30', size: '30', color: 'Army Olive', colorHex: '#3D4532', inStock: true, stockQuantity: 18 },
       { id: 'v-6-32-olv', sku: 'TC-OLV-32', size: '32', color: 'Army Olive', colorHex: '#3D4532', inStock: true, stockQuantity: 24 },
@@ -243,10 +225,7 @@ export const FALLBACK_PRODUCTS: FallbackProduct[] = [
     care_instructions: 'Wash inside out in cold water after 3-6 months of wear. Hang dry.',
     rating: 4.9,
     reviews_count: 38,
-    images: [
-      { url: '/hero-banner-3.jpg', alt_text: 'Raw Selvedge Denim Front' },
-      { url: '/hero-banner-4.jpg', alt_text: 'Raw Denim Lifestyle' },
-    ],
+    images: [],
     variants: [
       { id: 'v-7-30-ind', sku: 'RSD-IND-30', size: '30', color: 'Raw Indigo', colorHex: '#1A2744', inStock: true, stockQuantity: 12 },
       { id: 'v-7-32-ind', sku: 'RSD-IND-32', size: '32', color: 'Raw Indigo', colorHex: '#1A2744', inStock: true, stockQuantity: 20 },
@@ -272,10 +251,7 @@ export const FALLBACK_PRODUCTS: FallbackProduct[] = [
     care_instructions: 'Machine wash warm. Hang dry. Steam iron.',
     rating: 4.8,
     reviews_count: 47,
-    images: [
-      { url: '/hero-banner-2.jpg', alt_text: 'Oxford Shirt Front' },
-      { url: '/hero-banner-5.jpg', alt_text: 'Oxford Shirt Side' },
-    ],
+    images: [],
     variants: [
       { id: 'v-8-m-wht', sku: 'BOS-WHT-M', size: 'M', color: 'Chalk White', colorHex: '#FDFBF7', inStock: true, stockQuantity: 18 },
       { id: 'v-8-l-wht', sku: 'BOS-WHT-L', size: 'L', color: 'Chalk White', colorHex: '#FDFBF7', inStock: true, stockQuantity: 14 },
@@ -301,10 +277,7 @@ export const FALLBACK_PRODUCTS: FallbackProduct[] = [
     care_instructions: 'Machine wash cold inside out. Tumble dry low. Do not bleach.',
     rating: 4.9,
     reviews_count: 108,
-    images: [
-      { url: '/hero-banner-4.jpg', alt_text: 'Minimalist Heavyweight Tee' },
-      { url: '/hero-banner.png', alt_text: 'Minimalist Heavyweight Tee Flat Lay' },
-    ],
+    images: [],
     variants: [
       { id: 'v-9-s-blk', sku: 'MHT-BLK-S', size: 'S', color: 'Charcoal Black', colorHex: '#111111', inStock: true, stockQuantity: 20 },
       { id: 'v-9-m-blk', sku: 'MHT-BLK-M', size: 'M', color: 'Charcoal Black', colorHex: '#111111', inStock: true, stockQuantity: 35 },
@@ -332,10 +305,7 @@ export const FALLBACK_PRODUCTS: FallbackProduct[] = [
     care_instructions: 'Machine wash cold inside out. Air dry in shade. Do not tumble dry.',
     rating: 5.0,
     reviews_count: 174,
-    images: [
-      { url: '/hero-banner-3.jpg', alt_text: 'Heavyweight Fleece Hoodie Front' },
-      { url: '/custom/tshirt-step-2.png', alt_text: 'Heavyweight Fleece Hoodie Back' },
-    ],
+    images: [],
     variants: [
       { id: 'v-10-m-blk', sku: 'HFH-BLK-M', size: 'M', color: 'Ink Black', colorHex: '#171717', inStock: true, stockQuantity: 30 },
       { id: 'v-10-l-blk', sku: 'HFH-BLK-L', size: 'L', color: 'Ink Black', colorHex: '#171717', inStock: true, stockQuantity: 25 },
@@ -363,10 +333,7 @@ export const FALLBACK_PRODUCTS: FallbackProduct[] = [
     care_instructions: 'Machine wash cold inside out. Do not iron directly on print. Hang dry.',
     rating: 4.8,
     reviews_count: 156,
-    images: [
-      { url: '/hero-banner-5.jpg', alt_text: 'Bold Signature Tee Front' },
-      { url: '/custom/tshirt-step-3-black.png', alt_text: 'Bold Signature Tee Graphic' },
-    ],
+    images: [],
     variants: [
       { id: 'v-11-s-blk', sku: 'BST-BLK-S', size: 'S', color: 'Midnight Black', colorHex: '#111111', inStock: true, stockQuantity: 22 },
       { id: 'v-11-m-blk', sku: 'BST-BLK-M', size: 'M', color: 'Midnight Black', colorHex: '#111111', inStock: true, stockQuantity: 38 },

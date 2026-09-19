@@ -7,6 +7,7 @@ import { useCart } from '../../hooks/useCart';
 
 import { QuickViewModal } from './QuickViewModal';
 import { InteractiveTilt } from '../ui/InteractiveTilt';
+import { ProductPlaceholder } from '../ui/ProductPlaceholder';
 
 export interface ProductCardProps {
   id: string;
@@ -101,7 +102,7 @@ export function ProductCard({
                   }}
                 />
               ) : (
-                <div className="w-full h-full bg-[#EDE0CC]" />
+                <ProductPlaceholder name={title} category={category?.name} />
               )}
             </Link>
 

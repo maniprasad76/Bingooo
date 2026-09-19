@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { Heart, Truck, Package, Sparkles, ShieldCheck, CheckCircle2, Mail, ArrowRight, X, ChevronLeft, ChevronRight, Maximize2 } from 'lucide-react';
 import { SEO } from '../components/common/SEO';
@@ -7,12 +7,15 @@ import { BINGOOO_INSTAGRAM_URL, BINGOOO_INSTAGRAM_HANDLE, getWhatsAppUrl, WhatsA
 import { triggerHaptic } from '../lib/native/capacitorBridge';
 import { api } from '../lib/api/client';
 import { prefetchProduct } from '../lib/utils/preloader';
+import { useProducts } from '../hooks/useProducts';
+import { ProductPlaceholder } from '../components/ui/ProductPlaceholder';
 
 interface FeaturedProduct {
   id: string;
   name: string;
   price: string;
   image: string;
+  category?: string;
   swatches: string[];
   link: string;
 }
@@ -22,7 +25,8 @@ const FEATURED_PRODUCTS: FeaturedProduct[] = [
     id: 'prod-1',
     name: 'Classic Logo Tee',
     price: '₹999',
-    image: '/hero-banner.png',
+    image: '',
+    category: 'Oversized Tees',
     swatches: ['#171717', '#ffffff', '#d9cbb8'],
     link: '/product/classic-oversized-tee',
   },
@@ -30,7 +34,8 @@ const FEATURED_PRODUCTS: FeaturedProduct[] = [
     id: 'prod-2',
     name: 'Minimal Tee',
     price: '₹1,099',
-    image: '/hero-banner-5.jpg',
+    image: '',
+    category: 'Oversized Tees',
     swatches: ['#171717', '#d9cbb8', '#ffffff'],
     link: '/product/minimalist-heavyweight-tee',
   },
@@ -38,7 +43,8 @@ const FEATURED_PRODUCTS: FeaturedProduct[] = [
     id: 'prod-3',
     name: 'Statement Hoodie',
     price: '₹1,499',
-    image: '/real-fit-1.jpg',
+    image: '',
+    category: 'Hoodies',
     swatches: ['#171717', '#8d8984', '#d9cbb8'],
     link: '/product/heavyweight-fleece-hoodie',
   },
@@ -46,7 +52,8 @@ const FEATURED_PRODUCTS: FeaturedProduct[] = [
     id: 'prod-4',
     name: 'Bold B Tee',
     price: '₹1,199',
-    image: '/real-fit-2.jpg',
+    image: '',
+    category: 'Oversized Tees',
     swatches: ['#171717', '#ffffff', '#8d8984'],
     link: '/product/bold-signature-tee',
   },
@@ -125,6 +132,37 @@ export function HomePage() {
   const [subscribed, setSubscribed] = useState(false);
   const [isSubscribing, setIsSubscribing] = useState(false);
   const [selectedFitIndex, setSelectedFitIndex] = useState<number | null>(null);
+
+  // Dynamic products from API/Admin DB (with clean fallback)
+  const productsQuery = useProducts({ limit: 4 });
+  const apiProducts = productsQuery.data?.data;
+
+  const displayFeaturedProducts = useMemo(() => {
+    if (Array.isArray(apiProducts) && apiProducts.length > 0) {
+      return apiProducts.slice(0, 4).map((p: any) => {
+        const primaryImage =
+          p.images?.[0]?.url ||
+          p.images?.[0]?.object_key ||
+          (typeof p.images?.[0] === 'string' ? p.images[0] : '') ||
+          '';
+
+        const swatches = p.variants?.length
+          ? Array.from(new Set(p.variants.map((v: any) => v.colorHex || v.color_hex).filter(Boolean))).slice(0, 3)
+          : ['#171717', '#ffffff', '#d9cbb8'];
+
+        return {
+          id: p.id,
+          name: p.title || p.name,
+          price: `₹${p.base_price || p.price || 999}`,
+          image: primaryImage,
+          category: p.category?.name || '',
+          swatches: (swatches.length ? swatches : ['#171717', '#ffffff', '#d9cbb8']) as string[],
+          link: `/product/${p.slug || p.id}`,
+        };
+      });
+    }
+    return FEATURED_PRODUCTS;
+  }, [apiProducts]);
 
   useEffect(() => {
     if (selectedFitIndex === null) return;
@@ -341,7 +379,7 @@ export function HomePage() {
 
           {/* Grid */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-[13px] sm:gap-[22px]">
-            {FEATURED_PRODUCTS.map((prod) => (
+            {displayFeaturedProducts.map((prod) => (
               <article key={prod.id} className="group flex flex-col">
                 <div className="relative aspect-[4/5] overflow-hidden bg-[#ede0cc]">
                   <button
@@ -371,7 +409,7 @@ export function HomePage() {
                         }}
                       />
                     ) : (
-                      <div className="h-full w-full bg-[#ede0cc]" />
+                      <ProductPlaceholder name={prod.name} category={prod.category} />
                     )}
                   </Link>
                 </div>

@@ -19,6 +19,7 @@ import { useToast } from '../components/ui/Toast';
 import { SEO } from '../components/common/SEO';
 import { triggerHaptic } from '../lib/native/capacitorBridge';
 import { FALLBACK_PRODUCTS } from '../data/fallbackProducts';
+import { ProductPlaceholder } from '../components/ui/ProductPlaceholder';
 
 export function WishlistPage() {
   const { wishlist, toggleWishlist, isLoading } = useWishlist();
@@ -38,7 +39,7 @@ export function WishlistPage() {
       colorHex: p.variants?.[0]?.colorHex || '#171717',
       size: p.variants?.[0]?.size || 'L',
       variantId: p.variants?.[0]?.id,
-      image: p.images?.[0]?.url || p.images?.[0]?.object_key || '/hero-banner-2.jpg',
+      image: p.images?.[0]?.url || p.images?.[0]?.object_key || '',
     }));
   }, [wishlist]);
 
@@ -254,11 +255,15 @@ export function WishlistPage() {
                   <div>
                     <div className="aspect-[4/5] bg-[#ede0cc] overflow-hidden relative rounded-[2px]">
                       <Link to={`/product/${prod.slug}`} className="block w-full h-full">
-                        <img
-                          src={prod.images?.[0]?.url || '/hero-banner-2.jpg'}
-                          alt={prod.title}
-                          className="w-full h-full object-cover grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-500"
-                        />
+                        {prod.images?.[0]?.url ? (
+                          <img
+                            src={prod.images[0].url}
+                            alt={prod.title}
+                            className="w-full h-full object-cover grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-500"
+                          />
+                        ) : (
+                          <ProductPlaceholder name={prod.title} />
+                        )}
                       </Link>
                     </div>
 
@@ -457,11 +462,15 @@ export function WishlistPage() {
                     {/* Image Canvas with Heart Button */}
                     <div className="relative aspect-[4/5] bg-[#ede0cc] overflow-hidden rounded-[2px]">
                       <Link to={`/product/${item.slug}`} className="block w-full h-full">
-                        <img
-                          src={item.image}
-                          alt={item.title}
-                          className="w-full h-full object-cover grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-500 ease-out"
-                        />
+                        {item.image ? (
+                          <img
+                            src={item.image}
+                            alt={item.title}
+                            className="w-full h-full object-cover grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-500 ease-out"
+                          />
+                        ) : (
+                          <ProductPlaceholder name={item.title} />
+                        )}
                       </Link>
 
                       <button
@@ -561,11 +570,15 @@ export function WishlistPage() {
                 <div>
                   <div className="aspect-[4/5] bg-[#ede0cc] overflow-hidden relative rounded-[2px]">
                     <Link to={`/product/${prod.slug}`} className="block w-full h-full">
-                      <img
-                        src={prod.images?.[0]?.url || '/hero-banner-2.jpg'}
-                        alt={prod.title}
-                        className="w-full h-full object-cover grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-500"
-                      />
+                      {prod.images?.[0]?.url ? (
+                        <img
+                          src={prod.images[0].url}
+                          alt={prod.title}
+                          className="w-full h-full object-cover grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-500"
+                        />
+                      ) : (
+                        <ProductPlaceholder name={prod.title} />
+                      )}
                     </Link>
                   </div>
 

@@ -9,6 +9,7 @@ import { useWishlist } from '../hooks/useWishlist';
 import { triggerHaptic } from '../lib/native/capacitorBridge';
 import { ProductCardSkeleton } from '../components/ui/Skeleton';
 import { prefetchProduct } from '../lib/utils/preloader';
+import { ProductPlaceholder } from '../components/ui/ProductPlaceholder';
 
 interface ShopProduct {
   id: string;
@@ -816,7 +817,7 @@ export function ShopPage() {
                               }}
                             />
                           ) : (
-                            <div className="w-full h-full bg-[#ede0cc]" />
+                            <ProductPlaceholder name={product.name} category={product.category} />
                           )}
                         </Link>
 

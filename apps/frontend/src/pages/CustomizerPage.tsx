@@ -1,5 +1,5 @@
-import { useState, useRef, useEffect } from 'react';
-import { motion, useMotionValue } from 'framer-motion';
+import { useState, useRef, useEffect, useCallback } from 'react';
+import { motion, useMotionValue, AnimatePresence } from 'framer-motion';
 import {
   Check,
   ArrowRight,
@@ -12,9 +12,14 @@ import {
   Bold,
   Italic,
   Move,
-  Maximize2,
   Crosshair,
   ShoppingBag,
+  RotateCw,
+  Undo2,
+  Redo2,
+  Trash2,
+  Sparkles,
+  ChevronDown,
 } from 'lucide-react';
 import { useCart } from '../hooks/useCart';
 import { useToast } from '../components/ui/Toast';
@@ -23,22 +28,18 @@ import { SEO } from '../components/common/SEO';
 import { getWhatsAppUrl, WhatsAppIcon } from '../components/ui/SocialIcons';
 
 interface ColorOption {
-  id?: string;
-  name: string;
-  hex: string;
-  textContrast: string;
-  frontImageUrl?: string;
-  backImageUrl?: string;
-  isActive?: boolean;
+  id?: string; name: string; hex: string; textContrast: string;
+  frontImageUrl?: string; backImageUrl?: string; isActive?: boolean;
 }
-
 interface GarmentType {
-  id: string;
-  name: string;
-  price: number;
-  description: string;
-  isActive?: boolean;
-  colors?: ColorOption[];
+  id: string; name: string; price: number; description: string;
+  isActive?: boolean; colors?: ColorOption[];
+}
+interface DesignSnapshot {
+  dragXVal: number; dragYVal: number; zoomScale: number; rotation: number;
+  customText: string; selectedFont: string; isBold: boolean; isItalic: boolean;
+  isUppercase: boolean; textColor: string; letterSpacing: string;
+  uploadedImage: string | null; designMode: 'upload' | 'text';
 }
 
 const COLORS: ColorOption[] = [
@@ -47,67 +48,16 @@ const COLORS: ColorOption[] = [
   { id: 'beige', name: 'Beige', hex: '#D8C8B1', textContrast: '#171717', frontImageUrl: '' },
   { id: 'red', name: 'Red', hex: '#E6321C', textContrast: '#FFFFFF', frontImageUrl: '' },
 ];
-
 const GARMENTS: GarmentType[] = [
-  {
-    id: 'tshirt',
-    name: 'T-SHIRT',
-    price: 999,
-    description: '100% Combed Cotton Classic Crewneck',
-    colors: [
-      { id: 'black', name: 'Black', hex: '#171717', textContrast: '#FFFFFF', frontImageUrl: '' },
-      { id: 'white', name: 'White', hex: '#FFFFFF', textContrast: '#171717', frontImageUrl: '' },
-      { id: 'beige', name: 'Beige', hex: '#D8C8B1', textContrast: '#171717', frontImageUrl: '' },
-      { id: 'red', name: 'Red', hex: '#E6321C', textContrast: '#FFFFFF', frontImageUrl: '' },
-    ],
-  },
-  {
-    id: 'oversized',
-    name: 'OVERSIZED',
-    price: 1299,
-    description: '240 GSM Heavyweight Drop-Shoulder Fit',
-    colors: [
-      { id: 'black', name: 'Black', hex: '#171717', textContrast: '#FFFFFF', frontImageUrl: '' },
-      { id: 'white', name: 'White', hex: '#FFFFFF', textContrast: '#171717', frontImageUrl: '' },
-      { id: 'beige', name: 'Beige', hex: '#D8C8B1', textContrast: '#171717', frontImageUrl: '' },
-      { id: 'red', name: 'Red', hex: '#E6321C', textContrast: '#FFFFFF', frontImageUrl: '' },
-    ],
-  },
-  {
-    id: 'hoodie',
-    name: 'HOODIE',
-    price: 2499,
-    description: '350 GSM Brushed Fleece Pullover Hoodie',
-    colors: [
-      { id: 'black', name: 'Black', hex: '#171717', textContrast: '#FFFFFF', frontImageUrl: '' },
-      { id: 'white', name: 'White', hex: '#FFFFFF', textContrast: '#171717', frontImageUrl: '' },
-      { id: 'beige', name: 'Beige', hex: '#D8C8B1', textContrast: '#171717', frontImageUrl: '' },
-      { id: 'red', name: 'Red', hex: '#E6321C', textContrast: '#FFFFFF', frontImageUrl: '' },
-    ],
-  },
+  { id: 'tshirt', name: 'T-SHIRT', price: 999, description: '100% Combed Cotton Classic Crewneck', colors: COLORS.map(c => ({ ...c })) },
+  { id: 'oversized', name: 'OVERSIZED', price: 1299, description: '240 GSM Heavyweight Drop-Shoulder Fit', colors: COLORS.map(c => ({ ...c })) },
+  { id: 'hoodie', name: 'HOODIE', price: 2499, description: '350 GSM Brushed Fleece Pullover Hoodie', colors: COLORS.map(c => ({ ...c })) },
 ];
-
 const SIZES = ['XS', 'S', 'M', 'L', 'XL'];
 
-// ─── 17 Curated Font Styles Across 3 Design Aesthetics ───────────────────────
-interface FontOption {
-  id: string;
-  name: string;
-  label: string;
-  family: string;
-  category: 'street' | 'luxury' | 'creative';
-  preview: string;
-}
-
-const FONT_CATEGORIES = [
-  { id: 'all', label: 'All Styles (17)' },
-  { id: 'street', label: 'Street & Cyber' },
-  { id: 'luxury', label: 'Luxury & Serif' },
-  { id: 'creative', label: 'Creative & Retro' },
-];
-
+interface FontOption { id: string; name: string; label: string; family: string; category: 'street' | 'luxury' | 'creative'; preview: string; }
+const FONT_CATEGORIES = [{ id: 'all', label: 'All' }, { id: 'street', label: 'Street' }, { id: 'luxury', label: 'Luxury' }, { id: 'creative', label: 'Creative' }];
 const FONT_OPTIONS: FontOption[] = [
-  // Street & Cyber
   { id: 'manrope', name: 'Manrope', label: 'Clean Modern', family: "'Manrope', sans-serif", category: 'street', preview: 'BINGOOO' },
   { id: 'outfit', name: 'Outfit', label: 'High-End Street', family: "'Outfit', sans-serif", category: 'street', preview: 'STREET' },
   { id: 'anton', name: 'Anton', label: 'Ultra Heavy', family: "'Anton', sans-serif", category: 'street', preview: 'HEAVY' },
@@ -115,66 +65,116 @@ const FONT_OPTIONS: FontOption[] = [
   { id: 'space', name: 'Space Grotesk', label: 'Brutalist Tech', family: "'Space Grotesk', sans-serif", category: 'street', preview: 'BRUTAL' },
   { id: 'russo', name: 'Russo One', label: 'Impact Block', family: "'Russo One', sans-serif", category: 'street', preview: 'IMPACT' },
   { id: 'bungee', name: 'Bungee', label: 'Cyber Arcade', family: "'Bungee', cursive", category: 'street', preview: 'ARCADE' },
-
-  // Luxury & Serif
   { id: 'playfair', name: 'Playfair', label: 'Vogue Editorial', family: "'Playfair Display', serif", category: 'luxury', preview: 'Atelier' },
   { id: 'cinzel', name: 'Cinzel', label: 'Royal Roman', family: "'Cinzel', serif", category: 'luxury', preview: 'IMPERIAL' },
   { id: 'prata', name: 'Prata', label: 'Haute Couture', family: "'Prata', serif", category: 'luxury', preview: 'Elegance' },
   { id: 'cormorant', name: 'Cormorant', label: 'Archival Serif', family: "'Cormorant Garamond', serif", category: 'luxury', preview: 'Archival' },
   { id: 'syne', name: 'Syne', label: 'Avant-Garde', family: "'Syne', sans-serif", category: 'luxury', preview: 'AVANT' },
-
-  // Creative & Retro
   { id: 'marker', name: 'Permanent Marker', label: 'Graffiti Tag', family: "'Permanent Marker', cursive", category: 'creative', preview: 'GRAFFITI' },
   { id: 'caveat', name: 'Caveat', label: 'Artisan Script', family: "'Caveat', cursive", category: 'creative', preview: 'Handwritten' },
   { id: 'righteous', name: 'Righteous', label: 'Retro 80s', family: "'Righteous', cursive", category: 'creative', preview: 'SYNTHWAVE' },
   { id: 'mono', name: 'Plex Mono', label: 'Technical Spec', family: "'IBM Plex Mono', monospace", category: 'creative', preview: '240_GSM' },
   { id: 'majormono', name: 'Major Mono', label: 'Glitch Monospace', family: "'Major Mono Display', monospace", category: 'creative', preview: '001//BIO' },
 ];
-
 const TEXT_COLORS = [
-  { name: 'Auto', hex: '' },
-  { name: 'White', hex: '#FFFFFF' },
-  { name: 'Charcoal', hex: '#171717' },
-  { name: 'Cream', hex: '#F7EEDB' },
-  { name: 'Sand', hex: '#D8C8B1' },
-  { name: 'Brand Red', hex: '#E6321C' },
-  { name: 'Gold', hex: '#B7791F' },
-  { name: 'Royal Navy', hex: '#1D3557' },
+  { name: 'Auto', hex: '' }, { name: 'White', hex: '#FFFFFF' }, { name: 'Charcoal', hex: '#171717' },
+  { name: 'Cream', hex: '#F7EEDB' }, { name: 'Sand', hex: '#D8C8B1' }, { name: 'Red', hex: '#E6321C' },
+  { name: 'Gold', hex: '#B7791F' }, { name: 'Navy', hex: '#1D3557' },
 ];
+const SPACING_OPTIONS = [{ label: 'Normal', value: '0.02em' }, { label: 'Wide', value: '0.12em' }, { label: 'Ultra', value: '0.28em' }];
 
-const SPACING_OPTIONS = [
-  { label: 'Normal', value: '0.02em' },
-  { label: 'Wide', value: '0.12em' },
-  { label: 'Ultra', value: '0.28em' },
-];
+function TShirtSVG({ color }: { color: string }) {
+  const isDark = color === '#171717';
+  const stroke = isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.10)';
+  const sh = isDark ? 'rgba(0,0,0,0.5)' : 'rgba(0,0,0,0.13)';
+  return (
+    <svg width="300" height="320" viewBox="0 0 200 220" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ filter: `drop-shadow(0 10px 28px ${sh})` }}>
+      <path d="M70 10 C70 10 80 28 100 28 C120 28 130 10 130 10 L162 30 L182 52 L165 68 L148 57 L148 210 L52 210 L52 57 L35 68 L18 52 L38 30 Z" fill={color} stroke={stroke} strokeWidth="1" />
+      <path d="M82 16 C86 24 94 28 100 28 C106 28 114 24 118 16" stroke={isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.07)'} strokeWidth="1" fill="none" />
+    </svg>
+  );
+}
+function OversizedSVG({ color }: { color: string }) {
+  const isDark = color === '#171717';
+  const stroke = isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.10)';
+  const sh = isDark ? 'rgba(0,0,0,0.5)' : 'rgba(0,0,0,0.13)';
+  return (
+    <svg width="310" height="320" viewBox="0 0 220 230" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ filter: `drop-shadow(0 10px 28px ${sh})` }}>
+      <path d="M74 12 C74 12 86 32 110 32 C134 32 146 12 146 12 L180 37 L202 65 L184 80 L162 67 L158 215 L62 215 L58 67 L36 80 L18 65 L40 37 Z" fill={color} stroke={stroke} strokeWidth="1" />
+      <path d="M88 18 C93 28 102 32 110 32 C118 32 127 28 132 18" stroke={isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.07)'} strokeWidth="1" fill="none" />
+    </svg>
+  );
+}
+function HoodieSVG({ color }: { color: string }) {
+  const isDark = color === '#171717';
+  const stroke = isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.10)';
+  const sh = isDark ? 'rgba(0,0,0,0.5)' : 'rgba(0,0,0,0.13)';
+  return (
+    <svg width="310" height="340" viewBox="0 0 220 250" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ filter: `drop-shadow(0 10px 28px ${sh})` }}>
+      <path d="M80 8 C75 0 62 0 58 10 C50 22 55 38 65 46 C72 30 90 28 110 28 C130 28 148 30 155 46 C165 38 170 22 162 10 C158 0 145 0 140 8 C134 4 122 2 110 2 C98 2 86 4 80 8 Z" fill={color} stroke={stroke} strokeWidth="0.8" />
+      <path d="M65 46 C58 50 42 35 20 65 L38 82 L58 68 L58 230 L162 230 L162 68 L182 82 L200 65 C178 35 162 50 155 46 C148 30 130 28 110 28 C90 28 72 30 65 46 Z" fill={color} stroke={stroke} strokeWidth="1" />
+      <rect x="78" y="148" width="64" height="36" rx="4" fill={isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.06)'} />
+      <line x1="110" y1="46" x2="110" y2="148" stroke={isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.08)'} strokeWidth="1.5" strokeDasharray="3,2" />
+      <rect x="58" y="218" width="104" height="12" rx="3" fill={isDark ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.07)'} />
+    </svg>
+  );
+}
+function GarmentSVG({ garmentId, color }: { garmentId: string; color: string }) {
+  if (garmentId === 'tshirt') return <TShirtSVG color={color} />;
+  if (garmentId === 'oversized') return <OversizedSVG color={color} />;
+  if (garmentId === 'hoodie') return <HoodieSVG color={color} />;
+  return <TShirtSVG color={color} />;
+}
 
 export function CustomizerPage() {
   const { addItem, isAdding } = useCart();
   const { toast } = useToast();
 
-  // Garment Customizer State — Synced dynamically with Admin Panel
   const [garmentsList, setGarmentsList] = useState<GarmentType[]>(GARMENTS);
-  const [selectedGarment, setSelectedGarment] = useState<GarmentType>(GARMENTS[1]); // Default Oversized
-  const [selectedColor, setSelectedColor] = useState<ColorOption>(GARMENTS[1].colors?.[0] || COLORS[0]); // Default Black
+  const [selectedGarment, setSelectedGarment] = useState<GarmentType>(GARMENTS[1]);
+  const [selectedColor, setSelectedColor] = useState<ColorOption>(GARMENTS[1].colors?.[0] || COLORS[0]);
+  const [selectedSize, setSelectedSize] = useState<string>('M');
+  const [viewSide, setViewSide] = useState<'FRONT' | 'BACK'>('FRONT');
+  const [designMode, setDesignMode] = useState<'upload' | 'text'>('upload');
+  const [uploadedImage, setUploadedImage] = useState<string | null>(null);
+  const [customText, setCustomText] = useState<string>('BINGOOO');
+  const [selectedFont, setSelectedFont] = useState<string>('manrope');
+  const [selectedFontCategory, setSelectedFontCategory] = useState<string>('all');
+  const [isBold, setIsBold] = useState<boolean>(true);
+  const [isItalic, setIsItalic] = useState<boolean>(false);
+  const [isUppercase, setIsUppercase] = useState<boolean>(true);
+  const [textColor, setTextColor] = useState<string>('');
+  const [letterSpacing, setLetterSpacing] = useState<string>('0.05em');
+  const [zoomScale, setZoomScale] = useState<number>(1.0);
+  const [rotation, setRotation] = useState<number>(0);
+  const [activePlacementTag, setActivePlacementTag] = useState<string>('CENTER');
+  const [isSizeModalOpen, setIsSizeModalOpen] = useState<boolean>(false);
+  const [isAddedFeedback, setIsAddedFeedback] = useState<boolean>(false);
+  const [activeSection, setActiveSection] = useState<string | null>('product');
+  const [history, setHistory] = useState<DesignSnapshot[]>([]);
+  const [historyIndex, setHistoryIndex] = useState<number>(-1);
+  const isApplyingHistory = useRef(false);
 
-  // Dynamically load customizer configuration (garments, custom colors & uploaded mockups from Admin)
+  const dragX = useMotionValue(0);
+  const dragY = useMotionValue(0);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const canvasRef = useRef<HTMLDivElement | null>(null);
+  const mockupRef = useRef<HTMLDivElement | null>(null);
+
+  const activeFont = FONT_OPTIONS.find(f => f.id === selectedFont) || FONT_OPTIONS[0];
+  const filteredFonts = FONT_OPTIONS.filter(f => selectedFontCategory === 'all' ? true : f.category === selectedFontCategory);
+
   useEffect(() => {
     fetch('/api/v1/customizations/studio/config')
-      .then((res) => (res.ok ? res.json() : null))
-      .then((data) => {
+      .then(res => res.ok ? res.json() : null)
+      .then(data => {
         const config = data?.data || data;
         if (config && Array.isArray(config.garments) && config.garments.length > 0) {
           setGarmentsList(config.garments);
-          setSelectedGarment((prevG) => {
-            const currentG =
-              config.garments.find((g: any) => g.id === prevG.id) || config.garments[0];
-            if (currentG.colors && currentG.colors.length > 0) {
-              setSelectedColor((prevC) => {
-                const matched =
-                  currentG.colors.find((c: any) => c.name.toLowerCase() === prevC.name.toLowerCase()) ||
-                  currentG.colors[0];
-                return matched;
-              });
+          setSelectedGarment(prevG => {
+            const currentG = config.garments.find((g: GarmentType) => g.id === prevG.id) || config.garments[0];
+            if (currentG.colors?.length > 0) {
+              setSelectedColor(prevC => currentG.colors.find((c: ColorOption) => c.name.toLowerCase() === prevC.name.toLowerCase()) || currentG.colors[0]);
             }
             return currentG;
           });
@@ -183,1303 +183,512 @@ export function CustomizerPage() {
       .catch(() => {});
   }, []);
 
+  const captureSnapshot = useCallback((): DesignSnapshot => ({
+    dragXVal: dragX.get(), dragYVal: dragY.get(), zoomScale, rotation,
+    customText, selectedFont, isBold, isItalic, isUppercase, textColor, letterSpacing,
+    uploadedImage, designMode,
+  }), [dragX, dragY, zoomScale, rotation, customText, selectedFont, isBold, isItalic, isUppercase, textColor, letterSpacing, uploadedImage, designMode]);
+
+  const pushHistory = useCallback(() => {
+    if (isApplyingHistory.current) return;
+    const snap = captureSnapshot();
+    setHistory(prev => { const trimmed = prev.slice(0, historyIndex + 1); return [...trimmed, snap].slice(-30); });
+    setHistoryIndex(i => Math.min(i + 1, 29));
+  }, [captureSnapshot, historyIndex]);
+
+  const applySnapshot = (snap: DesignSnapshot) => {
+    isApplyingHistory.current = true;
+    dragX.set(snap.dragXVal); dragY.set(snap.dragYVal);
+    setZoomScale(snap.zoomScale); setRotation(snap.rotation);
+    setCustomText(snap.customText); setSelectedFont(snap.selectedFont);
+    setIsBold(snap.isBold); setIsItalic(snap.isItalic); setIsUppercase(snap.isUppercase);
+    setTextColor(snap.textColor); setLetterSpacing(snap.letterSpacing);
+    setUploadedImage(snap.uploadedImage); setDesignMode(snap.designMode);
+    setTimeout(() => { isApplyingHistory.current = false; }, 0);
+  };
+
+  const handleUndo = () => { if (historyIndex <= 0) return; triggerHaptic('light'); const ni = historyIndex - 1; setHistoryIndex(ni); applySnapshot(history[ni]); };
+  const handleRedo = () => { if (historyIndex >= history.length - 1) return; triggerHaptic('light'); const ni = historyIndex + 1; setHistoryIndex(ni); applySnapshot(history[ni]); };
+
   const getGarmentImageSrc = (garmentId: string, colorName: string, view: 'FRONT' | 'BACK' = 'FRONT'): string => {
-    const garment = garmentsList.find((g) => g.id === garmentId);
-    if (garment?.colors && garment.colors.length > 0) {
-      const match = garment.colors.find(
-        (c) =>
-          c.name.toLowerCase() === colorName.toLowerCase() ||
-          (c.id && c.id.toLowerCase() === colorName.toLowerCase())
-      );
-      if (match) {
-        if (view === 'BACK' && match.backImageUrl) {
-          return match.backImageUrl;
-        }
-        if (match.frontImageUrl) {
-          return match.frontImageUrl;
-        }
-      }
+    const garment = garmentsList.find(g => g.id === garmentId);
+    if (garment?.colors?.length) {
+      const match = garment.colors.find(c => c.name.toLowerCase() === colorName.toLowerCase() || (c.id && c.id.toLowerCase() === colorName.toLowerCase()));
+      if (match) { if (view === 'BACK' && match.backImageUrl) return match.backImageUrl; if (match.frontImageUrl) return match.frontImageUrl; }
     }
     return '';
   };
 
-  const [selectedSize, setSelectedSize] = useState<string>('S');
-  const [viewSide, setViewSide] = useState<'FRONT' | 'BACK'>('FRONT');
-  const [activePlacementTag, setActivePlacementTag] = useState<string>('CENTER');
-
-  // Design Mode & Content State: Upload from Gallery or Custom Text
-  const [designMode, setDesignMode] = useState<'upload' | 'text'>('upload');
-  const [customText, setCustomText] = useState<string>('BINGOOO');
-  const [selectedFont, setSelectedFont] = useState<string>('manrope');
-  const [selectedFontCategory, setSelectedFontCategory] = useState<string>('all');
-
-  const [isBold, setIsBold] = useState<boolean>(true);
-  const [isItalic, setIsItalic] = useState<boolean>(false);
-  const [isUppercase, setIsUppercase] = useState<boolean>(true);
-  const [textColor, setTextColor] = useState<string>('');
-  const [letterSpacing, setLetterSpacing] = useState<string>('0.05em');
-
-  // Interactive Zoom & Scale State (from 0.4x to 2.5x)
-  const [zoomScale, setZoomScale] = useState<number>(1.0);
-
-  // Artwork State (Uploaded by user from Gallery / Photos)
-  const [uploadedImage, setUploadedImage] = useState<string | null>(null);
-
-  const [isSizeModalOpen, setIsSizeModalOpen] = useState<boolean>(false);
-  const [isAddedFeedback, setIsAddedFeedback] = useState<boolean>(false);
-
-  // Motion drag coordinates for free element placement anywhere
-  const dragX = useMotionValue(0);
-  const dragY = useMotionValue(0);
-
-  const fileInputRef = useRef<HTMLInputElement | null>(null);
-  const canvasRef = useRef<HTMLDivElement | null>(null);
-  const mockupRef = useRef<HTMLDivElement | null>(null);
-
-  // Active Font Reference
-  const activeFont = FONT_OPTIONS.find((f) => f.id === selectedFont) || FONT_OPTIONS[0];
-
-  // Filtered fonts
-  const filteredFonts = FONT_OPTIONS.filter((f) =>
-    selectedFontCategory === 'all' ? true : f.category === selectedFontCategory
-  );
-
-  // ── Two-Finger Touch Pinch Zoom Handlers with non-passive native support ──
   useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-
-    let startDistance = 0;
-    let baseZoom = 1.0;
-
-    const onTouchStart = (e: TouchEvent) => {
-      if (e.touches.length === 2) {
-        startDistance = Math.hypot(
-          e.touches[0].clientX - e.touches[1].clientX,
-          e.touches[0].clientY - e.touches[1].clientY
-        );
-        baseZoom = zoomScale;
-      }
-    };
-
-    const onTouchMove = (e: TouchEvent) => {
-      if (e.touches.length === 2 && startDistance > 0) {
-        // Prevent native browser viewport zoom on 2 fingers
-        if (e.cancelable) e.preventDefault();
-
-        const currentDist = Math.hypot(
-          e.touches[0].clientX - e.touches[1].clientX,
-          e.touches[0].clientY - e.touches[1].clientY
-        );
-        const scale = (currentDist / startDistance) * baseZoom;
-        const clampedScale = Math.min(2.5, Math.max(0.4, +scale.toFixed(2)));
-        setZoomScale(clampedScale);
-      }
-    };
-
-    const onTouchEnd = (e: TouchEvent) => {
-      if (e.touches.length < 2) {
-        startDistance = 0;
-      }
-    };
-
-    canvas.addEventListener('touchstart', onTouchStart, { passive: true });
-    canvas.addEventListener('touchmove', onTouchMove, { passive: false });
-    canvas.addEventListener('touchend', onTouchEnd, { passive: true });
-    canvas.addEventListener('touchcancel', onTouchEnd, { passive: true });
-
-    return () => {
-      canvas.removeEventListener('touchstart', onTouchStart);
-      canvas.removeEventListener('touchmove', onTouchMove);
-      canvas.removeEventListener('touchend', onTouchEnd);
-      canvas.removeEventListener('touchcancel', onTouchEnd);
-    };
+    const canvas = canvasRef.current; if (!canvas) return;
+    let startDist = 0; let baseZoom = 1.0;
+    const onStart = (e: TouchEvent) => { if (e.touches.length === 2) { startDist = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY); baseZoom = zoomScale; } };
+    const onMove = (e: TouchEvent) => { if (e.touches.length === 2 && startDist > 0) { if (e.cancelable) e.preventDefault(); const d = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY); setZoomScale(Math.min(2.5, Math.max(0.3, +((d / startDist) * baseZoom).toFixed(2)))); } };
+    const onEnd = (e: TouchEvent) => { if (e.touches.length < 2) startDist = 0; };
+    canvas.addEventListener('touchstart', onStart, { passive: true }); canvas.addEventListener('touchmove', onMove, { passive: false });
+    canvas.addEventListener('touchend', onEnd, { passive: true }); canvas.addEventListener('touchcancel', onEnd, { passive: true });
+    return () => { canvas.removeEventListener('touchstart', onStart); canvas.removeEventListener('touchmove', onMove); canvas.removeEventListener('touchend', onEnd); canvas.removeEventListener('touchcancel', onEnd); };
   }, [zoomScale]);
 
-  // ── Mouse Wheel / Trackpad Zoom ──
-  const handleWheel = (e: React.WheelEvent) => {
-    if (e.ctrlKey || e.metaKey) {
-      e.preventDefault();
-      const delta = -e.deltaY * 0.005;
-      setZoomScale((prev) => Math.min(2.5, Math.max(0.4, +(prev + delta).toFixed(2))));
-    }
-  };
+  const handleWheel = (e: React.WheelEvent) => { if (e.ctrlKey || e.metaKey) { e.preventDefault(); setZoomScale(prev => Math.min(2.5, Math.max(0.3, +(prev - e.deltaY * 0.005).toFixed(2)))); } };
+  const handleZoomIn = () => { triggerHaptic('light'); setZoomScale(z => Math.min(2.5, +(z + 0.1).toFixed(1))); };
+  const handleZoomOut = () => { triggerHaptic('light'); setZoomScale(z => Math.max(0.3, +(z - 0.1).toFixed(1))); };
+  const handleRotateCW = () => { triggerHaptic('light'); setRotation(r => (r + 15) % 360); };
+  const handleRotateCCW = () => { triggerHaptic('light'); setRotation(r => (r - 15 + 360) % 360); };
 
-  // Discrete micro-zoom actions for fast one-tap adjustment
-  const handleZoomIn = () => {
-    triggerHaptic('light');
-    setZoomScale((z) => Math.min(2.5, +(z + 0.1).toFixed(1)));
-  };
-
-  const handleZoomOut = () => {
-    triggerHaptic('light');
-    setZoomScale((z) => Math.max(0.4, +(z - 0.1).toFixed(1)));
-  };
-
-  const handleZoomReset = () => {
-    triggerHaptic('light');
-    setZoomScale(1.0);
-  };
-
-  // ── Placement Snap Presets ──
   const applyPresetPlacement = (placement: 'CENTER' | 'LEFT_CHEST' | 'BACK' | 'LOWER_HEM') => {
-    triggerHaptic('light');
-    setActivePlacementTag(placement);
-
-    if (placement === 'CENTER') {
-      dragX.set(0);
-      dragY.set(0);
-      if (viewSide === 'BACK') setViewSide('FRONT');
-    } else if (placement === 'LEFT_CHEST') {
-      dragX.set(-48);
-      dragY.set(-38);
-      if (viewSide === 'BACK') setViewSide('FRONT');
-    } else if (placement === 'BACK') {
-      dragX.set(0);
-      dragY.set(-20);
-      setViewSide('BACK');
-    } else if (placement === 'LOWER_HEM') {
-      dragX.set(45);
-      dragY.set(85);
-      if (viewSide === 'BACK') setViewSide('FRONT');
-    }
+    triggerHaptic('light'); setActivePlacementTag(placement);
+    if (placement === 'CENTER') { dragX.set(0); dragY.set(0); if (viewSide === 'BACK') setViewSide('FRONT'); }
+    else if (placement === 'LEFT_CHEST') { dragX.set(-48); dragY.set(-38); if (viewSide === 'BACK') setViewSide('FRONT'); }
+    else if (placement === 'BACK') { dragX.set(0); dragY.set(-20); setViewSide('BACK'); }
+    else if (placement === 'LOWER_HEM') { dragX.set(45); dragY.set(85); if (viewSide === 'BACK') setViewSide('FRONT'); }
+    pushHistory();
   };
 
   const handleResetPosition = () => {
-    triggerHaptic('light');
-    dragX.set(0);
-    dragY.set(0);
-    setActivePlacementTag('CENTER');
-    toast({
-      title: 'Centered on garment',
-      description: 'You can drag it anywhere on the shirt anytime.',
-      variant: 'default',
-    });
+    triggerHaptic('light'); dragX.set(0); dragY.set(0); setRotation(0); setZoomScale(1.0); setActivePlacementTag('CENTER');
+    toast({ title: 'Design reset', description: 'Centered, zoom 100%, rotation cleared.', variant: 'default' }); pushHistory();
   };
 
-  // Handle File Upload from Device / Phone Gallery
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
-
-    if (file.size > 15 * 1024 * 1024) {
-      toast({
-        title: 'File too large',
-        description: 'Please pick an image under 15MB.',
-        variant: 'danger',
-      });
-      if (fileInputRef.current) fileInputRef.current.value = '';
-      return;
-    }
-
+    const file = event.target.files?.[0]; if (!file) return;
+    if (file.size > 15 * 1024 * 1024) { toast({ title: 'File too large', description: 'Under 15MB please.', variant: 'danger' }); if (fileInputRef.current) fileInputRef.current.value = ''; return; }
     const reader = new FileReader();
-    reader.onload = (e) => {
-      const result = e.target?.result as string;
-      setUploadedImage(result);
-      setDesignMode('upload');
-      triggerHaptic('medium');
-      toast({
-        title: 'Artwork loaded from gallery!',
-        description: 'Drag anywhere to position • 2 fingers to zoom.',
-        variant: 'success',
-      });
-    };
+    reader.onload = e => { setUploadedImage(e.target?.result as string); setDesignMode('upload'); triggerHaptic('medium'); toast({ title: 'Artwork loaded!', description: 'Drag to position · pinch to zoom · rotate with controls.', variant: 'success' }); setTimeout(pushHistory, 50); };
     reader.readAsDataURL(file);
   };
 
   const handleClearArtwork = () => {
-    setUploadedImage(null);
-    if (fileInputRef.current) fileInputRef.current.value = '';
-    toast({
-      title: 'Artwork removed',
-      description: 'Upload another design from gallery or type custom text.',
-      variant: 'default',
-    });
+    setUploadedImage(null); if (fileInputRef.current) fileInputRef.current.value = '';
+    toast({ title: 'Artwork removed', description: 'Upload a new design or switch to custom text.', variant: 'default' }); setTimeout(pushHistory, 50);
   };
 
-  // Handle Add to Cart
   const handleAddToCart = () => {
-    if (!selectedSize) {
-      toast({
-        title: 'Select a size',
-        description: 'Please pick your desired size before adding to cart.',
-        variant: 'danger',
-      });
-      return;
-    }
-
+    if (!selectedSize) { toast({ title: 'Select a size', description: 'Please pick your desired size.', variant: 'danger' }); return; }
     triggerHaptic('medium');
-    const variantId = `custom-${selectedGarment.id}-${selectedColor.name.toLowerCase()}-${selectedSize.toLowerCase()}`;
-    const customId = `custom-${Date.now()}`;
-
-    addItem(variantId, 1, customId);
-    setIsAddedFeedback(true);
-
-    setTimeout(() => {
-      setIsAddedFeedback(false);
-    }, 1800);
+    addItem(`custom-${selectedGarment.id}-${selectedColor.name.toLowerCase()}-${selectedSize.toLowerCase()}`, 1, `custom-${Date.now()}`);
+    setIsAddedFeedback(true); setTimeout(() => setIsAddedFeedback(false), 2000);
   };
 
-  // Close size modal on Escape
   useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') setIsSizeModalOpen(false);
-    };
-    if (isSizeModalOpen) {
-      document.body.style.overflow = 'hidden';
-      window.addEventListener('keydown', handleKeyDown);
-    } else {
-      document.body.style.overflow = '';
-    }
-    return () => {
-      document.body.style.overflow = '';
-      window.removeEventListener('keydown', handleKeyDown);
-    };
+    const kd = (e: KeyboardEvent) => { if (e.key === 'Escape') setIsSizeModalOpen(false); };
+    if (isSizeModalOpen) { document.body.style.overflow = 'hidden'; window.addEventListener('keydown', kd); }
+    else document.body.style.overflow = '';
+    return () => { document.body.style.overflow = ''; window.removeEventListener('keydown', kd); };
   }, [isSizeModalOpen]);
+
+  const toggleSection = (id: string) => setActiveSection(prev => prev === id ? null : id);
+  const hasDesign = uploadedImage || (designMode === 'text' && customText.trim().length > 0);
+  const imageSrc = getGarmentImageSrc(selectedGarment.id, selectedColor.name, viewSide);
+  const currentStep = !hasDesign ? 2 : !selectedSize ? 3 : 4;
 
   return (
     <main className="bg-[#f7eedb] text-[#171717] font-sans antialiased pb-28 lg:pb-0">
-      <SEO
-        title="Custom Studio — BINGOOO"
-        description="Design your custom T-shirt, oversized tee or hoodie with high-definition DTF printing. Upload whatever you want from your gallery or choose custom typography with 17 fonts."
-        canonical="https://bingooo.in/customize"
-      />
+      <SEO title="Custom Studio — BINGOOO" description="Design your custom T-shirt, oversized tee or hoodie with high-definition DTF printing. Upload whatever you want from your gallery or choose custom typography with 17 fonts." canonical="https://bingooo.in/customize" />
 
-      {/* =======================================================
-           PAGE INTRO
-      ======================================================= */}
-      <section className="text-center pt-[clamp(50px,7vw,90px)] px-5 pb-[45px]">
-        <div className="text-[10px] font-semibold tracking-[0.2em] uppercase text-[#171717] mb-2.5">
-          BINGOOO CUSTOM STUDIO
+      {/* HERO */}
+      <section className="relative overflow-hidden bg-[#171717] text-white">
+        <div className="container-bingooo py-[clamp(48px,8vw,96px)] relative z-10">
+          <div className="max-w-[680px]">
+            <div className="inline-flex items-center gap-2 mb-5 px-3 py-1 rounded-full bg-white/10 border border-white/15 text-[10px] font-bold uppercase tracking-[0.2em] text-[#E6321C]">
+              <Sparkles size={10} /><span>Bingooo Custom Studio</span>
+            </div>
+            <h1 className="text-[clamp(48px,8vw,96px)] leading-[0.85] font-extrabold tracking-[-0.07em] uppercase mb-5">
+              CREATE.<br /><span className="text-[#E6321C]">CUSTOMIZE.</span><br />WEAR.
+            </h1>
+            <p className="text-[#999] text-[14px] leading-[1.75] max-w-[480px]">Upload any design or write custom text. Pick your garment, choose a color, drag anywhere — your idea, your clothes.</p>
+            <div className="flex flex-wrap gap-2 mt-6">
+              {['HD DTF Printing', 'Free Drag Placement', '17 Font Styles', '3–7 Day Delivery'].map(chip => (
+                <span key={chip} className="px-2.5 py-1 rounded-full bg-white/8 border border-white/12 text-[10px] font-semibold text-white/65">{chip}</span>
+              ))}
+            </div>
+          </div>
         </div>
-
-        <h1 className="my-2.5 sm:mb-[15px] text-[clamp(45px,7vw,88px)] leading-[0.88] font-extrabold tracking-[-0.07em] uppercase">
-          CREATE.<br />
-          CUSTOMIZE.<br />
-          WEAR.
-        </h1>
-
-        <p className="max-w-[560px] mx-auto text-[#6f6a63] text-[13px] leading-[1.7]">
-          Upload any design, photo, or logo from your gallery, or write custom text. Drag anywhere on the shirt, and use two fingers to zoom in or out.
-        </p>
+        <div className="h-[1px] bg-[#333]" />
       </section>
 
-      {/* =======================================================
-           PROGRESS STEPS
-      ======================================================= */}
-      <div className="container-bingooo">
-        <div className="max-w-[700px] mx-auto mb-[45px] flex justify-center items-center overflow-x-auto pb-1">
-          <div className="flex items-center gap-[9px] text-[9px] font-bold uppercase whitespace-nowrap">
-            <span className="w-7 h-7 rounded-full grid place-items-center bg-[#171717] text-white text-[10px]">
-              01
-            </span>
-            CHOOSE
-          </div>
-
-          <div className="w-[30px] sm:w-[65px] h-[1px] mx-2 sm:mx-3 bg-[#ddd3c5]" />
-
-          <div className={`flex items-center gap-[9px] text-[9px] font-bold uppercase whitespace-nowrap ${uploadedImage || customText ? 'text-[#171717]' : 'text-[#6f6a63]'}`}>
-            <span className={`w-7 h-7 rounded-full grid place-items-center text-[10px] ${uploadedImage || customText ? 'bg-[#171717] text-white' : 'bg-[#ede0cc] text-[#171717]'}`}>
-              02
-            </span>
-            CUSTOMIZE
-          </div>
-
-          <div className="w-[30px] sm:w-[65px] h-[1px] mx-2 sm:mx-3 bg-[#ddd3c5]" />
-
-          <div className="flex items-center gap-[9px] text-[9px] font-bold uppercase text-[#6f6a63] whitespace-nowrap">
-            <span className="w-7 h-7 rounded-full grid place-items-center bg-[#ede0cc] text-[#171717] text-[10px]">
-              03
-            </span>
-            PREVIEW
+      {/* PROGRESS BAR */}
+      <div className="sticky top-0 z-30 bg-[#f7eedb]/95 backdrop-blur-md border-b border-[#ddd3c5]">
+        <div className="container-bingooo">
+          <div className="flex items-stretch overflow-x-auto scrollbar-none">
+            {[{ n: 1, label: 'Garment' }, { n: 2, label: 'Design' }, { n: 3, label: 'Placement' }, { n: 4, label: 'Size & Order' }].map(({ n, label }) => {
+              const done = currentStep > n; const active = currentStep === n;
+              return (
+                <div key={n} className={`flex items-center gap-2 px-4 py-3 text-[10px] font-bold uppercase tracking-[0.08em] whitespace-nowrap border-b-2 transition-colors ${active ? 'border-[#E6321C] text-[#171717]' : done ? 'border-transparent text-[#E6321C]' : 'border-transparent text-[#aaa]'}`}>
+                  <span className={`w-5 h-5 rounded-full text-[9px] flex items-center justify-center font-extrabold transition-colors ${done ? 'bg-[#E6321C] text-white' : active ? 'bg-[#171717] text-white' : 'bg-[#ddd3c5] text-[#6f6a63]'}`}>
+                    {done ? <Check size={9} strokeWidth={3} /> : n}
+                  </span>
+                  {label}
+                </div>
+              );
+            })}
           </div>
         </div>
       </div>
 
-      {/* =======================================================
-           CUSTOM BUILDER
-      ======================================================= */}
-      <section className="container-bingooo grid grid-cols-1 lg:grid-cols-[1fr_450px] gap-[30px] items-start pb-[80px]">
+      {/* MAIN BUILDER */}
+      <section className="container-bingooo grid grid-cols-1 lg:grid-cols-[1fr_430px] gap-6 xl:gap-8 py-8 items-start">
 
-        {/* ── PREVIEW PANEL WITH PINCH-TO-ZOOM & DRAG-ANYWHERE CANVAS ── */}
-        <div className="flex flex-col gap-2.5">
-          <div
-            ref={canvasRef}
-            onWheel={handleWheel}
-            className="min-h-[360px] sm:min-h-[520px] lg:min-h-[690px] p-4 sm:p-[35px] bg-[#ede0cc] border border-[#ddd3c5] relative flex items-center justify-center overflow-hidden rounded-xl shadow-xs touch-pan-y select-none"
-          >
-            {/* Top Indicators */}
-            <div className="absolute top-[16px] left-4 sm:left-5 flex items-center gap-2">
-              <span className="text-[9px] font-mono font-bold tracking-[0.16em] uppercase text-[#171717]">
-                LIVE CANVAS
-              </span>
-              <span className="px-2 py-0.5 rounded-full bg-[#171717] text-[#f7eedb] text-[8px] font-bold uppercase tracking-wider flex items-center gap-1">
-                <Move size={9} />
-                Drag to place
-              </span>
-            </div>
-
-            <div className="absolute top-[16px] right-4 sm:right-5 flex items-center gap-2 z-20">
-              <button
-                type="button"
-                onClick={() => {
-                  triggerHaptic('light');
-                  setViewSide(viewSide === 'FRONT' ? 'BACK' : 'FRONT');
-                }}
-                className="px-2.5 py-1 rounded bg-[#FAF8F5]/90 border border-[#ddd3c5] text-[9px] font-bold tracking-[0.1em] text-[#171717] hover:bg-white transition-colors cursor-pointer shadow-xs flex items-center gap-1"
-              >
-                <span>{viewSide} VIEW</span>
-                <span>↻</span>
+        {/* CANVAS */}
+        <div className="flex flex-col gap-3 lg:sticky lg:top-[60px]">
+          <div ref={canvasRef} onWheel={handleWheel} className="relative min-h-[360px] sm:min-h-[500px] lg:min-h-[620px] bg-[#ede0cc] border border-[#ddd3c5] rounded-2xl overflow-hidden flex items-center justify-center touch-pan-y select-none shadow-sm">
+            <div className="absolute top-3 left-3 right-3 z-20 flex items-center justify-between">
+              <div className="flex items-center gap-1.5">
+                <span className="px-2 py-0.5 rounded-full bg-[#171717] text-[#f7eedb] text-[8px] font-bold uppercase tracking-wider">LIVE CANVAS</span>
+                <span className="px-2 py-0.5 rounded-full bg-[#FAF8F5]/80 border border-[#ddd3c5] text-[8px] font-bold uppercase text-[#171717] flex items-center gap-1"><Move size={8} /> Drag</span>
+              </div>
+              <button type="button" onClick={() => { triggerHaptic('light'); setViewSide(viewSide === 'FRONT' ? 'BACK' : 'FRONT'); }} className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-white/90 border border-[#ddd3c5] text-[9px] font-bold text-[#171717] hover:bg-white shadow-sm cursor-pointer">
+                <span>{viewSide}</span><RotateCw size={9} />
               </button>
             </div>
 
-            {/* Floating Gesture Hint Pill */}
-            <div className="absolute top-12 left-1/2 -translate-x-1/2 z-20 pointer-events-none transition-opacity">
-              <div className="flex items-center gap-1.5 sm:gap-2 bg-[#171717]/85 text-[#f7eedb] backdrop-blur-md px-3 py-1 sm:px-3.5 sm:py-1.5 rounded-full text-[9px] sm:text-[10px] font-mono tracking-wide shadow-md border border-white/10 whitespace-nowrap">
-                <span>✋ Drag anywhere</span>
-                <span className="text-[#E6321C]">•</span>
-                <span>✌️ 2 fingers zoom</span>
+            <div className="absolute top-12 inset-x-0 flex justify-center z-10 pointer-events-none">
+              <div className="flex items-center gap-1.5 bg-[#171717]/80 text-[#f7eedb] backdrop-blur-sm px-3 py-1 rounded-full text-[9px] font-mono border border-white/10 whitespace-nowrap">
+                <span>✋ Drag</span><span className="text-[#E6321C]">•</span><span>✌️ Pinch zoom</span>
               </div>
             </div>
 
-            {/* Floating On-Canvas Discrete Zoom Controls (Desktop / Tablet) */}
-            <div className="hidden sm:flex absolute bottom-4 right-4 z-20 items-center bg-[#FAF8F5]/94 backdrop-blur-md rounded-lg shadow-md border border-[#ddd3c5] p-1 gap-1">
-              <button
-                type="button"
-                onClick={handleZoomOut}
-                disabled={zoomScale <= 0.4}
-                className="w-7 h-7 flex items-center justify-center rounded hover:bg-[#ede0cc] text-[#171717] disabled:opacity-40 transition-colors cursor-pointer"
-                title="Zoom Out"
-                aria-label="Zoom Out"
-              >
-                <ZoomOut size={13} />
-              </button>
-              <span className="text-[10px] font-mono font-bold text-[#171717] px-1.5 min-w-[42px] text-center select-none">
-                {Math.round(zoomScale * 100)}%
-              </span>
-              <button
-                type="button"
-                onClick={handleZoomIn}
-                disabled={zoomScale >= 2.5}
-                className="w-7 h-7 flex items-center justify-center rounded hover:bg-[#ede0cc] text-[#171717] disabled:opacity-40 transition-colors cursor-pointer"
-                title="Zoom In"
-                aria-label="Zoom In"
-              >
-                <ZoomIn size={13} />
-              </button>
-              <div className="h-4 w-[1px] bg-[#ddd3c5] mx-0.5" />
-              <button
-                type="button"
-                onClick={handleZoomReset}
-                className="w-7 h-7 flex items-center justify-center rounded hover:bg-[#ede0cc] text-[#6f6a63] hover:text-[#171717] transition-colors cursor-pointer"
-                title="Reset Zoom (100%)"
-                aria-label="Reset Zoom"
-              >
-                <RotateCcw size={12} />
-              </button>
-              <button
-                type="button"
-                onClick={handleResetPosition}
-                className="px-2 h-7 rounded text-[9px] font-bold text-[#171717] hover:bg-[#ede0cc] transition-colors cursor-pointer flex items-center gap-1"
-                title="Center Design"
-              >
-                <Crosshair size={11} />
-                <span>Center</span>
-              </button>
-            </div>
-
-            {/* Real-Life Photorealistic Apparel Mockup Container */}
-            <div
-              ref={mockupRef}
-              className="relative w-[min(90%,500px)] aspect-square flex items-center justify-center select-none"
-            >
-              {/* Real-Life Studio Garment Photo Mockup OR Clean Vector Silhouette */}
+            <div ref={mockupRef} className="relative w-[min(85%,460px)] aspect-square flex items-center justify-center select-none">
               <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                {getGarmentImageSrc(selectedGarment.id, selectedColor.name, viewSide) ? (
-                  <img
-                    src={getGarmentImageSrc(selectedGarment.id, selectedColor.name, viewSide)}
-                    alt={`Real-life ${selectedColor.name} ${selectedGarment.name} Mockup`}
-                    className={`w-full h-full max-h-[500px] object-contain select-none transition-all duration-300 drop-shadow-[0_16px_36px_rgba(0,0,0,0.12)] ${
-                      viewSide === 'BACK' && !selectedColor.backImageUrl ? 'scale-x-[-1]' : ''
-                    }`}
-                    draggable={false}
-                  />
+                {imageSrc ? (
+                  <img src={imageSrc} alt={`${selectedColor.name} ${selectedGarment.name}`} className={`w-full h-full max-h-[460px] object-contain select-none transition-all duration-300 drop-shadow-[0_16px_40px_rgba(0,0,0,0.14)] ${viewSide === 'BACK' && !selectedColor.backImageUrl ? 'scale-x-[-1]' : ''}`} draggable={false} />
                 ) : (
-                  <div className="w-full h-full max-h-[500px]" />
-                )}
-                {/* Authentic back neckline detail when viewed from back */}
-                {viewSide === 'BACK' && getGarmentImageSrc(selectedGarment.id, selectedColor.name, viewSide) && (
-                  <div className="absolute top-[16%] inset-x-0 mx-auto w-16 h-4 rounded-b-full bg-black/10 border-b border-black/25 flex items-center justify-center pointer-events-none z-0">
-                    <span className="text-[7px] font-mono font-bold text-black/60 tracking-wider">
-                      {selectedGarment.id === 'hoodie' ? '350 GSM' : '240 GSM'}
-                    </span>
-                  </div>
+                  <div className="transition-all duration-300"><GarmentSVG garmentId={selectedGarment.id} color={selectedColor.hex} /></div>
                 )}
               </div>
-
-              {/* ── DRAGGABLE & PINCH-ZOOMABLE DESIGN ELEMENT ── */}
-              <motion.div
-                drag
-                dragConstraints={mockupRef}
-                dragElastic={0.06}
-                dragMomentum={false}
-                onDragStart={() => {
-                  triggerHaptic('light');
-                  setActivePlacementTag('CUSTOM');
-                }}
-                style={{
-                  x: dragX,
-                  y: dragY,
-                  scale: zoomScale,
-                }}
-                className="absolute z-10 flex flex-col justify-center items-center text-center origin-center cursor-grab active:cursor-grabbing group p-2 touch-none select-none"
-              >
-                {/* Subtle hover/drag guide border */}
-                <div className="absolute -inset-1.5 border border-dashed border-[#E6321C]/50 rounded-lg opacity-0 group-hover:opacity-100 group-active:opacity-100 transition-opacity pointer-events-none">
-                  <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-[#E6321C] text-white text-[7px] font-bold px-1.5 py-0.5 rounded-full uppercase tracking-wider whitespace-nowrap shadow-xs">
-                    Drag to Move
-                  </div>
+              <motion.div drag dragConstraints={mockupRef} dragElastic={0.05} dragMomentum={false} onDragStart={() => { triggerHaptic('light'); setActivePlacementTag('CUSTOM'); }} onDragEnd={() => pushHistory()} style={{ x: dragX, y: dragY, scale: zoomScale, rotate: rotation }} className="absolute z-10 flex flex-col justify-center items-center text-center origin-center cursor-grab active:cursor-grabbing group p-2 touch-none select-none">
+                <div className="absolute -inset-2 border border-dashed border-[#E6321C]/50 rounded-lg opacity-0 group-hover:opacity-100 group-active:opacity-100 transition-opacity pointer-events-none">
+                  <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 bg-[#E6321C] text-white text-[7px] font-bold px-2 py-0.5 rounded-full uppercase whitespace-nowrap">Drag</div>
                 </div>
-
                 {uploadedImage ? (
                   <div className="relative flex items-center justify-center">
-                    <img
-                      src={uploadedImage}
-                      alt="Uploaded artwork from gallery"
-                      className="max-w-[220px] max-h-[170px] sm:max-h-[210px] object-contain drop-shadow-md select-none pointer-events-none"
-                    />
-                    <button
-                      type="button"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleClearArtwork();
-                      }}
-                      className="absolute -top-3 -right-3 w-6 h-6 bg-[#171717] hover:bg-[#E6321C] text-white rounded-full text-xs font-bold flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all shadow-md cursor-pointer"
-                      title="Remove design"
-                    >
-                      ×
-                    </button>
+                    <img src={uploadedImage} alt="Uploaded artwork" className="max-w-[200px] max-h-[160px] sm:max-h-[200px] object-contain drop-shadow-lg select-none pointer-events-none" />
+                    <button type="button" onClick={e => { e.stopPropagation(); handleClearArtwork(); }} className="absolute -top-3 -right-3 w-5 h-5 bg-[#171717] hover:bg-[#E6321C] text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all shadow-md cursor-pointer"><Trash2 size={9} /></button>
                   </div>
                 ) : designMode === 'upload' ? (
-                  <div
-                    onClick={() => fileInputRef.current?.click()}
-                    className="px-4 py-3 rounded-lg border-2 border-dashed border-[#171717]/40 bg-white/50 hover:bg-white/80 transition-colors cursor-pointer flex flex-col items-center justify-center text-center shadow-xs select-none backdrop-blur-xs"
-                  >
-                    <Upload size={18} className="text-[#E6321C] mb-1" />
-                    <span className="text-[10px] font-bold uppercase text-[#171717]">
-                      Choose From Gallery
-                    </span>
-                    <span className="text-[8px] text-[#6f6a63]">
-                      Tap to upload artwork
-                    </span>
+                  <div onClick={() => fileInputRef.current?.click()} className="px-4 py-3 rounded-xl border-2 border-dashed border-[#171717]/30 bg-white/60 hover:bg-white/90 transition-colors cursor-pointer flex flex-col items-center gap-1 shadow-sm backdrop-blur-sm select-none">
+                    <Upload size={18} className="text-[#E6321C]" />
+                    <span className="text-[10px] font-bold uppercase text-[#171717]">Upload Art</span>
+                    <span className="text-[8px] text-[#6f6a63]">Tap to pick</span>
                   </div>
                 ) : (
-                  <div
-                    className="px-3 py-1 select-none leading-tight break-words text-center"
-                    style={{
-                      fontFamily: activeFont.family,
-                      fontWeight: isBold ? 800 : 500,
-                      fontStyle: isItalic ? 'italic' : 'normal',
-                      textTransform: isUppercase ? 'uppercase' : 'none',
-                      letterSpacing: letterSpacing,
-                      color: textColor || selectedColor.textContrast,
-                      fontSize: 'clamp(20px, 2.8vw, 32px)',
-                      textShadow: (textColor === '#FFFFFF' || (!textColor && selectedColor.textContrast === '#FFFFFF'))
-                        ? '0 1px 3px rgba(0,0,0,0.35)'
-                        : undefined,
-                    }}
-                  >
+                  <div className="px-3 py-1 select-none leading-tight break-words text-center" style={{ fontFamily: activeFont.family, fontWeight: isBold ? 800 : 500, fontStyle: isItalic ? 'italic' : 'normal', textTransform: isUppercase ? 'uppercase' : 'none', letterSpacing, color: textColor || selectedColor.textContrast, fontSize: 'clamp(18px, 2.6vw, 30px)', textShadow: (textColor === '#FFFFFF' || (!textColor && selectedColor.textContrast === '#FFFFFF')) ? '0 1px 4px rgba(0,0,0,0.4)' : undefined }}>
                     {customText || 'BINGOOO'}
                   </div>
                 )}
               </motion.div>
             </div>
+
+            {/* Desktop controls */}
+            <div className="hidden sm:flex absolute bottom-3 right-3 z-20 items-center bg-white/95 backdrop-blur-md rounded-xl shadow-sm border border-[#ddd3c5] p-1.5 gap-1">
+              <button type="button" onClick={handleZoomOut} disabled={zoomScale <= 0.3} className="w-7 h-7 flex items-center justify-center rounded-lg hover:bg-[#ede0cc] text-[#171717] disabled:opacity-30 cursor-pointer" aria-label="Zoom Out"><ZoomOut size={12} /></button>
+              <span className="text-[10px] font-mono font-bold px-1 min-w-[36px] text-center">{Math.round(zoomScale * 100)}%</span>
+              <button type="button" onClick={handleZoomIn} disabled={zoomScale >= 2.5} className="w-7 h-7 flex items-center justify-center rounded-lg hover:bg-[#ede0cc] text-[#171717] disabled:opacity-30 cursor-pointer" aria-label="Zoom In"><ZoomIn size={12} /></button>
+              <div className="h-4 w-[1px] bg-[#ddd3c5] mx-0.5" />
+              <button type="button" onClick={handleRotateCCW} className="w-7 h-7 flex items-center justify-center rounded-lg hover:bg-[#ede0cc] cursor-pointer" aria-label="Rotate CCW"><RotateCcw size={12} /></button>
+              <span className="text-[10px] font-mono font-bold px-1 min-w-[28px] text-center">{rotation}°</span>
+              <button type="button" onClick={handleRotateCW} className="w-7 h-7 flex items-center justify-center rounded-lg hover:bg-[#ede0cc] cursor-pointer" aria-label="Rotate CW"><RotateCw size={12} /></button>
+              <div className="h-4 w-[1px] bg-[#ddd3c5] mx-0.5" />
+              <button type="button" onClick={handleResetPosition} className="px-2 h-7 rounded-lg text-[9px] font-bold hover:bg-[#ede0cc] cursor-pointer flex items-center gap-1"><Crosshair size={10} /><span>Reset</span></button>
+            </div>
+            <div className="hidden sm:flex absolute bottom-3 left-3 z-20 gap-1">
+              <button type="button" onClick={handleUndo} disabled={historyIndex <= 0} className="w-7 h-7 flex items-center justify-center rounded-lg bg-white/90 border border-[#ddd3c5] hover:bg-[#ede0cc] disabled:opacity-30 cursor-pointer shadow-sm" title="Undo"><Undo2 size={12} /></button>
+              <button type="button" onClick={handleRedo} disabled={historyIndex >= history.length - 1} className="w-7 h-7 flex items-center justify-center rounded-lg bg-white/90 border border-[#ddd3c5] hover:bg-[#ede0cc] disabled:opacity-30 cursor-pointer shadow-sm" title="Redo"><Redo2 size={12} /></button>
+            </div>
           </div>
 
-          {/* Mobile Quick Action Strip (Easy 1-thumb touch controls on phone) */}
-          <div className="sm:hidden flex items-center justify-between gap-1.5 p-2 bg-[#FAF8F5] border border-[#ddd3c5] rounded-lg shadow-xs">
-            <div className="flex items-center gap-1">
-              <button
-                type="button"
-                onClick={handleZoomOut}
-                disabled={zoomScale <= 0.4}
-                className="w-8 h-8 rounded border border-[#ddd3c5] bg-white flex items-center justify-center text-[#171717] active:bg-[#ede0cc] disabled:opacity-40 cursor-pointer shadow-xs"
-                title="Zoom Out"
-                aria-label="Zoom Out"
-              >
-                <ZoomOut size={13} />
-              </button>
-              <span className="font-mono text-[10px] font-bold text-center min-w-[38px] select-none">
-                {Math.round(zoomScale * 100)}%
-              </span>
-              <button
-                type="button"
-                onClick={handleZoomIn}
-                disabled={zoomScale >= 2.5}
-                className="w-8 h-8 rounded border border-[#ddd3c5] bg-white flex items-center justify-center text-[#171717] active:bg-[#ede0cc] disabled:opacity-40 cursor-pointer shadow-xs"
-                title="Zoom In"
-                aria-label="Zoom In"
-              >
-                <ZoomIn size={13} />
-              </button>
-              <button
-                type="button"
-                onClick={handleZoomReset}
-                className="h-8 px-2 rounded border border-[#ddd3c5] bg-white text-[9px] font-bold text-[#6f6a63] active:text-[#171717] cursor-pointer shadow-xs"
-              >
-                100%
-              </button>
+          {/* Mobile quick bar */}
+          <div className="sm:hidden flex flex-wrap items-center justify-between gap-2 p-2.5 bg-white border border-[#ddd3c5] rounded-xl shadow-sm">
+            <div className="flex gap-1">
+              <button type="button" onClick={handleUndo} disabled={historyIndex <= 0} className="w-8 h-8 rounded-lg border border-[#ddd3c5] bg-[#f7eedb] flex items-center justify-center disabled:opacity-30 cursor-pointer" aria-label="Undo"><Undo2 size={13} /></button>
+              <button type="button" onClick={handleRedo} disabled={historyIndex >= history.length - 1} className="w-8 h-8 rounded-lg border border-[#ddd3c5] bg-[#f7eedb] flex items-center justify-center disabled:opacity-30 cursor-pointer" aria-label="Redo"><Redo2 size={13} /></button>
             </div>
+            <div className="flex items-center gap-1">
+              <button type="button" onClick={handleZoomOut} disabled={zoomScale <= 0.3} className="w-8 h-8 rounded-lg border border-[#ddd3c5] bg-white flex items-center justify-center disabled:opacity-30 cursor-pointer" aria-label="Zoom Out"><ZoomOut size={13} /></button>
+              <span className="font-mono text-[10px] font-bold min-w-[34px] text-center">{Math.round(zoomScale * 100)}%</span>
+              <button type="button" onClick={handleZoomIn} disabled={zoomScale >= 2.5} className="w-8 h-8 rounded-lg border border-[#ddd3c5] bg-white flex items-center justify-center disabled:opacity-30 cursor-pointer" aria-label="Zoom In"><ZoomIn size={13} /></button>
+            </div>
+            <div className="flex items-center gap-1">
+              <button type="button" onClick={handleRotateCCW} className="w-8 h-8 rounded-lg border border-[#ddd3c5] bg-white flex items-center justify-center cursor-pointer" aria-label="Rotate CCW"><RotateCcw size={13} /></button>
+              <span className="font-mono text-[10px] font-bold min-w-[26px] text-center">{rotation}°</span>
+              <button type="button" onClick={handleRotateCW} className="w-8 h-8 rounded-lg border border-[#ddd3c5] bg-white flex items-center justify-center cursor-pointer" aria-label="Rotate CW"><RotateCw size={13} /></button>
+            </div>
+            <button type="button" onClick={() => { triggerHaptic('light'); setViewSide(viewSide === 'FRONT' ? 'BACK' : 'FRONT'); }} className="h-8 px-3 rounded-lg bg-[#171717] text-white text-[9px] font-bold flex items-center gap-1 cursor-pointer">{viewSide === 'FRONT' ? 'Back ↻' : 'Front ↻'}</button>
+          </div>
 
-            <div className="flex items-center gap-1">
-              <button
-                type="button"
-                onClick={handleResetPosition}
-                className="h-8 px-2 rounded border border-[#ddd3c5] bg-white text-[9px] font-bold text-[#171717] flex items-center gap-1 active:bg-[#ede0cc] cursor-pointer shadow-xs"
-                title="Center Design"
-              >
-                <Crosshair size={11} />
-                <span>Center</span>
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  triggerHaptic('light');
-                  setViewSide(viewSide === 'FRONT' ? 'BACK' : 'FRONT');
-                }}
-                className="h-8 px-2.5 rounded bg-[#171717] text-white text-[9px] font-bold flex items-center gap-1 active:bg-black cursor-pointer shadow-xs"
-              >
-                <span>{viewSide === 'FRONT' ? 'Back ↻' : 'Front ↻'}</span>
-              </button>
-            </div>
+          <div className="p-3.5 bg-white border border-[#ddd3c5] rounded-xl text-[10px] text-[#6f6a63] flex items-start gap-2.5 shadow-sm">
+            <span className="text-base shrink-0">✨</span>
+            <span><strong className="text-[#171717]">High-Definition DTF Printing.</strong> Your artwork will be printed with vivid, durable direct-to-film colors permanently onto the garment fabric.</span>
           </div>
         </div>
 
-        {/* ── CONTROLS PANEL ── */}
-        <aside className="bg-white border border-[#ddd3c5] rounded-[12px] p-5 sm:p-[25px] shadow-xs">
+        {/* CONTROLS PANEL */}
+        <aside className="flex flex-col gap-0 border border-[#ddd3c5] rounded-2xl bg-white shadow-sm overflow-hidden">
 
-          {/* 01 / Choose Product */}
-          <div className="pb-[25px] mb-[25px] border-b border-[#ddd3c5]">
-            <div className="flex justify-between items-center mb-[13px] text-[11px] font-bold uppercase">
-              <span>01 / Choose Product</span>
-            </div>
-
-            <div className="grid grid-cols-3 gap-2">
-              {garmentsList.map((garment) => (
-                <button
-                  key={garment.id}
-                  type="button"
-                  onClick={() => {
-                    triggerHaptic('light');
-                    setSelectedGarment(garment);
-                    const garmentColors = garment.colors && garment.colors.length > 0 ? garment.colors : COLORS;
-                    const matched =
-                      garmentColors.find((c) => c.name.toLowerCase() === selectedColor.name.toLowerCase()) ||
-                      garmentColors[0];
-                    if (matched) setSelectedColor(matched);
-                  }}
-                  className={`border bg-[#f7eedb] p-2 sm:p-2.5 text-center transition-all cursor-pointer ${
-                    selectedGarment.id === garment.id
-                      ? 'border-2 border-[#171717]'
-                      : 'border-[#ddd3c5] hover:border-[#171717]'
-                  }`}
-                >
-                  <div className="h-[70px] sm:h-[90px] flex justify-center items-center p-1">
-                    {getGarmentImageSrc(garment.id, selectedColor.name) ? (
-                      <img
-                        src={getGarmentImageSrc(garment.id, selectedColor.name)}
-                        alt={garment.name}
-                        className="max-h-full max-w-full object-contain drop-shadow-xs transition-transform duration-200"
-                        draggable={false}
-                      />
-                    ) : (
-                      <div className="w-full h-full" />
-                    )}
-                  </div>
-                  <div className="text-[10px] font-bold tracking-[0.05em] uppercase mt-1">
-                    {garment.name}
-                  </div>
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* 02 / Design & Artwork (Upload From Gallery or Custom Text) */}
-          <div className="pb-[25px] mb-[25px] border-b border-[#ddd3c5]">
-            <div className="flex justify-between items-center mb-3 text-[11px] font-bold uppercase">
-              <span>02 / Design & Artwork</span>
-              <span className="text-[#e6321c] font-mono text-[10px]">
-                {designMode === 'upload' ? (uploadedImage ? 'GALLERY ARTWORK LOADED' : 'UPLOAD FROM GALLERY') : 'CUSTOM TEXT'}
-              </span>
-            </div>
-
-            {/* Design Mode Selector Tabs */}
-            <div className="grid grid-cols-2 gap-1.5 p-1 bg-[#ede0cc] rounded-lg mb-4 text-center">
-              <button
-                type="button"
-                onClick={() => {
-                  triggerHaptic('light');
-                  setDesignMode('upload');
-                }}
-                className={`py-2 px-2 text-[10px] font-bold uppercase rounded transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
-                  designMode === 'upload'
-                    ? 'bg-white text-[#171717] shadow-xs'
-                    : 'text-[#6f6a63] hover:text-[#171717]'
-                }`}
-              >
-                <Upload size={13} />
-                <span>Upload From Gallery</span>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => {
-                  triggerHaptic('light');
-                  setDesignMode('text');
-                }}
-                className={`py-2 px-2 text-[10px] font-bold uppercase rounded transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
-                  designMode === 'text'
-                    ? 'bg-white text-[#171717] shadow-xs'
-                    : 'text-[#6f6a63] hover:text-[#171717]'
-                }`}
-              >
-                <Type size={13} />
-                <span>Custom Text / Font</span>
-              </button>
-            </div>
-
-            {/* ── SUB-PANEL: UPLOAD FROM GALLERY ── */}
-            {designMode === 'upload' && (
-              <div className="space-y-3">
-                <div
-                  onClick={() => fileInputRef.current?.click()}
-                  className={`border-2 border-dashed rounded-xl p-5 text-center transition-all cursor-pointer ${
-                    uploadedImage
-                      ? 'border-[#171717] bg-[#FAF8F5]'
-                      : 'border-[#bdb3a4] bg-[#faf7f0] hover:border-[#171717] hover:bg-white'
-                  }`}
-                >
-                  {uploadedImage ? (
-                    <div className="flex flex-col items-center">
-                      <div className="w-20 h-20 rounded-lg border border-[#ddd3c5] bg-white p-1 mb-2.5 flex items-center justify-center overflow-hidden shadow-xs">
-                        <img
-                          src={uploadedImage}
-                          alt="Uploaded artwork"
-                          className="max-h-full max-w-full object-contain"
-                        />
-                      </div>
-                      <span className="text-[11px] font-bold text-[#171717] uppercase tracking-wide mb-1">
-                        Artwork Placed on Garment
-                      </span>
-                      <p className="text-[9px] text-[#6f6a63] max-w-[280px] mb-3">
-                        Drag anywhere on the shirt to adjust placement • Pinch with 2 fingers to zoom
-                      </p>
-                      <div className="flex gap-2">
-                        <button
-                          type="button"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            fileInputRef.current?.click();
-                          }}
-                          className="px-3.5 py-1.5 rounded bg-[#171717] text-white text-[9px] font-bold uppercase hover:bg-black transition-colors cursor-pointer shadow-xs"
-                        >
-                          Change Image
-                        </button>
-                        <button
-                          type="button"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleClearArtwork();
-                          }}
-                          className="px-3.5 py-1.5 rounded border border-[#ddd3c5] bg-white text-[#171717] text-[9px] font-bold uppercase hover:border-[#E6321C] hover:text-[#E6321C] transition-colors cursor-pointer shadow-xs"
-                        >
-                          Remove
-                        </button>
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="flex flex-col items-center">
-                      <div className="w-12 h-12 rounded-full bg-[#ede0cc] flex items-center justify-center text-[#171717] mb-2.5">
-                        <ImageIcon size={22} className="text-[#E6321C]" />
-                      </div>
-                      <strong className="block text-[12px] font-extrabold uppercase tracking-wide text-[#171717] mb-1">
-                        Upload Your Own Design
-                      </strong>
-                      <p className="text-[#6f6a63] text-[10px] max-w-[300px] mb-3 leading-relaxed">
-                        Pick any artwork, photo, anime graphic, or logo from your phone gallery or computer.
-                      </p>
-                      <button
-                        type="button"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          fileInputRef.current?.click();
-                        }}
-                        className="px-5 py-2.5 rounded-lg bg-[#E6321C] text-white text-[10px] font-bold uppercase hover:bg-[#b91f12] active:scale-[0.98] transition-all flex items-center gap-1.5 shadow-md cursor-pointer"
-                      >
-                        <Upload size={13} />
-                        <span>Choose From Gallery / Photos</span>
-                      </button>
-                      <span className="text-[8px] font-mono text-[#8a847b] mt-2.5">
-                        PNG (transparent recommended), JPG, WEBP, SVG • Max 15MB
-                      </span>
-                    </div>
-                  )}
-
-                  <input
-                    ref={fileInputRef}
-                    type="file"
-                    accept="image/png,image/jpeg,image/webp,image/svg+xml,image/*"
-                    onChange={handleFileChange}
-                    className="hidden"
-                  />
-                </div>
-
-                <div className="p-2.5 bg-[#f7eedb] rounded-lg border border-[#ddd3c5] text-[9px] text-[#6f6a63] flex items-center gap-2">
-                  <span className="text-base">✨</span>
-                  <span><strong>High-Definition DTF Printing:</strong> Your artwork will be printed with vivid, durable direct-to-film colors directly onto the garment.</span>
-                </div>
+          {/* 01 Garment */}
+          <div className="border-b border-[#ddd3c5]">
+            <button type="button" onClick={() => toggleSection('product')} className="w-full flex items-center justify-between p-5 text-left hover:bg-[#faf8f5] transition-colors cursor-pointer">
+              <div className="flex items-center gap-3">
+                <span className={`w-6 h-6 rounded-full text-[9px] font-extrabold flex items-center justify-center ${currentStep > 1 ? 'bg-[#E6321C] text-white' : 'bg-[#171717] text-white'}`}>{currentStep > 1 ? <Check size={9} strokeWidth={3} /> : '01'}</span>
+                <div><div className="text-[11px] font-bold uppercase tracking-wider">Choose Product</div><div className="text-[10px] text-[#6f6a63] mt-0.5">{selectedGarment.name} · {selectedColor.name}</div></div>
               </div>
-            )}
-
-            {/* ── SUB-PANEL: TYPE CUSTOM TEXT & EXPANDED 17 FONT STYLES ── */}
-            {designMode === 'text' && (
-              <div className="space-y-4">
-                {/* Text Input */}
-                <div>
-                  <label className="block text-[10px] font-bold uppercase tracking-wider text-[#6f6a63] mb-1.5">
-                    Your Text / Slogan
-                  </label>
-                  <input
-                    type="text"
-                    value={customText}
-                    onChange={(e) => setCustomText(isUppercase ? e.target.value.toUpperCase() : e.target.value)}
-                    placeholder="E.G. BINGOOO"
-                    maxLength={24}
-                    className="w-full h-9 px-3 bg-[#faf7f0] border border-[#ddd3c5] rounded-md text-xs font-bold outline-none focus:border-[#171717] transition-colors"
-                  />
-                </div>
-
-                {/* Font Category Filter Pills */}
-                <div>
-                  <div className="flex justify-between items-center mb-1.5">
-                    <label className="text-[10px] font-bold uppercase tracking-wider text-[#6f6a63]">
-                      Select Font Style
-                    </label>
-                    <span className="text-[9px] font-mono text-[#E6321C]">
-                      {filteredFonts.length} FONTS
-                    </span>
-                  </div>
-
-                  <div className="flex gap-1 overflow-x-auto pb-1.5 mb-2 scrollbar-none">
-                    {FONT_CATEGORIES.map((cat) => (
-                      <button
-                        key={cat.id}
-                        type="button"
-                        onClick={() => setSelectedFontCategory(cat.id)}
-                        className={`px-2.5 py-1 rounded-full text-[9px] font-bold uppercase whitespace-nowrap transition-all cursor-pointer ${
-                          selectedFontCategory === cat.id
-                            ? 'bg-[#171717] text-white'
-                            : 'bg-[#ede0cc] text-[#6f6a63] hover:text-[#171717]'
-                        }`}
-                      >
-                        {cat.label}
-                      </button>
-                    ))}
-                  </div>
-
-                  {/* Font Style Grid */}
-                  <div className="grid grid-cols-2 gap-1.5 max-h-[220px] overflow-y-auto pr-1">
-                    {filteredFonts.map((font) => (
-                      <button
-                        key={font.id}
-                        type="button"
-                        onClick={() => {
-                          triggerHaptic('light');
-                          setSelectedFont(font.id);
-                        }}
-                        className={`p-2 rounded border text-left transition-all cursor-pointer flex flex-col justify-between ${
-                          selectedFont === font.id
-                            ? 'border-2 border-[#171717] bg-[#f7eedb]'
-                            : 'border-[#ddd3c5] bg-white hover:border-[#171717]'
-                        }`}
-                      >
-                        <span
-                          className="text-sm truncate select-none block"
-                          style={{ fontFamily: font.family }}
-                        >
-                          {font.preview}
-                        </span>
-                        <div className="flex items-center justify-between mt-1">
-                          <span className="text-[9px] font-bold uppercase tracking-wider text-[#171717]">
-                            {font.name}
-                          </span>
-                          <span className="text-[8px] text-[#6f6a63]">
-                            {font.label}
-                          </span>
-                        </div>
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Typography Controls (Bold, Italic, All-Caps, Spacing) */}
-                <div className="grid grid-cols-2 gap-2 pt-1">
-                  <div>
-                    <span className="block text-[9px] font-bold uppercase text-[#6f6a63] mb-1">Style</span>
-                    <div className="flex gap-1">
-                      <button
-                        type="button"
-                        onClick={() => setIsBold(!isBold)}
-                        className={`w-8 h-7 rounded text-xs font-black border transition-all cursor-pointer flex items-center justify-center ${
-                          isBold ? 'bg-[#171717] text-white border-[#171717]' : 'border-[#ddd3c5] text-[#171717]'
-                        }`}
-                        title="Bold"
-                      >
-                        <Bold size={12} />
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setIsItalic(!isItalic)}
-                        className={`w-8 h-7 rounded text-xs font-serif italic border transition-all cursor-pointer flex items-center justify-center ${
-                          isItalic ? 'bg-[#171717] text-white border-[#171717]' : 'border-[#ddd3c5] text-[#171717]'
-                        }`}
-                        title="Italic"
-                      >
-                        <Italic size={12} />
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          const next = !isUppercase;
-                          setIsUppercase(next);
-                          if (next) setCustomText((t) => t.toUpperCase());
-                        }}
-                        className={`px-2 h-7 rounded text-[10px] font-bold border transition-all cursor-pointer ${
-                          isUppercase ? 'bg-[#171717] text-white border-[#171717]' : 'border-[#ddd3c5] text-[#171717]'
-                        }`}
-                        title="Uppercase"
-                      >
-                        AA
-                      </button>
-                    </div>
-                  </div>
-
-                  <div>
-                    <span className="block text-[9px] font-bold uppercase text-[#6f6a63] mb-1">Letter Spacing</span>
-                    <div className="flex gap-1">
-                      {SPACING_OPTIONS.map((opt) => (
-                        <button
-                          key={opt.label}
-                          type="button"
-                          onClick={() => setLetterSpacing(opt.value)}
-                          className={`flex-1 h-7 rounded text-[9px] font-bold uppercase border transition-all cursor-pointer ${
-                            letterSpacing === opt.value
-                              ? 'bg-[#171717] text-white border-[#171717]'
-                              : 'border-[#ddd3c5] text-[#6f6a63]'
-                          }`}
-                        >
-                          {opt.label}
+              <ChevronDown size={14} className={`text-[#6f6a63] transition-transform ${activeSection === 'product' ? 'rotate-180' : ''}`} />
+            </button>
+            <AnimatePresence initial={false}>
+              {activeSection === 'product' && (
+                <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.22 }} style={{ overflow: 'hidden' }}>
+                  <div className="px-5 pb-5 space-y-4">
+                    <div className="grid grid-cols-3 gap-2">
+                      {garmentsList.map(garment => (
+                        <button key={garment.id} type="button" onClick={() => { triggerHaptic('light'); setSelectedGarment(garment); const gc = garment.colors?.length ? garment.colors : COLORS; const m = gc.find(c => c.name.toLowerCase() === selectedColor.name.toLowerCase()) || gc[0]; if (m) setSelectedColor(m); }} className={`border rounded-xl p-2.5 text-center transition-all cursor-pointer ${selectedGarment.id === garment.id ? 'border-2 border-[#171717] bg-[#f7eedb]' : 'border-[#ddd3c5] hover:border-[#171717]'}`}>
+                          <div className="h-[72px] flex justify-center items-center overflow-hidden">
+                            {getGarmentImageSrc(garment.id, selectedColor.name) ? (
+                              <img src={getGarmentImageSrc(garment.id, selectedColor.name)} alt={garment.name} className="max-h-full max-w-full object-contain" draggable={false} />
+                            ) : (
+                              <div style={{ transform: 'scale(0.22)', transformOrigin: 'center', width: 80, height: 70 }}><GarmentSVG garmentId={garment.id} color={selectedColor.hex} /></div>
+                            )}
+                          </div>
+                          <div className="text-[10px] font-bold tracking-[0.04em] uppercase mt-1">{garment.name}</div>
+                          <div className="text-[9px] text-[#E6321C] font-bold mt-0.5">₹{garment.price.toLocaleString('en-IN')}</div>
                         </button>
                       ))}
                     </div>
+                    <p className="text-[10px] text-[#6f6a63]">{selectedGarment.description}</p>
+                    <div>
+                      <div className="flex justify-between items-center mb-2 text-[10px] font-bold uppercase"><span>Color</span><span className="text-[#6f6a63] font-normal">{selectedColor.name}</span></div>
+                      <div className="flex flex-wrap gap-2.5">
+                        {(selectedGarment.colors?.length ? selectedGarment.colors : COLORS).map(color => (
+                          <button key={color.id || color.name} type="button" onClick={() => { triggerHaptic('light'); setSelectedColor(color); }} className={`w-8 h-8 rounded-full transition-all cursor-pointer ${selectedColor.name.toLowerCase() === color.name.toLowerCase() ? 'shadow-[0_0_0_2px_#f7eedb,0_0_0_3.5px_#171717]' : 'hover:scale-110'}`} style={{ backgroundColor: color.hex, border: color.hex.toLowerCase() === '#ffffff' ? '1.5px solid #cfc7bb' : 'none' }} title={color.name} aria-label={color.name} />
+                        ))}
+                      </div>
+                    </div>
                   </div>
-                </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
 
-                {/* Text Color Swatches */}
-                <div>
-                  <span className="block text-[9px] font-bold uppercase text-[#6f6a63] mb-1.5">Print Color</span>
-                  <div className="flex flex-wrap gap-1.5">
-                    {TEXT_COLORS.map((col) => (
-                      <button
-                        key={col.name}
-                        type="button"
-                        onClick={() => {
-                          triggerHaptic('light');
-                          setTextColor(col.hex);
-                        }}
-                        className={`px-2 py-1 rounded text-[9px] font-bold uppercase border transition-all cursor-pointer flex items-center gap-1 ${
-                          textColor === col.hex
-                            ? 'border-2 border-[#171717] bg-[#f7eedb] text-[#171717]'
-                            : 'border-[#ddd3c5] bg-white text-[#6f6a63]'
-                        }`}
-                      >
-                        {col.hex && (
-                          <span
-                            className="w-2.5 h-2.5 rounded-full border border-black/20"
-                            style={{ backgroundColor: col.hex }}
-                          />
+          {/* 02 Design */}
+          <div className="border-b border-[#ddd3c5]">
+            <button type="button" onClick={() => toggleSection('design')} className="w-full flex items-center justify-between p-5 text-left hover:bg-[#faf8f5] transition-colors cursor-pointer">
+              <div className="flex items-center gap-3">
+                <span className={`w-6 h-6 rounded-full text-[9px] font-extrabold flex items-center justify-center ${hasDesign ? 'bg-[#E6321C] text-white' : 'bg-[#ddd3c5] text-[#6f6a63]'}`}>{hasDesign ? <Check size={9} strokeWidth={3} /> : '02'}</span>
+                <div><div className="text-[11px] font-bold uppercase tracking-wider">Design & Artwork</div><div className="text-[10px] text-[#6f6a63] mt-0.5">{uploadedImage ? 'Gallery artwork loaded' : designMode === 'text' && customText ? `"${customText.slice(0, 14)}"` : 'Upload or type custom text'}</div></div>
+              </div>
+              <ChevronDown size={14} className={`text-[#6f6a63] transition-transform ${activeSection === 'design' ? 'rotate-180' : ''}`} />
+            </button>
+            <AnimatePresence initial={false}>
+              {activeSection === 'design' && (
+                <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.22 }} style={{ overflow: 'hidden' }}>
+                  <div className="px-5 pb-5 space-y-4">
+                    <div className="grid grid-cols-2 gap-1 p-1 bg-[#ede0cc] rounded-xl">
+                      {[{ mode: 'upload' as const, icon: <Upload size={12} />, label: 'Upload' }, { mode: 'text' as const, icon: <Type size={12} />, label: 'Custom Text' }].map(({ mode, icon, label }) => (
+                        <button key={mode} type="button" onClick={() => { triggerHaptic('light'); setDesignMode(mode); }} className={`py-2 px-2 text-[10px] font-bold uppercase rounded-lg transition-all flex items-center justify-center gap-1.5 cursor-pointer ${designMode === mode ? 'bg-white text-[#171717] shadow-sm' : 'text-[#6f6a63] hover:text-[#171717]'}`}>{icon}<span>{label}</span></button>
+                      ))}
+                    </div>
+                    {designMode === 'upload' && (
+                      <div onClick={() => fileInputRef.current?.click()} className={`border-2 border-dashed rounded-xl p-5 text-center transition-all cursor-pointer ${uploadedImage ? 'border-[#171717] bg-[#faf8f5]' : 'border-[#bdb3a4] bg-[#faf7f0] hover:border-[#171717] hover:bg-white'}`}>
+                        {uploadedImage ? (
+                          <div className="flex flex-col items-center">
+                            <div className="w-20 h-20 rounded-xl border border-[#ddd3c5] bg-white p-1 mb-3 flex items-center justify-center overflow-hidden shadow-sm"><img src={uploadedImage} alt="Artwork preview" className="max-h-full max-w-full object-contain" /></div>
+                            <span className="text-[11px] font-bold text-[#171717] uppercase tracking-wide mb-1">Artwork Placed</span>
+                            <p className="text-[9px] text-[#6f6a63] mb-3">Drag on shirt · Pinch to zoom · Rotate with controls</p>
+                            <div className="flex gap-2">
+                              <button type="button" onClick={e => { e.stopPropagation(); fileInputRef.current?.click(); }} className="px-3.5 py-1.5 rounded-lg bg-[#171717] text-white text-[9px] font-bold uppercase hover:bg-black cursor-pointer shadow-sm">Change</button>
+                              <button type="button" onClick={e => { e.stopPropagation(); handleClearArtwork(); }} className="px-3.5 py-1.5 rounded-lg border border-[#ddd3c5] bg-white text-[#171717] text-[9px] font-bold uppercase hover:border-[#E6321C] hover:text-[#E6321C] cursor-pointer shadow-sm">Remove</button>
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="flex flex-col items-center">
+                            <div className="w-12 h-12 rounded-full bg-[#ede0cc] flex items-center justify-center mb-3"><ImageIcon size={22} className="text-[#E6321C]" /></div>
+                            <strong className="block text-[12px] font-extrabold uppercase tracking-wide text-[#171717] mb-1">Upload Your Design</strong>
+                            <p className="text-[#6f6a63] text-[10px] max-w-[280px] mb-3 leading-relaxed">Pick any artwork, photo, anime graphic, or logo from your gallery.</p>
+                            <button type="button" onClick={e => { e.stopPropagation(); fileInputRef.current?.click(); }} className="px-5 py-2.5 rounded-lg bg-[#E6321C] text-white text-[10px] font-bold uppercase hover:bg-[#b91f12] active:scale-[0.98] transition-all flex items-center gap-1.5 shadow-md cursor-pointer"><Upload size={13} /><span>Choose From Gallery</span></button>
+                            <span className="text-[8px] font-mono text-[#8a847b] mt-2.5">PNG (transparent rec.), JPG, WEBP, SVG · Max 15MB</span>
+                          </div>
                         )}
-                        <span>{col.name}</span>
-                      </button>
-                    ))}
+                        <input ref={fileInputRef} type="file" accept="image/png,image/jpeg,image/webp,image/svg+xml,image/*" onChange={handleFileChange} className="hidden" />
+                      </div>
+                    )}
+                    {designMode === 'text' && (
+                      <div className="space-y-4">
+                        <div>
+                          <label className="block text-[10px] font-bold uppercase tracking-wider text-[#6f6a63] mb-1.5">Your Text / Slogan</label>
+                          <input type="text" value={customText} onChange={e => setCustomText(isUppercase ? e.target.value.toUpperCase() : e.target.value)} onBlur={pushHistory} placeholder="E.G. BINGOOO" maxLength={24} className="w-full h-10 px-3 bg-[#faf7f0] border border-[#ddd3c5] rounded-xl text-xs font-bold outline-none focus:border-[#171717] transition-colors" />
+                        </div>
+                        <div>
+                          <div className="flex justify-between items-center mb-1.5"><label className="text-[10px] font-bold uppercase text-[#6f6a63]">Font Style</label><span className="text-[9px] font-mono text-[#E6321C]">{filteredFonts.length} options</span></div>
+                          <div className="flex gap-1 overflow-x-auto pb-1.5 mb-2 scrollbar-none">
+                            {FONT_CATEGORIES.map(cat => <button key={cat.id} type="button" onClick={() => setSelectedFontCategory(cat.id)} className={`px-2.5 py-1 rounded-full text-[9px] font-bold uppercase whitespace-nowrap cursor-pointer ${selectedFontCategory === cat.id ? 'bg-[#171717] text-white' : 'bg-[#ede0cc] text-[#6f6a63] hover:text-[#171717]'}`}>{cat.label}</button>)}
+                          </div>
+                          <div className="grid grid-cols-2 gap-1.5 max-h-[220px] overflow-y-auto pr-1">
+                            {filteredFonts.map(font => (
+                              <button key={font.id} type="button" onClick={() => { triggerHaptic('light'); setSelectedFont(font.id); }} className={`p-2 rounded-xl border text-left cursor-pointer flex flex-col justify-between ${selectedFont === font.id ? 'border-2 border-[#171717] bg-[#f7eedb]' : 'border-[#ddd3c5] bg-white hover:border-[#171717]'}`}>
+                                <span className="text-sm truncate select-none block" style={{ fontFamily: font.family }}>{font.preview}</span>
+                                <div className="flex items-center justify-between mt-1"><span className="text-[9px] font-bold uppercase text-[#171717]">{font.name}</span><span className="text-[8px] text-[#6f6a63]">{font.label}</span></div>
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                        <div className="grid grid-cols-2 gap-2">
+                          <div>
+                            <span className="block text-[9px] font-bold uppercase text-[#6f6a63] mb-1">Style</span>
+                            <div className="flex gap-1">
+                              <button type="button" onClick={() => { setIsBold(!isBold); pushHistory(); }} className={`w-8 h-8 rounded-lg text-xs font-black border cursor-pointer flex items-center justify-center ${isBold ? 'bg-[#171717] text-white border-[#171717]' : 'border-[#ddd3c5] text-[#171717]'}`} title="Bold"><Bold size={12} /></button>
+                              <button type="button" onClick={() => { setIsItalic(!isItalic); pushHistory(); }} className={`w-8 h-8 rounded-lg text-xs italic border cursor-pointer flex items-center justify-center ${isItalic ? 'bg-[#171717] text-white border-[#171717]' : 'border-[#ddd3c5] text-[#171717]'}`} title="Italic"><Italic size={12} /></button>
+                              <button type="button" onClick={() => { const n = !isUppercase; setIsUppercase(n); if (n) setCustomText(t => t.toUpperCase()); pushHistory(); }} className={`px-2 h-8 rounded-lg text-[10px] font-bold border cursor-pointer ${isUppercase ? 'bg-[#171717] text-white border-[#171717]' : 'border-[#ddd3c5] text-[#171717]'}`} title="Uppercase">AA</button>
+                            </div>
+                          </div>
+                          <div>
+                            <span className="block text-[9px] font-bold uppercase text-[#6f6a63] mb-1">Spacing</span>
+                            <div className="flex gap-1">{SPACING_OPTIONS.map(opt => <button key={opt.label} type="button" onClick={() => { setLetterSpacing(opt.value); pushHistory(); }} className={`flex-1 h-8 rounded-lg text-[9px] font-bold uppercase border cursor-pointer ${letterSpacing === opt.value ? 'bg-[#171717] text-white border-[#171717]' : 'border-[#ddd3c5] text-[#6f6a63]'}`}>{opt.label}</button>)}</div>
+                          </div>
+                        </div>
+                        <div>
+                          <span className="block text-[9px] font-bold uppercase text-[#6f6a63] mb-1.5">Print Color</span>
+                          <div className="flex flex-wrap gap-1.5">
+                            {TEXT_COLORS.map(col => (
+                              <button key={col.name} type="button" onClick={() => { triggerHaptic('light'); setTextColor(col.hex); pushHistory(); }} className={`px-2 py-1 rounded-lg text-[9px] font-bold uppercase border cursor-pointer flex items-center gap-1 ${textColor === col.hex ? 'border-2 border-[#171717] bg-[#f7eedb] text-[#171717]' : 'border-[#ddd3c5] bg-white text-[#6f6a63]'}`}>
+                                {col.hex && <span className="w-2.5 h-2.5 rounded-full border border-black/20" style={{ backgroundColor: col.hex }} />}
+                                <span>{col.name}</span>
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                    )}
                   </div>
-                </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+
+          {/* 03 Placement */}
+          <div className="border-b border-[#ddd3c5]">
+            <button type="button" onClick={() => toggleSection('placement')} className="w-full flex items-center justify-between p-5 text-left hover:bg-[#faf8f5] transition-colors cursor-pointer">
+              <div className="flex items-center gap-3">
+                <span className="w-6 h-6 rounded-full text-[9px] font-extrabold flex items-center justify-center bg-[#ddd3c5] text-[#6f6a63]">03</span>
+                <div><div className="text-[11px] font-bold uppercase tracking-wider">Placement</div><div className="text-[10px] text-[#6f6a63] mt-0.5">{activePlacementTag} · {viewSide} view</div></div>
               </div>
-            )}
+              <ChevronDown size={14} className={`text-[#6f6a63] transition-transform ${activeSection === 'placement' ? 'rotate-180' : ''}`} />
+            </button>
+            <AnimatePresence initial={false}>
+              {activeSection === 'placement' && (
+                <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.22 }} style={{ overflow: 'hidden' }}>
+                  <div className="px-5 pb-5 space-y-3">
+                    <p className="text-[10px] text-[#6f6a63]">Drag the design on the shirt, or pick a quick snap:</p>
+                    <div className="grid grid-cols-2 gap-1.5">
+                      {(['CENTER', 'LEFT_CHEST', 'BACK', 'LOWER_HEM'] as const).map(p => (
+                        <button key={p} type="button" onClick={() => applyPresetPlacement(p)} className={`min-h-[38px] px-2 rounded-xl border text-[9px] font-bold uppercase cursor-pointer flex items-center justify-center gap-1 ${activePlacementTag === p ? 'bg-[#171717] text-white border-[#171717]' : 'border-[#ddd3c5] bg-white hover:border-[#171717]'}`}>
+                          <Crosshair size={10} /><span>{p.replace('_', ' ')}</span>
+                        </button>
+                      ))}
+                    </div>
+                    <button type="button" onClick={handleResetPosition} className="w-full min-h-[36px] px-3 rounded-xl border border-[#ddd3c5] bg-white text-[10px] font-bold uppercase text-[#171717] hover:border-[#171717] cursor-pointer flex items-center justify-center gap-1.5"><RotateCcw size={11} /><span>Reset All (Center + 100% Zoom + 0°)</span></button>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
 
-          {/* 03 / Garment Color */}
-          <div className="pb-[25px] mb-[25px] border-b border-[#ddd3c5]">
-            <div className="flex justify-between items-center mb-[13px] text-[11px] font-bold uppercase">
-              <span>03 / Garment Color</span>
-              <span className="text-[#6f6a63] text-[10px] font-normal">{selectedColor.name}</span>
-            </div>
-
-            <div className="flex flex-wrap gap-[10px]">
-              {(selectedGarment.colors && selectedGarment.colors.length > 0 ? selectedGarment.colors : COLORS).map((color) => (
-                <button
-                  key={color.id || color.name}
-                  type="button"
-                  onClick={() => {
-                    triggerHaptic('light');
-                    setSelectedColor(color);
-                  }}
-                  className={`w-8 h-8 rounded-full border-2 border-transparent transition-all cursor-pointer ${
-                    selectedColor.name.toLowerCase() === color.name.toLowerCase()
-                      ? 'shadow-[0_0_0_2px_#f7eedb,0_0_0_3px_#171717]'
-                      : 'hover:scale-105'
-                  }`}
-                  style={{
-                    backgroundColor: color.hex,
-                    border: color.hex.toLowerCase() === '#ffffff' ? '1px solid #cfc7bb' : 'none',
-                  }}
-                  title={color.name}
-                  aria-label={color.name}
-                />
-              ))}
-            </div>
-          </div>
-
-          {/* 04 / Size */}
-          <div className="pb-[25px] mb-[25px] border-b border-[#ddd3c5]">
-            <div className="flex justify-between items-center mb-[13px] text-[11px] font-bold uppercase">
-              <span>04 / Size</span>
-              <button
-                type="button"
-                onClick={() => setIsSizeModalOpen(true)}
-                className="text-[9px] font-bold underline underline-offset-2 hover:text-[#e6321c] transition-colors"
-              >
-                SIZE GUIDE
-              </button>
-            </div>
-
-            <div className="grid grid-cols-5 gap-1.5">
-              {SIZES.map((size) => (
-                <button
-                  key={size}
-                  type="button"
-                  onClick={() => {
-                    triggerHaptic('light');
-                    setSelectedSize(size);
-                  }}
-                  className={`min-h-[42px] border text-[10px] font-semibold transition-all cursor-pointer ${
-                    selectedSize === size
-                      ? 'bg-[#171717] text-white border-[#171717]'
-                      : 'border-[#ddd3c5] bg-transparent hover:border-[#171717]'
-                  }`}
-                >
-                  {size}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* 05 / Free Placement & Quick Snaps */}
-          <div className="pb-[25px] mb-[25px] border-b border-[#ddd3c5]">
-            <div className="flex justify-between items-center mb-[10px] text-[11px] font-bold uppercase">
-              <span>05 / Garment Placement</span>
-              <span className="text-[9px] font-mono text-[#E6321C]">
-                {activePlacementTag}
-              </span>
-            </div>
-
-            <p className="text-[10px] text-[#6f6a63] mb-2.5">
-              Drag directly on the shirt to place anywhere, or pick a quick snap:
-            </p>
-
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5">
-              <button
-                type="button"
-                onClick={() => applyPresetPlacement('CENTER')}
-                className={`min-h-[36px] px-2 border text-[9px] font-bold uppercase transition-all cursor-pointer flex items-center justify-center gap-1 ${
-                  activePlacementTag === 'CENTER'
-                    ? 'bg-[#171717] text-white border-[#171717]'
-                    : 'border-[#ddd3c5] bg-white hover:border-[#171717]'
-                }`}
-              >
-                <Crosshair size={11} />
-                <span>Center</span>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => applyPresetPlacement('LEFT_CHEST')}
-                className={`min-h-[36px] px-2 border text-[9px] font-bold uppercase transition-all cursor-pointer flex items-center justify-center gap-1 ${
-                  activePlacementTag === 'LEFT_CHEST'
-                    ? 'bg-[#171717] text-white border-[#171717]'
-                    : 'border-[#ddd3c5] bg-white hover:border-[#171717]'
-                }`}
-              >
-                <Move size={11} />
-                <span>Left Chest</span>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => applyPresetPlacement('BACK')}
-                className={`min-h-[36px] px-2 border text-[9px] font-bold uppercase transition-all cursor-pointer flex items-center justify-center gap-1 ${
-                  activePlacementTag === 'BACK'
-                    ? 'bg-[#171717] text-white border-[#171717]'
-                    : 'border-[#ddd3c5] bg-white hover:border-[#171717]'
-                }`}
-              >
-                <Maximize2 size={11} />
-                <span>Back</span>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => applyPresetPlacement('LOWER_HEM')}
-                className={`min-h-[36px] px-2 border text-[9px] font-bold uppercase transition-all cursor-pointer flex items-center justify-center gap-1 ${
-                  activePlacementTag === 'LOWER_HEM'
-                    ? 'bg-[#171717] text-white border-[#171717]'
-                    : 'border-[#ddd3c5] bg-white hover:border-[#171717]'
-                }`}
-              >
-                <span>Lower Hem</span>
-              </button>
-            </div>
-          </div>
-
-          {/* Price Box */}
-          <div className="pb-[25px] mb-[25px] border-b-0">
-            <div className="p-[15px] bg-[#f7eedb] flex justify-between items-center">
-              <div>
-                <div className="text-[10px] font-semibold uppercase">
-                  YOUR CUSTOM {selectedGarment.name}
-                </div>
-                <div className="text-[#6f6a63] text-[9px] mt-1">
-                  Includes HD DTF custom printing
-                </div>
+          {/* 04 Size & Order */}
+          <div>
+            <button type="button" onClick={() => toggleSection('order')} className="w-full flex items-center justify-between p-5 text-left hover:bg-[#faf8f5] transition-colors cursor-pointer">
+              <div className="flex items-center gap-3">
+                <span className={`w-6 h-6 rounded-full text-[9px] font-extrabold flex items-center justify-center ${selectedSize ? 'bg-[#171717] text-white' : 'bg-[#ddd3c5] text-[#6f6a63]'}`}>04</span>
+                <div><div className="text-[11px] font-bold uppercase tracking-wider">Size & Order</div><div className="text-[10px] text-[#6f6a63] mt-0.5">{selectedSize ? `Size ${selectedSize} selected` : 'Pick your size'}</div></div>
               </div>
-              <div className="text-[21px] font-extrabold">
-                ₹{selectedGarment.price.toLocaleString('en-IN')}
-              </div>
-            </div>
+              <ChevronDown size={14} className={`text-[#6f6a63] transition-transform ${activeSection === 'order' ? 'rotate-180' : ''}`} />
+            </button>
+            <AnimatePresence initial={false}>
+              {activeSection === 'order' && (
+                <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.22 }} style={{ overflow: 'hidden' }}>
+                  <div className="px-5 pb-5 space-y-4">
+                    <div>
+                      <div className="flex justify-between items-center mb-2 text-[10px] font-bold uppercase"><span>Size</span><button type="button" onClick={() => setIsSizeModalOpen(true)} className="text-[9px] font-bold underline underline-offset-2 hover:text-[#e6321c] cursor-pointer">SIZE GUIDE</button></div>
+                      <div className="grid grid-cols-5 gap-1.5">
+                        {SIZES.map(size => <button key={size} type="button" onClick={() => { triggerHaptic('light'); setSelectedSize(size); }} className={`min-h-[42px] rounded-xl border text-[10px] font-semibold cursor-pointer ${selectedSize === size ? 'bg-[#171717] text-white border-[#171717]' : 'border-[#ddd3c5] bg-transparent hover:border-[#171717]'}`}>{size}</button>)}
+                      </div>
+                    </div>
+                    <div className="p-4 bg-[#f7eedb] rounded-xl flex justify-between items-center">
+                      <div><div className="text-[10px] font-semibold uppercase">YOUR CUSTOM {selectedGarment.name}</div><div className="text-[#6f6a63] text-[9px] mt-0.5">Includes HD DTF custom printing</div></div>
+                      <div className="text-[22px] font-extrabold">₹{selectedGarment.price.toLocaleString('en-IN')}</div>
+                    </div>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
 
-          {/* Add to Cart Button */}
-          <button
-            type="button"
-            onClick={handleAddToCart}
-            disabled={isAdding}
-            className={`w-full min-h-[56px] border-0 rounded-[10px] text-white text-[12px] font-extrabold uppercase tracking-[0.06em] active:scale-[0.99] transition-all cursor-pointer disabled:opacity-50 flex items-center justify-center gap-2.5 group ${
-              isAddedFeedback
-                ? 'bg-[#238636] shadow-[0_6px_20px_rgba(35,134,54,0.35)]'
-                : 'bg-[#E6321C] hover:bg-[#B91F12] shadow-[0_6px_22px_rgba(230,50,28,0.35)] hover:shadow-[0_8px_28px_rgba(230,50,28,0.45)]'
-            }`}
-          >
-            {isAddedFeedback ? (
-              <>
-                <Check className="w-5 h-5" strokeWidth={2.5} />
-                <span>ADDED TO CART</span>
-              </>
-            ) : (
-              <>
-                <ShoppingBag className="w-5 h-5" />
-                <span>ADD CUSTOM DESIGN TO CART</span>
-                <ArrowRight className="w-4 h-4 transition-transform duration-200 group-hover:translate-x-1" />
-              </>
-            )}
-          </button>
-
-          {/* Bulk Orders WhatsApp Typography Callout */}
-          <div className="mt-4 pt-4 border-t border-[#ddd3c5] text-center">
-            <p className="text-[10px] font-semibold text-[#6f6a63] uppercase tracking-wider mb-1">
-              Ordering for college, team or brand?
-            </p>
-            <a
-              href={getWhatsAppUrl('Hi Bingooo, I would like to inquire about a bulk/wholesale order for custom apparel.')}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-[11px] font-extrabold uppercase tracking-wide text-[#171717] hover:text-[#e6321c] inline-flex items-center gap-1.5 transition-colors"
-            >
-              <WhatsAppIcon className="w-3.5 h-3.5 text-[#25D366]" />
-              <span>Need Bulk Quantities? Chat on WhatsApp →</span>
-            </a>
+          {/* CTA */}
+          <div className="p-5 bg-white border-t border-[#ddd3c5] space-y-3">
+            <button type="button" onClick={handleAddToCart} disabled={isAdding} className={`w-full min-h-[54px] border-0 rounded-xl text-white text-[12px] font-extrabold uppercase tracking-[0.06em] active:scale-[0.99] transition-all cursor-pointer disabled:opacity-50 flex items-center justify-center gap-2.5 group ${isAddedFeedback ? 'bg-[#238636] shadow-[0_6px_20px_rgba(35,134,54,0.3)]' : 'bg-[#E6321C] hover:bg-[#B91F12] shadow-[0_6px_22px_rgba(230,50,28,0.3)] hover:shadow-[0_8px_28px_rgba(230,50,28,0.4)]'}`}>
+              {isAddedFeedback ? (<><Check className="w-5 h-5" strokeWidth={2.5} /><span>ADDED TO CART</span></>) : (<><ShoppingBag className="w-5 h-5" /><span>ADD CUSTOM DESIGN TO CART</span><ArrowRight className="w-4 h-4 transition-transform duration-200 group-hover:translate-x-1" /></>)}
+            </button>
+            <div className="text-center pt-1">
+              <p className="text-[10px] font-semibold text-[#6f6a63] uppercase tracking-wider mb-1">Ordering for a team or brand?</p>
+              <a href={getWhatsAppUrl('Hi Bingooo! I want to inquire about a bulk custom order.')} target="_blank" rel="noopener noreferrer" className="text-[11px] font-extrabold uppercase tracking-wide text-[#171717] hover:text-[#e6321c] inline-flex items-center gap-1.5 transition-colors">
+                <WhatsAppIcon className="w-3.5 h-3.5 text-[#25D366]" /><span>Bulk Orders via WhatsApp →</span>
+              </a>
+            </div>
           </div>
         </aside>
       </section>
 
-      {/* =======================================================
-           HOW IT WORKS SECTION
-      ======================================================= */}
+      {/* HOW IT WORKS */}
       <section className="py-20 bg-[#171717] text-white">
         <div className="container-bingooo">
-          <div className="text-center mb-[45px]">
-            <div className="text-[10px] font-semibold tracking-[0.2em] uppercase text-[#6f6a63] mb-2.5">
-              HOW IT WORKS
-            </div>
-            <h2 className="mt-2.5 text-[clamp(36px,5vw,60px)] leading-[0.9] font-extrabold tracking-[-0.065em] uppercase text-white">
-              YOUR IDEA.<br />
-              YOUR CLOTHES.
-            </h2>
+          <div className="text-center mb-12">
+            <div className="text-[10px] font-semibold tracking-[0.22em] uppercase text-[#6f6a63] mb-3">HOW IT WORKS</div>
+            <h2 className="text-[clamp(36px,5vw,64px)] leading-[0.88] font-extrabold tracking-[-0.065em] uppercase">YOUR IDEA.<br /><span className="text-[#E6321C]">YOUR CLOTHES.</span></h2>
           </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-[1px] bg-[#333333]">
-            <article className="p-[35px] bg-[#171717]">
-              <div className="text-[#e6321c] font-mono text-[12px] font-bold">
-                01
-              </div>
-              <h3 className="my-4 mb-2 text-[17px] font-bold text-white uppercase">
-                Choose your canvas.
-              </h3>
-              <p className="m-0 text-[#aaaaaa] text-[11px] leading-[1.7]">
-                Pick your T-shirt, oversized tee or hoodie and choose your preferred color.
-              </p>
-            </article>
-
-            <article className="p-[35px] bg-[#171717]">
-              <div className="text-[#e6321c] font-mono text-[12px] font-bold">
-                02
-              </div>
-              <h3 className="my-4 mb-2 text-[17px] font-bold text-white uppercase">
-                Upload from Gallery.
-              </h3>
-              <p className="m-0 text-[#aaaaaa] text-[11px] leading-[1.7]">
-                Upload any artwork, photo, or logo from your phone or device. Drag and pinch to size it.
-              </p>
-            </article>
-
-            <article className="p-[35px] bg-[#171717]">
-              <div className="text-[#e6321c] font-mono text-[12px] font-bold">
-                03
-              </div>
-              <h3 className="my-4 mb-2 text-[17px] font-bold text-white uppercase">
-                Preview & wear.
-              </h3>
-              <p className="m-0 text-[#aaaaaa] text-[11px] leading-[1.7]">
-                Check your custom piece, select your size, and add to cart for HD DTF printing.
-              </p>
-            </article>
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-[1px] bg-[#2a2a2a] rounded-2xl overflow-hidden">
+            {[{ n: '01', title: 'Choose Canvas', body: 'Pick your T-shirt, oversized tee, or hoodie and select your preferred color.' }, { n: '02', title: 'Upload or Type', body: 'Upload any artwork from your gallery, or type custom text with 17 curated font styles.' }, { n: '03', title: 'Position & Scale', body: 'Drag anywhere on the shirt. Pinch or scroll to zoom. Rotate to perfect the angle.' }, { n: '04', title: 'Preview & Wear', body: 'Check your custom piece, select your size, and add to cart for HD DTF printing.' }].map(({ n, title, body }) => (
+              <article key={n} className="p-8 bg-[#171717] flex flex-col">
+                <div className="text-[#E6321C] font-mono text-[11px] font-bold mb-4">{n}</div>
+                <h3 className="text-[15px] font-bold text-white uppercase mb-2">{title}</h3>
+                <p className="text-[#888] text-[11px] leading-[1.75]">{body}</p>
+              </article>
+            ))}
           </div>
         </div>
       </section>
 
-      {/* =======================================================
-           SIZE CHART MODAL
-      ======================================================= */}
-      {isSizeModalOpen && (
-        <div
-          role="dialog"
-          aria-modal="true"
-          className="fixed inset-0 z-[100] flex items-center justify-center p-5 bg-black/60 backdrop-blur-xs"
-          onClick={() => setIsSizeModalOpen(false)}
-        >
-          <div
-            className="w-[min(760px,100%)] max-h-[90vh] overflow-y-auto bg-[#f7eedb] p-[30px] shadow-2xl"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="flex justify-between items-center mb-[25px]">
-              <h2 className="m-0 text-[28px] font-extrabold tracking-[-0.04em] uppercase">
-                Size Chart
-              </h2>
-              <button
-                type="button"
-                onClick={() => setIsSizeModalOpen(false)}
-                className="w-[35px] h-[35px] border border-[#ddd3c5] bg-transparent text-[18px] flex items-center justify-center hover:bg-[#171717] hover:text-white transition-colors cursor-pointer"
-                aria-label="Close modal"
-              >
-                ×
-              </button>
-            </div>
+      {/* SIZE MODAL */}
+      <AnimatePresence>
+        {isSizeModalOpen && (
+          <motion.div role="dialog" aria-modal="true" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm" onClick={() => setIsSizeModalOpen(false)}>
+            <motion.div initial={{ scale: 0.95, y: 16 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.95, y: 16 }} transition={{ duration: 0.2 }} className="w-[min(760px,100%)] max-h-[90vh] overflow-y-auto bg-[#f7eedb] rounded-2xl p-8 shadow-2xl" onClick={e => e.stopPropagation()}>
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-[28px] font-extrabold tracking-[-0.04em] uppercase">Size Chart</h2>
+                <button type="button" onClick={() => setIsSizeModalOpen(false)} className="w-9 h-9 border border-[#ddd3c5] rounded-xl bg-transparent text-[18px] flex items-center justify-center hover:bg-[#171717] hover:text-white cursor-pointer" aria-label="Close">×</button>
+              </div>
+              <div className="overflow-x-auto">
+                <table className="w-full min-w-[500px] border-collapse">
+                  <thead><tr>{['Size', 'Chest', 'Shoulder', 'Length'].map(h => <th key={h} className="p-3.5 border border-[#ddd3c5] bg-[#171717] text-white text-left text-[11px] font-bold uppercase">{h}</th>)}</tr></thead>
+                  <tbody>
+                    {[['XS', '96 cm', '42 cm', '66 cm'], ['S', '102 cm', '44 cm', '68 cm'], ['M', '108 cm', '46 cm', '70 cm'], ['L', '114 cm', '48 cm', '72 cm'], ['XL', '120 cm', '50 cm', '74 cm']].map(([sz, ...vals]) => (
+                      <tr key={sz} className={sz === selectedSize ? 'bg-[#e8ddc8]' : ''}>
+                        <td className="p-3.5 border border-[#ddd3c5] text-[11px] font-bold">{sz}{sz === selectedSize && <span className="ml-1.5 text-[8px] text-[#E6321C] font-bold uppercase">selected</span>}</td>
+                        {vals.map((v, i) => <td key={i} className="p-3.5 border border-[#ddd3c5] text-[11px]">{v}</td>)}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
-            <div className="overflow-x-auto">
-              <table className="w-full min-w-[550px] border-collapse bg-[#f7eedb]">
-                <thead>
-                  <tr>
-                    <th className="p-3.5 border border-[#ddd3c5] bg-[#171717] text-white text-left text-[11px] font-bold uppercase">
-                      Size
-                    </th>
-                    <th className="p-3.5 border border-[#ddd3c5] bg-[#171717] text-white text-left text-[11px] font-bold uppercase">
-                      Chest
-                    </th>
-                    <th className="p-3.5 border border-[#ddd3c5] bg-[#171717] text-white text-left text-[11px] font-bold uppercase">
-                      Shoulder
-                    </th>
-                    <th className="p-3.5 border border-[#ddd3c5] bg-[#171717] text-white text-left text-[11px] font-bold uppercase">
-                      Length
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td className="p-3.5 border border-[#ddd3c5] text-[11px] font-semibold">XS</td>
-                    <td className="p-3.5 border border-[#ddd3c5] text-[11px]">96 cm</td>
-                    <td className="p-3.5 border border-[#ddd3c5] text-[11px]">42 cm</td>
-                    <td className="p-3.5 border border-[#ddd3c5] text-[11px]">66 cm</td>
-                  </tr>
-                  <tr>
-                    <td className="p-3.5 border border-[#ddd3c5] text-[11px] font-semibold">S</td>
-                    <td className="p-3.5 border border-[#ddd3c5] text-[11px]">102 cm</td>
-                    <td className="p-3.5 border border-[#ddd3c5] text-[11px]">44 cm</td>
-                    <td className="p-3.5 border border-[#ddd3c5] text-[11px]">68 cm</td>
-                  </tr>
-                  <tr>
-                    <td className="p-3.5 border border-[#ddd3c5] text-[11px] font-semibold">M</td>
-                    <td className="p-3.5 border border-[#ddd3c5] text-[11px]">108 cm</td>
-                    <td className="p-3.5 border border-[#ddd3c5] text-[11px]">46 cm</td>
-                    <td className="p-3.5 border border-[#ddd3c5] text-[11px]">70 cm</td>
-                  </tr>
-                  <tr>
-                    <td className="p-3.5 border border-[#ddd3c5] text-[11px] font-semibold">L</td>
-                    <td className="p-3.5 border border-[#ddd3c5] text-[11px]">114 cm</td>
-                    <td className="p-3.5 border border-[#ddd3c5] text-[11px]">48 cm</td>
-                    <td className="p-3.5 border border-[#ddd3c5] text-[11px]">72 cm</td>
-                  </tr>
-                  <tr>
-                    <td className="p-3.5 border border-[#ddd3c5] text-[11px] font-semibold">XL</td>
-                    <td className="p-3.5 border border-[#ddd3c5] text-[11px]">120 cm</td>
-                    <td className="p-3.5 border border-[#ddd3c5] text-[11px]">50 cm</td>
-                    <td className="p-3.5 border border-[#ddd3c5] text-[11px]">74 cm</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* =======================================================
-           MOBILE STICKY ACTION BAR (1-Tap Checkout on Mobile)
-      ======================================================= */}
-      <div className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-[#FAF8F5]/96 backdrop-blur-md border-t border-[#ddd3c5] p-3 px-4 flex items-center justify-between shadow-[0_-4px_20px_rgba(0,0,0,0.08)]">
+      {/* MOBILE STICKY */}
+      <div className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-[#FAF8F5]/96 backdrop-blur-md border-t border-[#ddd3c5] px-4 py-2.5 flex items-center justify-between shadow-[0_-4px_20px_rgba(0,0,0,0.08)]">
         <div>
-          <div className="text-[9px] font-mono font-bold uppercase tracking-wider text-[#6f6a63]">
-            {selectedGarment.name} • {selectedSize} • {selectedColor.name}
-          </div>
-          <div className="text-[19px] font-extrabold text-[#171717] leading-none mt-1">
-            ₹{selectedGarment.price.toLocaleString('en-IN')}
-          </div>
+          <div className="text-[9px] font-mono font-bold uppercase tracking-wider text-[#6f6a63]">{selectedGarment.name} · {selectedSize} · {selectedColor.name}</div>
+          <div className="text-[20px] font-extrabold text-[#171717] leading-none mt-0.5">₹{selectedGarment.price.toLocaleString('en-IN')}</div>
         </div>
-
-        <button
-          type="button"
-          onClick={handleAddToCart}
-          disabled={isAdding}
-          className="min-h-[46px] px-5 rounded-lg bg-[#e6321c] text-white text-[11px] font-bold uppercase hover:bg-[#b91f12] active:scale-[0.98] transition-all flex items-center gap-2 shadow-md cursor-pointer disabled:opacity-50"
-        >
-          {isAddedFeedback ? (
-            <>
-              <span>ADDED!</span>
-              <Check className="w-4 h-4" />
-            </>
-          ) : (
-            <>
-              <span>ADD TO CART</span>
-              <ArrowRight className="w-4 h-4" />
-            </>
-          )}
+        <button type="button" onClick={handleAddToCart} disabled={isAdding} className="min-h-[46px] px-5 rounded-xl bg-[#e6321c] text-white text-[11px] font-bold uppercase hover:bg-[#b91f12] active:scale-[0.98] transition-all flex items-center gap-2 shadow-md cursor-pointer disabled:opacity-50">
+          {isAddedFeedback ? (<><span>ADDED!</span><Check className="w-4 h-4" /></>) : (<><span>ADD TO CART</span><ArrowRight className="w-4 h-4" /></>)}
         </button>
       </div>
     </main>

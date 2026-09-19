@@ -1428,10 +1428,10 @@
     "semantic_hash": "1a41291c3a8f8d3c0414683940da5423"
   },
   "apps/frontend/src/pages/CustomizerPage.tsx": {
-    "mtime": 1789631596.858513,
-    "seen": 1789634534.2679684,
-    "ast_hash": "62f551f8f25df7fc82f8d12c76ab211a",
-    "semantic_hash": "62f551f8f25df7fc82f8d12c76ab211a"
+    "mtime": 1789816474.854083,
+    "seen": 1789816532.998409,
+    "ast_hash": "f996ecb2ebe29c302e9f544dde0178b5",
+    "semantic_hash": ""
   },
   "apps/frontend/src/pages/FaqPage.tsx": {
     "mtime": 1789629620.1005545,
@@ -4765,31 +4765,31 @@
   },
   "supabase/migrations/001_initial_schema.sql": {
     "mtime": 1788696131.6980247,
-    "seen": 1789662626.2481868,
+    "seen": 1789816013.5202794,
     "ast_hash": "",
     "semantic_hash": ""
   },
   "supabase/migrations/002_rls_policies.sql": {
     "mtime": 1788696372.6242847,
-    "seen": 1789662626.2481868,
+    "seen": 1789816013.5202794,
     "ast_hash": "",
     "semantic_hash": ""
   },
   "supabase/migrations/003_auth_triggers_and_seed.sql": {
     "mtime": 1788697071.165675,
-    "seen": 1789662626.2481868,
+    "seen": 1789816013.5202794,
     "ast_hash": "",
     "semantic_hash": ""
   },
   "supabase/seed.sql": {
     "mtime": 1788330022.1644168,
-    "seen": 1789662626.2481868,
+    "seen": 1789816013.5202794,
     "ast_hash": "",
     "semantic_hash": ""
   },
   "supabase/verify_rls.sql": {
     "mtime": 1788694551.5578887,
-    "seen": 1789662626.2481868,
+    "seen": 1789816013.5202794,
     "ast_hash": "",
     "semantic_hash": ""
   },
@@ -4875,6 +4875,54 @@
     "mtime": 1789803844.24,
     "seen": 1789806278.1588147,
     "ast_hash": "541feed7bf953925a0e3e1443102e55e",
+    "semantic_hash": ""
+  },
+  "apps/frontend/public/custom/black back side.png": {
+    "mtime": 1789815900.4796593,
+    "seen": 1789816013.5222797,
+    "ast_hash": "e59a9b28b9091bc1930d76ec61a1b044",
+    "semantic_hash": ""
+  },
+  "apps/frontend/public/custom/black front.png": {
+    "mtime": 1789815900.4816084,
+    "seen": 1789816013.5222797,
+    "ast_hash": "a879c4a3f1e59134f4f92b1c6a570761",
+    "semantic_hash": ""
+  },
+  "apps/frontend/public/custom/hoodie black back side.png": {
+    "mtime": 1789815900.4835877,
+    "seen": 1789816013.5222797,
+    "ast_hash": "134fd8d90705cacef924aecb041d8285",
+    "semantic_hash": ""
+  },
+  "apps/frontend/public/custom/hoodie black front side.png": {
+    "mtime": 1789815900.4859872,
+    "seen": 1789816013.5222797,
+    "ast_hash": "b0074d12065cbf6847009fd83fecd599",
+    "semantic_hash": ""
+  },
+  "apps/frontend/public/custom/hoodie front white.png": {
+    "mtime": 1789815900.4880083,
+    "seen": 1789816013.5222797,
+    "ast_hash": "6fab61fa1877686b8e403623d70691a5",
+    "semantic_hash": ""
+  },
+  "apps/frontend/public/custom/hoodie white back side.png": {
+    "mtime": 1789815900.489933,
+    "seen": 1789816013.5222797,
+    "ast_hash": "94e579ab8d2404a2e3941a091c47edec",
+    "semantic_hash": ""
+  },
+  "apps/frontend/public/custom/white back side.png": {
+    "mtime": 1789815900.4909317,
+    "seen": 1789816013.5222797,
+    "ast_hash": "51f01381a37e08108861472be7be36b7",
+    "semantic_hash": ""
+  },
+  "apps/frontend/public/custom/white front.png": {
+    "mtime": 1789815900.4929318,
+    "seen": 1789816013.5222797,
+    "ast_hash": "4ba21b2011fb7d18a9b300422d089d1b",
     "semantic_hash": ""
   }
 }

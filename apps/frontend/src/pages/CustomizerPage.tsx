@@ -3,8 +3,8 @@ import { motion, useMotionValue, AnimatePresence } from 'framer-motion';
 import {
   Check, ArrowRight, ZoomIn, ZoomOut, RotateCcw, Type, Upload,
   Image as ImageIcon, Bold, Italic, Move, Crosshair, ShoppingBag,
-  RotateCw, Undo2, Redo2, Trash2, Sparkles, ChevronDown, ChevronLeft,
-  ChevronRight, FlipHorizontal, Scan, Layers, Eye,
+  RotateCw, Undo2, Redo2, Trash2, Sparkles,
+  FlipHorizontal, Scan, Layers, Eye,
 } from 'lucide-react';
 import { useCart } from '../hooks/useCart';
 import { useToast } from '../components/ui/Toast';
@@ -182,7 +182,6 @@ export function CustomizerPage() {
   const filteredFonts = FONT_OPTIONS.filter(f => selectedFontCategory === 'all' ? true : f.category === selectedFontCategory);
   const isLightGarment = ['#FFFFFF', '#D8C8B1', '#F7EEDB'].some(h => selectedColor.hex.toUpperCase() === h);
   const designBlendMode = isLightGarment ? 'multiply' : 'normal';
-  const hasDesign = uploadedImage !== null || (designMode === 'text' && customText.trim().length > 0);
   const imageSrc = (() => {
     const garment = garmentsList.find(g => g.id === selectedGarment.id);
     if (garment?.colors?.length) {
@@ -315,13 +314,6 @@ export function CustomizerPage() {
     document.body.style.overflow = (isSizeModalOpen || mobileDrawerOpen) ? 'hidden' : '';
     return () => { document.body.style.overflow = ''; };
   }, [isSizeModalOpen, mobileDrawerOpen]);
-
-  const STEP_PROGRESS = [
-    { n: 1, key: 'garment', label: 'Garment' },
-    { n: 2, key: 'design',  label: 'Design' },
-    { n: 3, key: 'placement', label: 'Placement' },
-    { n: 4, key: 'order',   label: 'Size & Order' },
-  ] as const;
 
   // ─── Control Panel Tabs Content ─────────────────────────────────────────────
   const GarmentTab = () => (

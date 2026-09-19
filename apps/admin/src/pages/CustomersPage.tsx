@@ -183,8 +183,8 @@ export function CustomersPage() {
 
                       <td>
                         <span className="font-mono text-xs font-black text-ink">
-                          {c.total_spent !== undefined
-                            ? '₹' + c.total_spent.toLocaleString('en-IN')
+                          {c.total_spent != null
+                            ? '₹' + Number(c.total_spent).toLocaleString('en-IN')
                             : '—'}
                         </span>
                       </td>

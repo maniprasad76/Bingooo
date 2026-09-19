@@ -16,11 +16,13 @@ import { CategoriesPage } from '../pages/CategoriesPage';
 import { InventoryPage } from '../pages/InventoryPage';
 import { ReviewsPage } from '../pages/ReviewsPage';
 import { ReturnsPage } from '../pages/ReturnsPage';
+import { RouteErrorBoundary } from '../components/RouteErrorBoundary';
 
 export const router = createBrowserRouter([
   {
     path: '/login',
     element: <LoginPage />,
+    errorElement: <RouteErrorBoundary />,
   },
   {
     path: '/',
@@ -29,6 +31,7 @@ export const router = createBrowserRouter([
         <AdminLayout />
       </AdminGuard>
     ),
+    errorElement: <RouteErrorBoundary />,
     children: [
       { index: true, element: <Navigate to="/dashboard" replace /> },
       { path: 'dashboard', element: <DashboardPage /> },

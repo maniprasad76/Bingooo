@@ -42,10 +42,10 @@
     "semantic_hash": "7f730439642d0e8111c1c5205647b8f8"
   },
   "apps/admin/src/app/router.tsx": {
-    "mtime": 1789537955.2907202,
-    "seen": 1789634534.2679684,
-    "ast_hash": "71c8c737afa20daaaac59910d983e170",
-    "semantic_hash": "71c8c737afa20daaaac59910d983e170"
+    "mtime": 1789818942.791711,
+    "seen": 1789818996.39937,
+    "ast_hash": "7c8960dc5c22d3fe8c6039d27e099035",
+    "semantic_hash": ""
   },
   "apps/admin/src/components/AdminGuard.tsx": {
     "mtime": 1789194657.2328393,
@@ -102,16 +102,16 @@
     "semantic_hash": "03fb98487f6ca9c5af644bf7635fad1f"
   },
   "apps/admin/src/pages/CouponsPage.tsx": {
-    "mtime": 1789555588.7507343,
-    "seen": 1789634534.2679684,
-    "ast_hash": "2b567afc7380034ce444233909395a98",
-    "semantic_hash": "2b567afc7380034ce444233909395a98"
+    "mtime": 1789818868.1963866,
+    "seen": 1789818996.4003696,
+    "ast_hash": "05ea7e6c4f2cd4ba6e33d0cab8899287",
+    "semantic_hash": ""
   },
   "apps/admin/src/pages/CustomersPage.tsx": {
-    "mtime": 1789555607.9903061,
-    "seen": 1789634534.2679684,
-    "ast_hash": "3fc2310e0ce4bb1887eca98abbb647a2",
-    "semantic_hash": "3fc2310e0ce4bb1887eca98abbb647a2"
+    "mtime": 1789818878.9245336,
+    "seen": 1789818996.4003696,
+    "ast_hash": "0259295b336eab244caf92f8db2d7bff",
+    "semantic_hash": ""
   },
   "apps/admin/src/pages/CustomizerStudioPage.tsx": {
     "mtime": 1789554643.3643887,
@@ -156,10 +156,10 @@
     "semantic_hash": ""
   },
   "apps/admin/src/pages/ReturnsPage.tsx": {
-    "mtime": 1789555707.9930844,
-    "seen": 1789634534.2679684,
-    "ast_hash": "99bd1752fa59e0b17d5e53e167363674",
-    "semantic_hash": "99bd1752fa59e0b17d5e53e167363674"
+    "mtime": 1789818918.616771,
+    "seen": 1789818996.4013698,
+    "ast_hash": "10e8d68cdf7487b3525588bcbb7ca2c4",
+    "semantic_hash": ""
   },
   "apps/admin/src/pages/ReviewsPage.tsx": {
     "mtime": 1789555633.1910868,
@@ -4923,6 +4923,12 @@
     "mtime": 1789799924.2180207,
     "seen": 1789817227.1626167,
     "ast_hash": "6e2d8d9358649169ce8d1a3a26d9fe7a",
+    "semantic_hash": ""
+  },
+  "apps/admin/src/components/RouteErrorBoundary.tsx": {
+    "mtime": 1789818930.9369926,
+    "seen": 1789818996.39937,
+    "ast_hash": "15a631d1b57f7a818d0ff0d81b994fc8",
     "semantic_hash": ""
   }
 }

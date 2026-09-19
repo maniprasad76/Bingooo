@@ -21,11 +21,11 @@ interface Coupon {
   code: string;
   type: 'percentage' | 'fixed';
   value: number;
-  min_order_value: number;
-  max_uses: number;
-  used_count: number;
+  min_order_value?: number | null;
+  max_uses?: number | null;
+  used_count?: number | null;
   is_active: boolean;
-  expires_at?: string;
+  expires_at?: string | null;
   created_at: string;
 }
 
@@ -247,27 +247,29 @@ export function CouponsPage() {
 
                     <td>
                       <span className="font-mono font-bold text-xs text-brand-red">
-                        {c.type === 'percentage' ? `${c.value}% OFF` : `₹${c.value} FLAT`}
+                        {c.type === 'percentage'
+                          ? `${c.value ?? 0}% OFF`
+                          : `₹${Number(c.value ?? 0).toLocaleString('en-IN')} FLAT`}
                       </span>
                     </td>
 
                     <td>
                       <span className="font-mono text-xs text-ink">
-                        ₹{c.min_order_value.toLocaleString('en-IN')}
+                        ₹{Number(c.min_order_value ?? 0).toLocaleString('en-IN')}
                       </span>
                     </td>
 
                     <td>
                       <div className="space-y-1 max-w-[120px]">
                         <div className="flex items-center justify-between text-[10px] font-mono">
-                          <span className="font-bold text-ink">{c.used_count}</span>
-                          <span className="text-muted">/{c.max_uses} max</span>
+                          <span className="font-bold text-ink">{c.used_count ?? 0}</span>
+                          <span className="text-muted">/{c.max_uses ?? '∞'} max</span>
                         </div>
                         <div className="w-full bg-beige/60 h-1.5 rounded-full overflow-hidden border border-border/40">
                           <div
                             className="bg-brand-red h-full rounded-full transition-all"
                             style={{
-                              width: `${Math.min(100, Math.round((c.used_count / c.max_uses) * 100))}%`,
+                              width: `${Math.min(100, Math.round(((c.used_count ?? 0) / (c.max_uses || 1)) * 100))}%`,
                             }}
                           />
                         </div>

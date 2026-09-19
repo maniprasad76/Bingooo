@@ -322,7 +322,7 @@ export function ReturnsPage() {
 
                     <td>
                       <span className="font-mono text-xs font-black text-ink">
-                        ₹{ret.refund_amount.toLocaleString('en-IN')}
+                        ₹{Number(ret.refund_amount || 0).toLocaleString('en-IN')}
                       </span>
                     </td>
 
@@ -393,7 +393,7 @@ export function ReturnsPage() {
               </div>
               <div className="flex justify-between pt-1 border-t border-border/80 font-bold">
                 <span className="text-muted">Refund Amount:</span>
-                <span className="font-mono text-brand-red">₹{selectedReturn.refund_amount.toLocaleString('en-IN')}</span>
+                <span className="font-mono text-brand-red">₹{Number(selectedReturn.refund_amount || 0).toLocaleString('en-IN')}</span>
               </div>
             </div>
 

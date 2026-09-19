@@ -178,7 +178,7 @@ export function CancellationPolicyPage() {
         {/* Right Imagery Banner */}
         <div className="relative min-h-[380px] sm:min-h-[480px] lg:min-h-full overflow-hidden bg-[#171717]">
           <img
-            src="https://images.unsplash.com/photo-1556821840-3a63f95609a7?auto=format&fit=crop&w=1600&q=90"
+            src="/custom-studio.jpg"
             alt="Bingooo atelier production inspection and pre-dispatch logistics"
             className="w-full h-full object-cover grayscale contrast-125 opacity-85"
           />

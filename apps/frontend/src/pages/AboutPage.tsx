@@ -76,9 +76,9 @@ export function AboutPage() {
         <div className="container-bingooo grid grid-cols-1 lg:grid-cols-[0.9fr_1.1fr] gap-[clamp(50px,9vw,140px)] items-center">
           <div className="aspect-[4/5] overflow-hidden bg-[#ede0cc] max-w-[600px] mx-auto lg:mx-0 w-full">
             <img
-              src="https://images.unsplash.com/photo-1551488831-00ddcb6c6bd3?auto=format&fit=crop&w=1200&q=90"
+              src="/about-atelier.jpg"
               alt="Bingooo clothing story"
-              className="w-full h-full object-cover grayscale"
+              className="w-full h-full object-cover"
             />
           </div>
 
@@ -286,17 +286,17 @@ export function AboutPage() {
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
             {[
-              'https://images.unsplash.com/photo-1529139574466-a303027c1d8b?auto=format&fit=crop&w=700&q=85',
-              'https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?auto=format&fit=crop&w=700&q=85',
-              'https://images.unsplash.com/photo-1556821840-3a63f95609a7?auto=format&fit=crop&w=700&q=85',
-              'https://images.unsplash.com/photo-1583743814966-8936f37f7996?auto=format&fit=crop&w=700&q=85',
+              '/real-fit-1.jpg',
+              '/real-fit-2.jpg',
+              '/real-fit-3.jpg',
+              '/real-fit-4.jpg',
             ].map((imgSrc, i) => (
               <div key={i} className="aspect-square overflow-hidden bg-[#ede0cc]">
                 <img
                   src={imgSrc}
                   alt={`Bingooo Community ${i + 1}`}
                   loading="lazy"
-                  className="w-full h-full object-cover grayscale hover:scale-[1.04] transition-transform duration-500 ease-out"
+                  className="w-full h-full object-cover hover:scale-[1.04] transition-transform duration-500 ease-out"
                 />
               </div>
             ))}

@@ -65,7 +65,7 @@ export function ForgotPasswordPage() {
           <div className="relative hidden lg:flex flex-col justify-between p-10 bg-[#171717] text-white overflow-hidden">
             <div className="absolute inset-0 opacity-40">
               <img
-                src="https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&w=1200&q=90"
+                src="/real-fit-1.jpg"
                 alt="Bingooo Atelier"
                 className="h-full w-full object-cover grayscale"
               />

@@ -21,7 +21,7 @@ const FEATURED_SUGGESTIONS = [
     name: 'Classic Boxy Oversized Tee',
     price: '₹999',
     spec: '240 GSM Combed Cotton',
-    image: 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&w=900&q=85',
+    image: '/real-fit-1.jpg',
     link: '/shop',
     badge: 'BESTSELLER',
   },
@@ -30,7 +30,7 @@ const FEATURED_SUGGESTIONS = [
     name: 'Heavyweight Fleece Hoodie',
     price: '₹1,499',
     spec: '320 GSM French Terry',
-    image: 'https://images.unsplash.com/photo-1556821840-3a63f95609a7?auto=format&fit=crop&w=900&q=85',
+    image: '/real-fit-2.jpg',
     link: '/shop',
     badge: 'WINTER DROP',
   },
@@ -39,7 +39,7 @@ const FEATURED_SUGGESTIONS = [
     name: 'Vintage Acid Wash Tee',
     price: '₹1,199',
     spec: '260 GSM Structured Cut',
-    image: 'https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?auto=format&fit=crop&w=900&q=85',
+    image: '/real-fit-3.jpg',
     link: '/shop',
     badge: 'ARCHIVE',
   },
@@ -48,7 +48,7 @@ const FEATURED_SUGGESTIONS = [
     name: 'Bespoke Custom Print Tee',
     price: '₹1,299',
     spec: '3D Studio Heat-Cured DTF',
-    image: 'https://images.unsplash.com/photo-1583743814966-8936f37f7996?auto=format&fit=crop&w=900&q=85',
+    image: '/real-fit-4.jpg',
     link: '/customize',
     badge: 'CUSTOMIZER',
   },
@@ -172,7 +172,7 @@ export function NotFoundPage() {
         {/* Right Imagery Banner */}
         <div className="relative min-h-[360px] sm:min-h-[460px] lg:min-h-full overflow-hidden bg-[#171717]">
           <img
-            src="https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?auto=format&fit=crop&w=1600&q=90"
+            src="/real-fit-5.jpg"
             alt="Bingooo atelier streetwear archive"
             className="w-full h-full object-cover grayscale contrast-125 opacity-85"
           />

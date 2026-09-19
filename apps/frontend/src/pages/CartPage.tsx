@@ -611,28 +611,28 @@ export function CartPage() {
                 title: 'Core White Tee',
                 slug: 'core-white-tee',
                 base_price: 1199,
-                imageUrl: 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&w=600&q=85',
+                imageUrl: '/real-fit-1.jpg',
               },
               {
                 id: 'rec-2',
                 title: 'Everyday Sweatshirt',
                 slug: 'everyday-sweatshirt',
                 base_price: 1799,
-                imageUrl: 'https://images.unsplash.com/photo-1556821840-3a63f95609a7?auto=format&fit=crop&w=600&q=85',
+                imageUrl: '/real-fit-2.jpg',
               },
               {
                 id: 'rec-3',
                 title: 'Bingooo Cap',
                 slug: 'bingooo-cap',
                 base_price: 699,
-                imageUrl: 'https://images.unsplash.com/photo-1523398002811-999ca8dec234?auto=format&fit=crop&w=600&q=85',
+                imageUrl: '/real-fit-3.jpg',
               },
               {
                 id: 'rec-4',
                 title: 'Relaxed Shirt',
                 slug: 'relaxed-shirt',
                 base_price: 1999,
-                imageUrl: 'https://images.unsplash.com/photo-1598033129183-c4f50c736f10?auto=format&fit=crop&w=600&q=85',
+                imageUrl: '/real-fit-4.jpg',
               },
             ]).map((prod: any) => {
               const inWish = wishlist?.some((w: any) => w.productId === prod.id);

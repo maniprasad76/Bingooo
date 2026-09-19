@@ -73,7 +73,7 @@ export function PrivacyPolicyPage() {
         <div className="container-bingooo grid grid-cols-1 lg:grid-cols-[0.9fr_1.1fr] gap-[clamp(50px,9vw,140px)] items-center">
           <div className="aspect-[4/5] overflow-hidden bg-[#ede0cc] max-w-[600px] mx-auto lg:mx-0 w-full">
             <img
-              src="https://images.unsplash.com/photo-1556821840-3a63f95609a7?auto=format&fit=crop&w=1200&q=90"
+              src="/privacy-hero.jpg"
               alt="Bingooo data ethics"
               className="w-full h-full object-cover grayscale"
             />

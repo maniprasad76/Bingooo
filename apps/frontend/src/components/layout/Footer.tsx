@@ -1,6 +1,9 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowUpRight, ChevronRight } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '../../lib/utils';
+import { triggerHaptic } from '../../lib/native/capacitorBridge';
 import {
   getWhatsAppUrl,
   BINGOOO_INSTAGRAM_URL,
@@ -87,6 +90,16 @@ const FOOTER_SECTIONS: FooterSection[] = [
 ];
 
 export function Footer() {
+  const [openSections, setOpenSections] = useState<Record<string, boolean>>({});
+
+  const toggleSection = (id: string) => {
+    triggerHaptic('light');
+    setOpenSections((prev) => ({
+      ...prev,
+      [id]: !prev[id],
+    }));
+  };
+
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -193,78 +206,135 @@ export function Footer() {
             </div>
           </div>
 
-          {/* Footer Navigation Sections: Direct Tap Links on Mobile, Full Sub-sections on Desktop */}
-          {FOOTER_SECTIONS.map((section) => (
-            <div
-              key={section.id}
-              className="border-b border-white/10 md:border-b-0 flex flex-col items-start w-full text-left"
-            >
-              {/* Mobile: Direct tap link to primary page (No sub-sections) */}
-              <Link
-                to={section.mobileHref}
-                onClick={scrollToTop}
-                className="md:hidden w-full py-4 flex items-center justify-between text-left group cursor-pointer"
-                aria-label={`Navigate to ${section.title}`}
+          {/* Footer Navigation Sections: Accordion Dropdown on Mobile, Full Columns on Desktop */}
+          {FOOTER_SECTIONS.map((section) => {
+            const isOpen = !!openSections[section.id];
+
+            return (
+              <div
+                key={section.id}
+                className="border-b border-white/10 md:border-b-0 flex flex-col items-start w-full text-left"
               >
-                <span className="text-[11px] tracking-[0.18em] uppercase font-bold text-white inline-flex items-center gap-1.5 transition-colors group-hover:text-[#F7EEDB]">
+                {/* Mobile: Interactive Dropdown Button */}
+                <button
+                  type="button"
+                  onClick={() => toggleSection(section.id)}
+                  className="md:hidden w-full py-4 flex items-center justify-between text-left group cursor-pointer select-none"
+                  aria-expanded={isOpen}
+                  aria-label={`Toggle ${section.title} menu`}
+                >
+                  <span className="text-[11px] tracking-[0.18em] uppercase font-bold text-white inline-flex items-center gap-1.5 transition-colors group-hover:text-[#F7EEDB]">
+                    <span>{section.title}</span>
+                    {section.hasDot && (
+                      <span className="w-1.5 h-1.5 rounded-full bg-[#E6321C]" />
+                    )}
+                  </span>
+                  <ChevronRight
+                    className={cn(
+                      'w-4 h-4 text-[#aaa7a1] transition-transform duration-200 ease-out shrink-0',
+                      isOpen ? 'rotate-90 text-[#E6321C]' : 'group-hover:text-[#F7EEDB]'
+                    )}
+                    aria-hidden="true"
+                  />
+                </button>
+
+                {/* Mobile: Animated Dropdown Sub-links List */}
+                <AnimatePresence initial={false}>
+                  {isOpen && (
+                    <motion.div
+                      key={`mobile-dropdown-${section.id}`}
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: 'auto', opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
+                      className="md:hidden overflow-hidden w-full"
+                    >
+                      <div className="pb-4 pt-1 space-y-2 pl-3 border-l-2 border-[#E6321C]/40 ml-1 text-left">
+                        {section.links.map((link) => {
+                          if (link.isExternal) {
+                            return (
+                              <a
+                                key={link.label}
+                                href={link.href}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="flex items-center justify-between text-[#F7EEDB] hover:text-[#25D366] transition-colors font-semibold text-xs py-1"
+                              >
+                                <span>{link.label}</span>
+                                <ArrowUpRight size={13} className="text-[#25D366]" />
+                              </a>
+                            );
+                          }
+
+                          return (
+                            <Link
+                              key={link.label}
+                              to={link.href}
+                              onClick={scrollToTop}
+                              className={cn(
+                                'block transition-colors py-1 text-xs font-medium',
+                                section.id === 'collections'
+                                  ? 'text-[#aaa7a1] hover:text-[#F7EEDB]'
+                                  : 'text-[#d4d1cc] hover:text-white'
+                              )}
+                            >
+                              {link.label}
+                            </Link>
+                          );
+                        })}
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+
+                {/* Desktop: Section Heading */}
+                <h3 className="hidden md:flex items-center gap-1.5 text-[10px] tracking-[0.15em] uppercase font-bold text-white mb-[17px]">
                   <span>{section.title}</span>
                   {section.hasDot && (
                     <span className="w-1.5 h-1.5 rounded-full bg-[#E6321C]" />
                   )}
-                </span>
-                <ChevronRight
-                  className="w-4 h-4 text-[#aaa7a1] group-hover:text-[#F7EEDB] transition-colors shrink-0"
-                  aria-hidden="true"
-                />
-              </Link>
+                </h3>
 
-              {/* Desktop: Section Heading */}
-              <h3 className="hidden md:flex items-center gap-1.5 text-[10px] tracking-[0.15em] uppercase font-bold text-white mb-[17px]">
-                <span>{section.title}</span>
-                {section.hasDot && (
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#E6321C]" />
-                )}
-              </h3>
+                {/* Desktop: Sub-sections list (Always visible on desktop, hidden on mobile) */}
+                <div className="hidden md:block w-full">
+                  <div className="space-y-[11px] text-[10px] w-full">
+                    {section.links.map((link) => {
+                      if (link.isExternal) {
+                        return (
+                          <a
+                            key={link.label}
+                            href={link.href}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-1 text-[#F7EEDB] hover:text-[#25D366] transition-colors font-semibold py-0.5"
+                          >
+                            <span>{link.label}</span>
+                            <ArrowUpRight size={12} />
+                          </a>
+                        );
+                      }
 
-              {/* Desktop: Sub-sections list (Always visible on desktop, hidden on mobile) */}
-              <div className="hidden md:block w-full">
-                <div className="space-y-[11px] text-[10px] w-full">
-                  {section.links.map((link) => {
-                    if (link.isExternal) {
                       return (
-                        <a
+                        <Link
                           key={link.label}
-                          href={link.href}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="inline-flex items-center gap-1 text-[#F7EEDB] hover:text-[#25D366] transition-colors font-semibold py-0.5"
+                          to={link.href}
+                          onClick={scrollToTop}
+                          className={cn(
+                            'block transition-colors py-0.5',
+                            section.id === 'collections'
+                              ? 'text-[#aaa7a1] hover:text-[#F7EEDB]'
+                              : 'text-[#aaa7a1] hover:text-white'
+                          )}
                         >
-                          <span>{link.label}</span>
-                          <ArrowUpRight size={12} />
-                        </a>
+                          {link.label}
+                        </Link>
                       );
-                    }
-
-                    return (
-                      <Link
-                        key={link.label}
-                        to={link.href}
-                        onClick={scrollToTop}
-                        className={cn(
-                          'block transition-colors py-0.5',
-                          section.id === 'collections'
-                            ? 'text-[#aaa7a1] hover:text-[#F7EEDB]'
-                            : 'text-[#aaa7a1] hover:text-white'
-                        )}
-                      >
-                        {link.label}
-                      </Link>
-                    );
-                  })}
+                    })}
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
 
           {/* Message (Hidden on mobile <800px per reference CSS) */}
           <div className="hidden lg:block self-start text-[10px] font-semibold tracking-[0.18em] leading-[1.7] uppercase text-white after:content-[''] after:block after:w-[28px] after:h-[1px] after:bg-white after:mt-[14px]">

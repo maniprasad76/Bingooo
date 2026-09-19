@@ -22,7 +22,27 @@ export const supabase: SupabaseClient | null =
 
 /** Initialize auth on app mount — checks for existing token or Supabase Google OAuth */
 export async function initAdminAuth(): Promise<void> {
-  // 1. Check Supabase Google OAuth session first
+  // 0. Handle tokens directly passed in URL hash (from Supabase OAuth or auth bridge)
+  if (supabase && typeof window !== 'undefined' && window.location.hash && window.location.hash.includes('access_token')) {
+    try {
+      const hashParams = new URLSearchParams(window.location.hash.replace(/^#/, ''));
+      const accessToken = hashParams.get('access_token');
+      const refreshToken = hashParams.get('refresh_token');
+      if (accessToken) {
+        if (refreshToken) {
+          await supabase.auth.setSession({
+            access_token: accessToken,
+            refresh_token: refreshToken,
+          });
+        }
+        window.history.replaceState(null, '', window.location.pathname);
+      }
+    } catch {
+      // Fall through to getSession
+    }
+  }
+
+  // 1. Check Supabase Google OAuth session
   if (supabase) {
     try {
       const { data } = await supabase.auth.getSession();
@@ -99,10 +119,18 @@ export async function adminGoogleLogin(): Promise<void> {
     throw new Error('Google Authentication requires Supabase configuration.');
   }
 
+  const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+  const adminOrigin = window.location.origin;
+  const frontendCallback = isLocal
+    ? `${window.location.protocol}//${window.location.hostname}:5173/auth/callback`
+    : 'https://bingooo-frontend.vercel.app/auth/callback';
+
+  const redirectTarget = `${frontendCallback}?source=admin&admin_origin=${encodeURIComponent(adminOrigin)}`;
+
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: 'google',
     options: {
-      redirectTo: `${window.location.origin}/dashboard`,
+      redirectTo: redirectTarget,
     },
   });
 

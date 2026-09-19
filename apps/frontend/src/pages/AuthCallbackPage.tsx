@@ -20,43 +20,54 @@ export function AuthCallbackPage() {
       }
 
       try {
-        // Exchange code/tokens for session
-        const { data, error } = await supabase.auth.getSession();
-        if (error) throw error;
+        const searchParams = new URLSearchParams(window.location.search);
+        const hashParams = new URLSearchParams(window.location.hash.replace(/^#/, ''));
+        const isFromAdmin = searchParams.get('source') === 'admin' || hashParams.get('source') === 'admin';
+        const adminOrigin =
+          searchParams.get('admin_origin') ||
+          hashParams.get('admin_origin') ||
+          (window.location.hostname === 'localhost' ? 'http://localhost:5174' : 'https://bingooo-admin.vercel.app');
 
-        if (data.session) {
+        const handleUserSession = (session: any) => {
           const authStorageKey = 'bingooo_auth_token';
-          localStorage.setItem(authStorageKey, data.session.access_token);
-          useAuthStore.getState().setAuth(data.session.user.id, {
-            id: data.session.user.id,
-            email: data.session.user.email || '',
-            fullName: data.session.user.user_metadata?.full_name || data.session.user.user_metadata?.name,
+          localStorage.setItem(authStorageKey, session.access_token);
+          useAuthStore.getState().setAuth(session.user.id, {
+            id: session.user.id,
+            email: session.user.email || '',
+            fullName: session.user.user_metadata?.full_name || session.user.user_metadata?.name,
           });
+
+          const userEmail = session.user.email?.toLowerCase();
+          const SUPER_ADMIN_EMAIL = 'basaprasaduu@gmail.com';
+          const hasFrontendRedirect = Boolean(sessionStorage.getItem('bingooo_auth_redirect'));
+
+          // If from admin panel OR authorized Super Admin without explicit customer redirect
+          if (userEmail === SUPER_ADMIN_EMAIL && (isFromAdmin || !hasFrontendRedirect)) {
+            const targetUrl = `${adminOrigin}/dashboard#access_token=${encodeURIComponent(session.access_token)}&refresh_token=${encodeURIComponent(session.refresh_token || '')}`;
+            window.location.href = targetUrl;
+            return;
+          }
 
           const destination = sessionStorage.getItem('bingooo_auth_redirect') || '/account';
           sessionStorage.removeItem('bingooo_auth_redirect');
           if (isMounted) {
             navigate(destination, { replace: true });
           }
+        };
+
+        // Exchange code/tokens for session
+        const { data, error } = await supabase.auth.getSession();
+        if (error) throw error;
+
+        if (data.session) {
+          handleUserSession(data.session);
           return;
         }
 
         // Listen for auth state change if session is still settling
         const { data: authListener } = supabase.auth.onAuthStateChange((_event, session) => {
           if (session) {
-            const authStorageKey = 'bingooo_auth_token';
-            localStorage.setItem(authStorageKey, session.access_token);
-            useAuthStore.getState().setAuth(session.user.id, {
-              id: session.user.id,
-              email: session.user.email || '',
-              fullName: session.user.user_metadata?.full_name || session.user.user_metadata?.name,
-            });
-
-            const destination = sessionStorage.getItem('bingooo_auth_redirect') || '/account';
-            sessionStorage.removeItem('bingooo_auth_redirect');
-            if (isMounted) {
-              navigate(destination, { replace: true });
-            }
+            handleUserSession(session);
           }
         });
 

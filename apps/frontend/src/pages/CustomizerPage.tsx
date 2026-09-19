@@ -31,17 +31,17 @@ interface DesignSnapshot {
 // ─── Static Data ─────────────────────────────────────────────────────────────
 const SHIRT_COLORS: ColorOption[] = [
   { id: 'black', name: 'Black', hex: '#171717', textContrast: '#FFFFFF',
-    frontImageUrl: '/custom/black front.png', backImageUrl: '/custom/black back side.png' },
+    frontImageUrl: '/custom/black-front.png', backImageUrl: '/custom/black-back.png' },
   { id: 'white', name: 'White', hex: '#FFFFFF', textContrast: '#171717',
-    frontImageUrl: '/custom/white front.png', backImageUrl: '/custom/white back side.png' },
+    frontImageUrl: '/custom/white-front.png', backImageUrl: '/custom/white-back.png' },
   { id: 'beige', name: 'Beige', hex: '#D8C8B1', textContrast: '#171717' },
   { id: 'red', name: 'Red', hex: '#E6321C', textContrast: '#FFFFFF' },
 ];
 const HOODIE_COLORS: ColorOption[] = [
   { id: 'black', name: 'Black', hex: '#171717', textContrast: '#FFFFFF',
-    frontImageUrl: '/custom/hoodie black front side.png', backImageUrl: '/custom/hoodie black back side.png' },
+    frontImageUrl: '/custom/hoodie-black-front.png', backImageUrl: '/custom/hoodie-black-back.png' },
   { id: 'white', name: 'White', hex: '#FFFFFF', textContrast: '#171717',
-    frontImageUrl: '/custom/hoodie front white.png', backImageUrl: '/custom/hoodie white back side.png' },
+    frontImageUrl: '/custom/hoodie-white-front.png', backImageUrl: '/custom/hoodie-white-back.png' },
   { id: 'beige', name: 'Beige', hex: '#D8C8B1', textContrast: '#171717' },
   { id: 'red', name: 'Red', hex: '#E6321C', textContrast: '#FFFFFF' },
 ];
@@ -201,9 +201,24 @@ export function CustomizerPage() {
       .then(data => {
         const config = data?.data || data;
         if (config && Array.isArray(config.garments) && config.garments.length > 0) {
-          setGarmentsList(config.garments);
+          const mergedGarments = config.garments.map((g: GarmentType) => {
+            const defaultG = GARMENTS.find(dg => dg.id === g.id);
+            if (!defaultG) return g;
+            return {
+              ...g,
+              colors: g.colors?.map(c => {
+                const defaultC = defaultG.colors?.find(dc => dc.name.toLowerCase() === c.name.toLowerCase());
+                return {
+                  ...c,
+                  frontImageUrl: c.frontImageUrl || defaultC?.frontImageUrl || '',
+                  backImageUrl: c.backImageUrl || defaultC?.backImageUrl || '',
+                };
+              }) || defaultG.colors,
+            };
+          });
+          setGarmentsList(mergedGarments);
           setSelectedGarment(prevG => {
-            const currentG = config.garments.find((g: GarmentType) => g.id === prevG.id) || config.garments[0];
+            const currentG = mergedGarments.find((g: GarmentType) => g.id === prevG.id) || mergedGarments[0];
             if (currentG.colors?.length > 0) {
               setSelectedColor(prevC => currentG.colors.find((c: ColorOption) => c.name.toLowerCase() === prevC.name.toLowerCase()) || currentG.colors[0]);
             }

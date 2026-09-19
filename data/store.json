@@ -1556,16 +1556,18 @@
             "name": "Black",
             "hex": "#171717",
             "textContrast": "#FFFFFF",
-            "frontImageUrl": "",
-            "isActive": true
+            "frontImageUrl": "/custom/black-front.png",
+            "isActive": true,
+            "backImageUrl": "/custom/black-back.png"
           },
           {
             "id": "white",
             "name": "White",
             "hex": "#FFFFFF",
             "textContrast": "#171717",
-            "frontImageUrl": "",
-            "isActive": true
+            "frontImageUrl": "/custom/white-front.png",
+            "isActive": true,
+            "backImageUrl": "/custom/white-back.png"
           },
           {
             "id": "beige",
@@ -1597,16 +1599,18 @@
             "name": "Black",
             "hex": "#171717",
             "textContrast": "#FFFFFF",
-            "frontImageUrl": "",
-            "isActive": true
+            "frontImageUrl": "/custom/black-front.png",
+            "isActive": true,
+            "backImageUrl": "/custom/black-back.png"
           },
           {
             "id": "white",
             "name": "White",
             "hex": "#FFFFFF",
             "textContrast": "#171717",
-            "frontImageUrl": "",
-            "isActive": true
+            "frontImageUrl": "/custom/white-front.png",
+            "isActive": true,
+            "backImageUrl": "/custom/white-back.png"
           },
           {
             "id": "beige",
@@ -1638,16 +1642,18 @@
             "name": "Black",
             "hex": "#171717",
             "textContrast": "#FFFFFF",
-            "frontImageUrl": "",
-            "isActive": true
+            "frontImageUrl": "/custom/hoodie-black-front.png",
+            "isActive": true,
+            "backImageUrl": "/custom/hoodie-black-back.png"
           },
           {
             "id": "white",
             "name": "White",
             "hex": "#FFFFFF",
             "textContrast": "#171717",
-            "frontImageUrl": "",
-            "isActive": true
+            "frontImageUrl": "/custom/hoodie-white-front.png",
+            "isActive": true,
+            "backImageUrl": "/custom/hoodie-white-back.png"
           },
           {
             "id": "beige",

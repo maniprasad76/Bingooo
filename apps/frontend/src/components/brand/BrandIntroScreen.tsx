@@ -128,8 +128,8 @@ export function BrandIntroScreen() {
   };
 
   const currentVideoSrc = isDesktopOrTablet
-    ? '/brand-intro-desktop.mp4'
-    : '/brand-intro-mobile.mp4';
+    ? '/brand-intro-desktop.mp4?v=2'
+    : '/brand-intro-mobile.mp4?v=2';
 
   return (
     <AnimatePresence>
@@ -162,12 +162,12 @@ export function BrandIntroScreen() {
               className="w-full h-full object-cover bg-[#F7EEDB]"
             >
               <source
-                src="/brand-intro-desktop.mp4"
+                src="/brand-intro-desktop.mp4?v=2"
                 media="(min-width: 640px)"
                 type="video/mp4"
               />
               <source
-                src="/brand-intro-mobile.mp4"
+                src="/brand-intro-mobile.mp4?v=2"
                 type="video/mp4"
               />
             </video>

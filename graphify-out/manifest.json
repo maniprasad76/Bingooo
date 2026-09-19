@@ -4829,34 +4829,16 @@
     "ast_hash": "8ade778561bc46d668b7297f74f0046d",
     "semantic_hash": ""
   },
-  "apps/frontend/public/custom/Bingooo_logo_animation_assembly_1080p_20260919110350.mp4": {
-    "mtime": 1789796030.465143,
-    "seen": 1789796538.733393,
-    "ast_hash": "fd59136ae2fa941639139554ddb1aede",
-    "semantic_hash": ""
-  },
   "apps/frontend/src/components/brand/BrandIntroScreen.tsx": {
-    "mtime": 1789799703.8702092,
-    "seen": 1789799746.94905,
-    "ast_hash": "d4974a66a1283428feaf6a1d20b21b84",
+    "mtime": 1789800365.1125221,
+    "seen": 1789800409.9008152,
+    "ast_hash": "83c9cfc3756436ea34f3e9e6ed7d0cc5",
     "semantic_hash": ""
   },
   "apps/frontend/src/components/brand/index.ts": {
     "mtime": 1789797203.7712948,
     "seen": 1789797290.0029411,
     "ast_hash": "6e39d1a17971177ba6f510b8cc5719a1",
-    "semantic_hash": ""
-  },
-  "apps/frontend/public/brand-intro.mp4": {
-    "mtime": 1789796030.465143,
-    "seen": 1789797290.3869958,
-    "ast_hash": "fd59136ae2fa941639139554ddb1aede",
-    "semantic_hash": ""
-  },
-  "data/assets/Bingooo_logo_animation_assembly_1080p_20260919110350.mp4": {
-    "mtime": 1789796030.465143,
-    "seen": 1789797290.3879972,
-    "ast_hash": "fd59136ae2fa941639139554ddb1aede",
     "semantic_hash": ""
   },
   "apps/frontend/public/brand-intro-desktop.mp4": {
@@ -4866,15 +4848,21 @@
     "semantic_hash": ""
   },
   "apps/frontend/public/brand-intro-mobile.mp4": {
-    "mtime": 1789796030.465143,
-    "seen": 1789799667.018893,
-    "ast_hash": "fd59136ae2fa941639139554ddb1aede",
+    "mtime": 1789799924.2180207,
+    "seen": 1789800409.9735265,
+    "ast_hash": "6e2d8d9358649169ce8d1a3a26d9fe7a",
     "semantic_hash": ""
   },
   "apps/frontend/public/custom/bingooo16.mp4": {
     "mtime": 1789799367.2102268,
     "seen": 1789799667.018893,
     "ast_hash": "7560c0a784f255992dffe31dbfcd0443",
+    "semantic_hash": ""
+  },
+  "apps/frontend/public/custom/bingooo mobile.mp4": {
+    "mtime": 1789799924.2180207,
+    "seen": 1789800409.9735265,
+    "ast_hash": "6e2d8d9358649169ce8d1a3a26d9fe7a",
     "semantic_hash": ""
   }
 }

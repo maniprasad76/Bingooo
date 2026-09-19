@@ -163,7 +163,7 @@ export async function signInWithProvider(
   provider: 'google' | 'facebook',
   redirectTo?: string,
 ): Promise<void> {
-  const targetUrl = redirectTo || `${window.location.origin}/account`;
+  const targetUrl = redirectTo || `${window.location.origin}/auth/callback`;
 
   if (supabase) {
     const { data, error } = await supabase.auth.signInWithOAuth({

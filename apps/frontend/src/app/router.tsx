@@ -36,6 +36,7 @@ const RecentlyViewedPage = lazyPage(() => import('../pages/RecentlyViewedPage'),
 const TrackOrderPage = lazyPage(() => import('../pages/TrackOrderPage'), 'TrackOrderPage');
 const ArtworkGuidelinesPage = lazyPage(() => import('../pages/ArtworkGuidelinesPage'), 'ArtworkGuidelinesPage');
 const NotFoundPage = lazyPage(() => import('../pages/NotFoundPage'), 'NotFoundPage');
+const AuthCallbackPage = lazyPage(() => import('../pages/AuthCallbackPage'), 'AuthCallbackPage');
 
 // Helper redirect component for legacy/sub-policy slugs to resolve cannibalization and redirect chains
 function PolicyRedirect() {
@@ -108,6 +109,7 @@ export const router = createBrowserRouter([
       { path: 'signin', element: <Navigate to="/login" replace /> },
       { path: 'signup', element: <SignupPage /> },
       { path: 'register', element: <Navigate to="/signup" replace /> },
+      { path: 'auth/callback', element: <AuthCallbackPage /> },
       { path: 'forgot-password', element: <ForgotPasswordPage /> },
       { path: 'reset-password', element: <ResetPasswordPage /> },
 

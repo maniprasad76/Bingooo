@@ -990,10 +990,10 @@
     "semantic_hash": "652ca2ff7c4b73a0ccdff50696453fb3"
   },
   "apps/frontend/src/app/router.tsx": {
-    "mtime": 1789226408.197157,
-    "seen": 1789634534.2679684,
-    "ast_hash": "a4c09204db1674ef03c593f433427ae0",
-    "semantic_hash": "a4c09204db1674ef03c593f433427ae0"
+    "mtime": 1789801316.28705,
+    "seen": 1789801529.2837508,
+    "ast_hash": "30c2325f21d2cb99debcb5a58346fcee",
+    "semantic_hash": ""
   },
   "apps/frontend/src/components/cart/CartDrawer.tsx": {
     "mtime": 1789229309.657205,
@@ -1338,9 +1338,9 @@
     "semantic_hash": ""
   },
   "apps/frontend/src/lib/auth/supabase.ts": {
-    "mtime": 1789697055.427349,
-    "seen": 1789795821.636686,
-    "ast_hash": "a85d6e3d16c1d0303779d4c488168e05",
+    "mtime": 1789801427.5182753,
+    "seen": 1789801529.290751,
+    "ast_hash": "e4baea8a833a0561dd9a66cbb67f734b",
     "semantic_hash": ""
   },
   "apps/frontend/src/lib/native/capacitorBridge.ts": {
@@ -1452,10 +1452,10 @@
     "semantic_hash": ""
   },
   "apps/frontend/src/pages/LoginPage.tsx": {
-    "mtime": 1789091565.3194752,
-    "seen": 1789634534.2679684,
-    "ast_hash": "0fa45b9ebe35796df484b18a64d88ffe",
-    "semantic_hash": "0fa45b9ebe35796df484b18a64d88ffe"
+    "mtime": 1789801339.035838,
+    "seen": 1789801529.2927587,
+    "ast_hash": "bdc00d0435fed3e3f8a4d026e868d75b",
+    "semantic_hash": ""
   },
   "apps/frontend/src/pages/NotFoundPage.tsx": {
     "mtime": 1789228053.7785234,
@@ -1536,10 +1536,10 @@
     "semantic_hash": "95e5042c462220df64696a3870ddbfdf"
   },
   "apps/frontend/src/pages/SignupPage.tsx": {
-    "mtime": 1789091575.519772,
-    "seen": 1789634534.2679684,
-    "ast_hash": "d4fb7f49f61012f577683de17c2a018e",
-    "semantic_hash": "d4fb7f49f61012f577683de17c2a018e"
+    "mtime": 1789801358.184947,
+    "seen": 1789801529.2949033,
+    "ast_hash": "271bf8f1dc0aad88f7da553f6d7905f3",
+    "semantic_hash": ""
   },
   "apps/frontend/src/pages/SizeGuidePage.tsx": {
     "mtime": 1789227299.0215516,
@@ -4763,12 +4763,6 @@
     "ast_hash": "df0b6f70cb174b8f76d732d89f0411ce",
     "semantic_hash": ""
   },
-  "scripts/test-live-checkout.mjs": {
-    "mtime": 1789697423.553534,
-    "seen": 1789795821.6498084,
-    "ast_hash": "cb4ba0289c0795180612496d2d52aa5e",
-    "semantic_hash": ""
-  },
   "supabase/migrations/001_initial_schema.sql": {
     "mtime": 1788696131.6980247,
     "seen": 1789662626.2481868,
@@ -4809,12 +4803,6 @@
     "mtime": 1789690968.5400422,
     "seen": 1789691028.1975036,
     "ast_hash": "ee78b0198675ded93f1f4dcbaa4dea1d",
-    "semantic_hash": ""
-  },
-  "scripts/generate-submark-assets.mjs": {
-    "mtime": 1789795646.3802238,
-    "seen": 1789795821.6498084,
-    "ast_hash": "280caa1a08bee8253bdd2115dc8cf5a3",
     "semantic_hash": ""
   },
   "apps/admin/public/submark.png": {
@@ -4863,6 +4851,12 @@
     "mtime": 1789799924.2180207,
     "seen": 1789800409.9735265,
     "ast_hash": "6e2d8d9358649169ce8d1a3a26d9fe7a",
+    "semantic_hash": ""
+  },
+  "apps/frontend/src/pages/AuthCallbackPage.tsx": {
+    "mtime": 1789801140.152447,
+    "seen": 1789801529.2917583,
+    "ast_hash": "cf8e5e39b949220b352c714af2d3bbe1",
     "semantic_hash": ""
   }
 }

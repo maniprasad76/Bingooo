@@ -67,7 +67,8 @@ export function SignupPage() {
   const handleSocialSignUp = async (provider: 'google' | 'facebook') => {
     setSocialLoading(provider);
     try {
-      await signInWithProvider(provider, `${window.location.origin}/account`);
+      sessionStorage.setItem('bingooo_auth_redirect', '/account');
+      await signInWithProvider(provider, `${window.location.origin}/auth/callback`);
     } catch (error) {
       toast({
         title: `${provider === 'google' ? 'Google' : 'Facebook'} Registration`,

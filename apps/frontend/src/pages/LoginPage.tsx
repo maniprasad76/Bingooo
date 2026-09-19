@@ -65,7 +65,10 @@ export function LoginPage() {
   const handleSocialSignIn = async (provider: 'google' | 'facebook') => {
     setSocialLoading(provider);
     try {
-      await signInWithProvider(provider, `${window.location.origin}${redirectTo}`);
+      if (redirectTo) {
+        sessionStorage.setItem('bingooo_auth_redirect', redirectTo);
+      }
+      await signInWithProvider(provider, `${window.location.origin}/auth/callback`);
     } catch (error) {
       toast({
         title: `${provider === 'google' ? 'Google' : 'Facebook'} Sign-In`,

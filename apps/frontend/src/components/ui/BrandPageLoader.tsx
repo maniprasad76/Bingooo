@@ -42,13 +42,13 @@ export function BrandPageLoader({
           className="absolute h-20 w-20 rounded-full border border-dashed border-[#E6321C]/40"
         />
 
-        {/* Inner Solid Badge */}
+        {/* Inner Solid Badge with Official Submark */}
         <motion.div
           animate={{ scale: [0.96, 1.04, 0.96] }}
           transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
-          className="relative flex h-14 w-14 items-center justify-center rounded-2xl bg-[#171717] text-white shadow-xl border border-white/10"
+          className="relative flex h-16 w-16 items-center justify-center rounded-2xl overflow-hidden shadow-2xl border border-[#D6C8AE]"
         >
-          <span className="text-2xl font-black tracking-tighter text-[#E6321C]">B</span>
+          <img src="/submark.png" alt="Bingooo Submark" className="h-full w-full object-cover select-none" />
         </motion.div>
       </div>
 

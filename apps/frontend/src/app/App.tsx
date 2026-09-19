@@ -8,6 +8,7 @@ import { setPreloaderQueryClient } from '../lib/utils/preloader';
 import { registerServiceWorker } from '../lib/sw/registerServiceWorker';
 import { OfflineBanner } from '../components/common/OfflineBanner';
 import { GlobalErrorBoundary } from '../components/common/GlobalErrorBoundary';
+import { BrandIntroScreen } from '../components/brand';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -34,6 +35,7 @@ export function App() {
       <QueryClientProvider client={queryClient}>
         <ToastProvider>
           <OfflineBanner />
+          <BrandIntroScreen />
           <RouterProvider router={router} />
         </ToastProvider>
       </QueryClientProvider>

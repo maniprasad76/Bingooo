@@ -126,8 +126,8 @@ export function AdminLayout() {
         >
           {!collapsed ? (
             <div className="flex items-center gap-3">
-              <div className="relative flex items-center justify-center w-9 h-9 rounded-xl bg-gradient-to-br from-brand-red to-brand-red-deep text-white shadow-glow-red shrink-0">
-                <Store size={18} className="drop-shadow" />
+              <div className="relative flex items-center justify-center w-9 h-9 rounded-xl overflow-hidden border border-white/20 shadow-md shrink-0 bg-[#F9EEDC]">
+                <img src="/submark.png" alt="Bingooo" className="w-full h-full object-cover select-none" />
                 <span className="absolute -top-0.5 -right-0.5 flex h-2.5 w-2.5">
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                   <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
@@ -148,8 +148,8 @@ export function AdminLayout() {
               </div>
             </div>
           ) : (
-            <div className="flex items-center justify-center w-9 h-9 rounded-xl bg-gradient-to-br from-brand-red to-brand-red-deep text-white shadow-glow-red">
-              <Store size={18} />
+            <div className="flex items-center justify-center w-9 h-9 rounded-xl overflow-hidden border border-white/20 shadow-md shrink-0 bg-[#F9EEDC]">
+              <img src="/submark.png" alt="Bingooo" className="w-full h-full object-cover select-none" />
             </div>
           )}
 

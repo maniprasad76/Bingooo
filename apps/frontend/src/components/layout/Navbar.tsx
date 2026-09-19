@@ -67,38 +67,28 @@ export function Navbar() {
 
 
   // Lock background scroll and close on Escape when mobile menu is open
+  // Lock background scroll and close on Escape when mobile menu is open
   useEffect(() => {
-    if (mobileMenuOpen) {
-      const scrollY = window.scrollY;
-      const originalBodyOverflow = document.body.style.overflow;
-      const originalBodyPosition = document.body.style.position;
-      const originalBodyTop = document.body.style.top;
-      const originalBodyWidth = document.body.style.width;
-      const originalHtmlOverflow = document.documentElement.style.overflow;
+    if (!mobileMenuOpen) return;
 
-      document.documentElement.style.overflow = 'hidden';
-      document.body.style.overflow = 'hidden';
-      document.body.style.position = 'fixed';
-      document.body.style.top = `-${scrollY}px`;
-      document.body.style.width = '100%';
+    const originalBodyOverflow = document.body.style.overflow;
+    const originalHtmlOverflow = document.documentElement.style.overflow;
 
-      const handleKeyDown = (e: KeyboardEvent) => {
-        if (e.key === 'Escape') {
-          closeMobileMenu();
-        }
-      };
-      window.addEventListener('keydown', handleKeyDown);
+    document.documentElement.style.overflow = 'hidden';
+    document.body.style.overflow = 'hidden';
 
-      return () => {
-        document.documentElement.style.overflow = originalHtmlOverflow;
-        document.body.style.overflow = originalBodyOverflow;
-        document.body.style.position = originalBodyPosition;
-        document.body.style.top = originalBodyTop;
-        document.body.style.width = originalBodyWidth;
-        window.scrollTo(0, scrollY);
-        window.removeEventListener('keydown', handleKeyDown);
-      };
-    }
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        closeMobileMenu();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      document.documentElement.style.overflow = originalHtmlOverflow;
+      document.body.style.overflow = originalBodyOverflow;
+      window.removeEventListener('keydown', handleKeyDown);
+    };
   }, [mobileMenuOpen, closeMobileMenu]);
 
   return (
@@ -239,6 +229,7 @@ export function Navbar() {
               <>
                 {/* Backdrop */}
                 <motion.div
+                  key="mobile-nav-backdrop"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
@@ -251,6 +242,7 @@ export function Navbar() {
 
                 {/* Slide Drawer Panel */}
                 <motion.div
+                  key="mobile-nav-drawer"
                   initial={{ x: '-100%' }}
                   animate={{ x: 0 }}
                   exit={{ x: '-100%' }}

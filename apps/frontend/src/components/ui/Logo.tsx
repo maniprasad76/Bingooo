@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { cn } from '../../lib/utils';
 
-export type LogoVariant = 'red' | 'white' | 'dark' | 'icon' | 'icon-white';
+export type LogoVariant = 'red' | 'white' | 'dark' | 'icon' | 'icon-white' | 'submark';
 export type LogoSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'custom';
 
 export interface LogoProps {
@@ -16,12 +16,12 @@ export interface LogoProps {
 }
 
 const iconSizeClasses: Record<LogoSize, string> = {
-  xs: 'h-6 w-6 text-xs rounded-md',
-  sm: 'h-8 w-8 text-sm rounded-lg',
-  md: 'h-10 w-10 text-lg rounded-xl',
-  lg: 'h-12 w-12 text-2xl rounded-xl',
-  xl: 'h-14 w-14 text-3xl rounded-2xl',
-  custom: 'h-10 w-10 text-lg rounded-xl',
+  xs: 'h-6 w-6 rounded-md',
+  sm: 'h-8 w-8 rounded-lg',
+  md: 'h-10 w-10 rounded-xl',
+  lg: 'h-12 w-12 rounded-xl',
+  xl: 'h-14 w-14 rounded-2xl',
+  custom: 'h-10 w-10 rounded-xl',
 };
 
 const typographySizes: Record<
@@ -81,7 +81,7 @@ export function Logo({
   to = '/',
   alt = 'Bingooo — Premium Menswear',
 }: LogoProps) {
-  const isIcon = variant === 'icon' || variant === 'icon-white';
+  const isIcon = variant === 'icon' || variant === 'icon-white' || variant === 'submark';
   const isWhite = variant === 'white' || variant === 'icon-white';
   const isRed = variant === 'red';
   const config = typographySizes[size];
@@ -103,19 +103,22 @@ export function Logo({
   const logoContent = isIcon ? (
     <div
       className={cn(
-        'inline-flex items-center justify-center font-heading font-black select-none border transition-colors shrink-0 shadow-xs',
+        'inline-flex items-center justify-center select-none overflow-hidden shrink-0 shadow-xs border',
         variant === 'icon-white'
-          ? 'bg-white/10 border-white/15'
-          : 'bg-[#F7EEDB] border-[#D6C8AE]',
+          ? 'bg-[#171717] border-white/15'
+          : 'bg-[#F9EEDC] border-[#D6C8AE]',
         iconSizeClasses[size],
         imgClassName
       )}
       aria-label={alt}
       role="img"
     >
-      <span className="leading-none text-[#E6321C] flex items-baseline">
-        B<span className="text-[#171717]">.</span>
-      </span>
+      <img
+        src="/submark.png"
+        alt={alt}
+        className="w-full h-full object-cover select-none"
+        loading="eager"
+      />
     </div>
   ) : (
     <div

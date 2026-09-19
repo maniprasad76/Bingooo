@@ -71,10 +71,12 @@ export function SocialFab() {
   const fabRef = useRef<HTMLDivElement>(null);
   const mobileMenuOpen = useUIStore((s) => s.mobileMenuOpen);
 
-  // Hide floating action button when mobile menu is open
-  if (mobileMenuOpen) {
-    return null;
-  }
+  // Close speed dial if mobile menu opens
+  useEffect(() => {
+    if (mobileMenuOpen) {
+      setIsOpen(false);
+    }
+  }, [mobileMenuOpen]);
 
   // Close on outside click
   useEffect(() => {
@@ -105,6 +107,11 @@ export function SocialFab() {
       document.removeEventListener('keydown', handleKeyDown);
     };
   }, [isOpen]);
+
+  // Hide floating action button when mobile menu is open (MUST BE AFTER ALL HOOKS)
+  if (mobileMenuOpen) {
+    return null;
+  }
 
   return (
     <div

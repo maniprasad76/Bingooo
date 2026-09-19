@@ -13,6 +13,7 @@ import { ScrollToTop } from '../common/ScrollToTop';
 import { RouteFallback } from '../common/RouteFallback';
 import { initCapacitorBridge, registerNavigator, registerOverlayCloser } from '../../lib/native/capacitorBridge';
 import { useCartStore } from '../../store/cart';
+import { useUIStore } from '../../store/ui';
 
 export function PageLayout() {
   const navigate = useNavigate();
@@ -21,6 +22,15 @@ export function PageLayout() {
     initCapacitorBridge();
     registerNavigator((delta) => navigate(delta));
     registerOverlayCloser(() => {
+      const uiState = useUIStore.getState();
+      if (uiState.mobileMenuOpen) {
+        uiState.closeMobileMenu();
+        return true;
+      }
+      if (uiState.searchModalOpen) {
+        uiState.closeSearchModal();
+        return true;
+      }
       if (useCartStore.getState().drawerOpen) {
         useCartStore.getState().closeDrawer();
         return true;

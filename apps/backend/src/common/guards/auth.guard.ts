@@ -82,21 +82,47 @@ export class AuthGuard implements CanActivate {
       return true;
     }
 
-    // 3. Supabase Auth fallback if configured
-    const supabaseUrl = process.env.SUPABASE_URL;
-    const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-    if (supabaseUrl && serviceRoleKey) {
+    // 3. Supabase Auth fallback
+    const supabaseUrl = process.env.SUPABASE_URL || 'https://zqmrmgwxhrdscippanuv.supabase.co';
+    const supabaseKey =
+      process.env.SUPABASE_SERVICE_ROLE_KEY ||
+      process.env.SUPABASE_PUBLISHABLE_KEY ||
+      process.env.SUPABASE_ANON_KEY ||
+      'sb_publishable_fHCORRNjkuYGufRUUdvHtw_T5VFXWpl';
+
+    if (supabaseUrl && supabaseKey) {
       try {
-        const supabase = createClient(supabaseUrl, serviceRoleKey, {
+        const supabase = createClient(supabaseUrl, supabaseKey, {
           auth: { autoRefreshToken: false, persistSession: false },
         });
         const { data: authData, error: authError } = await supabase.auth.getUser(token);
-        if (!authError && authData.user) {
+        if (!authError && authData?.user) {
+          // Sync or find user in db
+          let user = db.users.find((u) => u.id === authData.user.id || u.email === authData.user.email);
+          if (!user && authData.user.email) {
+            user = {
+              id: authData.user.id,
+              email: authData.user.email,
+              full_name:
+                authData.user.user_metadata?.full_name ||
+                authData.user.user_metadata?.name ||
+                authData.user.email.split('@')[0],
+              phone: authData.user.phone || '',
+              role: 'CUSTOMER',
+              status: 'ACTIVE',
+              password_hash: '',
+              created_at: new Date().toISOString(),
+              updated_at: new Date().toISOString(),
+            };
+            db.users.push(user);
+          }
+
+          const roleCode = user?.role || 'CUSTOMER';
           (request as any).user = {
             id: authData.user.id,
             email: authData.user.email,
-            roles: ['CUSTOMER'],
-            permissions: ['orders.own', 'profile.own'],
+            roles: [roleCode.toUpperCase()],
+            permissions: roleCode === 'SUPER_ADMIN' ? ['*'] : ['orders.own', 'profile.own'],
             token,
           };
           return true;

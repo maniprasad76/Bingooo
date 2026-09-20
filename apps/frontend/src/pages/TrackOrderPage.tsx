@@ -47,7 +47,7 @@ const DEMO_TRACKING_DATA: Record<string, TrackingResult> = {
         color: 'Charcoal Black',
         qty: 1,
         price: 699,
-        image: '/hero-banner.png',
+        image: '/custom/tshirt-step-1.png',
       },
       {
         title: 'Custom Atelier Graphic Tee',
@@ -221,7 +221,7 @@ export function TrackOrderPage() {
               color: 'Charcoal Black',
               qty: 1,
               price: 899,
-              image: '/hero-banner.png',
+              image: '/custom/tshirt-step-1.png',
             },
           ],
           timeline:
@@ -267,7 +267,7 @@ export function TrackOrderPage() {
               color: 'Custom Blend',
               qty: 1,
               price: 899,
-              image: '/hero-banner.png',
+              image: '/custom/tshirt-step-1.png',
             },
           ],
           timeline: [

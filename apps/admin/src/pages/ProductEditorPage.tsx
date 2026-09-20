@@ -123,7 +123,7 @@ export function ProductEditorPage() {
 
   // ── 3. 5 PRODUCT IMAGES ──
   const [slotImages, setSlotImages] = useState<string[]>([
-    '/hero-banner.png',
+    '/custom/tshirt-step-1.png',
     '/custom/tshirt-step-1.png',
     '/custom/tshirt-step-2.png',
     '',
@@ -510,7 +510,7 @@ export function ProductEditorPage() {
   // Preview data
   const validImages = useMemo(() => {
     const list = slotImages.filter((s) => Boolean(s && s.trim()));
-    return list.length > 0 ? list : ['/hero-banner.png'];
+    return list.length > 0 ? list : ['/custom/tshirt-step-1.png'];
   }, [slotImages]);
 
   const selectedCategoryName = useMemo(() => {

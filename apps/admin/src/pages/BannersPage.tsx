@@ -38,8 +38,8 @@ const EMPTY_FORM: Omit<BannerItem, 'id'> = {
   subtitle: '',
   ctaText: "Shop Men's Wear",
   targetUrl: '/shop',
-  desktopImageUrl: '/hero-banner.png',
-  mobileImageUrl: '/hero-banner.png',
+  desktopImageUrl: '/real-fit-1.jpg',
+  mobileImageUrl: '/real-fit-1.jpg',
   badge: 'EXCLUSIVE DROP',
   priority: 1,
   isActive: true,
@@ -85,8 +85,8 @@ export function BannersPage() {
       subtitle: banner.subtitle,
       ctaText: banner.ctaText || "Shop Men's Wear",
       targetUrl: banner.targetUrl || '/shop',
-      desktopImageUrl: banner.desktopImageUrl || '/hero-banner.png',
-      mobileImageUrl: banner.mobileImageUrl || banner.desktopImageUrl || '/hero-banner.png',
+      desktopImageUrl: banner.desktopImageUrl || '/real-fit-1.jpg',
+      mobileImageUrl: banner.mobileImageUrl || banner.desktopImageUrl || '/real-fit-1.jpg',
       badge: banner.badge || '',
       priority: banner.priority || 1,
       isActive: banner.isActive !== false,
@@ -386,7 +386,7 @@ export function BannersPage() {
                 <input
                   type="text"
                   required
-                  placeholder="/hero-banner.png or https://..."
+                  placeholder="/real-fit-1.jpg or https://..."
                   value={form.desktopImageUrl}
                   onChange={(e) => setForm({ ...form, desktopImageUrl: e.target.value })}
                   className="admin-input font-mono text-xs"

@@ -1,7 +1,7 @@
 # Graph Report - bingooo  (2026-09-20)
 
 ## Corpus Check
-- 711 files · ~1,171,188 words
+- 701 files · ~829,880 words
 - Verdict: corpus is large enough that graph structure adds value.
 - Unclassified: 41 file(s) not represented in the graph (top: (none) 12, .xml 12, .example 3)
 
@@ -11,7 +11,7 @@
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `43a96fdd`
+- Built from commit: `d3a87c44`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 

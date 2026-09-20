@@ -20,7 +20,7 @@ export interface SEOProps {
 const DEFAULT_TITLE = "Bingooo — Premium Heavyweight Men's Wear";
 const DEFAULT_DESCRIPTION =
   "Shop curated 240–280 GSM heavyweight cotton menswear or craft custom bespoke streetwear in our 3D Atelier Studio. Pan-India express delivery.";
-const DEFAULT_IMAGE = '/og-image.png';
+const DEFAULT_IMAGE = '/brand-logo.png';
 const BASE_URL = 'https://bingooo.in';
 
 /**

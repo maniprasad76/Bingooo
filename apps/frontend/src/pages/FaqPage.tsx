@@ -294,7 +294,7 @@ export function FaqPage() {
         >
           <div className="w-full h-full relative overflow-hidden flex items-center justify-center bg-gradient-to-br from-[#d5cfc5] to-[#8d8983]">
             <img
-              src="/hero-banner-2.jpg"
+              src="/about-atelier.jpg"
               alt="Bingooo Editorial Menswear"
               className="w-full h-full object-cover object-top grayscale contrast-110 mix-blend-multiply opacity-90"
               onError={(e) => {

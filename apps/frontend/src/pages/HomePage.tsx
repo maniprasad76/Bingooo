@@ -223,16 +223,18 @@ export function HomePage() {
           HERO SECTION — 100% Full Width Edge-to-Edge All Devices
       ========================================================= */}
       <section className="relative w-full min-h-[min(680px,calc(100vh-90px))] md:min-h-[min(720px,calc(100vh-104px))] overflow-hidden bg-[#f7eedb] m-0 p-0">
-        {/* Full-bleed Hero Campaign Imagery — No Left/Right Bounds */}
+        {/* Full-bleed Hero Campaign Imagery */}
         <div className="absolute inset-0 md:left-[36%] lg:left-[40%] xl:left-[42%] overflow-hidden pointer-events-none z-0">
           <img
             src="https://images.unsplash.com/photo-1529139574466-a303027c1d8b?auto=format&fit=crop&w=2200&q=85"
             alt="Bingooo fashion campaign"
-            className="h-full w-full object-cover object-top md:object-center grayscale"
+            className="h-full w-full object-cover object-[center_15%] grayscale contrast-[1.05]"
           />
           {/* Gradient Overlay: Vertical blend on mobile, Horizontal blend on desktop */}
-          <div className="absolute inset-0 bg-gradient-to-b from-[#f7eedb] via-[#f7eedb]/75 to-[#f7eedb]/20 md:hidden" />
-          <div className="hidden md:block absolute inset-0 bg-gradient-to-r from-[#f7eedb] via-[#f7eedb]/60 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-b from-[#f7eedb] via-[#f7eedb]/80 to-[#f7eedb]/30 md:hidden" />
+          <div className="hidden md:block absolute inset-0 bg-gradient-to-r from-[#f7eedb] via-[#f7eedb]/65 to-transparent" />
+          {/* Subtle bottom fade to blend into next section */}
+          <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-[#f7eedb] to-transparent pointer-events-none" />
         </div>
 
         {/* Hero Content — Full Width Grid with Edge-Aware Padding */}
@@ -245,20 +247,20 @@ export function HomePage() {
               BINGOOO
             </div>
 
-            <h1 className="m-0 mb-6 sm:mb-8 text-[clamp(44px,6.8vw,96px)] font-extrabold leading-[0.84] tracking-[-0.07em] uppercase text-[#171717]">
+            <h1 className="m-0 mb-4 sm:mb-6 text-[clamp(44px,6.8vw,96px)] font-extrabold leading-[0.84] tracking-[-0.07em] uppercase text-[#171717]">
               WEAR WHAT<br />
               DEFINES<br />
               YOU<span className="text-[#e6321c]">.</span>
             </h1>
 
-            <p className="my-5 mb-6 text-[11px] font-semibold tracking-[0.34em] uppercase text-[#171717]">
-              WEAR WHAT DEFINES YOU.
+            <p className="my-4 mb-7 text-xs sm:text-[13px] font-semibold tracking-[0.18em] uppercase text-[#6f6a63] max-w-[480px] leading-relaxed">
+              240–280 GSM Heavyweight Streetwear <span className="text-[#e6321c] font-bold mx-1.5">•</span> Custom 3D Atelier
             </p>
 
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3.5 sm:gap-4">
               <Link
                 to="/shop"
-                className="btn btn-red min-h-[52px] px-8 text-xs font-extrabold tracking-wider w-full sm:w-auto shadow-[0_6px_22px_rgba(230,50,28,0.35)] hover:shadow-[0_8px_28px_rgba(230,50,28,0.45)] group justify-center cursor-pointer"
+                className="h-[52px] px-8 rounded-[10px] text-xs font-bold tracking-wider uppercase inline-flex items-center justify-center gap-2.5 bg-[#E6321C] text-white hover:bg-[#B91F12] shadow-[0_6px_20px_rgba(230,50,28,0.32)] hover:shadow-[0_8px_26px_rgba(230,50,28,0.42)] transition-all duration-200 group w-full sm:w-auto cursor-pointer active:scale-[0.98]"
               >
                 <span>SHOP MEN'S WEAR</span>
                 <span className="transition-transform duration-200 group-hover:translate-x-1">→</span>
@@ -266,9 +268,9 @@ export function HomePage() {
 
               <Link
                 to="/customize"
-                className="min-h-[52px] px-7 text-xs font-black tracking-wider uppercase inline-flex items-center justify-center gap-2.5 rounded-none border-2 border-[#171717] bg-[#171717] text-white hover:bg-white hover:text-[#171717] transition-all shadow-[0_8px_24px_rgba(0,0,0,0.22)] group w-full sm:w-auto cursor-pointer"
+                className="h-[52px] px-8 rounded-[10px] text-xs font-bold tracking-wider uppercase inline-flex items-center justify-center gap-2.5 bg-[#171717] text-white hover:bg-black shadow-[0_6px_20px_rgba(23,23,23,0.18)] hover:shadow-[0_8px_26px_rgba(23,23,23,0.28)] transition-all duration-200 group w-full sm:w-auto cursor-pointer active:scale-[0.98] border border-[#171717]"
               >
-                <Sparkles size={15} className="text-[#E6321C] group-hover:scale-115 transition-transform" />
+                <Sparkles size={15} className="text-[#E6321C] transition-transform duration-200 group-hover:rotate-12" />
                 <span>CREATE YOUR DESIGN</span>
               </Link>
             </div>

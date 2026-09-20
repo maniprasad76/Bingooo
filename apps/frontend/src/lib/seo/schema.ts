@@ -26,7 +26,7 @@ export function generateOrganizationSchema() {
     name: BRAND_NAME,
     url: SITE_URL,
     logo: `${SITE_URL}/brand-logo.png`,
-    image: `${SITE_URL}/hero-banner.png`,
+    image: `${SITE_URL}/brand-logo.png`,
     description:
       'Contemporary Indian luxury menswear crafted with 240 to 280 GSM heavyweight cotton and bespoke 3D custom apparel.',
     telephone: '+91-7981787317',
@@ -109,7 +109,7 @@ export function generateProductSchema(product: {
     img.url.startsWith('http') ? img.url : `${SITE_URL}${img.url}`
   );
   if (images.length === 0) {
-    images.push(`${SITE_URL}/hero-banner.png`);
+    images.push(`${SITE_URL}/brand-logo.png`);
   }
 
   const inStock = product.variants && product.variants.length > 0
@@ -262,7 +262,7 @@ export function generateItemListSchema(
         ? item.image.startsWith('http')
           ? item.image
           : `${SITE_URL}${item.image}`
-        : `${SITE_URL}/hero-banner.png`,
+        : `${SITE_URL}/brand-logo.png`,
     })),
   };
 }
@@ -296,7 +296,7 @@ export function generateLocalBusinessSchema() {
     '@id': `${SITE_URL}/#localbusiness`,
     name: BRAND_NAME,
     url: SITE_URL,
-    image: `${SITE_URL}/hero-banner.png`,
+    image: `${SITE_URL}/brand-logo.png`,
     logo: `${SITE_URL}/brand-logo.png`,
     description:
       'Bingooo is India\'s premium heavyweight menswear brand offering 240–420 GSM streetwear and bespoke custom-printed apparel. Located in Srikakulam, Andhra Pradesh.',

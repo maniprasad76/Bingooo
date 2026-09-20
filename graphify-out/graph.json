@@ -93128,7 +93128,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "apps/frontend/src/pages/HomePage.tsx",
-      "source_location": "L402",
+      "source_location": "L404",
       "weight": 1.0
     },
     {
@@ -93140,7 +93140,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "apps/frontend/src/pages/HomePage.tsx",
-      "source_location": "L486",
+      "source_location": "L488",
       "weight": 1.0
     },
     {
@@ -204115,5 +204115,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "43a96fddd8cb57072915cd050024a527ac0b1764"
+  "built_at_commit": "d3a87c444a27602400a64a6cc37b8276ef8c36f7"
 }

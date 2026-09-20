@@ -7,11 +7,12 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { db, saveDb } from '../database/store';
 import { rebuildIndexes } from '../database/db-index.service';
+import { getDataDir, getUploadsDir } from '../utils/paths.util';
 
-const DATA_DIR = path.resolve(process.cwd(), 'data');
+const DATA_DIR = getDataDir();
 const BACKUP_DIR = path.join(DATA_DIR, 'backups');
 const STORE_FILE = path.join(DATA_DIR, 'store.json');
-const UPLOADS_DIR = path.resolve(process.cwd(), 'uploads');
+const UPLOADS_DIR = getUploadsDir();
 const MAX_BACKUPS = 10;
 
 // Ensure backup directory exists

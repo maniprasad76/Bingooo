@@ -9,7 +9,7 @@ import { v4 as uuidv4 } from 'uuid';
 import * as crypto from 'crypto';
 import Razorpay from 'razorpay';
 import { IsString, IsOptional, IsNumber, IsObject } from 'class-validator';
-import { db } from '../common/database/store';
+import { db, saveDb } from '../common/database/store';
 import { OrdersService } from '../orders/orders.service';
 
 export class CreateOrderDto {
@@ -88,19 +88,30 @@ export class PaymentsService {
       shipping_fee_default: Number(db.settings.shipping_fee_default) || 99,
       prepaid_discount_percentage: Number(db.settings.prepaid_discount_percentage) || 5,
       currency: db.settings.currency || 'INR',
-      key_id: (process.env.RAZORPAY_KEY_ID || 'rzp_test_TYDFxO8bZagWG6').trim(),
+      key_id: (process.env.RAZORPAY_KEY_ID || '').trim(),
     };
   }
 
-  private getRazorpayClient(): Razorpay {
-    const keyId = (process.env.RAZORPAY_KEY_ID || 'rzp_test_TYDFxO8bZagWG6').trim();
-    const keySecret = (process.env.RAZORPAY_KEY_SECRET || 'W4EEMomr3MJb2oB8yK5Q4dP3').trim();
+  /**
+   * No hardcoded credential fallbacks: a publicly-known fallback key/secret
+   * committed to source would let anyone forge Razorpay signatures against
+   * this server. Missing config must fail loudly, not silently "work" with
+   * a value visible in the repo.
+   */
+  private getRazorpayCredentials(): { keyId: string; keySecret: string } {
+    const keyId = (process.env.RAZORPAY_KEY_ID || '').trim();
+    const keySecret = (process.env.RAZORPAY_KEY_SECRET || '').trim();
     if (!keyId || !keySecret) {
       throw new InternalServerErrorException({
         code: 'RAZORPAY_NOT_CONFIGURED',
         message: 'Razorpay credentials (RAZORPAY_KEY_ID or RAZORPAY_KEY_SECRET) not configured',
       });
     }
+    return { keyId, keySecret };
+  }
+
+  private getRazorpayClient(): Razorpay {
+    const { keyId, keySecret } = this.getRazorpayCredentials();
     return new Razorpay({
       key_id: keyId,
       key_secret: keySecret,
@@ -147,7 +158,12 @@ export class PaymentsService {
 
       const payableAmount =
         order.payment_method === 'partial_cod' ? (order.cod_deposit || order.total) : order.total;
-      amountInPaise = dto.amount !== undefined ? Math.round(dto.amount) : Math.round(payableAmount * 100);
+      // Always derive the charge amount from the authoritative order record.
+      // A client-supplied `amount` is intentionally ignored here: trusting it
+      // would let a caller pay less than the order's real total and then use
+      // the (genuinely valid, but under-priced) Razorpay signature to mark
+      // the full order as captured.
+      amountInPaise = Math.round(payableAmount * 100);
       receipt = receipt || order.order_number;
       notes = { orderId: order.id, orderNumber: order.order_number, ...notes };
     } else if (dto.amount !== undefined) {
@@ -209,6 +225,7 @@ export class PaymentsService {
         updated_at: new Date().toISOString(),
       };
       db.payments.push(payment);
+      saveDb();
     }
 
     return {
@@ -238,13 +255,7 @@ export class PaymentsService {
       });
     }
 
-    const keySecret = (process.env.RAZORPAY_KEY_SECRET || 'W4EEMomr3MJb2oB8yK5Q4dP3').trim();
-    if (!keySecret) {
-      throw new InternalServerErrorException({
-        code: 'RAZORPAY_SECRET_MISSING',
-        message: 'Razorpay key secret is not configured on server',
-      });
-    }
+    const { keySecret } = this.getRazorpayCredentials();
 
     // Calculate HMAC-SHA256
     const expectedSignature = crypto
@@ -299,6 +310,7 @@ export class PaymentsService {
         order.status = 'processing';
         order.updated_at = new Date().toISOString();
       }
+      saveDb();
     }
 
     return {
@@ -314,36 +326,40 @@ export class PaymentsService {
 
   /** Webhook listener for async Razorpay events */
   handleWebhook(event: any, signature?: string, rawBody?: Buffer | string) {
-    const webhookSecret = process.env.RAZORPAY_WEBHOOK_SECRET?.trim() || 'bingooo_whsec_2026';
+    const webhookSecret = process.env.RAZORPAY_WEBHOOK_SECRET?.trim();
+    if (!webhookSecret) {
+      throw new InternalServerErrorException({
+        code: 'RAZORPAY_WEBHOOK_NOT_CONFIGURED',
+        message: 'RAZORPAY_WEBHOOK_SECRET is not configured on server',
+      });
+    }
 
-    // If a webhook secret is configured, enforce strict cryptographic HMAC signature validation
-    if (webhookSecret) {
-      if (!signature) {
-        throw new BadRequestException({
-          code: 'MISSING_WEBHOOK_SIGNATURE',
-          message: 'Missing x-razorpay-signature header',
-        });
-      }
+    // Enforce strict cryptographic HMAC signature validation
+    if (!signature) {
+      throw new BadRequestException({
+        code: 'MISSING_WEBHOOK_SIGNATURE',
+        message: 'Missing x-razorpay-signature header',
+      });
+    }
 
-      const payloadString = rawBody
-        ? (Buffer.isBuffer(rawBody) ? rawBody.toString('utf8') : rawBody)
-        : JSON.stringify(event);
+    const payloadString = rawBody
+      ? (Buffer.isBuffer(rawBody) ? rawBody.toString('utf8') : rawBody)
+      : JSON.stringify(event);
 
-      try {
-        const isValid = Razorpay.validateWebhookSignature(payloadString, signature, webhookSecret);
-        if (!isValid) {
-          throw new BadRequestException({
-            code: 'INVALID_WEBHOOK_SIGNATURE',
-            message: 'Razorpay webhook signature verification failed',
-          });
-        }
-      } catch (err: any) {
-        if (err instanceof BadRequestException) throw err;
+    try {
+      const isValid = Razorpay.validateWebhookSignature(payloadString, signature, webhookSecret);
+      if (!isValid) {
         throw new BadRequestException({
           code: 'INVALID_WEBHOOK_SIGNATURE',
-          message: 'Error verifying webhook signature: ' + (err?.message || 'Invalid format'),
+          message: 'Razorpay webhook signature verification failed',
         });
       }
+    } catch (err: any) {
+      if (err instanceof BadRequestException) throw err;
+      throw new BadRequestException({
+        code: 'INVALID_WEBHOOK_SIGNATURE',
+        message: 'Error verifying webhook signature: ' + (err?.message || 'Invalid format'),
+      });
     }
 
     const eventId = event?.id || uuidv4();
@@ -386,6 +402,7 @@ export class PaymentsService {
       }
     }
 
+    saveDb();
     return { received: true, status: 'ok' };
   }
 

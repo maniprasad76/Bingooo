@@ -23,39 +23,39 @@ interface FeaturedProduct {
 const FEATURED_PRODUCTS: FeaturedProduct[] = [
   {
     id: 'prod-1',
-    name: 'Classic Logo Tee',
-    price: '₹999',
-    image: '',
+    name: 'Classic Oversized Tee',
+    price: '₹1,299',
+    image: '/custom/tshirt-step-1.png',
     category: 'Oversized Tees',
     swatches: ['#171717', '#ffffff', '#d9cbb8'],
     link: '/product/classic-oversized-tee',
   },
   {
     id: 'prod-2',
-    name: 'Minimal Tee',
-    price: '₹1,099',
-    image: '',
+    name: 'Graphic Print Tee — Midnight',
+    price: '₹1,499',
+    image: '/custom/tshirt-step-3-black.png',
     category: 'Oversized Tees',
     swatches: ['#171717', '#d9cbb8', '#ffffff'],
-    link: '/product/minimalist-heavyweight-tee',
+    link: '/product/graphic-print-tee-midnight',
   },
   {
     id: 'prod-3',
-    name: 'Statement Hoodie',
-    price: '₹1,499',
-    image: '',
+    name: 'Essential Pullover Hoodie',
+    price: '₹2,499',
+    image: '/custom/tshirt-step-2.png',
     category: 'Hoodies',
     swatches: ['#171717', '#8d8984', '#d9cbb8'],
-    link: '/product/heavyweight-fleece-hoodie',
+    link: '/product/essential-pullover-hoodie',
   },
   {
     id: 'prod-4',
-    name: 'Bold B Tee',
-    price: '₹1,199',
-    image: '',
+    name: 'Heavyweight Studio Boxy Tee',
+    price: '₹1,399',
+    image: '/custom/tshirt-step-1.png',
     category: 'Oversized Tees',
     swatches: ['#171717', '#ffffff', '#8d8984'],
-    link: '/product/bold-signature-tee',
+    link: '/product/classic-oversized-tee',
   },
 ];
 
@@ -132,6 +132,7 @@ export function HomePage() {
   const [subscribed, setSubscribed] = useState(false);
   const [isSubscribing, setIsSubscribing] = useState(false);
   const [selectedFitIndex, setSelectedFitIndex] = useState<number | null>(null);
+  const [failedImages, setFailedImages] = useState<Record<string, boolean>>({});
 
   // Dynamic products from API/Admin DB (with clean fallback)
   const productsQuery = useProducts({ limit: 4 });
@@ -144,6 +145,9 @@ export function HomePage() {
           p.images?.[0]?.url ||
           p.images?.[0]?.object_key ||
           (typeof p.images?.[0] === 'string' ? p.images[0] : '') ||
+          p.image_url ||
+          p.imageUrl ||
+          p.image ||
           '';
 
         const swatches = p.variants?.length
@@ -399,13 +403,13 @@ export function HomePage() {
                     onTouchStart={() => prefetchProduct(prod.link.replace('/product/', ''))}
                     className="block h-full w-full"
                   >
-                    {prod.image ? (
+                    {prod.image && !failedImages[prod.id] ? (
                       <img
                         src={prod.image}
                         alt={prod.name}
                         className="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.035]"
-                        onError={(e) => {
-                          e.currentTarget.style.display = 'none';
+                        onError={() => {
+                          setFailedImages((prev) => ({ ...prev, [prod.id]: true }));
                         }}
                       />
                     ) : (

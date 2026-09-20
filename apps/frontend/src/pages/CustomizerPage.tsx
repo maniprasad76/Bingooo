@@ -34,8 +34,10 @@ const SHIRT_COLORS: ColorOption[] = [
     frontImageUrl: '/custom/black-front.png', backImageUrl: '/custom/black-back.png' },
   { id: 'white', name: 'White', hex: '#FFFFFF', textContrast: '#171717',
     frontImageUrl: '/custom/white-front.png', backImageUrl: '/custom/white-back.png' },
-  { id: 'beige', name: 'Beige', hex: '#D8C8B1', textContrast: '#171717' },
-  { id: 'red', name: 'Red', hex: '#E6321C', textContrast: '#FFFFFF' },
+  { id: 'beige', name: 'Beige', hex: '#D8C8B1', textContrast: '#171717',
+    frontImageUrl: '/custom/beige-front.png', backImageUrl: '/custom/beige-back.png' },
+  { id: 'red', name: 'Red', hex: '#E6321C', textContrast: '#FFFFFF',
+    frontImageUrl: '/custom/red-front.png', backImageUrl: '/custom/red-back.png' },
 ];
 const HOODIE_COLORS: ColorOption[] = [
   { id: 'black', name: 'Black', hex: '#171717', textContrast: '#FFFFFF',
@@ -180,19 +182,13 @@ export function CustomizerPage() {
 
   const activeFont = FONT_OPTIONS.find(f => f.id === selectedFont) || FONT_OPTIONS[0];
   const filteredFonts = FONT_OPTIONS.filter(f => selectedFontCategory === 'all' ? true : f.category === selectedFontCategory);
-  const isLightGarment = ['#FFFFFF', '#D8C8B1', '#F7EEDB'].some(h => selectedColor.hex.toUpperCase() === h);
+  const isLightGarment = ['#FFFFFF', '#D8C8B1', '#F7EEDB', '#C8B99D', '#FAF6EE'].some(h => selectedColor.hex?.toUpperCase() === h) || ['beige', 'white', 'cream', 'sand'].includes(selectedColor.name?.toLowerCase());
   const designBlendMode = isLightGarment ? 'multiply' : 'normal';
-  const imageSrc = (() => {
-    const garment = garmentsList.find(g => g.id === selectedGarment.id);
-    if (garment?.colors?.length) {
-      const match = garment.colors.find(c => c.name.toLowerCase() === selectedColor.name.toLowerCase());
-      if (match) {
-        if (viewSide === 'BACK' && match.backImageUrl) return match.backImageUrl;
-        if (match.frontImageUrl) return match.frontImageUrl;
-      }
-    }
-    return '';
-  })();
+
+  const currentGarmentColor = garmentsList.find(g => g.id === selectedGarment.id)?.colors?.find(c => c.name.toLowerCase() === selectedColor.name.toLowerCase()) || selectedColor;
+  const currentFrontImage = currentGarmentColor.frontImageUrl || '';
+  const currentBackImage = currentGarmentColor.backImageUrl || '';
+  const imageSrc = (viewSide === 'BACK' && currentBackImage) ? currentBackImage : currentFrontImage;
 
   // Fetch live config from API
   useEffect(() => {
@@ -400,17 +396,9 @@ export function CustomizerPage() {
             className="relative aspect-[3/4] rounded-xl overflow-hidden border border-[#ddd3c5] bg-[#ede0cc] cursor-pointer group"
             onClick={() => setViewSide('FRONT')}
           >
-            {imageSrc || (() => {
-              const g = garmentsList.find(x => x.id === selectedGarment.id);
-              const c = g?.colors?.find(x => x.name.toLowerCase() === selectedColor.name.toLowerCase());
-              return c?.frontImageUrl;
-            })() ? (
+            {currentFrontImage ? (
               <img
-                src={(() => {
-                  const g = garmentsList.find(x => x.id === selectedGarment.id);
-                  const c = g?.colors?.find(x => x.name.toLowerCase() === selectedColor.name.toLowerCase());
-                  return c?.frontImageUrl || '';
-                })()}
+                src={currentFrontImage}
                 alt="Front"
                 className={`w-full h-full object-contain p-2 transition-transform duration-200 group-hover:scale-105 ${viewSide === 'FRONT' ? '' : 'opacity-70'}`}
               />
@@ -427,17 +415,9 @@ export function CustomizerPage() {
             className="relative aspect-[3/4] rounded-xl overflow-hidden border border-[#ddd3c5] bg-[#ede0cc] cursor-pointer group"
             onClick={() => setViewSide('BACK')}
           >
-            {(() => {
-              const g = garmentsList.find(x => x.id === selectedGarment.id);
-              const c = g?.colors?.find(x => x.name.toLowerCase() === selectedColor.name.toLowerCase());
-              return c?.backImageUrl;
-            })() ? (
+            {currentBackImage ? (
               <img
-                src={(() => {
-                  const g = garmentsList.find(x => x.id === selectedGarment.id);
-                  const c = g?.colors?.find(x => x.name.toLowerCase() === selectedColor.name.toLowerCase());
-                  return c?.backImageUrl || '';
-                })()}
+                src={currentBackImage}
                 alt="Back"
                 className={`w-full h-full object-contain p-2 transition-transform duration-200 group-hover:scale-105 ${viewSide === 'BACK' ? '' : 'opacity-70'}`}
               />
@@ -786,7 +766,7 @@ export function CustomizerPage() {
                     <img
                       src={imageSrc}
                       alt={`${selectedColor.name} ${selectedGarment.name} – ${viewSide.toLowerCase()} view`}
-                      className={`w-full h-full object-contain select-none transition-all duration-500 drop-shadow-[0_18px_48px_rgba(0,0,0,0.16)]${viewSide === 'BACK' && !selectedColor.backImageUrl ? ' scale-x-[-1]' : ''}`}
+                      className={`w-full h-full object-contain select-none transition-all duration-500 drop-shadow-[0_18px_48px_rgba(0,0,0,0.16)]${viewSide === 'BACK' && !currentBackImage ? ' scale-x-[-1]' : ''}`}
                       draggable={false}
                     />
                   ) : (

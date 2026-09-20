@@ -22,6 +22,8 @@ export interface ProductCardProps {
   bestseller?: boolean;
   saleTag?: string | null;
   badgeText?: string | null;
+  imageUrl?: string;
+  image_url?: string;
 }
 
 export function ProductCard({
@@ -37,6 +39,8 @@ export function ProductCard({
   bestseller = false,
   saleTag,
   badgeText,
+  imageUrl,
+  image_url,
 }: ProductCardProps) {
   const { toggleWishlist } = useWishlist();
   const { data: wishlistData } = useIsInWishlist(id);
@@ -58,10 +62,14 @@ export function ProductCard({
     new Map(variants.filter((v) => v.colorHex).map((v) => [v.colorHex, v])).values()
   );
 
+  const [imgError, setImgError] = useState(false);
+
   const mainImage =
     images?.[0]?.url ||
     images?.[0]?.object_key ||
     (typeof images?.[0] === 'string' ? images[0] : null) ||
+    imageUrl ||
+    image_url ||
     '';
 
   const handleQuickAdd = (e: React.MouseEvent) => {
@@ -91,15 +99,13 @@ export function ProductCard({
           {/* Product Image Showcase */}
           <div className="relative aspect-[4/5] w-full bg-[#EDE0CC] flex items-center justify-center p-2 sm:p-4 overflow-hidden">
             <Link to={`/product/${slug}`} className="w-full h-full flex items-center justify-center">
-              {mainImage ? (
+              {mainImage && !imgError ? (
                 <img
                   src={mainImage}
                   alt={title}
                   className="h-full w-full object-contain p-1 sm:p-2 transition-transform duration-700 ease-out group-hover:scale-105"
                   loading="lazy"
-                  onError={(e) => {
-                    e.currentTarget.style.display = 'none';
-                  }}
+                  onError={() => setImgError(true)}
                 />
               ) : (
                 <ProductPlaceholder name={title} category={category?.name} />

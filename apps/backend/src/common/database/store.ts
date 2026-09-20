@@ -6,11 +6,11 @@
 import { v4 as uuidv4 } from 'uuid';
 import * as fs from 'fs';
 import * as path from 'path';
+import { getDataDir } from '../utils/paths.util';
 
-const IS_VERCEL = !!process.env.VERCEL;
-const BUNDLED_STORE_FILE = path.resolve(process.cwd(), 'data', 'store.json');
-const DATA_DIR = IS_VERCEL ? path.resolve('/tmp', 'data') : path.resolve(process.cwd(), 'data');
+const DATA_DIR = getDataDir();
 const STORE_FILE = path.join(DATA_DIR, 'store.json');
+const BUNDLED_STORE_FILE = STORE_FILE;
 
 
 // ── Seed data matching supabase/seed.sql ────────────────
@@ -192,6 +192,18 @@ export const db = {
       email: 'basaprasaduu@gmail.com',
       password_hash: 'pbkdf2$100000$30774a3a26d4dfe4942bbfded236a252$a45218459964e535d8de94ea1aba06eee27dcc58a999a8117cb67094d668b7cba85bab5e8767662443c029d7112beee5bcba64632882d033610a9d64cb46cd73',
       full_name: 'Mani Prasad',
+      phone: '+91 98765 43210',
+      role: 'SUPER_ADMIN',
+      status: 'active',
+      avatar_key: null,
+      created_at: new Date(Date.now() - 86400000 * 30).toISOString(),
+      updated_at: new Date().toISOString(),
+    },
+    {
+      id: 'usr-admin-2',
+      email: 'admin@bingooo.in',
+      password_hash: 'pbkdf2$100000$b095d6c6908831dc81248bd41458203a$50c6ea67afcbedfea26a75614d8082c9e99aa8e5eae4b30bcc6d47543a8068a57092b41fceaa2782857d649724426d261f8a1ad28171cb4635ce57097b9b61da', // Admin@123456
+      full_name: 'Atelier Administrator',
       phone: '+91 98765 43210',
       role: 'SUPER_ADMIN',
       status: 'active',
@@ -966,8 +978,8 @@ export const db = {
         colors: [
           { id: 'black', name: 'Black', hex: '#171717', textContrast: '#FFFFFF', frontImageUrl: '/custom/black-front.png', backImageUrl: '/custom/black-back.png', isActive: true },
           { id: 'white', name: 'White', hex: '#FFFFFF', textContrast: '#171717', frontImageUrl: '/custom/white-front.png', backImageUrl: '/custom/white-back.png', isActive: true },
-          { id: 'beige', name: 'Beige', hex: '#D8C8B1', textContrast: '#171717', frontImageUrl: '', isActive: true },
-          { id: 'red', name: 'Red', hex: '#E6321C', textContrast: '#FFFFFF', frontImageUrl: '', isActive: true },
+          { id: 'beige', name: 'Beige', hex: '#D8C8B1', textContrast: '#171717', frontImageUrl: '/custom/beige-front.png', backImageUrl: '/custom/beige-back.png', isActive: true },
+          { id: 'red', name: 'Red', hex: '#E6321C', textContrast: '#FFFFFF', frontImageUrl: '/custom/red-front.png', backImageUrl: '/custom/red-back.png', isActive: true },
         ],
       },
       {
@@ -979,8 +991,8 @@ export const db = {
         colors: [
           { id: 'black', name: 'Black', hex: '#171717', textContrast: '#FFFFFF', frontImageUrl: '/custom/black-front.png', backImageUrl: '/custom/black-back.png', isActive: true },
           { id: 'white', name: 'White', hex: '#FFFFFF', textContrast: '#171717', frontImageUrl: '/custom/white-front.png', backImageUrl: '/custom/white-back.png', isActive: true },
-          { id: 'beige', name: 'Beige', hex: '#D8C8B1', textContrast: '#171717', frontImageUrl: '', isActive: true },
-          { id: 'red', name: 'Red', hex: '#E6321C', textContrast: '#FFFFFF', frontImageUrl: '', isActive: true },
+          { id: 'beige', name: 'Beige', hex: '#D8C8B1', textContrast: '#171717', frontImageUrl: '/custom/beige-front.png', backImageUrl: '/custom/beige-back.png', isActive: true },
+          { id: 'red', name: 'Red', hex: '#E6321C', textContrast: '#FFFFFF', frontImageUrl: '/custom/red-front.png', backImageUrl: '/custom/red-back.png', isActive: true },
         ],
       },
       {

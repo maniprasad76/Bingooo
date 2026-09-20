@@ -7,7 +7,7 @@ const CACHE_NAME = 'bingooo-cache-v1';
 const STATIC_ASSETS = [
   '/',
   '/index.html',
-  '/manifest.json',
+  '/manifest.webmanifest',
   '/favicon.ico',
 ];
 

@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { v4 as uuidv4 } from 'uuid';
-import { db } from '../common/database/store';
+import { db, saveDb } from '../common/database/store';
 
 @Injectable()
 export class InventoryService {
@@ -57,6 +57,7 @@ export class InventoryService {
       created_at: variant.updated_at,
     });
 
+    saveDb();
     return this.findAll().find((item) => item.id === variantId);
   }
 

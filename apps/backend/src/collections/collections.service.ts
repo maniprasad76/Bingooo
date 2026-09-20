@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
 import { v4 as uuidv4 } from 'uuid';
-import { db } from '../common/database/store';
+import { db, saveDb } from '../common/database/store';
 
 @Injectable()
 export class CollectionsService {
@@ -30,6 +30,7 @@ export class CollectionsService {
       created_at: new Date().toISOString(), updated_at: new Date().toISOString(),
     };
     db.collections.push(col);
+    saveDb();
     return col;
   }
 
@@ -37,6 +38,7 @@ export class CollectionsService {
     const idx = db.collections.findIndex((c) => c.id === id);
     if (idx === -1) throw new NotFoundException({ code: 'COLLECTION_NOT_FOUND', message: 'Collection not found' });
     db.collections[idx] = { ...db.collections[idx], ...data, updated_at: new Date().toISOString() };
+    saveDb();
     return db.collections[idx];
   }
 
@@ -45,5 +47,6 @@ export class CollectionsService {
     if (idx === -1) throw new NotFoundException({ code: 'COLLECTION_NOT_FOUND', message: 'Collection not found' });
     db.collections.splice(idx, 1);
     db.product_collections = db.product_collections.filter((pc) => pc.collection_id !== id);
+    saveDb();
   }
 }

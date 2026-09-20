@@ -108,6 +108,32 @@
       "seo_description": "Warm and customizable pullover hoodie in premium fleece.",
       "created_at": "2026-09-17T09:37:42.520Z",
       "updated_at": "2026-09-17T09:37:42.520Z"
+    },
+    {
+      "id": "2294ff04-7315-4755-90e8-ec57be4a8ad9",
+      "category_id": "c84b5a5d-517a-4630-9eb7-42ba0481bd88",
+      "title": "300 GSM Heavy French Terry Acid Wash Tee — Drop 02",
+      "slug": "acid-wash-tee-1789884729996",
+      "description": "Ultra-heavy 300 GSM acid washed vintage boxy tee.",
+      "status": "draft",
+      "base_price": 1499,
+      "compare_at_price": 2299,
+      "customization_enabled": true,
+      "seo_title": null,
+      "seo_description": null,
+      "fabric": null,
+      "gsm": null,
+      "fit": null,
+      "design_details": null,
+      "care_instructions": null,
+      "tags": [],
+      "featured": false,
+      "bestseller": false,
+      "is_sale": false,
+      "sale_tag": null,
+      "badge_text": null,
+      "created_at": "2026-09-20T06:12:10.001Z",
+      "updated_at": "2026-09-20T06:12:10.012Z"
     }
   ],
   "product_images": [
@@ -137,6 +163,15 @@
       "alt_text": "Essential Custom Apparel in Sandstone",
       "sort_order": 0,
       "is_primary": true
+    },
+    {
+      "id": "img-drop2-1",
+      "product_id": "2294ff04-7315-4755-90e8-ec57be4a8ad9",
+      "url": "/custom/tshirt-step-1.png",
+      "object_key": "/custom/tshirt-step-1.png",
+      "alt_text": "300 GSM Heavy French Terry Acid Wash Tee — Drop 02",
+      "sort_order": 0,
+      "is_primary": true
     }
   ],
   "product_variants": [
@@ -148,7 +183,7 @@
       "color": "Black",
       "color_hex": "#111111",
       "price": 1299,
-      "stock_quantity": 16,
+      "stock_quantity": 3,
       "reserved_quantity": 0,
       "is_active": true,
       "created_at": "2026-09-17T09:37:42.519Z",
@@ -545,6 +580,20 @@
       "is_active": true,
       "created_at": "2026-09-17T09:37:42.520Z",
       "updated_at": "2026-09-17T09:37:42.520Z"
+    },
+    {
+      "id": "4bbc28f5-14b0-470c-bb2d-d3a1f01e7a6d",
+      "product_id": "2294ff04-7315-4755-90e8-ec57be4a8ad9",
+      "sku": "AWT-M-1789884730005",
+      "size": "M",
+      "color": "Acid Charcoal",
+      "color_hex": "#222222",
+      "price": 1599,
+      "stock_quantity": 30,
+      "reserved_quantity": 0,
+      "is_active": true,
+      "created_at": "2026-09-20T06:12:10.008Z",
+      "updated_at": "2026-09-20T06:12:10.008Z"
     }
   ],
   "product_collections": [
@@ -849,6 +898,186 @@
       "avatar_key": null,
       "created_at": "2026-09-17T09:54:40.406Z",
       "updated_at": "2026-09-17T09:54:40.406Z"
+    },
+    {
+      "id": "53e0ae9d-baa4-43f8-b1c8-26b2c5a356be",
+      "email": "user_a_1789884429472@example.com",
+      "password_hash": "pbkdf2$100000$d8fd549ac740583d14bfa0e86290b4ac$7a4cdf1e7ecc3551fdd50dfd88fd724afaa91ad5c9afbdd80d92ec2887055e89bea0acf13a760f87d1a6a4fbe2823c0c98f0ee6edd5078172f65bd4039db2c6f",
+      "full_name": "Alice Walker",
+      "phone": "+919999900001",
+      "role": "CUSTOMER",
+      "status": "active",
+      "avatar_key": null,
+      "created_at": "2026-09-20T06:07:09.589Z",
+      "updated_at": "2026-09-20T06:07:09.589Z"
+    },
+    {
+      "id": "d0fd1407-dada-4ec7-b7b9-c5e1cf93bde1",
+      "email": "user_b_1789884429592@example.com",
+      "password_hash": "pbkdf2$100000$c81772932f3c1a8718d65956b0385598$916f8897aa33d3312a77503e1ed6dcaba4461c0ec5b3eb81bb8614f5960f7d8cd781b7afc91faa22bffff0d6d7d058c4e420cb5801ec2af7c741bb1146917753",
+      "full_name": "Bob Smith",
+      "phone": "+919999900002",
+      "role": "CUSTOMER",
+      "status": "active",
+      "avatar_key": null,
+      "created_at": "2026-09-20T06:07:09.667Z",
+      "updated_at": "2026-09-20T06:07:09.667Z"
+    },
+    {
+      "id": "698469f1-eda3-4f54-a1ed-6b4b7bb29c5a",
+      "email": "checkout_shopper_1789884460956@bingooo.in",
+      "password_hash": "pbkdf2$100000$28426b607e6790eaf729351b9548d33a$35ae89cf2c6499892b557af325be1134e609d8e76355cb87fbd9833ed704e0e207c2218d87b6e3e9441156dd9b3ac157b0e63047338f49714621fedae76e9d1e",
+      "full_name": "Vikramaditya Rao",
+      "phone": "9845012345",
+      "role": "CUSTOMER",
+      "status": "active",
+      "avatar_key": null,
+      "created_at": "2026-09-20T06:07:41.186Z",
+      "updated_at": "2026-09-20T06:07:41.186Z"
+    },
+    {
+      "id": "usr-admin-2",
+      "email": "admin@bingooo.in",
+      "password_hash": "pbkdf2$100000$a609ed0b7a4f70b6b7ed05b92094f978$67fcad1060384e7d60d2e76f4248cb7ca16486f0d3ed5e320030f6eb7c6eb587078c9449c893fa9ceb7eb3c16648990f70a02d9914509ee178edb7006a603647",
+      "full_name": "Atelier Administrator",
+      "phone": "+91 98765 43210",
+      "role": "SUPER_ADMIN",
+      "status": "active",
+      "avatar_key": null,
+      "created_at": "2026-09-20T06:09:58.702Z",
+      "updated_at": "2026-09-20T06:09:58.703Z"
+    },
+    {
+      "id": "c885fe0d-03ba-4b1c-b636-b47c1f4e79b5",
+      "email": "regular_shopper_1789884729888@bingooo.in",
+      "password_hash": "pbkdf2$100000$c0abe6f8cd4995e1a30767724a0e63cb$b9ed27213997b347c185f7b69a59c11144ae39a751090da906d962a22a987cc4ca779915eb4453141af8b3e6914367f0ae083846cda09452b7f7e992cae8aa89",
+      "full_name": "Rohan Verma",
+      "phone": "",
+      "role": "CUSTOMER",
+      "status": "active",
+      "avatar_key": null,
+      "created_at": "2026-09-20T06:12:09.979Z",
+      "updated_at": "2026-09-20T06:12:09.979Z"
+    },
+    {
+      "id": "6b2dc611-6492-44e7-8337-2cdaee30dc56",
+      "email": "user_a_1789884747362@example.com",
+      "password_hash": "pbkdf2$100000$7f85e391b6612ebe81c50c7454308e0c$6881ef28fdc500b284fe1663f8101a032fb08475807f13a63cdd5dfe8922322edf686edc9e842b16b97c133b0060a2d6b146c25ee2a27ecaaaf28b421f78092a",
+      "full_name": "Alice Walker",
+      "phone": "+919999900001",
+      "role": "CUSTOMER",
+      "status": "active",
+      "avatar_key": null,
+      "created_at": "2026-09-20T06:12:27.437Z",
+      "updated_at": "2026-09-20T06:12:27.437Z"
+    },
+    {
+      "id": "7de73a9e-7243-4a7d-88fe-d67c15279cb1",
+      "email": "user_b_1789884747442@example.com",
+      "password_hash": "pbkdf2$100000$2413712ce657047959d5b15f8953801d$b21fa61244180e4b9981717fa3c679c0959e6106bc3cadc759484b4e64ba611d0daf465b3c65eab55f5347c8bbb34ca12e0f6f91268a29871038fadd61ce7623",
+      "full_name": "Bob Smith",
+      "phone": "+919999900002",
+      "role": "CUSTOMER",
+      "status": "active",
+      "avatar_key": null,
+      "created_at": "2026-09-20T06:12:27.513Z",
+      "updated_at": "2026-09-20T06:12:27.513Z"
+    },
+    {
+      "id": "ba9b2374-b644-4ec8-8b93-8c85f90c9e2b",
+      "email": "checkout_shopper_1789884749876@bingooo.in",
+      "password_hash": "pbkdf2$100000$c47d5f479820e0fc1eab1cad536edc71$fd03f3962a5a45a5000ac8558fb17daaf99ebe222ad05824e9c9bc983899dd23da7abd6e17c417afc323ab706576a34a9e0cdd04a46d5eca0d65db22c0243dac",
+      "full_name": "Vikramaditya Rao",
+      "phone": "9845012345",
+      "role": "CUSTOMER",
+      "status": "active",
+      "avatar_key": null,
+      "created_at": "2026-09-20T06:12:30.058Z",
+      "updated_at": "2026-09-20T06:12:30.058Z"
+    },
+    {
+      "id": "d5fbfd6b-f4d6-470d-af5a-d8b79ba8469e",
+      "email": "regular_shopper_1789884753984@bingooo.in",
+      "password_hash": "pbkdf2$100000$649ee054ac3c206c795bfce4ad8bd798$a9d0427dd6e1a4cd400dfbf67e98a964c65121c1ab54d86a7ba6b4370ff0b20ab0fab6385db2dbc3e0b009210428a90108390e0338da14dd65a1e869f1e1ea44",
+      "full_name": "Rohan Verma",
+      "phone": "",
+      "role": "CUSTOMER",
+      "status": "active",
+      "avatar_key": null,
+      "created_at": "2026-09-20T06:12:34.133Z",
+      "updated_at": "2026-09-20T06:12:34.133Z"
+    },
+    {
+      "id": "f5f8e795-4c34-4e30-963d-38789c9b32f4",
+      "email": "user_a_1789885571534@example.com",
+      "password_hash": "pbkdf2$100000$b31b4c6144621044db62a36f81f4a83c$4ba24d9e57757fbe6441fd427c0ff2486689d06701c6a8f3194497b460b42c41acaf66eb7cae2b23289e02d04701f5b48bdc6ef19ed28886c42caca7f969881a",
+      "full_name": "Alice Walker",
+      "phone": "+919999900001",
+      "role": "CUSTOMER",
+      "status": "active",
+      "avatar_key": null,
+      "created_at": "2026-09-20T06:26:11.603Z",
+      "updated_at": "2026-09-20T06:26:11.603Z"
+    },
+    {
+      "id": "c609f5eb-b170-4184-92b8-77cb80952c75",
+      "email": "user_b_1789885571606@example.com",
+      "password_hash": "pbkdf2$100000$ef1cfdd092325612d8984868b99ecaa3$0aae3d030602a5c2aa51e47f36ecb250fa3e146429c01d8b7fc63ac1013dbbbb2bfa96579ee19a4f0f3891b34e0aa0f9ac483ef6cff52e93d84b10eee1e99a5a",
+      "full_name": "Bob Smith",
+      "phone": "+919999900002",
+      "role": "CUSTOMER",
+      "status": "active",
+      "avatar_key": null,
+      "created_at": "2026-09-20T06:26:11.671Z",
+      "updated_at": "2026-09-20T06:26:11.671Z"
+    },
+    {
+      "id": "616f03a3-ff82-437a-aa73-7664170d5061",
+      "email": "regular_shopper_1789885573642@bingooo.in",
+      "password_hash": "pbkdf2$100000$810d37ff5a3709218ba9ebaa7e7ea8b7$cbfea2d3462ecc4eb0f924cdbe438e96809cfa00578279bd8a5a89de21cc19f5d4e46a11020b9d394e31e31d73ff71c3739467278315c11b28bf983e3fab5cdc",
+      "full_name": "Rohan Verma",
+      "phone": "",
+      "role": "CUSTOMER",
+      "status": "active",
+      "avatar_key": null,
+      "created_at": "2026-09-20T06:26:13.715Z",
+      "updated_at": "2026-09-20T06:26:13.715Z"
+    },
+    {
+      "id": "3620093a-2eda-4914-94ca-3d8ac24e5875",
+      "email": "checkout_shopper_1789885576596@bingooo.in",
+      "password_hash": "pbkdf2$100000$6ea77dc0d83d95198116edf167a5c593$078c06409a212b07165e0c1eed1d49a875907e3aec1484f3cbcb9af81de616b7da6dac0ba94f6efa9fb861e0e0851d6dd6b6b67a1ba3a29b55d03955fb50b5ee",
+      "full_name": "Vikramaditya Rao",
+      "phone": "9845012345",
+      "role": "CUSTOMER",
+      "status": "active",
+      "avatar_key": null,
+      "created_at": "2026-09-20T06:26:16.695Z",
+      "updated_at": "2026-09-20T06:26:16.695Z"
+    },
+    {
+      "id": "bfac3ee5-06dd-49cc-b547-de7bcd5bd884",
+      "email": "checkout_shopper_1789891279370@bingooo.in",
+      "password_hash": "pbkdf2$100000$bd53aeec701d62dd6c43c0923054ca8f$bf2ba942baed15b19537d6be50ea367ff2ecc3ada2cb128584b8379a0f897427b0dfe8a642350718c099404a46526bde113230b32ea3901e36a3307fee9fbb42",
+      "full_name": "Vikramaditya Rao",
+      "phone": "9845012345",
+      "role": "CUSTOMER",
+      "status": "active",
+      "avatar_key": null,
+      "created_at": "2026-09-20T08:01:19.542Z",
+      "updated_at": "2026-09-20T08:01:19.542Z"
+    },
+    {
+      "id": "9cc37ab3-1e49-4b05-8019-dfb5951e9457",
+      "email": "checkout_shopper_1789891996341@bingooo.in",
+      "password_hash": "pbkdf2$100000$88266e556d914257f4eba2d44c34598a$e1b6d9254d503b65a9eb426e013364163ba976133eb1c73b33163a4e3659a14bc50860de7ef43aa8f4892892eb6cef3c157452eebd49d2301c7fa56c41460202",
+      "full_name": "Vikramaditya Rao",
+      "phone": "9845012345",
+      "role": "CUSTOMER",
+      "status": "active",
+      "avatar_key": null,
+      "created_at": "2026-09-20T08:13:16.532Z",
+      "updated_at": "2026-09-20T08:13:16.532Z"
     }
   ],
   "roles": [
@@ -1121,6 +1350,86 @@
       "reference_id": "807f1cb1-f990-4eed-a46d-55b47e15ae3c",
       "created_by": "7a651311-c1b3-4c59-b83d-ba92e7440289",
       "created_at": "2026-09-17T09:54:40.565Z"
+    },
+    {
+      "id": "aaec4231-bb33-41ae-ae7f-dfd6c9d0bf12",
+      "variant_id": "4be24ccd-295f-4efc-b7bb-b8cfc2a35936",
+      "type": "sale",
+      "quantity": -1,
+      "reference_type": "order",
+      "reference_id": "1d2489da-8ce9-4e88-9350-8c360f6094d4",
+      "created_by": "53e0ae9d-baa4-43f8-b1c8-26b2c5a356be",
+      "created_at": "2026-09-20T06:07:09.785Z"
+    },
+    {
+      "id": "7d567698-9690-47f0-b0b1-692704163a82",
+      "variant_id": "4be24ccd-295f-4efc-b7bb-b8cfc2a35936",
+      "type": "sale",
+      "quantity": -2,
+      "reference_type": "order",
+      "reference_id": "ff52f589-5529-45b9-8fab-9c1e0b3a54f8",
+      "created_by": "698469f1-eda3-4f54-a1ed-6b4b7bb29c5a",
+      "created_at": "2026-09-20T06:07:41.220Z"
+    },
+    {
+      "id": "19e1dff4-d80c-44dd-bf1b-6687880604be",
+      "variant_id": "4be24ccd-295f-4efc-b7bb-b8cfc2a35936",
+      "type": "sale",
+      "quantity": -1,
+      "reference_type": "order",
+      "reference_id": "8bc6ba4b-11b0-41ce-baa5-fff7dc909cd5",
+      "created_by": "6b2dc611-6492-44e7-8337-2cdaee30dc56",
+      "created_at": "2026-09-20T06:12:27.627Z"
+    },
+    {
+      "id": "04bebe74-7968-483c-a1f5-775604b7327d",
+      "variant_id": "4be24ccd-295f-4efc-b7bb-b8cfc2a35936",
+      "type": "sale",
+      "quantity": -2,
+      "reference_type": "order",
+      "reference_id": "044e9d43-9917-4c3f-be9a-922e89e8c2cf",
+      "created_by": "ba9b2374-b644-4ec8-8b93-8c85f90c9e2b",
+      "created_at": "2026-09-20T06:12:30.115Z"
+    },
+    {
+      "id": "475f6364-120a-4605-84e4-7dcfed5e348e",
+      "variant_id": "4be24ccd-295f-4efc-b7bb-b8cfc2a35936",
+      "type": "sale",
+      "quantity": -1,
+      "reference_type": "order",
+      "reference_id": "109d84f7-8cdc-48b9-8a65-ec68907ea8f4",
+      "created_by": "f5f8e795-4c34-4e30-963d-38789c9b32f4",
+      "created_at": "2026-09-20T06:26:11.768Z"
+    },
+    {
+      "id": "3a35b3cc-af6e-469f-bb7b-3eaf9cea13c7",
+      "variant_id": "4be24ccd-295f-4efc-b7bb-b8cfc2a35936",
+      "type": "sale",
+      "quantity": -2,
+      "reference_type": "order",
+      "reference_id": "77502c60-9933-471b-8390-4ad9ce55fc5e",
+      "created_by": "3620093a-2eda-4914-94ca-3d8ac24e5875",
+      "created_at": "2026-09-20T06:26:16.722Z"
+    },
+    {
+      "id": "6d17d746-b1c3-4f50-be48-7fa4ce5f3b5b",
+      "variant_id": "4be24ccd-295f-4efc-b7bb-b8cfc2a35936",
+      "type": "sale",
+      "quantity": -2,
+      "reference_type": "order",
+      "reference_id": "b50b1b32-bb2f-49f9-b095-fd928350e1cc",
+      "created_by": "bfac3ee5-06dd-49cc-b547-de7bcd5bd884",
+      "created_at": "2026-09-20T08:01:19.597Z"
+    },
+    {
+      "id": "2daaa0ca-e76f-4690-a311-5a14f49328f6",
+      "variant_id": "4be24ccd-295f-4efc-b7bb-b8cfc2a35936",
+      "type": "sale",
+      "quantity": -2,
+      "reference_type": "order",
+      "reference_id": "17b5fd53-1b30-4203-b74c-f88b120154db",
+      "created_by": "9cc37ab3-1e49-4b05-8019-dfb5951e9457",
+      "created_at": "2026-09-20T08:13:16.570Z"
     }
   ],
   "wishlists": [
@@ -1219,6 +1528,70 @@
       "status": "active",
       "created_at": "2026-09-17T09:54:40.558Z",
       "updated_at": "2026-09-17T09:54:40.558Z"
+    },
+    {
+      "id": "ae7ba8e9-d40e-4b5e-99e2-2c46a6e67fcf",
+      "user_id": "53e0ae9d-baa4-43f8-b1c8-26b2c5a356be",
+      "session_id": null,
+      "status": "active",
+      "created_at": "2026-09-20T06:07:09.779Z",
+      "updated_at": "2026-09-20T06:07:09.779Z"
+    },
+    {
+      "id": "fbaed306-daeb-4609-b8d8-28740c7b2798",
+      "user_id": "698469f1-eda3-4f54-a1ed-6b4b7bb29c5a",
+      "session_id": "sess_test_1789884461196",
+      "status": "active",
+      "created_at": "2026-09-20T06:07:41.213Z",
+      "updated_at": "2026-09-20T06:07:41.213Z"
+    },
+    {
+      "id": "f1387c91-acee-4055-a7b3-38c98a914c7d",
+      "user_id": "6b2dc611-6492-44e7-8337-2cdaee30dc56",
+      "session_id": null,
+      "status": "active",
+      "created_at": "2026-09-20T06:12:27.623Z",
+      "updated_at": "2026-09-20T06:12:27.623Z"
+    },
+    {
+      "id": "284fae65-c20a-4bd5-bef3-0eabf5537f9d",
+      "user_id": "ba9b2374-b644-4ec8-8b93-8c85f90c9e2b",
+      "session_id": "sess_test_1789884750074",
+      "status": "active",
+      "created_at": "2026-09-20T06:12:30.106Z",
+      "updated_at": "2026-09-20T06:12:30.107Z"
+    },
+    {
+      "id": "addf4e75-2808-499d-9212-6ede28ece01e",
+      "user_id": "f5f8e795-4c34-4e30-963d-38789c9b32f4",
+      "session_id": null,
+      "status": "active",
+      "created_at": "2026-09-20T06:26:11.765Z",
+      "updated_at": "2026-09-20T06:26:11.765Z"
+    },
+    {
+      "id": "55d197fd-7798-47d6-88da-eb3193f3c54d",
+      "user_id": "3620093a-2eda-4914-94ca-3d8ac24e5875",
+      "session_id": "sess_test_1789885576705",
+      "status": "active",
+      "created_at": "2026-09-20T06:26:16.717Z",
+      "updated_at": "2026-09-20T06:26:16.717Z"
+    },
+    {
+      "id": "e67421ad-b6b9-421c-ad87-9dd64fdabf22",
+      "user_id": "bfac3ee5-06dd-49cc-b547-de7bcd5bd884",
+      "session_id": "sess_test_1789891279563",
+      "status": "active",
+      "created_at": "2026-09-20T08:01:19.589Z",
+      "updated_at": "2026-09-20T08:01:19.589Z"
+    },
+    {
+      "id": "d77ef912-dcb4-4a05-b8e6-02f0337c97f4",
+      "user_id": "9cc37ab3-1e49-4b05-8019-dfb5951e9457",
+      "session_id": "sess_test_1789891996544",
+      "status": "active",
+      "created_at": "2026-09-20T08:13:16.562Z",
+      "updated_at": "2026-09-20T08:13:16.562Z"
     }
   ],
   "cart_items": [],
@@ -1777,6 +2150,344 @@
       "carrier": null,
       "created_at": "2026-09-17T09:54:40.565Z",
       "updated_at": "2026-09-17T09:54:40.565Z"
+    },
+    {
+      "id": "1d2489da-8ce9-4e88-9350-8c360f6094d4",
+      "order_number": "BGO-20260920-2475",
+      "user_id": "53e0ae9d-baa4-43f8-b1c8-26b2c5a356be",
+      "status": "processing",
+      "payment_status": "pending",
+      "payment_method": "cod",
+      "subtotal": 1299,
+      "discount": 0,
+      "prepaid_discount": 0,
+      "shipping_fee": 0,
+      "tax": 65,
+      "total": 1364,
+      "currency": "INR",
+      "shipping_address": {
+        "name": "Alice Walker",
+        "phone": "+919999900001",
+        "line1": "123 Fashion Blvd",
+        "city": "Bengaluru",
+        "state": "Karnataka",
+        "postalCode": "560001",
+        "country": "IN"
+      },
+      "address_snapshot_json": {
+        "name": "Alice Walker",
+        "phone": "+919999900001",
+        "line1": "123 Fashion Blvd",
+        "city": "Bengaluru",
+        "state": "Karnataka",
+        "postalCode": "560001",
+        "country": "IN"
+      },
+      "cod_deposit": null,
+      "cod_remaining": 1364,
+      "coupon_code": null,
+      "notes": null,
+      "tracking_number": null,
+      "carrier": null,
+      "created_at": "2026-09-20T06:07:09.784Z",
+      "updated_at": "2026-09-20T06:07:09.784Z"
+    },
+    {
+      "id": "ff52f589-5529-45b9-8fab-9c1e0b3a54f8",
+      "order_number": "BGO-20260920-1022",
+      "user_id": "698469f1-eda3-4f54-a1ed-6b4b7bb29c5a",
+      "status": "shipped",
+      "payment_status": "pending",
+      "payment_method": "prepaid",
+      "subtotal": 2598,
+      "discount": 0,
+      "prepaid_discount": 130,
+      "shipping_fee": 0,
+      "tax": 123,
+      "total": 2591,
+      "currency": "INR",
+      "shipping_address": {
+        "name": "Vikramaditya Rao",
+        "phone": "9845012345",
+        "line1": "Penthouse 1201, Sovereign Crest",
+        "line2": "Lavelle Road",
+        "city": "Bengaluru",
+        "state": "Karnataka",
+        "postalCode": "560001",
+        "country": "IN"
+      },
+      "address_snapshot_json": {
+        "name": "Vikramaditya Rao",
+        "phone": "9845012345",
+        "line1": "Penthouse 1201, Sovereign Crest",
+        "line2": "Lavelle Road",
+        "city": "Bengaluru",
+        "state": "Karnataka",
+        "postalCode": "560001",
+        "country": "IN"
+      },
+      "cod_deposit": null,
+      "cod_remaining": null,
+      "coupon_code": null,
+      "notes": null,
+      "tracking_number": "BD-7894561230-IN",
+      "carrier": "BlueDart Express Air",
+      "created_at": "2026-09-20T06:07:41.220Z",
+      "updated_at": "2026-09-20T06:12:09.993Z"
+    },
+    {
+      "id": "8bc6ba4b-11b0-41ce-baa5-fff7dc909cd5",
+      "order_number": "BGO-20260920-6482",
+      "user_id": "6b2dc611-6492-44e7-8337-2cdaee30dc56",
+      "status": "processing",
+      "payment_status": "pending",
+      "payment_method": "cod",
+      "subtotal": 1299,
+      "discount": 0,
+      "prepaid_discount": 0,
+      "shipping_fee": 0,
+      "tax": 65,
+      "total": 1364,
+      "currency": "INR",
+      "shipping_address": {
+        "name": "Alice Walker",
+        "phone": "+919999900001",
+        "line1": "123 Fashion Blvd",
+        "city": "Bengaluru",
+        "state": "Karnataka",
+        "postalCode": "560001",
+        "country": "IN"
+      },
+      "address_snapshot_json": {
+        "name": "Alice Walker",
+        "phone": "+919999900001",
+        "line1": "123 Fashion Blvd",
+        "city": "Bengaluru",
+        "state": "Karnataka",
+        "postalCode": "560001",
+        "country": "IN"
+      },
+      "cod_deposit": null,
+      "cod_remaining": 1364,
+      "coupon_code": null,
+      "notes": null,
+      "tracking_number": null,
+      "carrier": null,
+      "created_at": "2026-09-20T06:12:27.627Z",
+      "updated_at": "2026-09-20T06:12:27.627Z"
+    },
+    {
+      "id": "044e9d43-9917-4c3f-be9a-922e89e8c2cf",
+      "order_number": "BGO-20260920-6368",
+      "user_id": "ba9b2374-b644-4ec8-8b93-8c85f90c9e2b",
+      "status": "shipped",
+      "payment_status": "pending",
+      "payment_method": "prepaid",
+      "subtotal": 2598,
+      "discount": 0,
+      "prepaid_discount": 130,
+      "shipping_fee": 0,
+      "tax": 123,
+      "total": 2591,
+      "currency": "INR",
+      "shipping_address": {
+        "name": "Vikramaditya Rao",
+        "phone": "9845012345",
+        "line1": "Penthouse 1201, Sovereign Crest",
+        "line2": "Lavelle Road",
+        "city": "Bengaluru",
+        "state": "Karnataka",
+        "postalCode": "560001",
+        "country": "IN"
+      },
+      "address_snapshot_json": {
+        "name": "Vikramaditya Rao",
+        "phone": "9845012345",
+        "line1": "Penthouse 1201, Sovereign Crest",
+        "line2": "Lavelle Road",
+        "city": "Bengaluru",
+        "state": "Karnataka",
+        "postalCode": "560001",
+        "country": "IN"
+      },
+      "cod_deposit": null,
+      "cod_remaining": null,
+      "coupon_code": null,
+      "notes": null,
+      "tracking_number": "BD-7894561230-IN",
+      "carrier": "BlueDart Express Air",
+      "created_at": "2026-09-20T06:12:30.115Z",
+      "updated_at": "2026-09-20T06:12:34.160Z"
+    },
+    {
+      "id": "109d84f7-8cdc-48b9-8a65-ec68907ea8f4",
+      "order_number": "BGO-20260920-5020",
+      "user_id": "f5f8e795-4c34-4e30-963d-38789c9b32f4",
+      "status": "shipped",
+      "payment_status": "pending",
+      "payment_method": "cod",
+      "subtotal": 1299,
+      "discount": 0,
+      "prepaid_discount": 0,
+      "shipping_fee": 0,
+      "tax": 65,
+      "total": 1364,
+      "currency": "INR",
+      "shipping_address": {
+        "name": "Alice Walker",
+        "phone": "+919999900001",
+        "line1": "123 Fashion Blvd",
+        "city": "Bengaluru",
+        "state": "Karnataka",
+        "postalCode": "560001",
+        "country": "IN"
+      },
+      "address_snapshot_json": {
+        "name": "Alice Walker",
+        "phone": "+919999900001",
+        "line1": "123 Fashion Blvd",
+        "city": "Bengaluru",
+        "state": "Karnataka",
+        "postalCode": "560001",
+        "country": "IN"
+      },
+      "cod_deposit": null,
+      "cod_remaining": 1364,
+      "coupon_code": null,
+      "notes": null,
+      "tracking_number": "BD-7894561230-IN",
+      "carrier": "BlueDart Express Air",
+      "created_at": "2026-09-20T06:26:11.768Z",
+      "updated_at": "2026-09-20T06:26:13.728Z"
+    },
+    {
+      "id": "77502c60-9933-471b-8390-4ad9ce55fc5e",
+      "order_number": "BGO-20260920-8364",
+      "user_id": "3620093a-2eda-4914-94ca-3d8ac24e5875",
+      "status": "processing",
+      "payment_status": "captured",
+      "payment_method": "prepaid",
+      "subtotal": 2598,
+      "discount": 0,
+      "prepaid_discount": 130,
+      "shipping_fee": 0,
+      "tax": 123,
+      "total": 2591,
+      "currency": "INR",
+      "shipping_address": {
+        "name": "Vikramaditya Rao",
+        "phone": "9845012345",
+        "line1": "Penthouse 1201, Sovereign Crest",
+        "line2": "Lavelle Road",
+        "city": "Bengaluru",
+        "state": "Karnataka",
+        "postalCode": "560001",
+        "country": "IN"
+      },
+      "address_snapshot_json": {
+        "name": "Vikramaditya Rao",
+        "phone": "9845012345",
+        "line1": "Penthouse 1201, Sovereign Crest",
+        "line2": "Lavelle Road",
+        "city": "Bengaluru",
+        "state": "Karnataka",
+        "postalCode": "560001",
+        "country": "IN"
+      },
+      "cod_deposit": null,
+      "cod_remaining": null,
+      "coupon_code": null,
+      "notes": null,
+      "tracking_number": null,
+      "carrier": null,
+      "created_at": "2026-09-20T06:26:16.722Z",
+      "updated_at": "2026-09-20T06:26:17.130Z"
+    },
+    {
+      "id": "b50b1b32-bb2f-49f9-b095-fd928350e1cc",
+      "order_number": "BGO-20260920-6651",
+      "user_id": "bfac3ee5-06dd-49cc-b547-de7bcd5bd884",
+      "status": "processing",
+      "payment_status": "captured",
+      "payment_method": "prepaid",
+      "subtotal": 2598,
+      "discount": 0,
+      "prepaid_discount": 130,
+      "shipping_fee": 0,
+      "tax": 123,
+      "total": 2591,
+      "currency": "INR",
+      "shipping_address": {
+        "name": "Vikramaditya Rao",
+        "phone": "9845012345",
+        "line1": "Penthouse 1201, Sovereign Crest",
+        "line2": "Lavelle Road",
+        "city": "Bengaluru",
+        "state": "Karnataka",
+        "postalCode": "560001",
+        "country": "IN"
+      },
+      "address_snapshot_json": {
+        "name": "Vikramaditya Rao",
+        "phone": "9845012345",
+        "line1": "Penthouse 1201, Sovereign Crest",
+        "line2": "Lavelle Road",
+        "city": "Bengaluru",
+        "state": "Karnataka",
+        "postalCode": "560001",
+        "country": "IN"
+      },
+      "cod_deposit": null,
+      "cod_remaining": null,
+      "coupon_code": null,
+      "notes": null,
+      "tracking_number": null,
+      "carrier": null,
+      "created_at": "2026-09-20T08:01:19.597Z",
+      "updated_at": "2026-09-20T08:01:25.887Z"
+    },
+    {
+      "id": "17b5fd53-1b30-4203-b74c-f88b120154db",
+      "order_number": "BGO-20260920-2863",
+      "user_id": "9cc37ab3-1e49-4b05-8019-dfb5951e9457",
+      "status": "processing",
+      "payment_status": "captured",
+      "payment_method": "prepaid",
+      "subtotal": 2598,
+      "discount": 0,
+      "prepaid_discount": 130,
+      "shipping_fee": 0,
+      "tax": 123,
+      "total": 2591,
+      "currency": "INR",
+      "shipping_address": {
+        "name": "Vikramaditya Rao",
+        "phone": "9845012345",
+        "line1": "Penthouse 1201, Sovereign Crest",
+        "line2": "Lavelle Road",
+        "city": "Bengaluru",
+        "state": "Karnataka",
+        "postalCode": "560001",
+        "country": "IN"
+      },
+      "address_snapshot_json": {
+        "name": "Vikramaditya Rao",
+        "phone": "9845012345",
+        "line1": "Penthouse 1201, Sovereign Crest",
+        "line2": "Lavelle Road",
+        "city": "Bengaluru",
+        "state": "Karnataka",
+        "postalCode": "560001",
+        "country": "IN"
+      },
+      "cod_deposit": null,
+      "cod_remaining": null,
+      "coupon_code": null,
+      "notes": null,
+      "tracking_number": null,
+      "carrier": null,
+      "created_at": "2026-09-20T08:13:16.570Z",
+      "updated_at": "2026-09-20T08:13:17.016Z"
     }
   ],
   "order_items": [
@@ -2029,6 +2740,150 @@
       "unit_price": 1299,
       "total": 1299,
       "created_at": "2026-09-17T09:54:40.565Z"
+    },
+    {
+      "id": "97d9b8b7-9eb2-4039-a7e9-8e1379cd1d44",
+      "order_id": "1d2489da-8ce9-4e88-9350-8c360f6094d4",
+      "product_id": "ead1024d-1153-4446-9e62-ded6616078f3",
+      "variant_id": "4be24ccd-295f-4efc-b7bb-b8cfc2a35936",
+      "customization_id": null,
+      "sku": "COT-S-BLK",
+      "title_snapshot": "Classic Oversized Tee",
+      "variant_snapshot_json": {
+        "size": "S",
+        "color": "Black",
+        "colorHex": "#111111"
+      },
+      "quantity": 1,
+      "unit_price": 1299,
+      "total": 1299,
+      "created_at": "2026-09-20T06:07:09.785Z"
+    },
+    {
+      "id": "33aec957-6649-40d1-9876-796d7c50d956",
+      "order_id": "ff52f589-5529-45b9-8fab-9c1e0b3a54f8",
+      "product_id": "ead1024d-1153-4446-9e62-ded6616078f3",
+      "variant_id": "4be24ccd-295f-4efc-b7bb-b8cfc2a35936",
+      "customization_id": "cust-1789884461205",
+      "sku": "COT-S-BLK",
+      "title_snapshot": "Classic Oversized Tee",
+      "variant_snapshot_json": {
+        "size": "S",
+        "color": "Black",
+        "colorHex": "#111111"
+      },
+      "quantity": 2,
+      "unit_price": 1299,
+      "total": 2598,
+      "created_at": "2026-09-20T06:07:41.220Z"
+    },
+    {
+      "id": "b2d4963e-1f04-4e1d-9a54-49c8416f51ba",
+      "order_id": "8bc6ba4b-11b0-41ce-baa5-fff7dc909cd5",
+      "product_id": "ead1024d-1153-4446-9e62-ded6616078f3",
+      "variant_id": "4be24ccd-295f-4efc-b7bb-b8cfc2a35936",
+      "customization_id": null,
+      "sku": "COT-S-BLK",
+      "title_snapshot": "Classic Oversized Tee",
+      "variant_snapshot_json": {
+        "size": "S",
+        "color": "Black",
+        "colorHex": "#111111"
+      },
+      "quantity": 1,
+      "unit_price": 1299,
+      "total": 1299,
+      "created_at": "2026-09-20T06:12:27.627Z"
+    },
+    {
+      "id": "b6686f13-9ac6-4281-a82c-ada061d5a523",
+      "order_id": "044e9d43-9917-4c3f-be9a-922e89e8c2cf",
+      "product_id": "ead1024d-1153-4446-9e62-ded6616078f3",
+      "variant_id": "4be24ccd-295f-4efc-b7bb-b8cfc2a35936",
+      "customization_id": "cust-1789884750095",
+      "sku": "COT-S-BLK",
+      "title_snapshot": "Classic Oversized Tee",
+      "variant_snapshot_json": {
+        "size": "S",
+        "color": "Black",
+        "colorHex": "#111111"
+      },
+      "quantity": 2,
+      "unit_price": 1299,
+      "total": 2598,
+      "created_at": "2026-09-20T06:12:30.115Z"
+    },
+    {
+      "id": "5617b5d2-2a18-4e59-be78-68347b4b911d",
+      "order_id": "109d84f7-8cdc-48b9-8a65-ec68907ea8f4",
+      "product_id": "ead1024d-1153-4446-9e62-ded6616078f3",
+      "variant_id": "4be24ccd-295f-4efc-b7bb-b8cfc2a35936",
+      "customization_id": null,
+      "sku": "COT-S-BLK",
+      "title_snapshot": "Classic Oversized Tee",
+      "variant_snapshot_json": {
+        "size": "S",
+        "color": "Black",
+        "colorHex": "#111111"
+      },
+      "quantity": 1,
+      "unit_price": 1299,
+      "total": 1299,
+      "created_at": "2026-09-20T06:26:11.768Z"
+    },
+    {
+      "id": "537c3cfe-44c8-465c-99f8-ee90dc2f007d",
+      "order_id": "77502c60-9933-471b-8390-4ad9ce55fc5e",
+      "product_id": "ead1024d-1153-4446-9e62-ded6616078f3",
+      "variant_id": "4be24ccd-295f-4efc-b7bb-b8cfc2a35936",
+      "customization_id": "cust-1789885576711",
+      "sku": "COT-S-BLK",
+      "title_snapshot": "Classic Oversized Tee",
+      "variant_snapshot_json": {
+        "size": "S",
+        "color": "Black",
+        "colorHex": "#111111"
+      },
+      "quantity": 2,
+      "unit_price": 1299,
+      "total": 2598,
+      "created_at": "2026-09-20T06:26:16.722Z"
+    },
+    {
+      "id": "c7361496-190d-4286-afd9-174b61b83725",
+      "order_id": "b50b1b32-bb2f-49f9-b095-fd928350e1cc",
+      "product_id": "ead1024d-1153-4446-9e62-ded6616078f3",
+      "variant_id": "4be24ccd-295f-4efc-b7bb-b8cfc2a35936",
+      "customization_id": "cust-1789891279579",
+      "sku": "COT-S-BLK",
+      "title_snapshot": "Classic Oversized Tee",
+      "variant_snapshot_json": {
+        "size": "S",
+        "color": "Black",
+        "colorHex": "#111111"
+      },
+      "quantity": 2,
+      "unit_price": 1299,
+      "total": 2598,
+      "created_at": "2026-09-20T08:01:19.597Z"
+    },
+    {
+      "id": "301ab659-2695-4ed1-947c-9fb2597e8d7b",
+      "order_id": "17b5fd53-1b30-4203-b74c-f88b120154db",
+      "product_id": "ead1024d-1153-4446-9e62-ded6616078f3",
+      "variant_id": "4be24ccd-295f-4efc-b7bb-b8cfc2a35936",
+      "customization_id": "cust-1789891996554",
+      "sku": "COT-S-BLK",
+      "title_snapshot": "Classic Oversized Tee",
+      "variant_snapshot_json": {
+        "size": "S",
+        "color": "Black",
+        "colorHex": "#111111"
+      },
+      "quantity": 2,
+      "unit_price": 1299,
+      "total": 2598,
+      "created_at": "2026-09-20T08:13:16.570Z"
     }
   ],
   "payments": [
@@ -2067,6 +2922,48 @@
       "order_number": "BING-89412",
       "created_at": "2026-09-08T10:35:47.741Z",
       "updated_at": "2026-09-08T10:35:47.741Z"
+    },
+    {
+      "id": "f751b665-f148-4bd4-a1e6-595eefa0f9ab",
+      "order_id": "77502c60-9933-471b-8390-4ad9ce55fc5e",
+      "provider": "razorpay",
+      "provider_order_id": "order_TeBwXwQDfGkfdy",
+      "provider_payment_id": "pay_test_1789885577119",
+      "status": "captured",
+      "amount": 2591,
+      "currency": "INR",
+      "raw_event_id": null,
+      "idempotency_key": "e88f5810-baa3-4946-b3c8-1eca6f71fa62",
+      "created_at": "2026-09-20T06:26:17.115Z",
+      "updated_at": "2026-09-20T06:26:17.130Z"
+    },
+    {
+      "id": "915d16fc-18d0-4674-aacb-fcadb18122a2",
+      "order_id": "b50b1b32-bb2f-49f9-b095-fd928350e1cc",
+      "provider": "razorpay",
+      "provider_order_id": "order_TeDZ2wLN6YkXuh",
+      "provider_payment_id": "pay_test_1789891285870",
+      "status": "captured",
+      "amount": 2591,
+      "currency": "INR",
+      "raw_event_id": null,
+      "idempotency_key": "5a3a7eeb-2648-4c6c-b495-9f229e3591cf",
+      "created_at": "2026-09-20T08:01:25.864Z",
+      "updated_at": "2026-09-20T08:01:25.887Z"
+    },
+    {
+      "id": "e29c800f-a307-4972-b55c-759deaf3583c",
+      "order_id": "17b5fd53-1b30-4203-b74c-f88b120154db",
+      "provider": "razorpay",
+      "provider_order_id": "order_TeDlZApbbpj13U",
+      "provider_payment_id": "pay_test_1789891997002",
+      "status": "captured",
+      "amount": 2591,
+      "currency": "INR",
+      "raw_event_id": null,
+      "idempotency_key": "036116cf-6ae4-40b0-9d05-4a1ca0026b00",
+      "created_at": "2026-09-20T08:13:16.994Z",
+      "updated_at": "2026-09-20T08:13:17.016Z"
     }
   ],
   "refunds": [],
@@ -2218,6 +3115,191 @@
     }
   ],
   "customizations": [
+    {
+      "id": "cust-1789891996554",
+      "user_id": "usr-cust-1",
+      "product_id": "ead1024d-1153-4446-9e62-ded6616078f3",
+      "product_title": "Classic Oversized Tee",
+      "status": "approved",
+      "print_status": "ready_to_print",
+      "design_json": {
+        "garment": {
+          "title": "240 GSM Heavyweight Oversized Tee",
+          "color": "Obsidian Black",
+          "size": "L",
+          "gsm": 240
+        },
+        "front": {
+          "hasDesign": true,
+          "artwork": {
+            "url": "data:image/svg+xml;utf8,<svg></svg>",
+            "scale": 1
+          }
+        },
+        "isDualSided": false
+      },
+      "preview_url": "/custom/tshirt-step-3-black.png",
+      "print_file_key": null,
+      "print_spec": {
+        "method": "DTG (Direct-to-Garment)",
+        "placement": "Chest & Back Print",
+        "resolutionDPI": 300,
+        "colorSpace": "CMYK"
+      },
+      "customer_name": "Aditi Sharma",
+      "customer_email": "customer@bingooo.in",
+      "customer_notes": "Please ensure high-density red print alignment",
+      "created_at": "2026-09-20T08:13:16.554Z",
+      "updated_at": "2026-09-20T08:13:16.554Z"
+    },
+    {
+      "id": "cust-1789891279579",
+      "user_id": "usr-cust-1",
+      "product_id": "ead1024d-1153-4446-9e62-ded6616078f3",
+      "product_title": "Classic Oversized Tee",
+      "status": "approved",
+      "print_status": "ready_to_print",
+      "design_json": {
+        "garment": {
+          "title": "240 GSM Heavyweight Oversized Tee",
+          "color": "Obsidian Black",
+          "size": "L",
+          "gsm": 240
+        },
+        "front": {
+          "hasDesign": true,
+          "artwork": {
+            "url": "data:image/svg+xml;utf8,<svg></svg>",
+            "scale": 1
+          }
+        },
+        "isDualSided": false
+      },
+      "preview_url": "/custom/tshirt-step-3-black.png",
+      "print_file_key": null,
+      "print_spec": {
+        "method": "DTG (Direct-to-Garment)",
+        "placement": "Chest & Back Print",
+        "resolutionDPI": 300,
+        "colorSpace": "CMYK"
+      },
+      "customer_name": "Aditi Sharma",
+      "customer_email": "customer@bingooo.in",
+      "customer_notes": "Please ensure high-density red print alignment",
+      "created_at": "2026-09-20T08:01:19.579Z",
+      "updated_at": "2026-09-20T08:01:19.579Z"
+    },
+    {
+      "id": "cust-1789885576711",
+      "user_id": "usr-cust-1",
+      "product_id": "ead1024d-1153-4446-9e62-ded6616078f3",
+      "product_title": "Classic Oversized Tee",
+      "status": "approved",
+      "print_status": "ready_to_print",
+      "design_json": {
+        "garment": {
+          "title": "240 GSM Heavyweight Oversized Tee",
+          "color": "Obsidian Black",
+          "size": "L",
+          "gsm": 240
+        },
+        "front": {
+          "hasDesign": true,
+          "artwork": {
+            "url": "data:image/svg+xml;utf8,<svg></svg>",
+            "scale": 1
+          }
+        },
+        "isDualSided": false
+      },
+      "preview_url": "/custom/tshirt-step-3-black.png",
+      "print_file_key": null,
+      "print_spec": {
+        "method": "DTG (Direct-to-Garment)",
+        "placement": "Chest & Back Print",
+        "resolutionDPI": 300,
+        "colorSpace": "CMYK"
+      },
+      "customer_name": "Aditi Sharma",
+      "customer_email": "customer@bingooo.in",
+      "customer_notes": "Please ensure high-density red print alignment",
+      "created_at": "2026-09-20T06:26:16.711Z",
+      "updated_at": "2026-09-20T06:26:16.711Z"
+    },
+    {
+      "id": "cust-1789884750095",
+      "user_id": "usr-cust-1",
+      "product_id": "ead1024d-1153-4446-9e62-ded6616078f3",
+      "product_title": "Classic Oversized Tee",
+      "status": "approved",
+      "print_status": "ready_to_print",
+      "design_json": {
+        "garment": {
+          "title": "240 GSM Heavyweight Oversized Tee",
+          "color": "Obsidian Black",
+          "size": "L",
+          "gsm": 240
+        },
+        "front": {
+          "hasDesign": true,
+          "artwork": {
+            "url": "data:image/svg+xml;utf8,<svg></svg>",
+            "scale": 1
+          }
+        },
+        "isDualSided": false
+      },
+      "preview_url": "/custom/tshirt-step-3-black.png",
+      "print_file_key": null,
+      "print_spec": {
+        "method": "DTG (Direct-to-Garment)",
+        "placement": "Chest & Back Print",
+        "resolutionDPI": 300,
+        "colorSpace": "CMYK"
+      },
+      "customer_name": "Aditi Sharma",
+      "customer_email": "customer@bingooo.in",
+      "customer_notes": "Please ensure high-density red print alignment",
+      "created_at": "2026-09-20T06:12:30.095Z",
+      "updated_at": "2026-09-20T06:12:30.095Z"
+    },
+    {
+      "id": "cust-1789884461205",
+      "user_id": "usr-cust-1",
+      "product_id": "ead1024d-1153-4446-9e62-ded6616078f3",
+      "product_title": "Classic Oversized Tee",
+      "status": "approved",
+      "print_status": "ready_to_print",
+      "design_json": {
+        "garment": {
+          "title": "240 GSM Heavyweight Oversized Tee",
+          "color": "Obsidian Black",
+          "size": "L",
+          "gsm": 240
+        },
+        "front": {
+          "hasDesign": true,
+          "artwork": {
+            "url": "data:image/svg+xml;utf8,<svg></svg>",
+            "scale": 1
+          }
+        },
+        "isDualSided": false
+      },
+      "preview_url": "/custom/tshirt-step-3-black.png",
+      "print_file_key": null,
+      "print_spec": {
+        "method": "DTG (Direct-to-Garment)",
+        "placement": "Chest & Back Print",
+        "resolutionDPI": 300,
+        "colorSpace": "CMYK"
+      },
+      "customer_name": "Aditi Sharma",
+      "customer_email": "customer@bingooo.in",
+      "customer_notes": "Please ensure high-density red print alignment",
+      "created_at": "2026-09-20T06:07:41.205Z",
+      "updated_at": "2026-09-20T06:07:41.205Z"
+    },
     {
       "id": "cust-1789638870795",
       "user_id": "usr-cust-1",
@@ -2412,6 +3494,149 @@
   "customization_assets": [],
   "shipments": [],
   "notifications": [
+    {
+      "id": "notif-1789891996570",
+      "category": "order",
+      "severity": "info",
+      "title": "New Order Placed (#BGO-20260920-2863)",
+      "description": "Order for ₹2591 placed via PREPAID",
+      "link_href": "/orders",
+      "link_text": "View Order →",
+      "is_read": false,
+      "created_at": "2026-09-20T08:13:16.570Z"
+    },
+    {
+      "id": "notif-1789891996554",
+      "category": "custom",
+      "severity": "warning",
+      "title": "New Custom Design Submitted (#cust-1789891996554)",
+      "description": "Aditi Sharma created artwork for Classic Oversized Tee",
+      "link_href": "/custom-orders",
+      "link_text": "Open Custom Print Queue →",
+      "is_read": false,
+      "created_at": "2026-09-20T08:13:16.554Z"
+    },
+    {
+      "id": "notif-1789891279597",
+      "category": "order",
+      "severity": "info",
+      "title": "New Order Placed (#BGO-20260920-6651)",
+      "description": "Order for ₹2591 placed via PREPAID",
+      "link_href": "/orders",
+      "link_text": "View Order →",
+      "is_read": false,
+      "created_at": "2026-09-20T08:01:19.597Z"
+    },
+    {
+      "id": "notif-1789891279579",
+      "category": "custom",
+      "severity": "warning",
+      "title": "New Custom Design Submitted (#cust-1789891279579)",
+      "description": "Aditi Sharma created artwork for Classic Oversized Tee",
+      "link_href": "/custom-orders",
+      "link_text": "Open Custom Print Queue →",
+      "is_read": false,
+      "created_at": "2026-09-20T08:01:19.579Z"
+    },
+    {
+      "id": "notif-1789885576722",
+      "category": "order",
+      "severity": "info",
+      "title": "New Order Placed (#BGO-20260920-8364)",
+      "description": "Order for ₹2591 placed via PREPAID",
+      "link_href": "/orders",
+      "link_text": "View Order →",
+      "is_read": false,
+      "created_at": "2026-09-20T06:26:16.722Z"
+    },
+    {
+      "id": "notif-1789885576711",
+      "category": "custom",
+      "severity": "warning",
+      "title": "New Custom Design Submitted (#cust-1789885576711)",
+      "description": "Aditi Sharma created artwork for Classic Oversized Tee",
+      "link_href": "/custom-orders",
+      "link_text": "Open Custom Print Queue →",
+      "is_read": false,
+      "created_at": "2026-09-20T06:26:16.711Z"
+    },
+    {
+      "id": "notif-1789885571768",
+      "category": "order",
+      "severity": "info",
+      "title": "New Order Placed (#BGO-20260920-5020)",
+      "description": "Order for ₹1364 placed via COD",
+      "link_href": "/orders",
+      "link_text": "View Order →",
+      "is_read": false,
+      "created_at": "2026-09-20T06:26:11.768Z"
+    },
+    {
+      "id": "notif-1789884750116",
+      "category": "order",
+      "severity": "info",
+      "title": "New Order Placed (#BGO-20260920-6368)",
+      "description": "Order for ₹2591 placed via PREPAID",
+      "link_href": "/orders",
+      "link_text": "View Order →",
+      "is_read": false,
+      "created_at": "2026-09-20T06:12:30.116Z"
+    },
+    {
+      "id": "notif-1789884750095",
+      "category": "custom",
+      "severity": "warning",
+      "title": "New Custom Design Submitted (#cust-1789884750095)",
+      "description": "Aditi Sharma created artwork for Classic Oversized Tee",
+      "link_href": "/custom-orders",
+      "link_text": "Open Custom Print Queue →",
+      "is_read": false,
+      "created_at": "2026-09-20T06:12:30.095Z"
+    },
+    {
+      "id": "notif-1789884747627",
+      "category": "order",
+      "severity": "info",
+      "title": "New Order Placed (#BGO-20260920-6482)",
+      "description": "Order for ₹1364 placed via COD",
+      "link_href": "/orders",
+      "link_text": "View Order →",
+      "is_read": false,
+      "created_at": "2026-09-20T06:12:27.627Z"
+    },
+    {
+      "id": "notif-1789884461220",
+      "category": "order",
+      "severity": "info",
+      "title": "New Order Placed (#BGO-20260920-1022)",
+      "description": "Order for ₹2591 placed via PREPAID",
+      "link_href": "/orders",
+      "link_text": "View Order →",
+      "is_read": false,
+      "created_at": "2026-09-20T06:07:41.220Z"
+    },
+    {
+      "id": "notif-1789884461205",
+      "category": "custom",
+      "severity": "warning",
+      "title": "New Custom Design Submitted (#cust-1789884461205)",
+      "description": "Aditi Sharma created artwork for Classic Oversized Tee",
+      "link_href": "/custom-orders",
+      "link_text": "Open Custom Print Queue →",
+      "is_read": false,
+      "created_at": "2026-09-20T06:07:41.205Z"
+    },
+    {
+      "id": "notif-1789884429785",
+      "category": "order",
+      "severity": "info",
+      "title": "New Order Placed (#BGO-20260920-2475)",
+      "description": "Order for ₹1364 placed via COD",
+      "link_href": "/orders",
+      "link_text": "View Order →",
+      "is_read": false,
+      "created_at": "2026-09-20T06:07:09.785Z"
+    },
     {
       "id": "notif-1789638880565",
       "category": "order",
@@ -2624,6 +3849,36 @@
   ],
   "audit_logs": [
     {
+      "id": "log-1789885573728",
+      "admin_email": "admin@bingooo.in",
+      "action": "order.status_update",
+      "resource": "orders",
+      "resource_id": "BGO-20260920-5020",
+      "details": "Status updated to shipped. Carrier: BlueDart Express Air AWB: BD-7894561230-IN",
+      "ip_address": "103.24.12.89",
+      "created_at": "2026-09-20T06:26:13.728Z"
+    },
+    {
+      "id": "log-1789884754160",
+      "admin_email": "admin@bingooo.in",
+      "action": "order.status_update",
+      "resource": "orders",
+      "resource_id": "BGO-20260920-6368",
+      "details": "Status updated to shipped. Carrier: BlueDart Express Air AWB: BD-7894561230-IN",
+      "ip_address": "103.24.12.89",
+      "created_at": "2026-09-20T06:12:34.160Z"
+    },
+    {
+      "id": "log-1789884729993",
+      "admin_email": "admin@bingooo.in",
+      "action": "order.status_update",
+      "resource": "orders",
+      "resource_id": "BGO-20260920-1022",
+      "details": "Status updated to shipped. Carrier: BlueDart Express Air AWB: BD-7894561230-IN",
+      "ip_address": "103.24.12.89",
+      "created_at": "2026-09-20T06:12:09.993Z"
+    },
+    {
       "id": "log-1789454749144",
       "admin_email": "admin@bingooo.in",
       "action": "order.status_update",
@@ -2809,6 +4064,51 @@
       "is_default": true,
       "created_at": "2026-09-17T09:54:40.533Z",
       "updated_at": "2026-09-17T09:54:40.533Z"
+    },
+    {
+      "id": "07dbcbe1-8f5b-471d-9bba-89538fd816fe",
+      "user_id": "53e0ae9d-baa4-43f8-b1c8-26b2c5a356be",
+      "name": "Alice Home",
+      "phone": "+919999900001",
+      "line1": "123 Fashion Blvd",
+      "line2": null,
+      "city": "Bengaluru",
+      "state": "Karnataka",
+      "postal_code": "560001",
+      "country": "IN",
+      "is_default": true,
+      "created_at": "2026-09-20T06:07:09.765Z",
+      "updated_at": "2026-09-20T06:07:09.765Z"
+    },
+    {
+      "id": "e8b432e9-59a9-4616-a8f0-cef7aa67f36c",
+      "user_id": "6b2dc611-6492-44e7-8337-2cdaee30dc56",
+      "name": "Alice Home",
+      "phone": "+919999900001",
+      "line1": "123 Fashion Blvd",
+      "line2": null,
+      "city": "Bengaluru",
+      "state": "Karnataka",
+      "postal_code": "560001",
+      "country": "IN",
+      "is_default": true,
+      "created_at": "2026-09-20T06:12:27.608Z",
+      "updated_at": "2026-09-20T06:12:27.608Z"
+    },
+    {
+      "id": "2b5938af-9fb0-4faa-a14f-3e1012dd6f8e",
+      "user_id": "f5f8e795-4c34-4e30-963d-38789c9b32f4",
+      "name": "Alice Home",
+      "phone": "+919999900001",
+      "line1": "123 Fashion Blvd",
+      "line2": null,
+      "city": "Bengaluru",
+      "state": "Karnataka",
+      "postal_code": "560001",
+      "country": "IN",
+      "is_default": true,
+      "created_at": "2026-09-20T06:26:11.753Z",
+      "updated_at": "2026-09-20T06:26:11.753Z"
     }
   ],
   "profiles": [
@@ -3000,6 +4300,132 @@
       "avatar_key": null,
       "created_at": "2026-09-17T09:54:40.406Z",
       "updated_at": "2026-09-17T09:54:40.406Z"
+    },
+    {
+      "id": "53e0ae9d-baa4-43f8-b1c8-26b2c5a356be",
+      "email": "user_a_1789884429472@example.com",
+      "full_name": "Alice Walker",
+      "phone": "+919999900001",
+      "avatar_key": null,
+      "created_at": "2026-09-20T06:07:09.589Z",
+      "updated_at": "2026-09-20T06:07:09.589Z"
+    },
+    {
+      "id": "d0fd1407-dada-4ec7-b7b9-c5e1cf93bde1",
+      "email": "user_b_1789884429592@example.com",
+      "full_name": "Bob Smith",
+      "phone": "+919999900002",
+      "avatar_key": null,
+      "created_at": "2026-09-20T06:07:09.667Z",
+      "updated_at": "2026-09-20T06:07:09.667Z"
+    },
+    {
+      "id": "698469f1-eda3-4f54-a1ed-6b4b7bb29c5a",
+      "email": "checkout_shopper_1789884460956@bingooo.in",
+      "full_name": "Vikramaditya Rao",
+      "phone": "9845012345",
+      "avatar_key": null,
+      "created_at": "2026-09-20T06:07:41.186Z",
+      "updated_at": "2026-09-20T06:07:41.186Z"
+    },
+    {
+      "id": "c885fe0d-03ba-4b1c-b636-b47c1f4e79b5",
+      "email": "regular_shopper_1789884729888@bingooo.in",
+      "full_name": "Rohan Verma",
+      "phone": "",
+      "avatar_key": null,
+      "created_at": "2026-09-20T06:12:09.979Z",
+      "updated_at": "2026-09-20T06:12:09.979Z"
+    },
+    {
+      "id": "6b2dc611-6492-44e7-8337-2cdaee30dc56",
+      "email": "user_a_1789884747362@example.com",
+      "full_name": "Alice Walker",
+      "phone": "+919999900001",
+      "avatar_key": null,
+      "created_at": "2026-09-20T06:12:27.437Z",
+      "updated_at": "2026-09-20T06:12:27.437Z"
+    },
+    {
+      "id": "7de73a9e-7243-4a7d-88fe-d67c15279cb1",
+      "email": "user_b_1789884747442@example.com",
+      "full_name": "Bob Smith",
+      "phone": "+919999900002",
+      "avatar_key": null,
+      "created_at": "2026-09-20T06:12:27.513Z",
+      "updated_at": "2026-09-20T06:12:27.513Z"
+    },
+    {
+      "id": "ba9b2374-b644-4ec8-8b93-8c85f90c9e2b",
+      "email": "checkout_shopper_1789884749876@bingooo.in",
+      "full_name": "Vikramaditya Rao",
+      "phone": "9845012345",
+      "avatar_key": null,
+      "created_at": "2026-09-20T06:12:30.058Z",
+      "updated_at": "2026-09-20T06:12:30.058Z"
+    },
+    {
+      "id": "d5fbfd6b-f4d6-470d-af5a-d8b79ba8469e",
+      "email": "regular_shopper_1789884753984@bingooo.in",
+      "full_name": "Rohan Verma",
+      "phone": "",
+      "avatar_key": null,
+      "created_at": "2026-09-20T06:12:34.133Z",
+      "updated_at": "2026-09-20T06:12:34.133Z"
+    },
+    {
+      "id": "f5f8e795-4c34-4e30-963d-38789c9b32f4",
+      "email": "user_a_1789885571534@example.com",
+      "full_name": "Alice Walker",
+      "phone": "+919999900001",
+      "avatar_key": null,
+      "created_at": "2026-09-20T06:26:11.603Z",
+      "updated_at": "2026-09-20T06:26:11.603Z"
+    },
+    {
+      "id": "c609f5eb-b170-4184-92b8-77cb80952c75",
+      "email": "user_b_1789885571606@example.com",
+      "full_name": "Bob Smith",
+      "phone": "+919999900002",
+      "avatar_key": null,
+      "created_at": "2026-09-20T06:26:11.671Z",
+      "updated_at": "2026-09-20T06:26:11.671Z"
+    },
+    {
+      "id": "616f03a3-ff82-437a-aa73-7664170d5061",
+      "email": "regular_shopper_1789885573642@bingooo.in",
+      "full_name": "Rohan Verma",
+      "phone": "",
+      "avatar_key": null,
+      "created_at": "2026-09-20T06:26:13.715Z",
+      "updated_at": "2026-09-20T06:26:13.715Z"
+    },
+    {
+      "id": "3620093a-2eda-4914-94ca-3d8ac24e5875",
+      "email": "checkout_shopper_1789885576596@bingooo.in",
+      "full_name": "Vikramaditya Rao",
+      "phone": "9845012345",
+      "avatar_key": null,
+      "created_at": "2026-09-20T06:26:16.695Z",
+      "updated_at": "2026-09-20T06:26:16.695Z"
+    },
+    {
+      "id": "bfac3ee5-06dd-49cc-b547-de7bcd5bd884",
+      "email": "checkout_shopper_1789891279370@bingooo.in",
+      "full_name": "Vikramaditya Rao",
+      "phone": "9845012345",
+      "avatar_key": null,
+      "created_at": "2026-09-20T08:01:19.542Z",
+      "updated_at": "2026-09-20T08:01:19.542Z"
+    },
+    {
+      "id": "9cc37ab3-1e49-4b05-8019-dfb5951e9457",
+      "email": "checkout_shopper_1789891996341@bingooo.in",
+      "full_name": "Vikramaditya Rao",
+      "phone": "9845012345",
+      "avatar_key": null,
+      "created_at": "2026-09-20T08:13:16.532Z",
+      "updated_at": "2026-09-20T08:13:16.532Z"
     }
   ],
   "banners": [
@@ -3094,6 +4520,33 @@
   },
   "media_assets": [
     {
+      "id": "asset-1789885580017-b14607",
+      "name": "tokyo-cyber-vector.png",
+      "category": "designs",
+      "url": "http://localhost:3000/api/v1/media/file/1789885580016-7b323e7b-tokyo-cyber-vector.png",
+      "sizeBytes": 70,
+      "dimensions": "1200x1200",
+      "uploaded_at": "2026-09-20T06:26:20.017Z"
+    },
+    {
+      "id": "asset-1789884757367-293f65",
+      "name": "tokyo-cyber-vector.png",
+      "category": "designs",
+      "url": "http://localhost:3000/api/v1/media/file/1789884757366-f661e694-tokyo-cyber-vector.png",
+      "sizeBytes": 70,
+      "dimensions": "1200x1200",
+      "uploaded_at": "2026-09-20T06:12:37.367Z"
+    },
+    {
+      "id": "asset-1789884731895-a1746a",
+      "name": "tokyo-cyber-vector.png",
+      "category": "designs",
+      "url": "http://localhost:3000/api/v1/media/file/1789884731895-c6f18deb-tokyo-cyber-vector.png",
+      "sizeBytes": 70,
+      "dimensions": "1200x1200",
+      "uploaded_at": "2026-09-20T06:12:11.895Z"
+    },
+    {
       "id": "asset-1789454756902-d99377",
       "name": "tokyo-cyber-vector.png",
       "category": "designs",
@@ -3180,7 +4633,8 @@
             "name": "Beige",
             "hex": "#D8C8B1",
             "textContrast": "#171717",
-            "frontImageUrl": "",
+            "frontImageUrl": "/custom/beige-front.png",
+            "backImageUrl": "/custom/beige-back.png",
             "isActive": true
           },
           {
@@ -3188,7 +4642,8 @@
             "name": "Red",
             "hex": "#E6321C",
             "textContrast": "#FFFFFF",
-            "frontImageUrl": "",
+            "frontImageUrl": "/custom/red-front.png",
+            "backImageUrl": "/custom/red-back.png",
             "isActive": true
           }
         ]
@@ -3223,7 +4678,8 @@
             "name": "Beige",
             "hex": "#D8C8B1",
             "textContrast": "#171717",
-            "frontImageUrl": "",
+            "frontImageUrl": "/custom/beige-front.png",
+            "backImageUrl": "/custom/beige-back.png",
             "isActive": true
           },
           {
@@ -3231,7 +4687,8 @@
             "name": "Red",
             "hex": "#E6321C",
             "textContrast": "#FFFFFF",
-            "frontImageUrl": "",
+            "frontImageUrl": "/custom/red-front.png",
+            "backImageUrl": "/custom/red-back.png",
             "isActive": true
           }
         ]

@@ -51,10 +51,10 @@ const DEFAULT_GARMENTS: GarmentItem[] = [
     description: '100% Combed Cotton Classic Crewneck',
     isActive: true,
     colors: [
-      { id: 'black', name: 'Black', hex: '#171717', textContrast: '#FFFFFF', frontImageUrl: '', isActive: true },
-      { id: 'white', name: 'White', hex: '#FFFFFF', textContrast: '#171717', frontImageUrl: '', isActive: true },
-      { id: 'beige', name: 'Beige', hex: '#D8C8B1', textContrast: '#171717', frontImageUrl: '', isActive: true },
-      { id: 'red', name: 'Red', hex: '#E6321C', textContrast: '#FFFFFF', frontImageUrl: '', isActive: true },
+      { id: 'black', name: 'Black', hex: '#171717', textContrast: '#FFFFFF', frontImageUrl: '/custom/black-front.png', backImageUrl: '/custom/black-back.png', isActive: true },
+      { id: 'white', name: 'White', hex: '#FFFFFF', textContrast: '#171717', frontImageUrl: '/custom/white-front.png', backImageUrl: '/custom/white-back.png', isActive: true },
+      { id: 'beige', name: 'Beige', hex: '#D8C8B1', textContrast: '#171717', frontImageUrl: '/custom/beige-front.png', backImageUrl: '/custom/beige-back.png', isActive: true },
+      { id: 'red', name: 'Red', hex: '#E6321C', textContrast: '#FFFFFF', frontImageUrl: '/custom/red-front.png', backImageUrl: '/custom/red-back.png', isActive: true },
     ],
   },
   {
@@ -64,10 +64,10 @@ const DEFAULT_GARMENTS: GarmentItem[] = [
     description: '240 GSM Heavyweight Drop-Shoulder Fit',
     isActive: true,
     colors: [
-      { id: 'black', name: 'Black', hex: '#171717', textContrast: '#FFFFFF', frontImageUrl: '', isActive: true },
-      { id: 'white', name: 'White', hex: '#FFFFFF', textContrast: '#171717', frontImageUrl: '', isActive: true },
-      { id: 'beige', name: 'Beige', hex: '#D8C8B1', textContrast: '#171717', frontImageUrl: '', isActive: true },
-      { id: 'red', name: 'Red', hex: '#E6321C', textContrast: '#FFFFFF', frontImageUrl: '', isActive: true },
+      { id: 'black', name: 'Black', hex: '#171717', textContrast: '#FFFFFF', frontImageUrl: '/custom/black-front.png', backImageUrl: '/custom/black-back.png', isActive: true },
+      { id: 'white', name: 'White', hex: '#FFFFFF', textContrast: '#171717', frontImageUrl: '/custom/white-front.png', backImageUrl: '/custom/white-back.png', isActive: true },
+      { id: 'beige', name: 'Beige', hex: '#D8C8B1', textContrast: '#171717', frontImageUrl: '/custom/beige-front.png', backImageUrl: '/custom/beige-back.png', isActive: true },
+      { id: 'red', name: 'Red', hex: '#E6321C', textContrast: '#FFFFFF', frontImageUrl: '/custom/red-front.png', backImageUrl: '/custom/red-back.png', isActive: true },
     ],
   },
   {
@@ -77,8 +77,8 @@ const DEFAULT_GARMENTS: GarmentItem[] = [
     description: '350 GSM Brushed Fleece Pullover Hoodie',
     isActive: true,
     colors: [
-      { id: 'black', name: 'Black', hex: '#171717', textContrast: '#FFFFFF', frontImageUrl: '', isActive: true },
-      { id: 'white', name: 'White', hex: '#FFFFFF', textContrast: '#171717', frontImageUrl: '', isActive: true },
+      { id: 'black', name: 'Black', hex: '#171717', textContrast: '#FFFFFF', frontImageUrl: '/custom/hoodie-black-front.png', backImageUrl: '/custom/hoodie-black-back.png', isActive: true },
+      { id: 'white', name: 'White', hex: '#FFFFFF', textContrast: '#171717', frontImageUrl: '/custom/hoodie-white-front.png', backImageUrl: '/custom/hoodie-white-back.png', isActive: true },
       { id: 'beige', name: 'Beige', hex: '#D8C8B1', textContrast: '#171717', frontImageUrl: '', isActive: true },
       { id: 'red', name: 'Red', hex: '#E6321C', textContrast: '#FFFFFF', frontImageUrl: '', isActive: true },
     ],

@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { db } from '../common/database/store';
+import { db, saveDb } from '../common/database/store';
 
 @Injectable()
 export class AdminService {
@@ -146,6 +146,7 @@ export class AdminService {
   /** Update system settings */
   updateSettings(data: Record<string, any>) {
     Object.assign(db.settings, data);
+    saveDb();
     return db.settings;
   }
 }

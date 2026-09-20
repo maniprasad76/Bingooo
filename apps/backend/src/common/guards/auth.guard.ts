@@ -67,12 +67,15 @@ export class AuthGuard implements CanActivate {
     }
 
     // 2. Supabase Auth verification
-    const supabaseUrl = process.env.SUPABASE_URL || 'https://zqmrmgwxhrdscippanuv.supabase.co';
+    // No hardcoded project URL/key fallback: if these aren't configured,
+    // this auth path is simply unavailable rather than silently trusting
+    // a fallback project that's visible to anyone reading this source.
+    const supabaseUrl = process.env.SUPABASE_URL;
     const supabaseKey =
+      process.env.SUPABASE_SECRET_KEY ||
       process.env.SUPABASE_SERVICE_ROLE_KEY ||
       process.env.SUPABASE_PUBLISHABLE_KEY ||
-      process.env.SUPABASE_ANON_KEY ||
-      'sb_publishable_fHCORRNjkuYGufRUUdvHtw_T5VFXWpl';
+      process.env.SUPABASE_ANON_KEY;
 
     if (supabaseUrl && supabaseKey) {
       try {
@@ -81,9 +84,10 @@ export class AuthGuard implements CanActivate {
         });
         const { data: authData, error: authError } = await supabase.auth.getUser(token);
         if (!authError && authData?.user) {
-          const isSuperAdminEmail = authData.user.email?.toLowerCase() === 'basaprasaduu@gmail.com';
-
-          // Sync or find user in db
+          // Sync or find user in db. Role/admin status is decided purely by
+          // the `role` already stored on the user record — never by matching
+          // a hardcoded email in source code, which would let anyone reading
+          // this repo know exactly which account has SUPER_ADMIN access.
           let user = db.users.find((u) => u.id === authData.user.id || u.email?.toLowerCase() === authData.user.email?.toLowerCase());
           if (!user && authData.user.email) {
             user = {
@@ -92,20 +96,18 @@ export class AuthGuard implements CanActivate {
               full_name:
                 authData.user.user_metadata?.full_name ||
                 authData.user.user_metadata?.name ||
-                (isSuperAdminEmail ? 'Mani Prasad' : authData.user.email.split('@')[0]),
+                authData.user.email.split('@')[0],
               phone: authData.user.phone || '',
-              role: isSuperAdminEmail ? 'SUPER_ADMIN' : 'CUSTOMER',
+              role: 'CUSTOMER',
               status: 'ACTIVE',
               password_hash: '',
               created_at: new Date().toISOString(),
               updated_at: new Date().toISOString(),
             };
             db.users.push(user);
-          } else if (user && isSuperAdminEmail) {
-            user.role = 'SUPER_ADMIN';
           }
 
-          const roleCode = isSuperAdminEmail ? 'SUPER_ADMIN' : (user?.role || 'CUSTOMER');
+          const roleCode = user?.role || 'CUSTOMER';
           (request as any).user = {
             id: authData.user.id,
             email: authData.user.email,

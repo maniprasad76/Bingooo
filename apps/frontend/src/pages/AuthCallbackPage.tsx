@@ -38,11 +38,11 @@ export function AuthCallbackPage() {
           });
 
           const userEmail = session.user.email?.toLowerCase();
-          const SUPER_ADMIN_EMAIL = 'basaprasaduu@gmail.com';
+          const SUPER_ADMIN_EMAILS = ['basaprasaduu@gmail.com', 'admin@bingooo.in'];
           const hasFrontendRedirect = Boolean(sessionStorage.getItem('bingooo_auth_redirect'));
 
           // If from admin panel OR authorized Super Admin without explicit customer redirect
-          if (userEmail === SUPER_ADMIN_EMAIL && (isFromAdmin || !hasFrontendRedirect)) {
+          if (userEmail && SUPER_ADMIN_EMAILS.includes(userEmail) && (isFromAdmin || !hasFrontendRedirect)) {
             const targetUrl = `${adminOrigin}/dashboard#access_token=${encodeURIComponent(session.access_token)}&refresh_token=${encodeURIComponent(session.refresh_token || '')}`;
             window.location.href = targetUrl;
             return;

@@ -238,8 +238,10 @@ export function CheckoutPage() {
           }
         }
 
-        const razorpayKey =
-          rzpOrder.keyId || import.meta.env.VITE_RAZORPAY_KEY_ID || 'rzp_test_TYDFxO8bZagWG6';
+        const razorpayKey = rzpOrder.keyId || import.meta.env.VITE_RAZORPAY_KEY_ID;
+        if (!razorpayKey) {
+          throw new Error('Razorpay Key ID is not configured. Please set VITE_RAZORPAY_KEY_ID in your environment.');
+        }
         const razorpayOrderId = rzpOrder.order_id || rzpOrder.razorpayOrderId;
 
         const isPartialPayment = backendPaymentMethod === 'partial_cod';

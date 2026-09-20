@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { db } from '../common/database/store';
+import { db, saveDb } from '../common/database/store';
 
 @Injectable()
 export class NotificationsService {
@@ -29,6 +29,7 @@ export class NotificationsService {
       throw new NotFoundException({ code: 'NOTIF_NOT_FOUND', message: 'Notification not found.' });
     }
     notif.is_read = true;
+    saveDb();
     return { success: true, id };
   }
 
@@ -37,12 +38,14 @@ export class NotificationsService {
     db.notifications.forEach((n) => {
       n.is_read = true;
     });
+    saveDb();
     return { success: true, message: 'All notifications marked as read.' };
   }
 
   /** Delete notification */
   delete(id: string) {
     db.notifications = db.notifications.filter((n) => n.id !== id);
+    saveDb();
     return { success: true, id };
   }
 
@@ -67,6 +70,7 @@ export class NotificationsService {
       created_at: new Date().toISOString(),
     };
     db.notifications.unshift(newNotif);
+    saveDb();
     return newNotif;
   }
 }

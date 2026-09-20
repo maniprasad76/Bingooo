@@ -252,6 +252,7 @@ export function ShopPage() {
 
   // Quick Add animation tracking
   const [quickAddedId, setQuickAddedId] = useState<string | null>(null);
+  const [failedImages, setFailedImages] = useState<Record<string, boolean>>({});
 
   // Keep active tab in sync if URL changes
   useEffect(() => {
@@ -284,7 +285,13 @@ export function ShopPage() {
           : undefined,
         rating: p.rating || 5,
         reviewsCount: p.reviews_count || 48,
-        image: p.images?.[0]?.url || p.images?.[0] || '',
+        image:
+          p.images?.[0]?.url ||
+          p.images?.[0]?.object_key ||
+          (typeof p.images?.[0] === 'string' ? p.images[0] : '') ||
+          p.image_url ||
+          p.imageUrl ||
+          '',
         isBestseller: !!p.bestseller,
         badge: p.bestseller
           ? 'BESTSELLER'
@@ -806,14 +813,14 @@ export function ShopPage() {
 
                         {/* Image Link */}
                         <Link to={`/product/${product.slug}`} className="block w-full h-full">
-                          {product.image ? (
+                          {product.image && !failedImages[product.id] ? (
                             <img
                               src={product.image}
                               alt={product.name}
                               loading="lazy"
                               className="w-full h-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.035]"
-                              onError={(e) => {
-                                e.currentTarget.style.display = 'none';
+                              onError={() => {
+                                setFailedImages((prev) => ({ ...prev, [product.id]: true }));
                               }}
                             />
                           ) : (

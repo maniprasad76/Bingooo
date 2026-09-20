@@ -3,6 +3,7 @@ import { v4 as uuidv4 } from 'uuid';
 import * as fs from 'fs';
 import * as path from 'path';
 import { db, saveDb } from '../common/database/store';
+import { getUploadsDir } from '../common/utils/paths.util';
 
 
 @Injectable()
@@ -10,11 +11,7 @@ export class MediaService {
   private readonly uploadDir: string;
 
   constructor() {
-    // Ensure uploads directory exists in apps/backend/uploads
-    this.uploadDir = path.resolve(process.cwd(), 'uploads');
-    if (!fs.existsSync(this.uploadDir)) {
-      fs.mkdirSync(this.uploadDir, { recursive: true });
-    }
+    this.uploadDir = getUploadsDir();
   }
 
   /** Get absolute path of an uploaded file, validating against traversal */

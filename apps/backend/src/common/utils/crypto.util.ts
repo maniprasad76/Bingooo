@@ -1,5 +1,20 @@
 import * as crypto from 'crypto';
 
+// JWT signing secret must come from the environment. There is no hardcoded
+// fallback: a public fallback secret would let anyone forge valid session
+// tokens (including SUPER_ADMIN tokens) for this API. Fail fast on use
+// instead of silently signing with a known-public value.
+export function getJwtSecret(): string {
+  const secret = process.env.JWT_SECRET;
+  if (!secret) {
+    throw new Error(
+      'JWT_SECRET environment variable is required and must not be empty. ' +
+        'Refusing to start without a real signing secret.',
+    );
+  }
+  return secret;
+}
+
 // In-memory token revocation blacklist (persists across active sessions)
 const revokedTokens = new Set<string>();
 
@@ -78,9 +93,8 @@ export function generateToken(payload: { userId: string; email: string; role: st
     }),
   ).toString('base64url');
 
-  const secret = process.env.JWT_SECRET || 'bingooo-super-secret-jwt-key-2026';
   const signature = crypto
-    .createHmac('sha256', secret)
+    .createHmac('sha256', getJwtSecret())
     .update(`${header}.${body}`)
     .digest('base64url');
 
@@ -98,9 +112,8 @@ export function verifyToken(token: string): { sub: string; email: string; role: 
     const parts = token.split('.');
     if (parts.length !== 3) return null;
     const [header, body, signature] = parts;
-    const secret = process.env.JWT_SECRET || 'bingooo-super-secret-jwt-key-2026';
     const expectedSignature = crypto
-      .createHmac('sha256', secret)
+      .createHmac('sha256', getJwtSecret())
       .update(`${header}.${body}`)
       .digest('base64url');
 

@@ -6,17 +6,9 @@
 import * as fs from 'fs';
 import * as path from 'path';
 
-const IS_VERCEL = !!process.env.VERCEL;
-const LOG_DIR = IS_VERCEL ? path.resolve('/tmp', 'logs') : path.resolve(process.cwd(), 'data', 'logs');
+import { getLogsDir } from '../utils/paths.util';
 
-// Ensure log directory exists
-try {
-  if (!fs.existsSync(LOG_DIR)) {
-    fs.mkdirSync(LOG_DIR, { recursive: true });
-  }
-} catch {
-  // Gracefully continue on read-only environments
-}
+const LOG_DIR = getLogsDir();
 
 export type LogLevel = 'info' | 'warn' | 'error' | 'debug';
 

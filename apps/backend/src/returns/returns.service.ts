@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { v4 as uuidv4 } from 'uuid';
-import { db } from '../common/database/store';
+import { db, saveDb } from '../common/database/store';
 
 export interface CreateReturnDto {
   orderId?: string;
@@ -54,6 +54,7 @@ export class ReturnsService {
       created_at: new Date().toISOString(),
     });
 
+    saveDb();
     return newReturn;
   }
 
@@ -103,6 +104,7 @@ export class ReturnsService {
       }
     }
 
+    saveDb();
     return ret;
   }
 }

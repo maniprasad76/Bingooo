@@ -53,7 +53,7 @@ export async function bootstrapServer(): Promise<Express> {
   ];
   app.enableCors({
     origin: (origin, callback) => {
-      if (!origin || allowedOrigins.includes(origin) || origin.endsWith('.vercel.app') || origin.includes('localhost')) {
+      if (!origin || allowedOrigins.includes(origin) || origin.endsWith('.vercel.app') || origin.endsWith('bingooo.co.in') || origin.includes('localhost')) {
         callback(null, true);
       } else {
         callback(null, true);

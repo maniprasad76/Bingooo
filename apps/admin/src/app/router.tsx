@@ -2,6 +2,7 @@ import { createBrowserRouter, Navigate } from 'react-router-dom';
 import { AdminGuard } from '../components/AdminGuard';
 import { AdminLayout } from '../components/AdminLayout';
 import { LoginPage } from '../pages/LoginPage';
+import { AuthCallbackPage } from '../pages/AuthCallbackPage';
 import { DashboardPage } from '../pages/DashboardPage';
 import { OrdersPage } from '../pages/OrdersPage';
 import { ProductsPage } from '../pages/ProductsPage';
@@ -22,6 +23,11 @@ export const router = createBrowserRouter([
   {
     path: '/login',
     element: <LoginPage />,
+    errorElement: <RouteErrorBoundary />,
+  },
+  {
+    path: '/auth/callback',
+    element: <AuthCallbackPage />,
     errorElement: <RouteErrorBoundary />,
   },
   {

@@ -78,6 +78,7 @@ async function bootstrap() {
       const isAllowed =
         allowedOrigins.includes(origin) ||
         origin.endsWith('.vercel.app') ||
+        origin.endsWith('bingooo.co.in') ||
         origin.includes('localhost') ||
         origin.includes('127.0.0.1');
 

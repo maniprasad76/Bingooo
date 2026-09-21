@@ -1,6 +1,6 @@
 # Bingooo Menswear - Robots.txt
-# https://bingooo.in
-# Last updated: 2026-09-15
+# https://bingooo.co.in
+# Last updated: 2026-09-21
 
 # ── Googlebot: Full crawl access ──
 User-agent: Googlebot
@@ -81,4 +81,4 @@ Disallow: /*?*
 Disallow: /*.json$
 
 # ── Sitemap ──
-Sitemap: https://bingooo.in/sitemap.xml
+Sitemap: https://bingooo.co.in/sitemap.xml

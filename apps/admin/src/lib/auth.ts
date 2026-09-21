@@ -9,6 +9,11 @@ import { api } from './api';
 
 const AUTH_KEY = 'bingooo_auth_token';
 const ADMIN_ROLES = ['ADMIN', 'SUPER_ADMIN', 'admin', 'super_admin'];
+export const AUTHORIZED_SUPER_ADMIN_EMAILS = [
+  'basaprasaduu@gmail.com',
+  'admin@bingooo.in',
+  'prasad@bingooo.co.in',
+];
 export const AUTHORIZED_SUPER_ADMIN_EMAIL = 'basaprasaduu@gmail.com';
 
 const supabaseUrl =
@@ -48,11 +53,11 @@ export async function initAdminAuth(): Promise<void> {
       const { data } = await supabase.auth.getSession();
       if (data.session?.user) {
         const userEmail = data.session.user.email?.toLowerCase();
-        if (userEmail === AUTHORIZED_SUPER_ADMIN_EMAIL) {
+        if (userEmail && AUTHORIZED_SUPER_ADMIN_EMAILS.includes(userEmail)) {
           localStorage.setItem(AUTH_KEY, data.session.access_token);
           useAuthStore.getState().setAuth({
             id: data.session.user.id,
-            email: data.session.user.email || AUTHORIZED_SUPER_ADMIN_EMAIL,
+            email: data.session.user.email || userEmail,
             fullName: data.session.user.user_metadata?.full_name || 'Mani Prasad',
             role: 'SUPER_ADMIN',
           });
@@ -119,18 +124,26 @@ export async function adminGoogleLogin(): Promise<void> {
     throw new Error('Google Authentication requires Supabase configuration.');
   }
 
-  const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
   const adminOrigin = window.location.origin;
-  const frontendCallback = isLocal
-    ? `${window.location.protocol}//${window.location.hostname}:5173/auth/callback`
-    : 'https://bingooo-frontend.vercel.app/auth/callback';
 
-  const redirectTarget = `${frontendCallback}?source=admin&admin_origin=${encodeURIComponent(adminOrigin)}`;
+  // Set shared cookies & session markers so if Supabase bounces via localhost or frontend, it returns to admin
+  try {
+    document.cookie = `bingooo_admin_login=1; path=/; max-age=600; SameSite=Lax`;
+    document.cookie = `bingooo_admin_origin=${encodeURIComponent(adminOrigin)}; path=/; max-age=600; SameSite=Lax`;
+    sessionStorage.setItem('bingooo_admin_login', '1');
+    sessionStorage.setItem('bingooo_admin_origin', adminOrigin);
+  } catch {}
+
+  // Direct callback on the Admin app itself
+  const redirectTarget = `${adminOrigin}/auth/callback?source=admin&admin_origin=${encodeURIComponent(adminOrigin)}`;
 
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: 'google',
     options: {
       redirectTo: redirectTarget,
+      queryParams: {
+        prompt: 'select_account',
+      },
     },
   });
 

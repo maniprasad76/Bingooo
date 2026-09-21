@@ -22,10 +22,21 @@ export function AuthCallbackPage() {
       try {
         const searchParams = new URLSearchParams(window.location.search);
         const hashParams = new URLSearchParams(window.location.hash.replace(/^#/, ''));
-        const isFromAdmin = searchParams.get('source') === 'admin' || hashParams.get('source') === 'admin';
+
+        // Check for admin intent from cookies, searchParams, or hashParams
+        const hasAdminCookie = document.cookie.includes('bingooo_admin_login=1');
+        const cookieOriginMatch = document.cookie.match(/bingooo_admin_origin=([^;]+)/);
+        const cookieAdminOrigin = cookieOriginMatch ? decodeURIComponent(cookieOriginMatch[1]) : null;
+
+        const isFromAdmin =
+          searchParams.get('source') === 'admin' ||
+          hashParams.get('source') === 'admin' ||
+          hasAdminCookie;
+
         const adminOrigin =
           searchParams.get('admin_origin') ||
           hashParams.get('admin_origin') ||
+          cookieAdminOrigin ||
           (window.location.hostname === 'localhost' ? 'http://localhost:5174' : 'https://bingooo-admin.vercel.app');
 
         const handleUserSession = (session: any) => {
@@ -38,13 +49,29 @@ export function AuthCallbackPage() {
           });
 
           const userEmail = session.user.email?.toLowerCase();
-          const SUPER_ADMIN_EMAILS = ['basaprasaduu@gmail.com', 'admin@bingooo.in'];
-          const hasFrontendRedirect = Boolean(sessionStorage.getItem('bingooo_auth_redirect'));
+          const SUPER_ADMIN_EMAILS = [
+            'basaprasaduu@gmail.com',
+            'admin@bingooo.in',
+            'prasad@bingooo.co.in',
+          ];
 
-          // If from admin panel OR authorized Super Admin without explicit customer redirect
-          if (userEmail && SUPER_ADMIN_EMAILS.includes(userEmail) && (isFromAdmin || !hasFrontendRedirect)) {
+          // If from admin panel OR authorized Super Admin
+          if (userEmail && SUPER_ADMIN_EMAILS.includes(userEmail) && isFromAdmin) {
+            // Clean up admin cookies
+            document.cookie = 'bingooo_admin_login=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT;';
+            document.cookie = 'bingooo_admin_origin=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT;';
+            sessionStorage.removeItem('bingooo_auth_redirect');
+
             const targetUrl = `${adminOrigin}/dashboard#access_token=${encodeURIComponent(session.access_token)}&refresh_token=${encodeURIComponent(session.refresh_token || '')}`;
             window.location.href = targetUrl;
+            return;
+          }
+
+          if (isFromAdmin) {
+            // User tried to log into admin but their email is not an authorized Super Admin
+            document.cookie = 'bingooo_admin_login=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT;';
+            document.cookie = 'bingooo_admin_origin=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT;';
+            window.location.href = `${adminOrigin}/login?error=unauthorized`;
             return;
           }
 

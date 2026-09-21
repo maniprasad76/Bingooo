@@ -27,6 +27,15 @@ export function LoginPage() {
   const location = useLocation();
   const from = (location.state as any)?.from?.pathname || '/dashboard';
 
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    if (params.get('error') === 'unauthorized') {
+      const msg = 'Access Denied: That Google account does not have Super Admin permissions.';
+      setError(msg);
+      toast.error('Unauthorized', msg);
+    }
+  }, [location.search, toast]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');

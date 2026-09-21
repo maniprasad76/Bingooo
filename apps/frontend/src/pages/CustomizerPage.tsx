@@ -676,7 +676,7 @@ export function CustomizerPage() {
       <SEO
         title="Custom Studio — Design Your Own Garment | BINGOOO"
         description="Create custom T-shirts, oversized tees, and hoodies with HD DTF printing. Upload any design or type custom text. 17 font styles, drag-and-drop placement, 3–7 day delivery."
-        canonical="https://bingooo.in/customize"
+        canonical="https://bingooo.co.in/customize"
       />
 
       {/* ── HERO HEADER ───────────────────────────────────────────────────────── */}

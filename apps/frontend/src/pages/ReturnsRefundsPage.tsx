@@ -97,7 +97,7 @@ export function ReturnsRefundsPage() {
       <SEO
         title="Returns & Refunds Policy — BINGOOO Atelier"
         description="Learn about Bingooo's hassle-free 7-day doorstep size exchange policy, reverse courier pickups across 19,000+ Indian pincodes, and rapid 24h refund timelines."
-        canonical="https://bingooo.in/returns-refunds"
+        canonical="https://bingooo.co.in/returns-refunds"
       />
 
       {/* =======================================================

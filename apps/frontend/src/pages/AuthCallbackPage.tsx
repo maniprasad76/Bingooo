@@ -37,7 +37,7 @@ export function AuthCallbackPage() {
           searchParams.get('admin_origin') ||
           hashParams.get('admin_origin') ||
           cookieAdminOrigin ||
-          (window.location.hostname === 'localhost' ? 'http://localhost:5174' : 'https://bingooo-admin.vercel.app');
+          (window.location.hostname === 'localhost' ? 'http://localhost:5174' : 'https://admin.bingooo.co.in');
 
         const handleUserSession = (session: any) => {
           const authStorageKey = 'bingooo_auth_token';

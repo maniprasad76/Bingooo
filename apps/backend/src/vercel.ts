@@ -47,6 +47,10 @@ export async function bootstrapServer(): Promise<Express> {
   const allowedOrigins = explicitCors || [
     'http://localhost:5173',
     'http://localhost:5174',
+    'https://bingooo.co.in',
+    'https://www.bingooo.co.in',
+    'https://admin.bingooo.co.in',
+    'https://api.bingooo.co.in',
     'https://bingooo-frontend.vercel.app',
     'https://bingooo-admin.vercel.app',
     'https://bingooo-admin-three.vercel.app',

@@ -93,7 +93,7 @@ export function ContactPage() {
       <SEO
         title="Contact Us | BINGOOO Men's Wear"
         description="Get in touch with Bingooo for orders, sizing, shipping, returns, and custom apparel design inquiries."
-        canonical="https://bingooo.in/contact"
+        canonical="https://bingooo.co.in/contact"
       />
 
       {/* =======================================================

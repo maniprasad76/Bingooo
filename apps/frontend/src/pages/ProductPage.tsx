@@ -302,14 +302,14 @@ export function ProductPage() {
       <SEO
         title={`${product?.title || 'Classic Logo Tee'} — BINGOOO`}
         description={product?.description || "BINGOOO Men's fashion, custom designs and clothing culture."}
-        canonical={`https://bingooo.in/product/${slug || 'classic-logo-tee'}`}
+        canonical={`https://bingooo.co.in/product/${slug || 'classic-logo-tee'}`}
         ogType="product"
         productPrice={price}
         schema={[generateProductSchema(product as any)]}
         breadcrumbs={[
-          { name: 'Home', url: 'https://bingooo.in/' },
-          { name: product?.category?.name || 'Shop', url: `https://bingooo.in/category/${product?.category?.slug || 'shop'}` },
-          { name: product?.title || 'Product', url: `https://bingooo.in/product/${slug}` },
+          { name: 'Home', url: 'https://bingooo.co.in/' },
+          { name: product?.category?.name || 'Shop', url: `https://bingooo.co.in/category/${product?.category?.slug || 'shop'}` },
+          { name: product?.title || 'Product', url: `https://bingooo.co.in/product/${slug}` },
         ]}
       />
 

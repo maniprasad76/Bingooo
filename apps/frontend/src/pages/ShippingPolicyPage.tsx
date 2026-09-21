@@ -79,7 +79,7 @@ const FAQS = [
   {
     question: 'How do I track my active shipment in real time?',
     answer:
-      'The moment your parcel is scanned out of our Srikakulam logistics facility, an automated WhatsApp message and SMS are dispatched containing your unique Airway Bill (AWB) number and direct tracking URL. You can also track your parcel anytime at bingooo.in/track-order using your Order ID or phone number.',
+      'The moment your parcel is scanned out of our Srikakulam logistics facility, an automated WhatsApp message and SMS are dispatched containing your unique Airway Bill (AWB) number and direct tracking URL. You can also track your parcel anytime at bingooo.co.in/track-order using your Order ID or phone number.',
   },
   {
     question: 'Do custom on-demand DTF garments take longer to dispatch?',
@@ -161,7 +161,7 @@ export function ShippingPolicyPage() {
       <SEO
         title="Shipping & Delivery Policy — BINGOOO Atelier"
         description="Review Bingooo's pan-India delivery timelines, courier tracking details, dispatch schedules, and free shipping on orders above ₹999."
-        canonical="https://bingooo.in/shipping-policy"
+        canonical="https://bingooo.co.in/shipping-policy"
       />
 
       {/* =======================================================

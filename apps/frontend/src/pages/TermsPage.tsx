@@ -8,7 +8,7 @@ export function TermsPage() {
       <SEO
         title="Terms of Service — BINGOOO"
         description="Review the terms and conditions governing apparel purchases, custom printing atelier guidelines, and website usage at Bingooo."
-        canonical="https://bingooo.in/terms"
+        canonical="https://bingooo.co.in/terms"
         ogImage="/terms-hero.jpg"
       />
 
@@ -197,7 +197,7 @@ export function TermsPage() {
               </div>
               <div className="space-y-3 text-[13px] leading-[1.8] text-[#6f6a63]">
                 <p>
-                  By accessing, browsing, registering on, or purchasing from <strong className="text-[#171717]">Bingooo Men&apos;s Wear</strong> (bingooo.in), you agree to be bound by these Terms of Service, along with our Privacy Policy, Shipping Policy, and Cancellation Guidelines.
+                  By accessing, browsing, registering on, or purchasing from <strong className="text-[#171717]">Bingooo Men&apos;s Wear</strong> (bingooo.co.in), you agree to be bound by these Terms of Service, along with our Privacy Policy, Shipping Policy, and Cancellation Guidelines.
                 </p>
                 <p>
                   If you do not agree with any provision stated herein, please refrain from transacting on this platform. We reserve the right to revise terms periodically in alignment with statutory updates.

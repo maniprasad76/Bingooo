@@ -8,7 +8,7 @@ export function PrivacyPolicyPage() {
       <SEO
         title="Privacy Policy — BINGOOO"
         description="Learn how Bingooo protects your personal information, secures payment transactions, and safeguards custom design studio uploads."
-        canonical="https://bingooo.in/privacy-policy"
+        canonical="https://bingooo.co.in/privacy-policy"
         ogImage="/privacy-hero.jpg"
       />
 

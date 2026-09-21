@@ -215,7 +215,7 @@ export function HomePage() {
         title="BINGOOO — Wear What Defines You"
         description="BINGOOO — Men's fashion, custom designs and clothing culture. Shop 240–280 GSM heavyweight streetwear or design your own in our 3D Atelier."
         keywords="mens wear, oversized tees, streetwear, custom t-shirts, hoodies, bingooo, heavyweight cotton, indian streetwear"
-        canonical="https://bingooo.in"
+        canonical="https://bingooo.co.in"
         schema={[generateOrganizationSchema(), generateWebSiteSchema(), generateLocalBusinessSchema()]}
       />
 

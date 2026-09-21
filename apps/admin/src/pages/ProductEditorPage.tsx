@@ -1355,7 +1355,7 @@ export function ProductEditorPage() {
                 {seoTitle || `${(title || 'Product Title').toUpperCase()} — BINGOOO`}
               </p>
               <p className="text-[11px] text-emerald-700 font-mono truncate">
-                https://bingooo.in/product/{slug || 'classic-oversized-tee'}
+                https://bingooo.co.in/product/{slug || 'classic-oversized-tee'}
               </p>
               <p className="text-[11px] text-muted line-clamp-2 leading-relaxed">
                 {seoDescription || description || 'BINGOOO luxury streetwear fashion, custom drops and clothing culture.'}

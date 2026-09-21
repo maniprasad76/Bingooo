@@ -8,7 +8,7 @@ export function AboutPage() {
       <SEO
         title="About Us — BINGOOO"
         description="BINGOOO — Not just clothes. A you. Discover our story, our values and the culture behind the brand."
-        canonical="https://bingooo.in/about"
+        canonical="https://bingooo.co.in/about"
       />
 
       {/* =======================================================

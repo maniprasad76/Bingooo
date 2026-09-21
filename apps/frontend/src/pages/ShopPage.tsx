@@ -444,10 +444,10 @@ export function ShopPage() {
       <SEO
         title={slug ? `${slug.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase())} — BINGOOO` : 'Shop — BINGOOO'}
         description="Everyday essentials, statement pieces and custom clothing made for people who want to wear what defines them."
-        canonical={slug ? `https://bingooo.in/category/${slug}` : 'https://bingooo.in/shop'}
+        canonical={slug ? `https://bingooo.co.in/category/${slug}` : 'https://bingooo.co.in/shop'}
         breadcrumbs={[
-          { name: 'Home', url: 'https://bingooo.in/' },
-          { name: slug ? slug.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase()) : 'Shop', url: slug ? `https://bingooo.in/category/${slug}` : 'https://bingooo.in/shop' },
+          { name: 'Home', url: 'https://bingooo.co.in/' },
+          { name: slug ? slug.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase()) : 'Shop', url: slug ? `https://bingooo.co.in/category/${slug}` : 'https://bingooo.co.in/shop' },
         ]}
         schema={filteredProducts.length > 0 ? generateItemListSchema(
           filteredProducts.slice(0, 10).map((p) => ({ name: p.name, slug: p.slug, price: p.price, image: p.image })),

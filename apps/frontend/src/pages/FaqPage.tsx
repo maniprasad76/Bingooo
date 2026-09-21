@@ -244,7 +244,7 @@ export function FaqPage() {
       <SEO
         title="FAQs — BINGOOO"
         description="Find answers to all frequently asked questions about Bingooo Men's Wear: orders, delivery times, size guides, return policies, custom 3D studio, and payments."
-        canonical="https://bingooo.in/faq"
+        canonical="https://bingooo.co.in/faq"
         schema={generateFaqSchema(FAQ_ITEMS.map((f) => ({ question: f.question, answer: f.answer })))}
       />
 

@@ -92,7 +92,7 @@ export function CancellationPolicyPage() {
       <SEO
         title="Cancellation Policy — BINGOOO Atelier"
         description="Understand Bingooo's zero-penalty pre-dispatch order cancellation window, custom on-demand print guidelines, and 100% instant refund timelines."
-        canonical="https://bingooo.in/cancellation-policy"
+        canonical="https://bingooo.co.in/cancellation-policy"
       />
 
       {/* =======================================================

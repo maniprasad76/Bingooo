@@ -97,7 +97,7 @@ export function WishlistPage() {
         <SEO
           title="Your Wishlist is Empty — BINGOOO"
           description="Your wishlist is waiting. Explore our collection of premium heavyweight silhouettes and custom pieces."
-          canonical="https://bingooo.in/wishlist"
+          canonical="https://bingooo.co.in/wishlist"
           noindex={true}
         />
 
@@ -309,7 +309,7 @@ export function WishlistPage() {
       <SEO
         title="My Wishlist — BINGOOO"
         description="View and manage your saved heavyweight streetwear styles, move items to cart, and track favorite menswear drops at Bingooo."
-        canonical="https://bingooo.in/wishlist"
+        canonical="https://bingooo.co.in/wishlist"
         noindex={true}
       />
 

@@ -2,7 +2,7 @@
 // Schema.org Structured Data Generators for Bingooo
 // ─────────────────────────────────────────────────────────
 
-export const SITE_URL = 'https://bingooo.in';
+export const SITE_URL = 'https://bingooo.co.in';
 export const BRAND_NAME = 'Bingooo';
 
 export interface BreadcrumbItem {

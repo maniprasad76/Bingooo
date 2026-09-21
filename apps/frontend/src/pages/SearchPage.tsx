@@ -81,7 +81,7 @@ export function SearchPage() {
       <SEO
         title={searchQuery ? `Search: "${searchQuery}" — BINGOOO` : 'Search Archive — BINGOOO'}
         description="Search across Bingooo Men's Wear: heavyweight 240 GSM tees, oversized streetwear hoodies, custom blanks, and limited edition drops."
-        canonical="https://bingooo.in/search"
+        canonical="https://bingooo.co.in/search"
       />
 
       {/* =======================================================

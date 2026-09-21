@@ -210,9 +210,9 @@
     "semantic_hash": "cc62890f26c7687ee006851b56573337"
   },
   "apps/backend/data/store.json": {
-    "mtime": 1789955636.2311718,
-    "seen": 1789955655.8344514,
-    "ast_hash": "fc9961e83cc908cb67456171ae2fa7df",
+    "mtime": 1789955690.8655658,
+    "seen": 1789956494.284855,
+    "ast_hash": "34a237960d1b0324bb08e7a316eda8cd",
     "semantic_hash": ""
   },
   "apps/backend/package.json": {
@@ -1452,10 +1452,10 @@
     "semantic_hash": "f9cb81ddcea69ffdab672fc8c48dca66"
   },
   "apps/frontend/vercel.json": {
-    "mtime": 1789024998.8599753,
-    "seen": 1789634534.2679684,
-    "ast_hash": "34be12b14372d5e25e07a6b60e767160",
-    "semantic_hash": "34be12b14372d5e25e07a6b60e767160"
+    "mtime": 1789956414.0984044,
+    "seen": 1789956494.3138528,
+    "ast_hash": "eb6be74833723aacd3ad459f020e9c00",
+    "semantic_hash": ""
   },
   "apps/frontend/vite.config.ts": {
     "mtime": 1789662816.613655,
@@ -4839,6 +4839,12 @@
     "mtime": 1789955427.225806,
     "seen": 1789955451.8735135,
     "ast_hash": "ee0944c95e8ede9fc9aece0190b3af2e",
+    "semantic_hash": ""
+  },
+  "src/worker.ts": {
+    "mtime": 1789956429.563837,
+    "seen": 1789956494.3148527,
+    "ast_hash": "022cb5289b03cd5a25ddb7a80b127529",
     "semantic_hash": ""
   }
 }

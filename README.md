@@ -3,9 +3,9 @@
 > **"Wear what feels like you."** — *Create. Customize. Wear.*
 
 ### 🌐 Live Deployments
-- **🛍️ Customer Storefront (Frontend):** [https://bingooo-frontend.vercel.app](https://bingooo-frontend.vercel.app)
-- **🎛️ Admin Operations Center:** [https://bingooo-admin.vercel.app](https://bingooo-admin.vercel.app)
-- **🚀 NestJS REST API (Backend):** [https://bingooo-backend.vercel.app](https://bingooo-backend.vercel.app)
+- **🛍️ Customer Storefront (Frontend):** [https://bingooo.co.in](https://bingooo.co.in)
+- **🎛️ Admin Operations Center:** [https://admin.bingooo.co.in](https://admin.bingooo.co.in)
+- **🚀 NestJS REST API (Backend):** [https://api.bingooo.co.in](https://api.bingooo.co.in)
 
 [![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=flat&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![React](https://img.shields.io/badge/React-20232A?style=flat&logo=react&logoColor=61DAFB)](https://reactjs.org/)

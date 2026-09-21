@@ -1,9 +1,19 @@
-import { Controller, Get, Post, Patch, Delete, Param, Query, Body } from '@nestjs/common';
-import { ApiTags, ApiOperation } from '@nestjs/swagger';
+import { Controller, Get, Post, Patch, Delete, Param, Query, Body, UseGuards } from '@nestjs/common';
+import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { NotificationsService } from './notifications.service';
+import { AuthGuard } from '../common/guards/auth.guard';
+import { RolesGuard } from '../common/guards/roles.guard';
+import { Permissions } from '../common/decorators/permissions.decorator';
 
+// Internal staff alert feed (order/stock/payment/custom categories) — there's
+// no per-user field on a notification, so this is admin-only, not a
+// per-customer inbox. Previously unauthenticated: anyone could read, mark
+// read, delete, or forge entries in the ops alert feed.
 @ApiTags('Notifications')
 @Controller('notifications')
+@UseGuards(AuthGuard, RolesGuard)
+@Permissions('notifications.manage')
+@ApiBearerAuth()
 export class NotificationsController {
   constructor(private readonly notificationsService: NotificationsService) {}
 

@@ -1,9 +1,18 @@
-import { Controller, Get, Post, Put, Delete, Param, Body } from '@nestjs/common';
-import { ApiTags, ApiOperation } from '@nestjs/swagger';
+import { Controller, Get, Post, Put, Delete, Param, Body, UseGuards } from '@nestjs/common';
+import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { RolesService } from './roles.service';
+import { AuthGuard } from '../common/guards/auth.guard';
+import { RolesGuard } from '../common/guards/roles.guard';
+import { Permissions } from '../common/decorators/permissions.decorator';
 
+// RBAC configuration itself — every route here must be staff-only.
+// Left open, anyone could create a role with permissions: ['*'] or rewrite
+// the permission set of roles real staff already hold.
 @ApiTags('Roles')
 @Controller('roles')
+@UseGuards(AuthGuard, RolesGuard)
+@Permissions('roles.manage')
+@ApiBearerAuth()
 export class RolesController {
   constructor(private readonly rolesService: RolesService) {}
 

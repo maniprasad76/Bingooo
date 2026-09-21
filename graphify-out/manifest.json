@@ -114,9 +114,9 @@
     "semantic_hash": ""
   },
   "apps/admin/src/pages/CustomizerStudioPage.tsx": {
-    "mtime": 1789822850.6598134,
-    "seen": 1789822925.316562,
-    "ast_hash": "d0e2764963b05ba3f67ad1d18832ae0a",
+    "mtime": 1789977282.5205724,
+    "seen": 1789978350.414187,
+    "ast_hash": "cda3a190716294ed3662fd3a41dd92bb",
     "semantic_hash": ""
   },
   "apps/admin/src/pages/DashboardPage.tsx": {
@@ -396,9 +396,9 @@
     "semantic_hash": ""
   },
   "apps/backend/src/common/database/store.ts": {
-    "mtime": 1789894405.034636,
-    "seen": 1789896349.1937597,
-    "ast_hash": "9a4ae541f3f9d7099a70cf276537f49e",
+    "mtime": 1789976787.5618281,
+    "seen": 1789978350.4221878,
+    "ast_hash": "49734896952e58a2ba7fdc36862d485b",
     "semantic_hash": ""
   },
   "apps/backend/src/common/decorators/permissions.decorator.ts": {
@@ -516,10 +516,10 @@
     "semantic_hash": "4375c4ffc5f8d94cd2864dc31513d90c"
   },
   "apps/backend/src/customizations/customizations.service.ts": {
-    "mtime": 1789445127.0403612,
-    "seen": 1789634534.2679684,
-    "ast_hash": "166552f310e0728b818ac8f552a448b7",
-    "semantic_hash": "166552f310e0728b818ac8f552a448b7"
+    "mtime": 1789976821.1547236,
+    "seen": 1789978350.4251873,
+    "ast_hash": "520f17298e68f16b5788e5776a4d7b20",
+    "semantic_hash": ""
   },
   "apps/backend/src/health/health.controller.ts": {
     "mtime": 1789454121.2184012,
@@ -1260,9 +1260,9 @@
     "semantic_hash": ""
   },
   "apps/frontend/src/pages/CustomizerPage.tsx": {
-    "mtime": 1789975480.679947,
-    "seen": 1789975519.7551522,
-    "ast_hash": "6746c51d6ae39e40003db458c3a6c7a3",
+    "mtime": 1789978241.8646758,
+    "seen": 1789978350.4471872,
+    "ast_hash": "ce613262b3270d2e51ca9a7928baf962",
     "semantic_hash": ""
   },
   "apps/frontend/src/pages/FaqPage.tsx": {

@@ -12,6 +12,7 @@ import { useToast } from '../components/ui/Toast';
 import { triggerHaptic } from '../lib/native/capacitorBridge';
 import { SEO } from '../components/common/SEO';
 import { WhatsAppIcon } from '../components/ui/SocialIcons';
+import { api } from '../lib/api/client';
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 interface ColorOption {
@@ -24,13 +25,20 @@ interface ColorOption {
   isActive?: boolean;
 }
 
-interface GarmentType {
+export interface GarmentType {
   id: string;
   name: string;
   price: number;
+  compareAtPrice?: number;
   description: string;
   isActive?: boolean;
   colors?: ColorOption[];
+  sizes?: string[];
+  activeSizes?: string[];
+  sizeMeasurements?: {
+    cm: Array<{ size: string; chest: string; length: string; shoulder: string; sleeve: string }>;
+    in: Array<{ size: string; chest: string; length: string; shoulder: string; sleeve: string }>;
+  };
 }
 
 interface DesignSnapshot {
@@ -133,12 +141,6 @@ const HOODIE_COLORS: ColorOption[] = [
 
 const COLORS: ColorOption[] = SHIRT_COLORS;
 
-const GARMENTS: GarmentType[] = [
-  { id: 'oversized', name: 'Oversized', price: 1299, description: '240 GSM Heavyweight · Drop-Shoulder', colors: SHIRT_COLORS.map(c => ({ ...c })) },
-  { id: 'tshirt', name: 'T-Shirt', price: 999, description: '100% Combed Cotton · Classic Crewneck', colors: SHIRT_COLORS.map(c => ({ ...c })) },
-  { id: 'hoodie', name: 'Hoodie', price: 2499, description: '350 GSM Brushed Fleece · Heavy Pullover', colors: HOODIE_COLORS.map(c => ({ ...c })) },
-];
-
 const SIZES = ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
 
 // ─── Size Measurements (cm / in) ─────────────────────────────────────────────
@@ -198,6 +200,45 @@ const SIZE_TABLE = {
     ],
   },
 };
+
+const GARMENTS: GarmentType[] = [
+  {
+    id: 'oversized',
+    name: 'Oversized',
+    price: 1299,
+    compareAtPrice: 1699,
+    description: '240 GSM Heavyweight · Drop-Shoulder Streetwear Fit',
+    isActive: true,
+    colors: SHIRT_COLORS.map(c => ({ ...c })),
+    sizes: ['XS', 'S', 'M', 'L', 'XL', 'XXL', '3XL'],
+    activeSizes: ['XS', 'S', 'M', 'L', 'XL', 'XXL'],
+    sizeMeasurements: SIZE_TABLE.oversized,
+  },
+  {
+    id: 'tshirt',
+    name: 'T-Shirt',
+    price: 999,
+    compareAtPrice: 1299,
+    description: '100% Combed Cotton · Classic Structured Crewneck',
+    isActive: true,
+    colors: SHIRT_COLORS.map(c => ({ ...c })),
+    sizes: ['XS', 'S', 'M', 'L', 'XL', 'XXL', '3XL'],
+    activeSizes: ['XS', 'S', 'M', 'L', 'XL', 'XXL'],
+    sizeMeasurements: SIZE_TABLE.tshirt,
+  },
+  {
+    id: 'hoodie',
+    name: 'Hoodie',
+    price: 2499,
+    compareAtPrice: 3199,
+    description: '350 GSM Brushed Fleece · Heavy Pullover Silhouette',
+    isActive: true,
+    colors: HOODIE_COLORS.map(c => ({ ...c })),
+    sizes: ['XS', 'S', 'M', 'L', 'XL', 'XXL', '3XL'],
+    activeSizes: ['XS', 'S', 'M', 'L', 'XL', 'XXL'],
+    sizeMeasurements: SIZE_TABLE.hoodie,
+  },
+];
 
 // ─── Font Options ────────────────────────────────────────────────────────────
 interface FontOption {
@@ -311,11 +352,62 @@ export function CustomizerPage() {
   const { addItem, isAdding } = useCart();
   const { toast } = useToast();
 
+  // Dynamic Garments state synced with Admin Customizer Studio
+  const [garmentsList, setGarmentsList] = useState<GarmentType[]>(GARMENTS);
+
   // Garment state
   const [selectedGarment, setSelectedGarment] = useState<GarmentType>(GARMENTS[0]); // Default to Oversized 240 GSM
   const [selectedColor, setSelectedColor] = useState<ColorOption>(GARMENTS[0].colors?.[0] || COLORS[0]);
   const [selectedSize, setSelectedSize] = useState<string>('L');
   const [viewSide, setViewSide] = useState<'FRONT' | 'BACK'>('FRONT');
+
+  // Dynamic active sizes and colors for currently selected garment
+  const availableSizes = (selectedGarment.activeSizes && selectedGarment.activeSizes.length > 0)
+    ? selectedGarment.activeSizes
+    : (selectedGarment.sizes && selectedGarment.sizes.length > 0 ? selectedGarment.sizes : SIZES);
+
+  const availableColors = (selectedGarment.colors && selectedGarment.colors.length > 0)
+    ? selectedGarment.colors.filter(c => c.isActive !== false)
+    : COLORS;
+
+  // Auto-adjust selected size if current size is not in active sizes
+  useEffect(() => {
+    if (availableSizes.length > 0 && !availableSizes.includes(selectedSize)) {
+      setSelectedSize(availableSizes[0]);
+    }
+  }, [availableSizes, selectedSize]);
+
+  // Auto-adjust selected color if current color is not in active colors
+  useEffect(() => {
+    if (availableColors.length > 0 && !availableColors.some(c => c.name.toLowerCase() === selectedColor.name.toLowerCase())) {
+      setSelectedColor(availableColors[0]);
+    }
+  }, [availableColors, selectedColor]);
+
+  // ── Sync with Admin Customizer Studio Config (Live Dynamic Control) ─────────
+  useEffect(() => {
+    let isMounted = true;
+    api.get('/customizations/studio/config')
+      .then((res: any) => {
+        if (!isMounted) return;
+        const gMap = res?.garments || res?.data?.garments;
+        if (!gMap) return;
+        const parsed: GarmentType[] = Object.keys(gMap)
+          .map(k => gMap[k])
+          .filter((g: any) => g && g.isActive !== false);
+        if (parsed.length > 0) {
+          setGarmentsList(parsed);
+          setSelectedGarment(prev => {
+            const matched = parsed.find(p => p.id === prev.id) || parsed[0];
+            return matched;
+          });
+        }
+      })
+      .catch((err) => {
+        console.warn('Customizer using local fallback configurations:', err);
+      });
+    return () => { isMounted = false; };
+  }, []);
 
   // Design state
   const [designMode, setDesignMode] = useState<'upload' | 'text'>('text');
@@ -370,7 +462,7 @@ export function CustomizerPage() {
   const isLightGarment = ['#FFFFFF', '#D8C8B1', '#F7EEDB', '#C8B99D', '#FAF6EE'].some(h => selectedColor.hex?.toUpperCase() === h) || ['beige', 'white', 'cream', 'sand'].includes(selectedColor.name?.toLowerCase());
   const designBlendMode = isLightGarment ? 'multiply' : 'normal';
 
-  const currentGarmentColor = GARMENTS.find((g: GarmentType) => g.id === selectedGarment.id)?.colors?.find((c: ColorOption) => c.name.toLowerCase() === selectedColor.name.toLowerCase()) || selectedColor;
+  const currentGarmentColor = selectedGarment.colors?.find((c: ColorOption) => c.name.toLowerCase() === selectedColor.name.toLowerCase()) || selectedColor;
   const currentFrontImage = currentGarmentColor.frontImageUrl || '';
   const currentBackImage = currentGarmentColor.backImageUrl || '';
   const imageSrc = (viewSide === 'BACK' && currentBackImage) ? currentBackImage : currentFrontImage;
@@ -397,7 +489,7 @@ export function CustomizerPage() {
     const qSize = params.get('size');
 
     if (qGarment) {
-      const foundG = GARMENTS.find(g => g.id === qGarment.toLowerCase());
+      const foundG = garmentsList.find(g => g.id === qGarment.toLowerCase()) || GARMENTS.find(g => g.id === qGarment.toLowerCase());
       if (foundG) setSelectedGarment(foundG);
     }
     if (qColor) {
@@ -526,7 +618,7 @@ export function CustomizerPage() {
 
   const handleLoadSavedDesign = (design: SavedCustomDesign) => {
     triggerHaptic('medium');
-    const g = GARMENTS.find(x => x.id === design.garmentId) || GARMENTS[0];
+    const g = garmentsList.find(x => x.id === design.garmentId) || GARMENTS.find(x => x.id === design.garmentId) || GARMENTS[0];
     setSelectedGarment(g);
     const c = g.colors?.find(col => col.name.toLowerCase() === design.colorName.toLowerCase()) || COLORS[0];
     setSelectedColor(c);
@@ -778,26 +870,31 @@ export function CustomizerPage() {
           </button>
         </div>
         <div className="grid grid-cols-3 gap-2">
-          {GARMENTS.map((garment: GarmentType) => (
+          {garmentsList.map((garment: GarmentType) => (
             <button
               key={garment.id}
               type="button"
               onClick={() => {
                 triggerHaptic('light');
                 setSelectedGarment(garment);
-                const gc = garment.colors?.length ? garment.colors : COLORS;
+                const gc = garment.colors?.filter(c => c.isActive !== false)?.length ? garment.colors.filter(c => c.isActive !== false) : COLORS;
                 const m = gc.find((c: ColorOption) => c.name.toLowerCase() === selectedColor.name.toLowerCase()) || gc[0];
                 if (m) setSelectedColor(m);
               }}
-              className={`relative border-2 rounded-2xl p-3 text-center transition-all duration-200 cursor-pointer flex flex-col items-center gap-2 ${selectedGarment.id === garment.id ? 'border-[#171717] bg-[#171717]' : 'border-[#ddd3c5] hover:border-[#aaa] bg-white'}`}
+              className={`relative border-2 rounded-2xl p-3 text-center transition-all duration-200 cursor-pointer flex flex-col items-center gap-1.5 ${selectedGarment.id === garment.id ? 'border-[#171717] bg-[#171717]' : 'border-[#ddd3c5] hover:border-[#aaa] bg-white'}`}
             >
-              <div className="h-16 w-full flex items-center justify-center overflow-hidden">
-                <div style={{ transform: 'scale(0.24)', transformOrigin: 'center', width: 80, height: 72 }}>
+              <div className="h-14 w-full flex items-center justify-center overflow-hidden">
+                <div style={{ transform: 'scale(0.22)', transformOrigin: 'center', width: 80, height: 72 }}>
                   <GarmentSVG garmentId={garment.id} color={selectedColor.hex} />
                 </div>
               </div>
               <div className={`text-[10px] font-extrabold uppercase tracking-wider ${selectedGarment.id === garment.id ? 'text-white' : 'text-[#171717]'}`}>{garment.name}</div>
-              <div className={`text-[10px] font-bold ${selectedGarment.id === garment.id ? 'text-[#E6321C]' : 'text-[#E6321C]'}`}>₹{garment.price.toLocaleString('en-IN')}</div>
+              <div className="flex items-center gap-1">
+                {garment.compareAtPrice && garment.compareAtPrice > garment.price && (
+                  <span className={`text-[9px] line-through ${selectedGarment.id === garment.id ? 'text-white/50' : 'text-[#6f6a63]'}`}>₹{garment.compareAtPrice}</span>
+                )}
+                <span className="text-[10px] font-bold text-[#E6321C]">₹{garment.price.toLocaleString('en-IN')}</span>
+              </div>
             </button>
           ))}
         </div>
@@ -811,7 +908,7 @@ export function CustomizerPage() {
           <span className="text-[10px] font-bold text-[#171717]">{selectedColor.name}</span>
         </div>
         <div className="flex flex-wrap gap-3">
-          {(selectedGarment.colors?.length ? selectedGarment.colors : COLORS).map(color => (
+          {availableColors.map(color => (
             <button
               key={color.id || color.name}
               type="button"
@@ -1117,8 +1214,8 @@ export function CustomizerPage() {
             <Ruler size={11} /> Model Size Guide
           </button>
         </div>
-        <div className="grid grid-cols-6 gap-1.5">
-          {SIZES.map(sz => (
+        <div className="flex flex-wrap gap-1.5">
+          {availableSizes.map(sz => (
             <button
               key={sz}
               type="button"
@@ -1126,7 +1223,7 @@ export function CustomizerPage() {
                 triggerHaptic('light');
                 setSelectedSize(sz);
               }}
-              className={`py-2.5 rounded-xl border text-[11px] font-bold uppercase transition-all cursor-pointer ${selectedSize === sz ? 'border-[#171717] bg-[#171717] text-white shadow-sm' : 'border-[#ddd3c5] bg-white text-[#171717] hover:border-[#aaa]'}`}
+              className={`flex-1 min-w-[42px] py-2.5 rounded-xl border text-[11px] font-bold uppercase transition-all cursor-pointer ${selectedSize === sz ? 'border-[#171717] bg-[#171717] text-white shadow-sm' : 'border-[#ddd3c5] bg-white text-[#171717] hover:border-[#aaa]'}`}
             >
               {sz}
             </button>
@@ -1150,7 +1247,12 @@ export function CustomizerPage() {
         </div>
         <div className="pt-2 border-t border-[#ddd3c5] flex justify-between items-baseline">
           <span className="text-xs font-bold uppercase tracking-wider">Total Atelier Cost</span>
-          <span className="text-xl font-extrabold text-[#E6321C]">₹{selectedGarment.price.toLocaleString('en-IN')}</span>
+          <div className="flex items-center gap-2">
+            {selectedGarment.compareAtPrice && selectedGarment.compareAtPrice > selectedGarment.price && (
+              <span className="text-xs text-[#6f6a63] line-through font-normal">₹{selectedGarment.compareAtPrice.toLocaleString('en-IN')}</span>
+            )}
+            <span className="text-xl font-extrabold text-[#E6321C]">₹{selectedGarment.price.toLocaleString('en-IN')}</span>
+          </div>
         </div>
       </div>
 
@@ -1773,7 +1875,7 @@ export function CustomizerPage() {
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-[#ddd3c5]">
-                      {(SIZE_TABLE[selectedGarment.id as keyof typeof SIZE_TABLE] || SIZE_TABLE.oversized)[sizeGuideUnit].map(row => (
+                      {((selectedGarment.sizeMeasurements?.[sizeGuideUnit] || (SIZE_TABLE[selectedGarment.id as keyof typeof SIZE_TABLE] || SIZE_TABLE.oversized)[sizeGuideUnit])).filter(r => !availableSizes.length || availableSizes.includes(r.size)).map(row => (
                         <tr key={row.size} className={row.size === selectedSize ? 'bg-[#ede0cc]/50 font-bold' : ''}>
                           <td className="p-3 text-xs font-extrabold text-[#171717]">{row.size}</td>
                           <td className="p-3">{row.chest}</td>

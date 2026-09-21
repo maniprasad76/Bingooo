@@ -173,12 +173,25 @@ export class CustomizationsService {
 
   /** Studio Customizer Garments & Color Mockup Configuration */
   getStudioConfig() {
-    if (!db.customizer_config) {
+    if (!db.customizer_config || !Array.isArray(db.customizer_config.garments) || db.customizer_config.garments.length === 0) {
       db.customizer_config = {
         garments: [],
         updatedAt: new Date().toISOString(),
       };
     }
+    const DEFAULT_SIZES = ['XS', 'S', 'M', 'L', 'XL', 'XXL', '3XL'];
+    const DEFAULT_ACTIVE_SIZES = ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
+    db.customizer_config.garments.forEach((g: any) => {
+      if (!g.sizes || !Array.isArray(g.sizes) || g.sizes.length === 0) {
+        g.sizes = [...DEFAULT_SIZES];
+      }
+      if (!g.activeSizes || !Array.isArray(g.activeSizes) || g.activeSizes.length === 0) {
+        g.activeSizes = [...DEFAULT_ACTIVE_SIZES];
+      }
+      if (!g.compareAtPrice) {
+        g.compareAtPrice = Math.round((g.price || 1299) * 1.4);
+      }
+    });
     return db.customizer_config;
   }
 

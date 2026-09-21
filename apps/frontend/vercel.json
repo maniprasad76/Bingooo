@@ -31,6 +31,10 @@
         {
           "key": "Permissions-Policy",
           "value": "camera=(), microphone=(), geolocation=()"
+        },
+        {
+          "key": "Strict-Transport-Security",
+          "value": "max-age=63072000; includeSubDomains; preload"
         }
       ]
     }
@@ -45,7 +49,7 @@
     { "source": "/cancellation", "destination": "/cancellation-policy", "permanent": true },
     { "source": "/fabric-specifications", "destination": "/fabric-guide", "permanent": true },
     { "source": "/track", "destination": "/track-order", "permanent": true },
-    { "source": "/wishlist", "destination": "/account/wishlist", "permanent": true },
+    { "source": "/account/wishlist", "destination": "/wishlist", "permanent": true },
     { "source": "/empty", "destination": "/", "permanent": true },
     { "source": "/empty-state", "destination": "/", "permanent": true },
     { "source": "/policies/size-guide", "destination": "/size-guide", "permanent": true },

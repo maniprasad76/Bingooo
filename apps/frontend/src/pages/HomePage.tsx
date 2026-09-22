@@ -2,7 +2,6 @@ import { useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { Heart, Truck, Package, Sparkles, ShieldCheck, CheckCircle2, Mail, ArrowRight, X, ChevronLeft, ChevronRight, Maximize2 } from 'lucide-react';
 import { SEO } from '../components/common/SEO';
-import { generateOrganizationSchema, generateWebSiteSchema, generateLocalBusinessSchema } from '../lib/seo/schema';
 import { BINGOOO_INSTAGRAM_URL, BINGOOO_INSTAGRAM_HANDLE, getWhatsAppUrl, WhatsAppIcon, InstagramIcon } from '../components/ui/SocialIcons';
 import { triggerHaptic } from '../lib/native/capacitorBridge';
 import { api } from '../lib/api/client';
@@ -216,7 +215,6 @@ export function HomePage() {
         description="BINGOOO — Men's fashion, custom designs and clothing culture. Shop 240–280 GSM heavyweight streetwear or design your own in our 3D Atelier."
         keywords="mens wear, oversized tees, streetwear, custom t-shirts, hoodies, bingooo, heavyweight cotton, indian streetwear"
         canonical="https://bingooo.co.in"
-        schema={[generateOrganizationSchema(), generateWebSiteSchema(), generateLocalBusinessSchema()]}
       />
 
       {/* =========================================================

@@ -109,31 +109,43 @@ export function AccountPage() {
   const { data: profile } = useQuery({
     queryKey: ['profile'],
     queryFn: () => api.get<any>('/users/profile'),
+    enabled: !!authUser,
+    retry: false,
   });
 
   const { data: userOrders = [], isLoading: isOrdersLoading } = useQuery({
     queryKey: ['user-orders'],
     queryFn: () => api.get<any[]>('/orders'),
+    enabled: !!authUser,
+    retry: false,
   });
 
   const { data: wishlist = [] } = useQuery({
     queryKey: ['wishlist'],
     queryFn: () => api.get<any[]>('/wishlist'),
+    enabled: !!authUser,
+    retry: false,
   });
 
   const { data: addresses = [] } = useQuery({
     queryKey: ['addresses'],
     queryFn: () => api.get<any[]>('/users/addresses'),
+    enabled: !!authUser,
+    retry: false,
   });
 
   const { data: userReturns = [] } = useQuery({
     queryKey: ['user-returns'],
     queryFn: () => api.get<any[]>('/returns/my'),
+    enabled: !!authUser,
+    retry: false,
   });
 
   const { data: userReviews = [] } = useQuery({
     queryKey: ['user-reviews'],
     queryFn: () => api.get<any[]>('/reviews/my'),
+    enabled: !!authUser,
+    retry: false,
   });
 
   const displayName = profile?.full_name || profile?.fullName || authUser?.fullName || 'Bingooo Member';

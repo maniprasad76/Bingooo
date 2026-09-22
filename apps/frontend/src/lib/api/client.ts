@@ -59,6 +59,29 @@ export function getGuestSessionId(): string {
   return sessionId;
 }
 
+export function getAuthToken(): string | null {
+  try {
+    const token = localStorage.getItem('bingooo_auth_token');
+    if (token && token.trim()) return token.trim();
+
+    // Fallback to Supabase's local storage session cache
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (key && key.startsWith('sb-') && key.endsWith('-auth-token')) {
+        const raw = localStorage.getItem(key);
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (parsed?.access_token) {
+            localStorage.setItem('bingooo_auth_token', parsed.access_token);
+            return parsed.access_token;
+          }
+        }
+      }
+    }
+  } catch {}
+  return null;
+}
+
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 async function executeFetch<T = unknown>(path: string, options: RequestOptions = {}): Promise<T> {
@@ -98,7 +121,7 @@ async function executeFetch<T = unknown>(path: string, options: RequestOptions =
     headers.set('X-Idempotency-Key', idempotencyKey);
   }
 
-  const token = localStorage.getItem('bingooo_auth_token');
+  const token = getAuthToken();
   if (token) {
     headers.set('Authorization', `Bearer ${token}`);
   }

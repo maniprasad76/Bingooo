@@ -15,7 +15,9 @@ services:
       - key: CORS_ORIGINS
         sync: false
       - key: SUPABASE_URL
-        sync: false
+        value: "https://zqmrmgwxhrdscippanuv.supabase.co"
+      - key: SUPABASE_PUBLISHABLE_KEY
+        value: "sb_publishable_fHCORRNjkuYGufRUUdvHtw_T5VFXWpl"
       - key: SUPABASE_SERVICE_ROLE_KEY
         sync: false
       - key: RAZORPAY_KEY_ID

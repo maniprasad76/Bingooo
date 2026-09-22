@@ -414,9 +414,9 @@
     "semantic_hash": "f4126c75e13effff584a86d970af9909"
   },
   "apps/backend/src/common/guards/auth.guard.ts": {
-    "mtime": 1789891520.243405,
-    "seen": 1789892027.6921709,
-    "ast_hash": "de42f29e6feaff8314991edfe1cad185",
+    "mtime": 1790095984.225169,
+    "seen": 1790096157.9821465,
+    "ast_hash": "295f84da81aae0faacf136977ce1e706",
     "semantic_hash": ""
   },
   "apps/backend/src/common/guards/roles.guard.ts": {
@@ -912,9 +912,9 @@
     "semantic_hash": ""
   },
   "apps/frontend/src/app/App.tsx": {
-    "mtime": 1789887172.2930944,
-    "seen": 1789887255.4081223,
-    "ast_hash": "06ab20df3ed6ca1913eace25d361aea6",
+    "mtime": 1790096070.8238456,
+    "seen": 1790096157.9950662,
+    "ast_hash": "b9144c9064fa6db26dc22f9b6449db63",
     "semantic_hash": ""
   },
   "apps/frontend/src/app/lazyPage.ts": {
@@ -1164,9 +1164,9 @@
     "semantic_hash": "826f61957bd0fdfab7a05bd5332353aa"
   },
   "apps/frontend/src/lib/api/client.ts": {
-    "mtime": 1790094480.7850587,
-    "seen": 1790094667.1399083,
-    "ast_hash": "5c1154e8a51695c74c502686aacb599e",
+    "mtime": 1790096052.3345048,
+    "seen": 1790096158.0011327,
+    "ast_hash": "164feda744ce9ba66c4cc3218e6a601d",
     "semantic_hash": ""
   },
   "apps/frontend/src/lib/auth/supabase.ts": {
@@ -1218,9 +1218,9 @@
     "semantic_hash": ""
   },
   "apps/frontend/src/pages/AccountPage.tsx": {
-    "mtime": 1789803213.36334,
-    "seen": 1789806278.0198267,
-    "ast_hash": "e0b68f50476ee35d3e9bef1bebdc1e59",
+    "mtime": 1790096085.8962948,
+    "seen": 1790096158.0020695,
+    "ast_hash": "b76920f56a5859a50b9b3b4f02f2a166",
     "semantic_hash": ""
   },
   "apps/frontend/src/pages/AddressesPage.tsx": {

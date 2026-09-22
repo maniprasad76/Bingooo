@@ -61,6 +61,10 @@
   ],
   "rewrites": [
     {
+      "source": "/api/(.*)",
+      "destination": "https://api.bingooo.co.in/api/$1"
+    },
+    {
       "source": "/(.*)",
       "destination": "/index.html"
     }

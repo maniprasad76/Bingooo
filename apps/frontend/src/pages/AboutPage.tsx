@@ -6,8 +6,8 @@ export function AboutPage() {
   return (
     <main className="bg-[#f7eedb] text-[#171717] font-sans antialiased">
       <SEO
-        title="About Us — BINGOOO"
-        description="BINGOOO — Not just clothes. A you. Discover our story, our values and the culture behind the brand."
+        title="About Us — Heavyweight Menswear Atelier Srikakulam | Bingooo®"
+        description="Discover Bingooo's journey from 7 Roads Junction, Srikakulam. Engineering 240–280 GSM heavyweight cotton streetwear that rejects fast fashion."
         canonical="https://bingooo.co.in/about"
       />
 

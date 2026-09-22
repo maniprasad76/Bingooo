@@ -13,8 +13,12 @@ export function RequireAuth({ children }: { children: ReactNode }) {
   const loading = useAuthStore((s) => s.loading);
   const location = useLocation();
 
-  // Wait for initAuth() to finish resolving the session before deciding,
-  // otherwise logged-in users would get flickered to /login on refresh.
+  // If already authenticated from persisted storage, render immediately with zero flicker
+  if (isAuthenticated) {
+    return <>{children}</>;
+  }
+
+  // If still checking session and not yet authenticated, show loader
   if (loading) {
     return (
       <div className="flex min-h-[55vh] w-full flex-col items-center justify-center gap-3 bg-[#FAF8F5]">
@@ -26,9 +30,6 @@ export function RequireAuth({ children }: { children: ReactNode }) {
     );
   }
 
-  if (!isAuthenticated) {
-    return <Navigate to="/login" replace state={{ from: location }} />;
-  }
-
-  return <>{children}</>;
+  // Not authenticated and session check completed
+  return <Navigate to="/login" replace state={{ from: location }} />;
 }

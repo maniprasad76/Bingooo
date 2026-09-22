@@ -9,7 +9,14 @@
  * VITE_API_URL to point at its API without changing any application code.
  */
 const configuredApiUrl = import.meta.env.VITE_API_URL?.trim().replace(/\/$/, '');
-const API_BASE = configuredApiUrl ? `${configuredApiUrl}/api/v1` : '/api/v1';
+const isProdStorefront =
+  typeof window !== 'undefined' &&
+  (window.location.hostname === 'bingooo.co.in' || window.location.hostname.endsWith('.bingooo.co.in'));
+const API_BASE = configuredApiUrl
+  ? `${configuredApiUrl}/api/v1`
+  : isProdStorefront
+  ? 'https://api.bingooo.co.in/api/v1'
+  : '/api/v1';
 
 export interface RequestOptions extends Omit<RequestInit, 'body'> {
   body?: unknown;

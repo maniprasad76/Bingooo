@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { Heart, Truck, Package, Sparkles, ShieldCheck, CheckCircle2, Mail, ArrowRight, X, ChevronLeft, ChevronRight, Maximize2 } from 'lucide-react';
 import { SEO } from '../components/common/SEO';
+import { generateOrganizationSchema, generateLocalBusinessSchema, generateWebSiteSchema } from '../lib/seo/schema';
 import { BINGOOO_INSTAGRAM_URL, BINGOOO_INSTAGRAM_HANDLE, getWhatsAppUrl, WhatsAppIcon, InstagramIcon } from '../components/ui/SocialIcons';
 import { triggerHaptic } from '../lib/native/capacitorBridge';
 import { api } from '../lib/api/client';
@@ -211,10 +212,15 @@ export function HomePage() {
   return (
     <main className="bg-[#f7eedb] text-[#171717] font-sans antialiased selection:bg-[#e6321c] selection:text-white">
       <SEO
-        title="BINGOOO — Wear What Defines You"
-        description="BINGOOO — Men's fashion, custom designs and clothing culture. Shop 240–280 GSM heavyweight streetwear or design your own in our 3D Atelier."
-        keywords="mens wear, oversized tees, streetwear, custom t-shirts, hoodies, bingooo, heavyweight cotton, indian streetwear"
+        title="Bingooo® — 240 GSM Heavyweight Oversized Tees & Streetwear India"
+        description="Shop India's premier 240–280 GSM heavyweight combed cotton menswear or craft custom bespoke streetwear in our 3D Atelier. Express Pan-India delivery from Srikakulam."
+        keywords="oversized t-shirts, 240 gsm oversized tee, heavyweight streetwear india, custom t-shirt printing srikakulam, mens streetwear india, drop shoulder t-shirt, 3d atelier, bingooo menswear"
         canonical="https://bingooo.co.in"
+        schema={[
+          generateWebSiteSchema(),
+          generateOrganizationSchema(),
+          generateLocalBusinessSchema(),
+        ]}
       />
 
       {/* =========================================================

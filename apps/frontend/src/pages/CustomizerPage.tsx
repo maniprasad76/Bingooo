@@ -1304,8 +1304,9 @@ export function CustomizerPage() {
   return (
     <main className="bg-[#f7eedb] min-h-screen text-[#171717] font-sans antialiased pb-28 lg:pb-12">
       <SEO
-        title="Bespoke Custom Atelier Studio — BINGOOO"
-        description="Craft custom oversized t-shirts, crewnecks, and hoodies with 240 GSM combed cotton, custom text, HD DTF graphic printing, and model size guides."
+        title="3D Custom T-Shirt Designer & Atelier Studio | DTF Printing India | Bingooo®"
+        description="Design custom 240–280 GSM heavyweight oversized t-shirts and hoodies in Bingooo's interactive 3D Atelier. High-definition DTF printing, live 3D preview, express delivery across India."
+        keywords="custom t-shirt design, 3d custom t-shirt designer, custom oversized t-shirt india, dtf printing srikakulam, bespoke streetwear, custom heavyweight hoodie"
         canonical="https://bingooo.co.in/customize"
       />
 

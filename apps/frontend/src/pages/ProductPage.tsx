@@ -312,8 +312,11 @@ export function ProductPage() {
   return (
     <main className="bg-[#f7eedb] text-[#171717] font-sans antialiased pb-[72px] sm:pb-0">
       <SEO
-        title={`${product?.title || 'Classic Logo Tee'} — BINGOOO`}
-        description={product?.description || "BINGOOO Men's fashion, custom designs and clothing culture."}
+        title={`${product?.title || 'Classic Oversized Tee'} | ${product?.fabric_gsm || 240} GSM Heavyweight Streetwear | Bingooo®`}
+        description={
+          product?.description ||
+          `Buy ${product?.title || 'Classic Oversized Tee'} in ${product?.fabric_gsm || 240} GSM luxury combed cotton online at Bingooo. Boxy streetwear drape, anti-sag collar, COD available.`
+        }
         canonical={`https://bingooo.co.in/product/${slug || 'classic-logo-tee'}`}
         ogType="product"
         productPrice={price}

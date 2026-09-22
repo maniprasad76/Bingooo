@@ -13,11 +13,21 @@ const authStorageKey = 'bingooo_auth_token';
 export const supabase: SupabaseClient | null =
   supabaseUrl && supabaseKey ? createClient(supabaseUrl, supabaseKey) : null;
 
-/** Initialize auth on app mount */
-export async function initAuth(): Promise<void> {
-  const token = localStorage.getItem(authStorageKey);
+let initAuthPromise: Promise<void> | null = null;
 
+/** Initialize auth on app mount with singleton promise deduplication */
+export function initAuth(): Promise<void> {
+  if (!initAuthPromise) {
+    initAuthPromise = runInitAuth().finally(() => {
+      useAuthStore.getState().setLoading(false);
+    });
+  }
+  return initAuthPromise;
+}
+
+async function runInitAuth(): Promise<void> {
   const isDevAuthAllowed = import.meta.env.DEV && import.meta.env.VITE_ENABLE_DEV_AUTH === 'true';
+  const token = localStorage.getItem(authStorageKey);
 
   if (isDevAuthAllowed && token === 'bingooo-dev-admin') {
     useAuthStore.getState().setAuth('usr-admin-1', {
@@ -30,53 +40,108 @@ export async function initAuth(): Promise<void> {
     return;
   }
 
-  if (token) {
+  // 1. First priority: Check Supabase session (Google & Facebook OAuth + Supabase email sessions)
+  if (supabase) {
     try {
-      const user = await api.get<any>('/auth/me');
-      useAuthStore.getState().setAuth(user.id, {
-        id: user.id,
-        email: user.email,
-        fullName: user.full_name || user.fullName,
-        phone: user.phone,
-        role: user.role,
-      });
-      return;
-    } catch {
-      localStorage.removeItem(authStorageKey);
-      useAuthStore.getState().logout();
+      const { data, error } = await supabase.auth.getSession();
+      if (!error && data?.session) {
+        const session = data.session;
+        localStorage.setItem(authStorageKey, session.access_token);
+        useAuthStore.getState().setAuth(session.user.id, {
+          id: session.user.id,
+          email: session.user.email || '',
+          fullName:
+            session.user.user_metadata?.full_name ||
+            session.user.user_metadata?.name ||
+            session.user.email?.split('@')[0],
+          phone: session.user.user_metadata?.phone || session.user.phone || '',
+          role: session.user.user_metadata?.role || 'CUSTOMER',
+        });
+
+        // Background non-fatal profile sync with backend (never logs out Google user if backend is offline)
+        api
+          .get<any>('/auth/me')
+          .then((profile) => {
+            if (profile && profile.id) {
+              useAuthStore.getState().setUser({
+                id: profile.id,
+                email: profile.email,
+                fullName: profile.full_name || profile.fullName,
+                phone: profile.phone,
+                role: profile.role,
+              });
+            }
+          })
+          .catch(() => {
+            // Backend /auth/me failure is non-fatal for Supabase OAuth users
+          });
+
+        // Reactive listener for token refresh or sign out
+        supabase.auth.onAuthStateChange((event, newSession) => {
+          if (newSession) {
+            localStorage.setItem(authStorageKey, newSession.access_token);
+            useAuthStore.getState().setAuth(newSession.user.id, {
+              id: newSession.user.id,
+              email: newSession.user.email || '',
+              fullName:
+                newSession.user.user_metadata?.full_name ||
+                newSession.user.user_metadata?.name ||
+                newSession.user.email?.split('@')[0],
+              phone: newSession.user.user_metadata?.phone || newSession.user.phone || '',
+              role: newSession.user.user_metadata?.role || 'CUSTOMER',
+            });
+          } else if (event === 'SIGNED_OUT') {
+            localStorage.removeItem(authStorageKey);
+            useAuthStore.getState().logout();
+          }
+        });
+
+        return;
+      }
+    } catch (err) {
+      console.warn('[Auth] Supabase getSession check failed:', err);
     }
   }
 
-  if (supabase) {
+  // 2. Second priority: If no Supabase session, check custom backend token
+  if (token) {
     try {
-      const { data } = await supabase.auth.getSession();
-      if (data.session) {
-        localStorage.setItem(authStorageKey, data.session.access_token);
-        useAuthStore.getState().setAuth(data.session.user.id, {
-          id: data.session.user.id,
-          email: data.session.user.email || '',
-          fullName: data.session.user.user_metadata?.full_name || data.session.user.user_metadata?.name,
+      const user = await api.get<any>('/auth/me');
+      if (user && user.id) {
+        useAuthStore.getState().setAuth(user.id, {
+          id: user.id,
+          email: user.email,
+          fullName: user.full_name || user.fullName,
+          phone: user.phone,
+          role: user.role,
         });
-      } else {
-        useAuthStore.getState().setAuth(null);
+        return;
       }
-
-      // Listen for OAuth callbacks or token refresh
-      supabase.auth.onAuthStateChange((_event, session) => {
-        if (session) {
-          localStorage.setItem(authStorageKey, session.access_token);
-          useAuthStore.getState().setAuth(session.user.id, {
-            id: session.user.id,
-            email: session.user.email || '',
-            fullName: session.user.user_metadata?.full_name || session.user.user_metadata?.name,
-          });
-        }
-      });
     } catch {
-      useAuthStore.getState().setAuth(null);
+      localStorage.removeItem(authStorageKey);
     }
-  } else {
-    useAuthStore.getState().setAuth(null);
+  }
+
+  // 3. No active session found
+  useAuthStore.getState().setAuth(null);
+
+  // Set up auth state change listener so future OAuth completions are captured
+  if (supabase) {
+    supabase.auth.onAuthStateChange((_event, session) => {
+      if (session) {
+        localStorage.setItem(authStorageKey, session.access_token);
+        useAuthStore.getState().setAuth(session.user.id, {
+          id: session.user.id,
+          email: session.user.email || '',
+          fullName:
+            session.user.user_metadata?.full_name ||
+            session.user.user_metadata?.name ||
+            session.user.email?.split('@')[0],
+          phone: session.user.user_metadata?.phone || session.user.phone || '',
+          role: session.user.user_metadata?.role || 'CUSTOMER',
+        });
+      }
+    });
   }
 }
 

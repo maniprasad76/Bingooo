@@ -442,8 +442,16 @@ export function ShopPage() {
   return (
     <main className="bg-[#f7eedb] text-[#171717] font-sans antialiased min-h-screen">
       <SEO
-        title={slug ? `${slug.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase())} — BINGOOO` : 'Shop — BINGOOO'}
-        description="Everyday essentials, statement pieces and custom clothing made for people who want to wear what defines them."
+        title={
+          slug
+            ? `${slug.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase())} — 240 GSM Heavyweight Menswear | Bingooo®`
+            : 'Buy Heavyweight Oversized T-Shirts & Menswear Online India | Bingooo®'
+        }
+        description={
+          slug
+            ? `Shop premium ${slug.replace(/-/g, ' ')} crafted from 240–280 GSM heavyweight combed cotton. Streetwear boxy drape, express delivery & cash on delivery across India.`
+            : 'Explore Bingooo’s curated 240–280 GSM heavyweight cotton menswear. Oversized tees, drop-shoulder hoodies, boxy cuts, and custom streetwear. Pan-India express delivery.'
+        }
         canonical={slug ? `https://bingooo.co.in/category/${slug}` : 'https://bingooo.co.in/shop'}
         breadcrumbs={[
           { name: 'Home', url: 'https://bingooo.co.in/' },

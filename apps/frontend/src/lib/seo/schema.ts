@@ -331,13 +331,6 @@ export function generateLocalBusinessSchema() {
       'https://www.instagram.com/bingooo.co',
       'https://wa.me/917981787317',
     ],
-    aggregateRating: {
-      '@type': 'AggregateRating',
-      ratingValue: '4.9',
-      reviewCount: '847',
-      bestRating: '5',
-      worstRating: '1',
-    },
   };
 }
 

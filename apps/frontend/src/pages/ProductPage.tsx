@@ -13,6 +13,7 @@ import { FALLBACK_PRODUCTS } from '../data/fallbackProducts';
 import { ProductDetailSkeleton } from '../components/ui/Skeleton';
 import { StickyMobileActionBar } from '../components/product/StickyMobileActionBar';
 import { ProductPlaceholder } from '../components/ui/ProductPlaceholder';
+import { WhatsAppIcon } from '../components/ui/SocialIcons';
 
 
 const DEFAULT_RELATED = [
@@ -251,6 +252,17 @@ export function ProductPage() {
     }
   };
 
+  // Handle WhatsApp Share
+  const handleWhatsAppShare = () => {
+    triggerHaptic('light');
+    const title = product?.title || 'Bingooo Menswear';
+    const pageUrl = window.location.href;
+    const shareText = encodeURIComponent(
+      `Check out this ${title} (₹${price}) on Bingooo:\n${pageUrl}`
+    );
+    window.open(`https://api.whatsapp.com/send?text=${shareText}`, '_blank', 'noopener,noreferrer');
+  };
+
   // Handle Pincode validation
   const handleCheckDelivery = (e: React.FormEvent) => {
     e.preventDefault();
@@ -403,24 +415,37 @@ export function ProductPage() {
 
           {/* ── PRODUCT INFO ── */}
           <div className="pt-[5px]">
-            {/* Meta Row: Category + Wishlist */}
+            {/* Meta Row: Category + Actions (WhatsApp Share & Wishlist) */}
             <div className="flex justify-between items-center mb-[13px]">
               <div className="text-[#6f6a63] text-[10px] font-semibold uppercase tracking-[0.14em]">
                 BINGOOO / {product?.category?.name?.toUpperCase() || 'MEN / T-SHIRTS'}
               </div>
 
-              <button
-                type="button"
-                onClick={handleToggleWishlist}
-                className={`w-[38px] h-[38px] border border-[#ddd3c5] rounded-full grid place-items-center transition-colors ${
-                  inWishlist
-                    ? 'bg-[#171717] text-[#e6321c] border-[#171717]'
-                    : 'bg-transparent text-[#171717] hover:bg-[#171717] hover:text-white'
-                }`}
-                aria-label="Add to wishlist"
-              >
-                <Heart size={16} className={inWishlist ? 'fill-[#e6321c] text-[#e6321c]' : 'text-current'} />
-              </button>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={handleWhatsAppShare}
+                  className="w-[38px] h-[38px] border border-[#ddd3c5] rounded-full grid place-items-center transition-all bg-white text-[#25D366] hover:border-[#25D366] hover:bg-[#25D366]/10 active:scale-95 cursor-pointer shadow-2xs"
+                  aria-label="Share via WhatsApp"
+                  title="Share via WhatsApp"
+                >
+                  <WhatsAppIcon className="w-4 h-4" />
+                </button>
+
+                <button
+                  type="button"
+                  onClick={handleToggleWishlist}
+                  className={`w-[38px] h-[38px] border border-[#ddd3c5] rounded-full grid place-items-center transition-all active:scale-95 cursor-pointer shadow-2xs ${
+                    inWishlist
+                      ? 'bg-[#171717] text-[#e6321c] border-[#171717]'
+                      : 'bg-white text-[#171717] hover:bg-[#171717] hover:text-white'
+                  }`}
+                  aria-label={inWishlist ? 'Remove from wishlist' : 'Save to wishlist'}
+                  title={inWishlist ? 'Saved to wishlist' : 'Save to wishlist'}
+                >
+                  <Heart size={16} className={inWishlist ? 'fill-[#e6321c] text-[#e6321c]' : 'text-current'} />
+                </button>
+              </div>
             </div>
 
             {/* Title */}
@@ -648,32 +673,45 @@ export function ProductPage() {
               </button>
             </div>
 
-            {/* Purchase Actions */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-[10px] mt-[10px]">
+            {/* Purchase & Social Actions */}
+            <div className="flex items-center gap-[10px] mt-[10px]">
               <button
                 type="button"
                 onClick={handleBuyNow}
-                className="btn btn-red h-[52px] w-full text-xs font-extrabold tracking-wider shadow-[0_6px_20px_rgba(230,50,28,0.32)] hover:shadow-[0_8px_25px_rgba(230,50,28,0.42)] group"
+                className="btn btn-red h-[52px] flex-1 text-xs font-extrabold tracking-wider shadow-[0_6px_20px_rgba(230,50,28,0.32)] hover:shadow-[0_8px_25px_rgba(230,50,28,0.42)] group inline-flex items-center justify-center gap-2 cursor-pointer active:scale-[0.98]"
               >
                 <Zap size={14} className="fill-white" />
                 <span>BUY IT NOW</span>
                 <span className="transition-transform duration-200 group-hover:translate-x-1">→</span>
               </button>
 
+              {/* Wishlist Icon Button */}
               <button
                 type="button"
                 onClick={handleToggleWishlist}
-                className={`btn h-[52px] w-full text-xs font-extrabold tracking-wider border transition-all duration-200 cursor-pointer ${
+                title={inWishlist ? 'Remove from Wishlist' : 'Save to Wishlist'}
+                aria-label={inWishlist ? 'Remove from Wishlist' : 'Save to Wishlist'}
+                className={`w-[52px] h-[52px] shrink-0 rounded-[7px] border grid place-items-center transition-all duration-200 cursor-pointer active:scale-95 shadow-xs ${
                   inWishlist
-                    ? 'border-[#E6321C] bg-[#E6321C]/8 text-[#E6321C]'
+                    ? 'border-[#E6321C] bg-[#E6321C]/10 text-[#E6321C]'
                     : 'border-[#DDD3C5] bg-white text-[#171717] hover:border-[#171717] hover:bg-[#FAF8F5]'
                 }`}
               >
                 <Heart
-                  size={15}
+                  size={19}
                   className={inWishlist ? 'fill-[#E6321C] text-[#E6321C]' : 'text-[#171717]'}
                 />
-                <span>{inWishlist ? 'SAVED TO WISHLIST' : 'SAVE TO WISHLIST'}</span>
+              </button>
+
+              {/* WhatsApp Share Icon Button */}
+              <button
+                type="button"
+                onClick={handleWhatsAppShare}
+                title="Share via WhatsApp"
+                aria-label="Share via WhatsApp"
+                className="w-[52px] h-[52px] shrink-0 rounded-[7px] border border-[#DDD3C5] bg-white text-[#25D366] hover:border-[#25D366] hover:bg-[#25D366]/10 grid place-items-center transition-all duration-200 cursor-pointer active:scale-95 shadow-xs"
+              >
+                <WhatsAppIcon className="w-5 h-5" />
               </button>
             </div>
 
@@ -1209,6 +1247,7 @@ export function ProductPage() {
           inWishlist={inWishlist}
           onAddToCart={handleAddToCart}
           onToggleWishlist={handleToggleWishlist}
+          onShareWhatsApp={handleWhatsAppShare}
           isAdding={isAdding}
         />
       )}

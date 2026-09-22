@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Heart, ShoppingBag } from 'lucide-react';
 import { Button } from '../ui/Button';
+import { WhatsAppIcon } from '../ui/SocialIcons';
 import { triggerHaptic } from '../../lib/native/capacitorBridge';
 
 interface StickyMobileActionBarProps {
@@ -18,6 +19,7 @@ interface StickyMobileActionBarProps {
   inWishlist?: boolean;
   onAddToCart: () => void;
   onToggleWishlist: () => void;
+  onShareWhatsApp?: () => void;
   isAdding?: boolean;
 }
 
@@ -27,6 +29,7 @@ export function StickyMobileActionBar({
   inWishlist,
   onAddToCart,
   onToggleWishlist,
+  onShareWhatsApp,
   isAdding,
 }: StickyMobileActionBarProps) {
   const [isVisible, setIsVisible] = useState(false);
@@ -90,18 +93,34 @@ export function StickyMobileActionBar({
           </div>
 
           {/* Actions */}
-          <div className="flex items-center gap-2.5 shrink-0">
+          <div className="flex items-center gap-2 shrink-0">
+            {onShareWhatsApp && (
+              <button
+                type="button"
+                onClick={() => {
+                  triggerHaptic('light');
+                  onShareWhatsApp();
+                }}
+                className="w-10 h-10 rounded-[8px] border border-[#DDD3C5] bg-white text-[#25D366] grid place-items-center active:scale-95 transition-all shadow-2xs hover:border-[#25D366] hover:bg-[#25D366]/10 cursor-pointer"
+                aria-label="Share via WhatsApp"
+                title="Share via WhatsApp"
+              >
+                <WhatsAppIcon className="w-4 h-4" />
+              </button>
+            )}
+
             <button
               type="button"
               onClick={() => {
                 triggerHaptic('light');
                 onToggleWishlist();
               }}
-              className="w-11 h-11 rounded-[8px] border border-[#DDD3C5] bg-white grid place-items-center active:scale-95 transition-all shadow-2xs hover:border-[#171717]"
+              className="w-10 h-10 rounded-[8px] border border-[#DDD3C5] bg-white grid place-items-center active:scale-95 transition-all shadow-2xs hover:border-[#171717] cursor-pointer"
               aria-label="Toggle wishlist"
+              title={inWishlist ? 'Remove from wishlist' : 'Save to wishlist'}
             >
               <Heart
-                size={18}
+                size={17}
                 className={inWishlist ? 'fill-[#E6321C] text-[#E6321C]' : 'text-[#171717]'}
               />
             </button>

@@ -1281,18 +1281,20 @@ export function CustomizerPage() {
           <button
             type="button"
             onClick={() => setIsSavePromptOpen(true)}
-            className="py-2.5 rounded-xl border border-[#ddd3c5] bg-white hover:bg-[#faf8f5] text-[10px] font-bold uppercase tracking-wider text-[#171717] flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+            className="py-2.5 rounded-xl border border-[#ddd3c5] bg-white hover:bg-[#faf8f5] text-[10px] font-bold uppercase tracking-wider text-[#171717] flex items-center justify-center gap-1.5 transition-colors cursor-pointer active:scale-95"
+            title="Save custom design to wishlist"
           >
-            <Bookmark size={13} className="text-[#E6321C]" />
-            <span>Save to Wishlist</span>
+            <Bookmark size={14} className="text-[#E6321C]" />
+            <span>Wishlist</span>
           </button>
           <button
             type="button"
-            onClick={() => setIsShareModalOpen(true)}
-            className="py-2.5 rounded-xl border border-[#ddd3c5] bg-white hover:bg-[#faf8f5] text-[10px] font-bold uppercase tracking-wider text-[#171717] flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+            onClick={handleWhatsAppShare}
+            className="py-2.5 rounded-xl border border-[#ddd3c5] bg-white hover:border-[#25D366] hover:bg-[#25D366]/10 text-[10px] font-bold uppercase tracking-wider text-[#25D366] flex items-center justify-center gap-1.5 transition-colors cursor-pointer active:scale-95"
+            title="Share design on WhatsApp"
           >
-            <Share2 size={13} />
-            <span>Share Design</span>
+            <WhatsAppIcon className="w-4 h-4 fill-[#25D366]" />
+            <span>WhatsApp</span>
           </button>
         </div>
       </div>

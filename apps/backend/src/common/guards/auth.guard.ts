@@ -6,7 +6,13 @@ import {
 } from '@nestjs/common';
 import { Request } from 'express';
 import { verifyToken, isTokenRevoked } from '../utils/crypto.util';
-import { db } from '../database/store';
+import { db, saveDb } from '../database/store';
+
+const SUPER_ADMIN_EMAILS = [
+  'basaprasaduu@gmail.com',
+  'admin@bingooo.in',
+  'prasad@bingooo.co.in',
+];
 
 /**
  * Validates authentication tokens and resolves caller's RBAC grants.
@@ -90,9 +96,19 @@ export class AuthGuard implements CanActivate {
         if (response.ok) {
           const authData = (await response.json()) as any;
           if (authData && authData.id) {
+            const userEmail = (authData.email || '').toLowerCase().trim();
+            const isAuthorizedSuperAdmin =
+              SUPER_ADMIN_EMAILS.includes(userEmail) ||
+              (Boolean(process.env.ADMIN_EMAILS) &&
+                (process.env.ADMIN_EMAILS || '')
+                  .split(',')
+                  .map((e) => e.trim().toLowerCase())
+                  .includes(userEmail));
+
             let user = db.users.find(
-              (u) => u.id === authData.id || u.email?.toLowerCase() === authData.email?.toLowerCase(),
+              (u) => u.id === authData.id || u.email?.toLowerCase() === userEmail,
             );
+
             if (!user && authData.email) {
               user = {
                 id: authData.id,
@@ -102,25 +118,38 @@ export class AuthGuard implements CanActivate {
                   authData.user_metadata?.name ||
                   authData.email.split('@')[0],
                 phone: authData.user_metadata?.phone || authData.phone || '',
-                role: 'CUSTOMER',
+                role: isAuthorizedSuperAdmin ? 'SUPER_ADMIN' : 'CUSTOMER',
                 status: 'ACTIVE',
                 password_hash: '',
                 created_at: new Date().toISOString(),
                 updated_at: new Date().toISOString(),
               };
               db.users.push(user);
+              saveDb();
+            } else if (user && isAuthorizedSuperAdmin && user.role !== 'SUPER_ADMIN') {
+              user.role = 'SUPER_ADMIN';
+              user.updated_at = new Date().toISOString();
+              saveDb();
             }
 
-            const roleCode = user?.role || 'CUSTOMER';
+            const roleCode = user?.role || (isAuthorizedSuperAdmin ? 'SUPER_ADMIN' : 'CUSTOMER');
+            const roleObj = db.roles.find(
+              (r) => r.code === roleCode || r.name.toUpperCase() === roleCode.toUpperCase(),
+            );
+
             (request as any).user = {
               id: authData.id,
               email: authData.email,
               roles: [roleCode.toUpperCase()],
-              permissions: roleCode === 'SUPER_ADMIN' ? ['*'] : ['orders.own', 'profile.own'],
+              permissions:
+                roleCode === 'SUPER_ADMIN'
+                  ? ['*']
+                  : roleObj?.permissions || ['orders.own', 'profile.own'],
               token,
             };
             return true;
           }
+
         }
       } catch {
         // Fall through to unauthorized exception

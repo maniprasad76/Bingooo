@@ -3,7 +3,8 @@ import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { CheckCircle2, Eye, EyeOff, Mail, ShieldCheck, ArrowRight } from 'lucide-react';
+import { CheckCircle2, Eye, EyeOff, ShieldCheck, ArrowRight } from 'lucide-react';
+
 import { Logo } from '../components/ui/Logo';
 import { confirmPasswordReset } from '../lib/auth/supabase';
 import { useToast } from '../components/ui/Toast';
@@ -12,7 +13,7 @@ import { triggerHaptic } from '../lib/native/capacitorBridge';
 
 const resetSchema = z
   .object({
-    email: z.string().min(1, 'Email is required').email('Please enter a valid email address'),
+    token: z.string().min(1, 'Reset token is required'),
     password: z.string().min(8, 'Password must be at least 8 characters'),
     confirmPassword: z.string().min(8, 'Please confirm your password'),
   })
@@ -32,7 +33,7 @@ export function ResetPasswordPage() {
   const navigate = useNavigate();
   const { toast } = useToast();
 
-  const queryEmail = searchParams.get('email') || '';
+  const queryToken = searchParams.get('token') || '';
 
   const {
     register,
@@ -41,7 +42,7 @@ export function ResetPasswordPage() {
   } = useForm<ResetForm>({
     resolver: zodResolver(resetSchema),
     defaultValues: {
-      email: queryEmail,
+      token: queryToken,
     },
   });
 
@@ -49,7 +50,7 @@ export function ResetPasswordPage() {
     triggerHaptic('medium');
     setLoading(true);
     try {
-      await confirmPasswordReset(data.email, data.password);
+      await confirmPasswordReset(data.token, data.password);
       setIsSuccess(true);
       toast({
         title: 'Password updated successfully',
@@ -66,6 +67,7 @@ export function ResetPasswordPage() {
       setLoading(false);
     }
   };
+
 
   return (
     <main className="bg-[#f7eedb] text-[#171717] font-sans antialiased min-h-[calc(100vh-104px)] flex flex-col justify-center py-8 sm:py-16">
@@ -154,25 +156,26 @@ export function ResetPasswordPage() {
             ) : (
               <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
                 <div>
-                  <label htmlFor="email" className="block text-[10px] font-mono font-bold uppercase tracking-[0.16em] text-[#171717] mb-1">
-                    EMAIL ADDRESS
+                  <label htmlFor="token" className="block text-[10px] font-mono font-bold uppercase tracking-[0.16em] text-[#171717] mb-1">
+                    SECURITY RESET CODE / TOKEN
                   </label>
                   <div className="relative">
                     <input
-                      id="email"
-                      type="email"
-                      placeholder="you@example.com"
-                      {...register('email')}
-                      className="w-full h-12 px-3.5 bg-white border border-[#ddd3c5] text-xs text-[#171717] placeholder:text-[#999] outline-none focus:border-[#171717] transition-colors rounded-none"
+                      id="token"
+                      type="text"
+                      placeholder="Paste your reset token"
+                      {...register('token')}
+                      className="w-full h-12 px-3.5 bg-white border border-[#ddd3c5] text-xs text-[#171717] placeholder:text-[#999] outline-none focus:border-[#171717] transition-colors rounded-none font-mono"
                     />
-                    <Mail size={15} className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[#6f6a63] pointer-events-none" />
+                    <ShieldCheck size={15} className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[#6f6a63] pointer-events-none" />
                   </div>
-                  {errors.email && (
+                  {errors.token && (
                     <p className="mt-1 text-[11px] font-medium text-[#e6321c]">
-                      {errors.email.message}
+                      {errors.token.message}
                     </p>
                   )}
                 </div>
+
 
                 <div>
                   <label htmlFor="password" className="block text-[10px] font-mono font-bold uppercase tracking-[0.16em] text-[#171717] mb-1">

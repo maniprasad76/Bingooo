@@ -537,81 +537,80 @@ export function WishlistPage() {
         </div>
       </section>
 
-      {/* =======================================================
-           RECOMMENDED PICKS (Curated Drop Carousel)
-      ======================================================= */}
-      <section className="py-[80px] bg-[#ede0cc] border-t border-[#ddd3c5]">
-        <div className="container-bingooo">
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end mb-8 gap-3">
-            <div>
-              <div className="text-[10px] font-semibold tracking-[0.2em] uppercase text-[#6f6a63] mb-1.5">
-                CURATED FOR YOU
+      {curatedPicks.length > 0 && (
+        <section className="py-[80px] bg-[#ede0cc] border-t border-[#ddd3c5]">
+          <div className="container-bingooo">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end mb-8 gap-3">
+              <div>
+                <div className="text-[10px] font-semibold tracking-[0.2em] uppercase text-[#6f6a63] mb-1.5">
+                  CURATED FOR YOU
+                </div>
+                <h2 className="m-0 text-[clamp(28px,4vw,44px)] font-extrabold tracking-[-0.06em] uppercase text-[#171717]">
+                  RECOMMENDED DROPS
+                </h2>
               </div>
-              <h2 className="m-0 text-[clamp(28px,4vw,44px)] font-extrabold tracking-[-0.06em] uppercase text-[#171717]">
-                RECOMMENDED DROPS
-              </h2>
+
+              <Link
+                to="/shop"
+                className="inline-flex items-center gap-1.5 text-[10px] font-extrabold tracking-[0.12em] uppercase text-[#171717] hover:text-[#e6321c] transition-colors"
+              >
+                <span>VIEW FULL ARCHIVE</span>
+                <ArrowRight size={13} />
+              </Link>
             </div>
 
-            <Link
-              to="/shop"
-              className="inline-flex items-center gap-1.5 text-[10px] font-extrabold tracking-[0.12em] uppercase text-[#171717] hover:text-[#e6321c] transition-colors"
-            >
-              <span>VIEW FULL ARCHIVE</span>
-              <ArrowRight size={13} />
-            </Link>
-          </div>
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+              {curatedPicks.map((prod) => (
+                <article
+                  key={prod.id}
+                  className="group flex flex-col justify-between bg-[#f7eedb] border border-[#ddd3c5] p-3 text-left transition-colors hover:border-[#171717] rounded-[4px]"
+                >
+                  <div>
+                    <div className="aspect-[4/5] bg-[#ede0cc] overflow-hidden relative rounded-[2px]">
+                      <Link to={`/product/${prod.slug}`} className="block w-full h-full">
+                        {prod.images?.[0]?.url ? (
+                          <img
+                            src={prod.images[0].url}
+                            alt={prod.title}
+                            className="w-full h-full object-cover grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-500"
+                          />
+                        ) : (
+                          <ProductPlaceholder name={prod.title} />
+                        )}
+                      </Link>
+                    </div>
 
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-            {curatedPicks.map((prod) => (
-              <article
-                key={prod.id}
-                className="group flex flex-col justify-between bg-[#f7eedb] border border-[#ddd3c5] p-3 text-left transition-colors hover:border-[#171717] rounded-[4px]"
-              >
-                <div>
-                  <div className="aspect-[4/5] bg-[#ede0cc] overflow-hidden relative rounded-[2px]">
-                    <Link to={`/product/${prod.slug}`} className="block w-full h-full">
-                      {prod.images?.[0]?.url ? (
-                        <img
-                          src={prod.images[0].url}
-                          alt={prod.title}
-                          className="w-full h-full object-cover grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-500"
-                        />
-                      ) : (
-                        <ProductPlaceholder name={prod.title} />
-                      )}
+                    <div className="pt-3">
+                      <div className="flex items-baseline justify-between gap-1">
+                        <Link to={`/product/${prod.slug}`}>
+                          <h4 className="text-[12px] font-bold text-[#171717] group-hover:text-[#e6321c] transition-colors line-clamp-1">
+                            {prod.title}
+                          </h4>
+                        </Link>
+                        <span className="text-[13px] font-extrabold text-[#171717]">
+                          ₹{(prod as any).base_price || prod.basePrice}
+                        </span>
+                      </div>
+                      <p className="text-[10px] text-[#6f6a63] mt-1 font-mono uppercase">
+                        {prod.category?.name || 'Heavyweight'}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="mt-3 pt-2.5 border-t border-[#ddd3c5]">
+                    <Link
+                      to={`/product/${prod.slug}`}
+                      className="w-full h-8 flex items-center justify-center border border-[#171717] text-[#171717] hover:bg-[#171717] hover:text-white text-[9px] font-extrabold uppercase tracking-wider transition-colors rounded-[2px]"
+                    >
+                      VIEW GARMENT →
                     </Link>
                   </div>
-
-                  <div className="pt-3">
-                    <div className="flex items-baseline justify-between gap-1">
-                      <Link to={`/product/${prod.slug}`}>
-                        <h4 className="text-[12px] font-bold text-[#171717] group-hover:text-[#e6321c] transition-colors line-clamp-1">
-                          {prod.title}
-                        </h4>
-                      </Link>
-                      <span className="text-[13px] font-extrabold text-[#171717]">
-                        ₹{(prod as any).base_price || prod.basePrice}
-                      </span>
-                    </div>
-                    <p className="text-[10px] text-[#6f6a63] mt-1 font-mono uppercase">
-                      {prod.category?.name || 'Heavyweight'}
-                    </p>
-                  </div>
-                </div>
-
-                <div className="mt-3 pt-2.5 border-t border-[#ddd3c5]">
-                  <Link
-                    to={`/product/${prod.slug}`}
-                    className="w-full h-8 flex items-center justify-center border border-[#171717] text-[#171717] hover:bg-[#171717] hover:text-white text-[9px] font-extrabold uppercase tracking-wider transition-colors rounded-[2px]"
-                  >
-                    VIEW GARMENT →
-                  </Link>
-                </div>
-              </article>
-            ))}
+                </article>
+              ))}
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* =======================================================
            TRUST & PERKS STRIP

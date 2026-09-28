@@ -108,16 +108,17 @@ export function CheckoutPage() {
   } = useForm<AddressFormData>({
     resolver: zodResolver(addressSchema),
     defaultValues: {
-      name: user?.fullName || 'Aditi Sharma',
-      phone: user?.phone || '9876543210',
-      line1: '124, Indiranagar 100ft Road',
-      line2: 'Flat 4B, Silicon Heights',
-      city: 'Bengaluru',
-      state: 'Karnataka',
-      postalCode: '560038',
+      name: user?.fullName || '',
+      phone: user?.phone || '',
+      line1: '',
+      line2: '',
+      city: '',
+      state: '',
+      postalCode: '',
       country: 'IN',
     },
   });
+
 
   // Load default address if available
   useEffect(() => {
@@ -266,9 +267,10 @@ export function CheckoutPage() {
           prefill: {
             name: addressData.name,
             contact: addressData.phone,
-            email: user?.email || 'customer@bingooo.in',
+            email: user?.email || undefined,
             method: paymentMethod === 'upi' || isPartialPayment ? 'upi' : undefined,
           },
+
           theme: { color: '#E6321C' },
           handler: async (response: any) => {
             try {

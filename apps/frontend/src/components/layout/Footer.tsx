@@ -10,12 +10,15 @@ import {
   BINGOOO_INSTAGRAM_HANDLE,
   BINGOOO_EMAIL_SUPPORT,
   BINGOOO_PHONE_DISPLAY,
+  BINGOOO_YOUTUBE_URL,
+  BINGOOO_YOUTUBE_HANDLE,
   WhatsAppIcon,
   InstagramIcon,
   EmailIcon,
   YouTubeIcon,
   PinterestIcon,
 } from '../ui/SocialIcons';
+
 
 interface FooterLink {
   label: string;
@@ -184,11 +187,11 @@ export function Footer() {
                 <WhatsAppIcon className="w-3.5 h-3.5" />
               </a>
               <a
-                href="https://youtube.com"
+                href={BINGOOO_YOUTUBE_URL}
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="Follow Bingooo on YouTube"
-                title="YouTube"
+                title={`YouTube (${BINGOOO_YOUTUBE_HANDLE})`}
                 className="w-[32px] h-[32px] border border-white/20 rounded-full grid place-items-center text-[#d4d1cc] hover:text-white hover:bg-[#E6321C] hover:border-[#E6321C] transition-all duration-150"
               >
                 <YouTubeIcon className="w-3.5 h-3.5" />

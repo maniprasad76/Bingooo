@@ -318,7 +318,7 @@ export function SmartSearchModal() {
                       product.images?.[0]?.url ||
                       product.images?.[0]?.object_key ||
                       (typeof product.images?.[0] === 'string' ? product.images[0] : null) ||
-                      '/custom/tshirt-step-1.png';
+                      '';
                     const resolvedImage = resolveImageUrl(mainImage);
                     const basePrice = product.base_price ?? product.basePrice ?? 699;
                     const compareAt = product.compare_at_price ?? product.compareAtPrice;

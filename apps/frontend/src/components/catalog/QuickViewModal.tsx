@@ -68,13 +68,8 @@ export function QuickViewModal({ product, isOpen, onClose }: QuickViewModalProps
   const mainImage =
     product.images?.[0]?.url ||
     product.images?.[0]?.object_key ||
-    (product.slug?.includes('graphic')
-      ? '/custom/tshirt-step-3-black.png'
-      : product.slug?.includes('classic')
-      ? '/custom/tshirt-step-1.png'
-      : product.slug?.includes('hoodie')
-      ? '/custom/tshirt-step-2.png'
-      : '/custom/tshirt-step-1.png');
+    (typeof product.images?.[0] === 'string' ? product.images[0] : '') ||
+    '';
 
   const handleAdd = () => {
     const matched = product.variants?.find(

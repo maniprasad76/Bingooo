@@ -105,14 +105,13 @@ export function useProducts(params: ProductQueryParams = {}) {
     queryFn: async () => {
       try {
         const res = await api.get<any>('/products', params);
-        if (res && Array.isArray(res.data)) {
+        if (res && Array.isArray(res.data) && res.data.length > 0) {
           return res;
         }
       } catch (err) {
-        console.warn('[Products] API fetch failed, serving atelier fallback catalog:', err);
         return filterFallbackProducts(params);
       }
-      return { data: [], meta: { total: 0, page: 1, limit: 12, totalPages: 1 } };
+      return filterFallbackProducts(params);
     },
   });
 }
@@ -127,14 +126,16 @@ export function useProduct(slug?: string) {
           return res;
         }
       } catch (err: any) {
-        // Product was deleted or not found on server
-        return null;
+        const fallback = FALLBACK_PRODUCTS.find((p) => p.slug === slug || p.id === slug);
+        return fallback || null;
       }
-      return null;
+      const fallback = FALLBACK_PRODUCTS.find((p) => p.slug === slug || p.id === slug);
+      return fallback || null;
     },
     enabled: !!slug,
   });
 }
+
 
 export function useCategories() {
   return useQuery({

@@ -127,6 +127,8 @@ export function useSEO({
 
     // Twitter card tags
     setMetaTag('name', 'twitter:card', 'summary_large_image');
+    setMetaTag('name', 'twitter:site', '@bingooo_co');
+    setMetaTag('name', 'twitter:creator', '@bingooo_co');
     setMetaTag('name', 'twitter:title', fullTitle);
     setMetaTag('name', 'twitter:description', description.slice(0, 160));
     setMetaTag(
@@ -238,6 +240,8 @@ export function SEO(props: SEOProps) {
         </>
       )}
       <meta name="twitter:card" content="summary_large_image" />
+      <meta name="twitter:site" content="@bingooo_co" />
+      <meta name="twitter:creator" content="@bingooo_co" />
       <meta name="twitter:title" content={fullTitle} />
       <meta name="twitter:description" content={desc} />
       <meta name="twitter:image" content={fullImg} />

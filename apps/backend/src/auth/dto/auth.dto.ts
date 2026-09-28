@@ -80,10 +80,10 @@ export class ForgotPasswordDto {
 }
 
 export class ResetPasswordDto {
-  @ApiProperty({ example: 'customer@example.com' })
-  @IsEmail({}, { message: 'Please provide a valid email address' })
-  @IsNotEmpty({ message: 'Email is required' })
-  email!: string;
+  @ApiProperty({ description: 'Secure reset token received via password reset request' })
+  @IsString()
+  @IsNotEmpty({ message: 'Reset token is required' })
+  token!: string;
 
   @ApiProperty()
   @IsString()
@@ -92,4 +92,5 @@ export class ResetPasswordDto {
   @IsNotEmpty({ message: 'New password is required' })
   newPassword!: string;
 }
+
 

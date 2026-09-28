@@ -20,44 +20,8 @@ interface FeaturedProduct {
   link: string;
 }
 
-const FEATURED_PRODUCTS: FeaturedProduct[] = [
-  {
-    id: 'prod-1',
-    name: 'Classic Oversized Tee',
-    price: '₹1,299',
-    image: '/custom/tshirt-step-1.png',
-    category: 'Oversized Tees',
-    swatches: ['#171717', '#ffffff', '#d9cbb8'],
-    link: '/product/classic-oversized-tee',
-  },
-  {
-    id: 'prod-2',
-    name: 'Graphic Print Tee — Midnight',
-    price: '₹1,499',
-    image: '/custom/tshirt-step-3-black.png',
-    category: 'Oversized Tees',
-    swatches: ['#171717', '#d9cbb8', '#ffffff'],
-    link: '/product/graphic-print-tee-midnight',
-  },
-  {
-    id: 'prod-3',
-    name: 'Essential Pullover Hoodie',
-    price: '₹2,499',
-    image: '/custom/tshirt-step-2.png',
-    category: 'Hoodies',
-    swatches: ['#171717', '#8d8984', '#d9cbb8'],
-    link: '/product/essential-pullover-hoodie',
-  },
-  {
-    id: 'prod-4',
-    name: 'Heavyweight Studio Boxy Tee',
-    price: '₹1,399',
-    image: '/custom/tshirt-step-1.png',
-    category: 'Oversized Tees',
-    swatches: ['#171717', '#ffffff', '#8d8984'],
-    link: '/product/classic-oversized-tee',
-  },
-];
+const FEATURED_PRODUCTS: FeaturedProduct[] = [];
+
 
 interface CommunityFit {
   id: string;
@@ -388,65 +352,76 @@ export function HomePage() {
           </div>
 
           {/* Grid */}
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-[13px] sm:gap-[22px]">
-            {displayFeaturedProducts.map((prod) => (
-              <article key={prod.id} className="group flex flex-col">
-                <div className="relative aspect-[4/5] overflow-hidden bg-[#ede0cc]">
-                  <button
-                    onClick={(e) => toggleWishlist(prod.id, e)}
-                    className="absolute right-3 top-3 w-[31px] h-[31px] rounded-full border border-[#ddd3c5] bg-white/85 grid place-items-center z-10 transition-transform active:scale-90 hover:bg-white"
-                    aria-label="Add to wishlist"
-                  >
-                    <Heart
-                      size={14}
-                      className={wishlist[prod.id] ? 'fill-[#e6321c] text-[#e6321c]' : 'text-[#171717]'}
-                    />
-                  </button>
-
-                  <Link
-                    to={prod.link}
-                    onMouseEnter={() => prefetchProduct(prod.link.replace('/product/', ''))}
-                    onTouchStart={() => prefetchProduct(prod.link.replace('/product/', ''))}
-                    className="block h-full w-full"
-                  >
-                    {prod.image && !failedImages[prod.id] ? (
-                      <img
-                        src={prod.image}
-                        alt={prod.name}
-                        className="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.035]"
-                        onError={() => {
-                          setFailedImages((prev) => ({ ...prev, [prod.id]: true }));
-                        }}
+          {displayFeaturedProducts.length === 0 ? (
+            <div className="py-14 px-6 text-center bg-[#ede0cc]/40 border border-[#ddd3c5] rounded-xl max-w-2xl mx-auto">
+              <p className="text-[12px] font-mono uppercase tracking-[0.2em] text-[#6f6a63] mb-3">
+                New collection dropping soon
+              </p>
+              <p className="text-[11px] text-[#8d8984]">
+                Products added from the Admin Panel will appear here live.
+              </p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-[13px] sm:gap-[22px]">
+              {displayFeaturedProducts.map((prod) => (
+                <article key={prod.id} className="group flex flex-col">
+                  <div className="relative aspect-[4/5] overflow-hidden bg-[#ede0cc]">
+                    <button
+                      onClick={(e) => toggleWishlist(prod.id, e)}
+                      className="absolute right-3 top-3 w-[31px] h-[31px] rounded-full border border-[#ddd3c5] bg-white/85 grid place-items-center z-10 transition-transform active:scale-90 hover:bg-white"
+                      aria-label="Add to wishlist"
+                    >
+                      <Heart
+                        size={14}
+                        className={wishlist[prod.id] ? 'fill-[#e6321c] text-[#e6321c]' : 'text-[#171717]'}
                       />
-                    ) : (
-                      <ProductPlaceholder name={prod.name} category={prod.category} />
-                    )}
-                  </Link>
-                </div>
+                    </button>
 
-                <div className="pt-[13px]">
-                  <p className="m-0 mb-[5px] text-[11px] sm:text-[12px] font-semibold text-[#171717]">
-                    <Link to={prod.link} className="hover:text-[#e6321c] transition-colors">
-                      {prod.name}
+                    <Link
+                      to={prod.link}
+                      onMouseEnter={() => prefetchProduct(prod.link.replace('/product/', ''))}
+                      onTouchStart={() => prefetchProduct(prod.link.replace('/product/', ''))}
+                      className="block h-full w-full"
+                    >
+                      {prod.image && !failedImages[prod.id] ? (
+                        <img
+                          src={prod.image}
+                          alt={prod.name}
+                          className="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.035]"
+                          onError={() => {
+                            setFailedImages((prev) => ({ ...prev, [prod.id]: true }));
+                          }}
+                        />
+                      ) : (
+                        <ProductPlaceholder name={prod.name} category={prod.category} />
+                      )}
                     </Link>
-                  </p>
-                  <p className="m-0 text-[13px] sm:text-[14px] font-bold text-[#171717]">
-                    {prod.price}
-                  </p>
-
-                  <div className="flex gap-[6px] mt-3">
-                    {prod.swatches.map((swatchColor, idx) => (
-                      <span
-                        key={idx}
-                        className="w-[13px] h-[13px] rounded-full border border-[#c9c0b3]"
-                        style={{ backgroundColor: swatchColor }}
-                      />
-                    ))}
                   </div>
-                </div>
-              </article>
-            ))}
-          </div>
+
+                  <div className="pt-[13px]">
+                    <p className="m-0 mb-[5px] text-[11px] sm:text-[12px] font-semibold text-[#171717]">
+                      <Link to={prod.link} className="hover:text-[#e6321c] transition-colors">
+                        {prod.name}
+                      </Link>
+                    </p>
+                    <p className="m-0 text-[13px] sm:text-[14px] font-bold text-[#171717]">
+                      {prod.price}
+                    </p>
+
+                    <div className="flex gap-[6px] mt-3">
+                      {prod.swatches.map((swatchColor, idx) => (
+                        <span
+                          key={idx}
+                          className="w-[13px] h-[13px] rounded-full border border-[#c9c0b3]"
+                          style={{ backgroundColor: swatchColor }}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                </article>
+              ))}
+            </div>
+          )}
         </div>
       </section>
 

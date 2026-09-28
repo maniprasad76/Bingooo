@@ -62,6 +62,8 @@ export function generateOrganizationSchema() {
     ],
     sameAs: [
       'https://www.instagram.com/bingooo.co',
+      'https://www.youtube.com/@bingooo_co',
+      'https://twitter.com/bingooo_co',
       'https://wa.me/917981787317',
     ],
     priceRange: '₹₹',
@@ -329,6 +331,8 @@ export function generateLocalBusinessSchema() {
     ],
     sameAs: [
       'https://www.instagram.com/bingooo.co',
+      'https://www.youtube.com/@bingooo_co',
+      'https://twitter.com/bingooo_co',
       'https://wa.me/917981787317',
     ],
   };

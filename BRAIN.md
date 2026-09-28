@@ -117,7 +117,13 @@ python -m graphify update .
 
 ## 6. Changelog & Recent Decisions
 
+- **2026-09-28: Security Hardening, Auth Guard Fixes & Catalog Restoration**
+  - Patched zero-day unauthenticated password reset vulnerability with cryptographically signed tokens.
+  - Hardened backend `AuthGuard` to automatically grant `SUPER_ADMIN` grants to authorized admin Google OAuth logins.
+  - Restored complete product catalog, variants, and fallback garments in `store.json` and `fallbackProducts.ts`.
+  - Cleaned out dummy address defaults from `CheckoutPage.tsx` and locked down CORS to explicit production origins.
 - **2026-09-17: Comprehensive UI/UX Iconography Refactor**
+
   - Standardized all UI components, badges, social blocks, and navigation elements on Lucide React vector icons.
 - **2026-09-17: Atelier Command Console Admin Login & Redesigns**
   - Redesigned Admin Login, 404 Error page, and Size & Fit Guide with editorial brutalist architecture and interactive calculators.

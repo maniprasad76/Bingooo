@@ -10,6 +10,8 @@ import {
   XTwitterIcon,
   BINGOOO_INSTAGRAM_URL,
   BINGOOO_EMAIL_SUPPORT,
+  BINGOOO_YOUTUBE_URL,
+  BINGOOO_TWITTER_URL,
   getWhatsAppUrl,
 } from './SocialIcons';
 
@@ -50,7 +52,7 @@ const SOCIAL_ITEMS: SocialItem[] = [
   {
     id: 'youtube',
     name: 'YouTube',
-    href: 'https://youtube.com',
+    href: BINGOOO_YOUTUBE_URL,
     icon: YouTubeIcon,
     color: '#FF0000',
     bgHover: 'hover:bg-[#FF0000] hover:text-white hover:border-[#FF0000]',
@@ -58,7 +60,7 @@ const SOCIAL_ITEMS: SocialItem[] = [
   {
     id: 'twitter',
     name: 'Twitter (X)',
-    href: 'https://twitter.com',
+    href: BINGOOO_TWITTER_URL,
     icon: XTwitterIcon,
     color: '#171717',
     bgHover: 'hover:bg-[#171717] hover:text-white hover:border-[#171717]',

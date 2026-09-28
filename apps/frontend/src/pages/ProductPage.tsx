@@ -9,43 +9,12 @@ import { useToast } from '../components/ui/Toast';
 import { SEO } from '../components/common/SEO';
 import { generateProductSchema } from '../lib/seo/schema';
 import { triggerHaptic } from '../lib/native/capacitorBridge';
-import { FALLBACK_PRODUCTS } from '../data/fallbackProducts';
 import { ProductDetailSkeleton } from '../components/ui/Skeleton';
 import { StickyMobileActionBar } from '../components/product/StickyMobileActionBar';
 import { ProductPlaceholder } from '../components/ui/ProductPlaceholder';
 import { WhatsAppIcon } from '../components/ui/SocialIcons';
 
-
-const DEFAULT_RELATED = [
-  {
-    id: 'rel-1',
-    name: 'Statement Hoodie',
-    price: '₹1,499',
-    image: '',
-    link: '/product/heavyweight-fleece-hoodie',
-  },
-  {
-    id: 'rel-2',
-    name: 'Bold B Tee',
-    price: '₹1,199',
-    image: '',
-    link: '/product/bold-signature-tee',
-  },
-  {
-    id: 'rel-3',
-    name: 'Minimal Tee',
-    price: '₹1,099',
-    image: '',
-    link: '/product/minimalist-heavyweight-tee',
-  },
-  {
-    id: 'rel-4',
-    name: 'Oversized Tee',
-    price: '₹1,299',
-    image: '',
-    link: '/product/classic-oversized-tee',
-  },
-];
+const DEFAULT_RELATED: any[] = [];
 
 interface ReviewItem {
   id: string;
@@ -96,17 +65,8 @@ export function ProductPage() {
   const { toast } = useToast();
   const { addProduct } = useRecentlyViewed();
 
-  // Find local fallback product if remote is not yet loaded
-  const fallbackProduct = useMemo(() => {
-    if (!slug) return FALLBACK_PRODUCTS[0];
-    return (
-      FALLBACK_PRODUCTS.find(
-        (p) => p.slug === slug || p.id === slug || p.slug.includes(slug)
-      ) || FALLBACK_PRODUCTS[0]
-    );
-  }, [slug]);
+  const product = remoteProduct || null;
 
-  const product = remoteProduct || fallbackProduct;
 
   const { data: wishlistData } = useIsInWishlist(product?.id);
   const inWishlist = !!wishlistData?.inWishlist;
@@ -307,6 +267,21 @@ export function ProductPage() {
 
   if (isProductLoading && !remoteProduct) {
     return <ProductDetailSkeleton />;
+  }
+
+  if (!isProductLoading && !product) {
+    return (
+      <main className="min-h-[70vh] bg-[#f7eedb] flex flex-col items-center justify-center p-6 text-center">
+        <h2 className="text-2xl font-bold uppercase tracking-tight text-[#171717] mb-2">Product Not Found</h2>
+        <p className="text-sm text-[#6f6a63] mb-6">This item may have been removed or is currently unavailable.</p>
+        <Link
+          to="/shop"
+          className="h-[46px] px-6 rounded-[8px] text-xs font-bold tracking-wider uppercase inline-flex items-center justify-center bg-[#171717] text-white hover:bg-black transition-colors"
+        >
+          Return to Shop
+        </Link>
+      </main>
+    );
   }
 
   return (

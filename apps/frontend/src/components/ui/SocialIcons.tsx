@@ -7,6 +7,10 @@ export const BINGOOO_EMAIL_SUPPORT = 'bingooo.sklm@gmail.com';
 export const BINGOOO_EMAIL_HELLO = 'bingooo.sklm@gmail.com';
 export const BINGOOO_INSTAGRAM_URL = 'https://www.instagram.com/bingooo.co';
 export const BINGOOO_INSTAGRAM_HANDLE = '@bingooo.co';
+export const BINGOOO_YOUTUBE_URL = 'https://www.youtube.com/@bingooo_co';
+export const BINGOOO_YOUTUBE_HANDLE = '@bingooo_co';
+export const BINGOOO_TWITTER_URL = 'https://twitter.com/bingooo_co';
+export const BINGOOO_TWITTER_HANDLE = '@bingooo_co';
 
 export function getWhatsAppUrl(message?: string): string {
   const defaultMsg = 'Hi Bingooo, I would like to inquire about your menswear collection and custom designs.';

@@ -65,15 +65,7 @@ function RecentlyViewedCard({
       ? Math.round(((item.compareAtPrice - item.basePrice) / item.compareAtPrice) * 100)
       : null;
 
-  const mainImage =
-    item.image ||
-    (item.slug.includes('graphic')
-      ? '/custom/tshirt-step-3-black.png'
-      : item.slug.includes('classic')
-      ? '/custom/tshirt-step-1.png'
-      : item.slug.includes('hoodie')
-      ? '/custom/tshirt-step-2.png'
-      : '/custom/tshirt-step-1.png');
+  const mainImage = item.image || '';
 
   if (viewMode === 'list') {
     return (

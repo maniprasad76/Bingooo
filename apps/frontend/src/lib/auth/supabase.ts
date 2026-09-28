@@ -282,10 +282,10 @@ export async function requestPasswordReset(email: string): Promise<void> {
   }
 }
 
-/** Reset password with new password */
-export async function confirmPasswordReset(email: string, newPassword: string): Promise<void> {
+/** Reset password with secure token and new password */
+export async function confirmPasswordReset(token: string, newPassword: string): Promise<void> {
   try {
-    await api.post('/auth/reset-password', { email, newPassword });
+    await api.post('/auth/reset-password', { token, newPassword });
   } catch (err) {
     if (supabase) {
       const { error } = await supabase.auth.updateUser({ password: newPassword });
@@ -295,6 +295,7 @@ export async function confirmPasswordReset(email: string, newPassword: string): 
     throw err;
   }
 }
+
 
 /** Sign out */
 export async function signOut(): Promise<void> {

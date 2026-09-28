@@ -108,9 +108,10 @@ export class AuthController {
   @Post('reset-password')
   @Throttle({ default: { limit: 5, ttl: 60000 } })
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Reset password (Rate limited: 5 req/min)' })
+  @ApiOperation({ summary: 'Reset password with secure token (Rate limited: 5 req/min)' })
   resetPassword(@Body() body: ResetPasswordDto) {
-    return this.authService.resetPassword(body.email, body.newPassword);
+    return this.authService.resetPassword(body.token, body.newPassword);
   }
 }
+
 

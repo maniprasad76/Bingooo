@@ -81,10 +81,10 @@ async function bootstrap() {
 
       const isAllowed =
         allowedOrigins.includes(origin) ||
-        origin.endsWith('.vercel.app') ||
-        origin.endsWith('bingooo.co.in') ||
-        origin.includes('localhost') ||
-        origin.includes('127.0.0.1');
+        origin.endsWith('.bingooo.co.in') ||
+        origin === 'https://bingooo.co.in' ||
+        (process.env.NODE_ENV !== 'production' && (origin.includes('localhost') || origin.includes('127.0.0.1')));
+
 
       if (isAllowed) {
         callback(null, true);

@@ -6,7 +6,8 @@ import {
   BadRequestException,
 } from '@nestjs/common';
 import { v4 as uuidv4 } from 'uuid';
-import { db } from '../common/database/store';
+import * as crypto from 'crypto';
+import { db, saveDb } from '../common/database/store';
 import {
   hashPassword,
   verifyPassword,
@@ -196,22 +197,58 @@ export class AuthService {
 
   async forgotPassword(email: string) {
     const user = db.users.find((u) => u.email.toLowerCase() === email.toLowerCase().trim());
-    // Always return success to prevent email enumeration
+    if (user) {
+      const resetToken = crypto.randomBytes(32).toString('hex');
+      const resetTokenExpiry = Date.now() + 3600000; // 1 hour validity
+      user.reset_token = resetToken;
+      user.reset_token_expiry = resetTokenExpiry;
+      user.updated_at = new Date().toISOString();
+      saveDb();
+      console.log(`[Auth Security] Password reset token dispatched for ${user.email}: ${resetToken}`);
+    }
+    // Always return generic success to prevent email enumeration
     return {
       success: true,
       message: 'If an account exists with that email, a password reset link has been dispatched.',
     };
   }
 
-  async resetPassword(email: string, newPass: string) {
-    const user = db.users.find((u) => u.email.toLowerCase() === email.toLowerCase().trim());
-    if (user) {
-      user.password_hash = hashPassword(newPass);
-      user.updated_at = new Date().toISOString();
+  async resetPassword(token: string, newPass: string) {
+    if (!token || typeof token !== 'string') {
+      throw new BadRequestException({
+        code: 'INVALID_TOKEN',
+        message: 'Invalid or missing password reset token.',
+      });
     }
+
+    if (!newPass || newPass.length < 8) {
+      throw new BadRequestException({
+        code: 'WEAK_PASSWORD',
+        message: 'Password must be at least 8 characters long.',
+      });
+    }
+
+    const user = db.users.find(
+      (u) => u.reset_token && u.reset_token === token && u.reset_token_expiry > Date.now(),
+    );
+
+    if (!user) {
+      throw new BadRequestException({
+        code: 'INVALID_OR_EXPIRED_TOKEN',
+        message: 'Password reset link is invalid or has expired. Please request a new one.',
+      });
+    }
+
+    user.password_hash = hashPassword(newPass);
+    user.reset_token = null;
+    user.reset_token_expiry = null;
+    user.updated_at = new Date().toISOString();
+    saveDb();
+
     return {
       success: true,
       message: 'Password has been reset successfully. You can now login.',
     };
   }
 }
+

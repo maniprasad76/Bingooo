@@ -28,6 +28,10 @@ export {
   BINGOOO_EMAIL_SUPPORT,
   BINGOOO_EMAIL_HELLO,
   BINGOOO_INSTAGRAM_URL,
+  BINGOOO_YOUTUBE_URL,
+  BINGOOO_YOUTUBE_HANDLE,
+  BINGOOO_TWITTER_URL,
+  BINGOOO_TWITTER_HANDLE,
   getWhatsAppUrl,
 } from './SocialIcons';
 export { ProductPlaceholder } from './ProductPlaceholder';

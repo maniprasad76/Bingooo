@@ -13,6 +13,8 @@ import { RequestIdInterceptor } from './common/interceptors/request-id.intercept
 import { IdempotencyInterceptor } from './common/interceptors/idempotency.interceptor';
 import { LoggingInterceptor } from './common/interceptors/logging.interceptor';
 import { CacheInterceptor } from './common/interceptors/cache.interceptor';
+import { hydrateStoreFromSupabase } from './common/database/supabase-sync.service';
+
 
 async function bootstrap() {
   const isProd = process.env.NODE_ENV === 'production';
@@ -150,7 +152,13 @@ async function bootstrap() {
   await app.listen(port, host);
   console.log(`🚀 Bingooo API running on http://${host}:${port}`);
   console.log(`📖 Swagger docs at http://${host}:${port}/api/docs`);
+
+  // ── Hydrate Store from Supabase PostgreSQL ──
+  hydrateStoreFromSupabase().catch((err) => {
+    console.warn('[Startup] Supabase hydration warning:', err?.message || err);
+  });
 }
+
 
 bootstrap();
 

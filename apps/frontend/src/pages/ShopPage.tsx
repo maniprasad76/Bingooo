@@ -10,6 +10,7 @@ import { triggerHaptic } from '../lib/native/capacitorBridge';
 import { ProductCardSkeleton } from '../components/ui/Skeleton';
 import { prefetchProduct } from '../lib/utils/preloader';
 import { ProductPlaceholder } from '../components/ui/ProductPlaceholder';
+import { resolveImageUrl } from '../lib/utils';
 
 interface ShopProduct {
   id: string;
@@ -146,13 +147,14 @@ export function ShopPage() {
           : undefined,
         rating: p.rating || 5,
         reviewsCount: p.reviews_count || 48,
-        image:
+        image: resolveImageUrl(
           p.images?.[0]?.url ||
           p.images?.[0]?.object_key ||
           (typeof p.images?.[0] === 'string' ? p.images[0] : '') ||
           p.image_url ||
           p.imageUrl ||
-          '',
+          ''
+        ),
         isBestseller: !!p.bestseller,
         badge: p.bestseller
           ? 'BESTSELLER'

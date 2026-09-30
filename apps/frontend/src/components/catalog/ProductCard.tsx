@@ -8,6 +8,7 @@ import { useCart } from '../../hooks/useCart';
 import { QuickViewModal } from './QuickViewModal';
 import { InteractiveTilt } from '../ui/InteractiveTilt';
 import { ProductPlaceholder } from '../ui/ProductPlaceholder';
+import { resolveImageUrl } from '../../lib/utils';
 
 export interface ProductCardProps {
   id: string;
@@ -64,13 +65,14 @@ export function ProductCard({
 
   const [imgError, setImgError] = useState(false);
 
-  const mainImage =
+  const rawMainImage =
     images?.[0]?.url ||
     images?.[0]?.object_key ||
     (typeof images?.[0] === 'string' ? images[0] : null) ||
     imageUrl ||
     image_url ||
     '';
+  const mainImage = resolveImageUrl(rawMainImage);
 
   const handleQuickAdd = (e: React.MouseEvent) => {
     e.preventDefault();

@@ -1,6 +1,6 @@
 import { useEffect, useState, useMemo } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { api } from '../lib/api';
+import { api, resolveImageUrl } from '../lib/api';
 import {
   Plus,
   Pencil,
@@ -220,7 +220,7 @@ export function ProductsPage() {
                       (sum, v) => sum + (v.stockQuantity ?? v.stock_quantity ?? 0),
                       0
                     ) ?? 0;
-                  const primaryImg = p.images?.[0]?.url || '';
+                  const primaryImg = resolveImageUrl(p.images?.[0]?.url || '');
 
                   return (
                     <tr key={p.id} className="group">

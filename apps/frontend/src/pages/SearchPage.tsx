@@ -43,7 +43,7 @@ export function SearchPage() {
     limit: 40,
   });
 
-  const products = data?.products || [];
+  const products: any[] = Array.isArray(data) ? data : data?.data || [];
 
   // Filter by category tab if selected
   const filteredProducts = useMemo(() => {

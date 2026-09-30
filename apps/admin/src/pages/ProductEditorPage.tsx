@@ -23,7 +23,7 @@ import {
   Flame,
   Percent,
 } from 'lucide-react';
-import { api } from '../lib/api';
+import { api, resolveImageUrl } from '../lib/api';
 
 interface Category {
   id: string;
@@ -252,7 +252,7 @@ export function ProductEditorPage() {
         if (Array.isArray(p.images) && p.images.length > 0) {
           const loadedSlots = ['', '', '', '', ''];
           p.images.slice(0, 5).forEach((img: any, idx: number) => {
-            loadedSlots[idx] = typeof img === 'string' ? img : img.url || '';
+            loadedSlots[idx] = resolveImageUrl(typeof img === 'string' ? img : img.url || '');
           });
           setSlotImages(loadedSlots);
         }
@@ -757,7 +757,7 @@ export function ProductEditorPage() {
                       <div className="relative w-14 h-14 rounded-md overflow-hidden bg-[#EDE0CC] border border-border shrink-0 flex items-center justify-center">
                         {currentImg ? (
                           <img
-                            src={currentImg}
+                            src={resolveImageUrl(currentImg)}
                             alt={slot.label}
                             className="w-full h-full object-cover"
                             onError={(e) => {

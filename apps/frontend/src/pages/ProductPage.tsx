@@ -13,6 +13,7 @@ import { ProductDetailSkeleton } from '../components/ui/Skeleton';
 import { StickyMobileActionBar } from '../components/product/StickyMobileActionBar';
 import { ProductPlaceholder } from '../components/ui/ProductPlaceholder';
 import { WhatsAppIcon } from '../components/ui/SocialIcons';
+import { resolveImageUrl } from '../lib/utils';
 
 const DEFAULT_RELATED: any[] = [];
 
@@ -82,7 +83,7 @@ export function ProductPage() {
   const images = useMemo<string[]>(() => {
     if (product?.images && product.images.length > 0) {
       const urls = product.images
-        .map((img: any) => (typeof img === 'string' ? img : img.url || img.object_key))
+        .map((img: any) => resolveImageUrl(typeof img === 'string' ? img : img.url || img.object_key))
         .filter(Boolean);
       if (urls.length > 0) return urls;
     }

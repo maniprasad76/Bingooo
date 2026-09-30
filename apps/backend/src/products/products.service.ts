@@ -474,7 +474,29 @@ export class ProductsService {
         stockQuantity: v.stock_quantity,
         reservedQuantity: v.reserved_quantity,
       })),
-      images: [...images].sort((a: any, b: any) => a.sort_order - b.sort_order),
+      images: [...images]
+        .sort((a: any, b: any) => a.sort_order - b.sort_order)
+        .map((img: any) => {
+          let url = img.url || '';
+          const isProd = process.env.NODE_ENV === 'production' || process.env.RENDER || process.env.VERCEL;
+          const targetBase = process.env.APP_URL
+            ? process.env.APP_URL.replace(/\/$/, '')
+            : isProd
+            ? 'https://api.bingooo.co.in'
+            : 'http://localhost:3000';
+
+          if (url.startsWith('http://localhost:3000/api/')) {
+            url = url.replace('http://localhost:3000', targetBase);
+          } else if (url.startsWith('https://localhost:3000/api/')) {
+            url = url.replace('https://localhost:3000', targetBase);
+          }
+
+          return {
+            ...img,
+            url,
+            object_key: url,
+          };
+        }),
       collections,
       reviewCount: reviews.length,
       avgRating,

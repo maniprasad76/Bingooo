@@ -8,6 +8,7 @@ import { setPreloaderQueryClient } from '../lib/utils/preloader';
 import { registerServiceWorker } from '../lib/sw/registerServiceWorker';
 import { OfflineBanner } from '../components/common/OfflineBanner';
 import { GlobalErrorBoundary } from '../components/common/GlobalErrorBoundary';
+import { SpeedInsights } from '@vercel/speed-insights/react';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -41,6 +42,7 @@ export function App() {
         <ToastProvider>
           <OfflineBanner />
           <RouterProvider router={router} />
+          <SpeedInsights />
         </ToastProvider>
       </QueryClientProvider>
     </GlobalErrorBoundary>

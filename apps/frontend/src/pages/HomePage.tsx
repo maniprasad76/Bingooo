@@ -9,6 +9,7 @@ import { api } from '../lib/api/client';
 import { prefetchProduct } from '../lib/utils/preloader';
 import { useProducts } from '../hooks/useProducts';
 import { ProductPlaceholder } from '../components/ui/ProductPlaceholder';
+import { resolveImageUrl } from '../lib/utils';
 
 interface FeaturedProduct {
   id: string;
@@ -105,7 +106,7 @@ export function HomePage() {
   const displayFeaturedProducts = useMemo(() => {
     if (Array.isArray(apiProducts) && apiProducts.length > 0) {
       return apiProducts.slice(0, 4).map((p: any) => {
-        const primaryImage =
+        const rawImage =
           p.images?.[0]?.url ||
           p.images?.[0]?.object_key ||
           (typeof p.images?.[0] === 'string' ? p.images[0] : '') ||
@@ -113,6 +114,7 @@ export function HomePage() {
           p.imageUrl ||
           p.image ||
           '';
+        const primaryImage = resolveImageUrl(rawImage);
 
         const swatches = p.variants?.length
           ? Array.from(new Set(p.variants.map((v: any) => v.colorHex || v.color_hex).filter(Boolean))).slice(0, 3)

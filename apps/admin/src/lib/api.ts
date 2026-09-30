@@ -3,7 +3,41 @@
 // ─────────────────────────────────────────────────────────
 
 const configuredApiUrl = (import.meta as any).env?.VITE_API_URL?.trim().replace(/\/$/, '');
-const API_BASE = configuredApiUrl ? `${configuredApiUrl}/api/v1` : '/api/v1';
+const isProdAdmin =
+  typeof window !== 'undefined' &&
+  (window.location.hostname === 'admin.bingooo.co.in' ||
+    window.location.hostname.endsWith('.bingooo.co.in') ||
+    window.location.hostname.includes('vercel.app'));
+
+const API_BASE = configuredApiUrl
+  ? `${configuredApiUrl}/api/v1`
+  : isProdAdmin
+  ? 'https://api.bingooo.co.in/api/v1'
+  : '/api/v1';
+
+/** Resolve media URLs for admin previews — rewrites localhost:3000 API urls to production API or relative */
+export function resolveImageUrl(url?: string | null): string {
+  if (!url) return '';
+  const isProd =
+    typeof window !== 'undefined' &&
+    (window.location.hostname === 'admin.bingooo.co.in' ||
+      window.location.hostname.endsWith('.bingooo.co.in') ||
+      window.location.hostname.includes('vercel.app'));
+
+  if (url.startsWith('http://localhost:3000/api/')) {
+    return isProd
+      ? url.replace('http://localhost:3000', 'https://api.bingooo.co.in')
+      : url.replace('http://localhost:3000', '');
+  }
+
+  if (url.startsWith('https://localhost:3000/api/')) {
+    return isProd
+      ? url.replace('https://localhost:3000', 'https://api.bingooo.co.in')
+      : url.replace('https://localhost:3000', '');
+  }
+
+  return url;
+}
 
 export class ApiError extends Error {
   status: number;

@@ -20,6 +20,7 @@ import { useQuery } from '@tanstack/react-query';
 import { SEO } from '../components/common/SEO';
 import { triggerHaptic } from '../lib/native/capacitorBridge';
 import { CartItemSkeleton } from '../components/ui/Skeleton';
+import { resolveImageUrl } from '../lib/utils';
 
 export function CartPage() {
   const { cart, updateQuantity, removeItem, clearCart, isLoading } = useCart();
@@ -605,38 +606,42 @@ export function CartPage() {
           </div>
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-4.5">
-            {(recProducts?.data && recProducts.data.length > 0 ? recProducts.data.slice(0, 4) : [
-              {
-                id: 'rec-1',
-                title: 'Core White Tee',
-                slug: 'core-white-tee',
-                base_price: 1199,
-                imageUrl: '/real-fit-1.jpg',
-              },
-              {
-                id: 'rec-2',
-                title: 'Everyday Sweatshirt',
-                slug: 'everyday-sweatshirt',
-                base_price: 1799,
-                imageUrl: '/real-fit-2.jpg',
-              },
-              {
-                id: 'rec-3',
-                title: 'Bingooo Cap',
-                slug: 'bingooo-cap',
-                base_price: 699,
-                imageUrl: '/real-fit-3.jpg',
-              },
-              {
-                id: 'rec-4',
-                title: 'Relaxed Shirt',
-                slug: 'relaxed-shirt',
-                base_price: 1999,
-                imageUrl: '/real-fit-4.jpg',
-              },
-            ]).map((prod: any) => {
+            {((() => {
+              const liveList = Array.isArray(recProducts) ? recProducts : recProducts?.data;
+              return liveList && liveList.length > 0 ? liveList.slice(0, 4) : [
+                {
+                  id: 'rec-1',
+                  title: 'Core White Tee',
+                  slug: 'core-white-tee',
+                  base_price: 1199,
+                  imageUrl: '/real-fit-1.jpg',
+                },
+                {
+                  id: 'rec-2',
+                  title: 'Everyday Sweatshirt',
+                  slug: 'everyday-sweatshirt',
+                  base_price: 1799,
+                  imageUrl: '/real-fit-2.jpg',
+                },
+                {
+                  id: 'rec-3',
+                  title: 'Bingooo Cap',
+                  slug: 'bingooo-cap',
+                  base_price: 699,
+                  imageUrl: '/real-fit-3.jpg',
+                },
+                {
+                  id: 'rec-4',
+                  title: 'Relaxed Shirt',
+                  slug: 'relaxed-shirt',
+                  base_price: 1999,
+                  imageUrl: '/real-fit-4.jpg',
+                },
+              ];
+            })()).map((prod: any) => {
               const inWish = wishlist?.some((w: any) => w.productId === prod.id);
-              const img = prod.images?.[0]?.url || prod.imageUrl;
+              const rawImg = prod.images?.[0]?.url || prod.imageUrl || '';
+              const img = resolveImageUrl(rawImg);
 
               return (
                 <article key={prod.id} className="relative group">

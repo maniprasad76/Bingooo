@@ -4,6 +4,7 @@ import { RouterProvider } from 'react-router-dom';
 import { router } from './app/router';
 import { initAdminAuth } from './lib/auth';
 import { ToastProvider } from './components/Toast';
+import { SpeedInsights } from '@vercel/speed-insights/react';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -23,6 +24,7 @@ export function App() {
     <QueryClientProvider client={queryClient}>
       <ToastProvider>
         <RouterProvider router={router} />
+        <SpeedInsights />
       </ToastProvider>
     </QueryClientProvider>
   );

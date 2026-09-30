@@ -117,6 +117,11 @@ python -m graphify update .
 
 ## 6. Changelog & Recent Decisions
 
+- **2026-09-30: Admin-to-Frontend Catalog Sync, Media Resolution & Speed Insights**
+  - Resolved `useProducts` array unwrap bug in frontend hook that prevented live catalog garments from loading.
+  - Added missing `/api/(.*)` rewrite in `apps/admin/vercel.json` and production API fallback in `apps/admin/src/lib/api.ts`.
+  - Normalized media upload and product enrichment URLs to eliminate broken `localhost:3000` URLs across all environments.
+  - Integrated `@vercel/speed-insights` in `@bingooo/frontend` and `@bingooo/admin`.
 - **2026-09-28: Security Hardening, Auth Guard Fixes & Catalog Restoration**
   - Patched zero-day unauthenticated password reset vulnerability with cryptographically signed tokens.
   - Hardened backend `AuthGuard` to automatically grant `SUPER_ADMIN` grants to authorized admin Google OAuth logins.

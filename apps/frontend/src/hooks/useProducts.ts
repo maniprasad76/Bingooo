@@ -105,8 +105,44 @@ export function useProducts(params: ProductQueryParams = {}) {
     queryFn: async () => {
       try {
         const res = await api.get<any>('/products', params);
-        if (res && Array.isArray(res.data) && res.data.length > 0) {
-          return res;
+        const items = Array.isArray(res) ? res : Array.isArray(res?.data) ? res.data : null;
+
+        if (items !== null) {
+          // If live items exist, always return live items
+          if (items.length > 0) {
+            return {
+              data: items,
+              meta: res?.meta || {
+                total: items.length,
+                page: params.page || 1,
+                limit: params.limit || items.length,
+                totalPages: Math.ceil(items.length / (params.limit || 12)) || 1,
+              },
+            };
+          }
+
+          // If filters/search were applied and matched 0 items, respect the empty filter
+          const hasFilters = Boolean(
+            params.categorySlug ||
+            params.collectionSlug ||
+            params.search ||
+            params.minPrice !== undefined ||
+            params.maxPrice !== undefined ||
+            params.sizes ||
+            params.colors
+          );
+
+          if (hasFilters) {
+            return {
+              data: [],
+              meta: res?.meta || {
+                total: 0,
+                page: 1,
+                limit: params.limit || 12,
+                totalPages: 0,
+              },
+            };
+          }
         }
       } catch (err) {
         return filterFallbackProducts(params);

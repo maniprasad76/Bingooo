@@ -11,7 +11,9 @@
 const configuredApiUrl = import.meta.env.VITE_API_URL?.trim().replace(/\/$/, '');
 const isProdStorefront =
   typeof window !== 'undefined' &&
-  (window.location.hostname === 'bingooo.co.in' || window.location.hostname.endsWith('.bingooo.co.in'));
+  (window.location.hostname === 'bingooo.co.in' ||
+    window.location.hostname.endsWith('.bingooo.co.in') ||
+    window.location.hostname.includes('vercel.app'));
 const API_BASE = configuredApiUrl
   ? `${configuredApiUrl}/api/v1`
   : isProdStorefront

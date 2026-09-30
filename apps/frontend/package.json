@@ -25,6 +25,7 @@
     "@hookform/resolvers": "^3.9.0",
     "@supabase/supabase-js": "^2.109.0",
     "@tanstack/react-query": "^5.62.0",
+    "@vercel/speed-insights": "^2.0.0",
     "canvas-confetti": "^1.9.4",
     "clsx": "^2.1.0",
     "framer-motion": "^11.15.0",

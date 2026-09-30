@@ -24,6 +24,15 @@ export class MediaService {
     return filePath;
   }
 
+  /** Get active base URL for media links */
+  private getBaseUrl(): string {
+    if (process.env.APP_URL) {
+      return process.env.APP_URL.replace(/\/$/, '');
+    }
+    const isProd = process.env.NODE_ENV === 'production' || process.env.RENDER || process.env.VERCEL;
+    return isProd ? 'https://api.bingooo.co.in' : 'http://localhost:3000';
+  }
+
   /** Save file uploaded via multipart/form-data */
   async saveUploadedFile(
     file: Express.Multer.File,
@@ -58,7 +67,7 @@ export class MediaService {
 
     fs.writeFileSync(destinationPath, file.buffer);
 
-    const baseUrl = (process.env.APP_URL || 'http://localhost:3000').replace(/\/$/, '');
+    const baseUrl = this.getBaseUrl();
     const publicUrl = `${baseUrl}/api/v1/media/file/${filename}`;
 
     const { db } = require('../common/database/store');
@@ -104,7 +113,7 @@ export class MediaService {
 
     fs.writeFileSync(destinationPath, buffer);
 
-    const baseUrl = (process.env.APP_URL || 'http://localhost:3000').replace(/\/$/, '');
+    const baseUrl = this.getBaseUrl();
     const publicUrl = `${baseUrl}/api/v1/media/file/${filename}`;
 
     const { db } = require('../common/database/store');
@@ -142,9 +151,10 @@ export class MediaService {
       throw new BadRequestException({ code: 'INVALID_FILE_TYPE', message: 'Only JPG, PNG, WEBP, and SVG files are supported' });
     }
 
+    const baseUrl = this.getBaseUrl();
     const key = `uploads/${Date.now()}-${uuidv4()}-${fileName.replace(/[^a-zA-Z0-9.-]/g, '_')}`;
-    const uploadUrl = `http://localhost:3000/api/v1/media/upload`;
-    const publicUrl = `http://localhost:3000/api/v1/media/file/${encodeURIComponent(fileName)}`;
+    const uploadUrl = `${baseUrl}/api/v1/media/upload`;
+    const publicUrl = `${baseUrl}/api/v1/media/file/${encodeURIComponent(fileName)}`;
 
     return {
       uploadUrl,

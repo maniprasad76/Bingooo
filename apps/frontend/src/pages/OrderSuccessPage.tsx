@@ -481,7 +481,7 @@ export function OrderSuccessPage() {
                   Financial Breakdown
                 </h3>
                 <span className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#238636] font-mono">
-                  TAX INVOICE
+                  OFFICIAL RECEIPT
                 </span>
               </div>
 
@@ -508,8 +508,8 @@ export function OrderSuccessPage() {
                 </div>
 
                 <div className="flex justify-between items-center">
-                  <span>GST (Included)</span>
-                  <span className="font-mono text-[#171717] font-semibold">12% Built-In</span>
+                  <span>Taxes</span>
+                  <span className="font-mono text-[#238636] font-semibold">Inclusive</span>
                 </div>
 
                 <div className="border-t border-[#DDD3C5] pt-4 mt-2 flex justify-between items-baseline">

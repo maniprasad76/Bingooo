@@ -156,8 +156,8 @@ export class CartService {
     const itemCount = items.reduce((sum, item) => sum + item.quantity, 0);
     const freeShippingThreshold = db.settings.free_shipping_threshold || 999;
     const shippingFee = subtotal >= freeShippingThreshold || subtotal === 0 ? 0 : (db.settings.shipping_fee_default || 99);
-    const tax = Math.round(subtotal * 0.05); // 5% GST
-    const total = subtotal + shippingFee + tax;
+    const tax = 0; // All prices are all-inclusive (no extra GST)
+    const total = subtotal + shippingFee;
 
     return {
       id: cart.id,

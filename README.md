@@ -107,14 +107,14 @@ A unified back-office suite organized into 7 functional operational divisions:
    - [StaffUsersPage](file:///c:/Users/manip/Desktop/bingooo/apps/admin/src/pages/StaffUsersPage.tsx) & [RolesPermissionsPage](file:///c:/Users/manip/Desktop/bingooo/apps/admin/src/pages/RolesPermissionsPage.tsx): Granular RBAC permissions checklist.
    - [ReviewsPage](file:///c:/Users/manip/Desktop/bingooo/apps/admin/src/pages/ReviewsPage.tsx): Review moderation board with star ratings and photo attachments.
 7. **Operations & System:**
-   - [SettingsPage](file:///c:/Users/manip/Desktop/bingooo/apps/admin/src/pages/SettingsPage.tsx): Full 8-tab configuration (Store Profile, Commerce & GST, Shipping Rules, COD & Partial COD, Razorpay Gateway, Notifications, Cloudflare R2, and SEO).
+   - [SettingsPage](file:///c:/Users/manip/Desktop/bingooo/apps/admin/src/pages/SettingsPage.tsx): Full 8-tab configuration (Store Profile, Commerce & Pricing, Shipping Rules, COD & Partial COD, Razorpay Gateway, Notifications, Cloudflare R2, and SEO).
    - [AnalyticsPage](file:///c:/Users/manip/Desktop/bingooo/apps/admin/src/pages/AnalyticsPage.tsx): BI analytics with custom design conversion funnels.
    - [AuditLogsPage](file:///c:/Users/manip/Desktop/bingooo/apps/admin/src/pages/AuditLogsPage.tsx) & [ProfilePage](file:///c:/Users/manip/Desktop/bingooo/apps/admin/src/pages/ProfilePage.tsx): Security event trails and admin profiles.
 
 ### 🛡️ Security & Defensive Engineering
 Guided by the **Never Get Hacked** skill ([.agents/skills/never-get-hacked/SKILL.md](file:///c:/Users/manip/Desktop/bingooo/.agents/skills/never-get-hacked/SKILL.md)):
 - **Zero Frontend Secrets:** No private keys or database passwords bundled into client code.
-- **Authoritative Server Pricing:** Cart line-item prices, GST, and discounts are strictly recalculated on the backend.
+- **Authoritative Server Pricing:** Cart line-item prices, discounts, and all-inclusive pricing are strictly recalculated on the backend.
 - **Payment Verification:** HMAC SHA-256 webhook signature verification on Razorpay events with raw payload buffering.
 - **Short-Lived Media Presigning:** Cloudflare R2 presigned URLs with MIME verification and UUID asset key isolation.
 - **Input Sanitization & RBAC:** NestJS `ValidationPipe` with `whitelist: true` and default-deny permission guards.

@@ -127,7 +127,7 @@ export function TermsPage() {
                 </h3>
               </div>
               <p className="max-w-[300px] m-0 text-[#6f6a63] text-[11px] leading-[1.7]">
-                All transactions, GST invoicing, doorstep return pickups, and payment settlements are governed under the laws of the Republic of India and Srikakulam.
+                All transactions, order invoicing, doorstep return pickups, and payment settlements are governed under the laws of the Republic of India and Srikakulam.
               </p>
             </article>
           </div>
@@ -223,11 +223,11 @@ export function TermsPage() {
             {/* Clause 3 */}
             <article className="py-10 grid grid-cols-1 md:grid-cols-[240px_1fr] gap-6 items-start">
               <div className="font-mono text-[11px] font-bold uppercase text-[#171717] tracking-wider">
-                03. PRICING & GST COMPLIANCE
+                03. PRICING & INVOICING
               </div>
               <div className="space-y-3 text-[13px] leading-[1.8] text-[#6f6a63]">
                 <p>
-                  All prices displayed on the storefront are quoted in Indian Rupees (INR) and are inclusive of applicable Goods and Services Tax (GST).
+                  All prices displayed on the storefront are quoted in Indian Rupees (INR) and are all-inclusive. What you see is what you pay, with no surprise tax surcharges at checkout.
                 </p>
                 <p>
                   For Cash on Delivery (COD) orders, a nominal ₹79 partial advance commitment may be required to confirm courier dispatch and prevent fraudulent or prank addresses.

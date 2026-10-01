@@ -87,7 +87,7 @@ python -m graphify update .
 ### 2. Security & RBAC Guard Pipeline
 - **Authentication**: Bearer JWT tokens validated via `AuthGuard`.
 - **Role Permissions**: Controlled with `@Permissions(...)` decorator and enforced by `RolesGuard`.
-- **Authoritative Server Pricing**: Cart line-item prices, GST, discounts, and shipping rules are calculated exclusively on the backend.
+- **Authoritative Server Pricing**: Cart line-item prices, discounts, all-inclusive pricing, and shipping rules are calculated exclusively on the backend.
 - **Razorpay Verification**: HMAC SHA-256 webhook signatures verified with raw request payloads.
 
 ### 3. Frontend Aesthetics & Performance

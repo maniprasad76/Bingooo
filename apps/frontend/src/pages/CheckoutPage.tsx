@@ -166,8 +166,7 @@ export function CheckoutPage() {
   const prepaidDiscount = isPrepaid ? Math.round(subtotal * (prepaidDiscountPct / 100)) : 0;
   const afterDiscount = Math.max(0, subtotal - prepaidDiscount);
   const shippingFee = afterDiscount >= 999 || afterDiscount === 0 ? 0 : 99;
-  const tax = Math.round(afterDiscount * 0.05);
-  const total = afterDiscount + shippingFee + tax;
+  const total = afterDiscount + shippingFee;
 
   const hasCustomItems = cart?.items?.some((i: any) => Boolean(i.customization || i.customizationId));
   const effectivePartialAdvance = Math.min(partialCodAdvance, total);
@@ -176,8 +175,7 @@ export function CheckoutPage() {
   // Non-discounted total for COD display (no prepaid discount)
   const codSubtotal = subtotal;
   const codShippingFee = codSubtotal >= 999 || codSubtotal === 0 ? 0 : 99;
-  const codTax = Math.round(codSubtotal * 0.05);
-  const codTotal = codSubtotal + codShippingFee + codTax;
+  const codTotal = codSubtotal + codShippingFee;
 
   const onSubmit = async (addressData: AddressFormData) => {
     if (isProcessing) return;
@@ -519,8 +517,8 @@ export function CheckoutPage() {
                       </span>
                     </div>
                     <div className="flex justify-between text-muted">
-                      <span>GST / Taxes (5%)</span>
-                      <span className="font-medium text-ink">₹{isPrepaid ? tax : codTax}</span>
+                      <span>Taxes</span>
+                      <span className="font-medium text-emerald-700">Inclusive</span>
                     </div>
                     {paymentMethod === 'partial_cod' && (
                       <div className="border-t border-dashed border-border pt-1.5 text-xs text-accent font-bold flex justify-between">
@@ -988,8 +986,8 @@ export function CheckoutPage() {
                   </span>
                 </div>
                 <div className="flex justify-between text-muted">
-                  <span>GST / Taxes (5%)</span>
-                  <span className="font-medium text-ink">₹{isPrepaid ? tax : codTax}</span>
+                  <span>Taxes</span>
+                  <span className="font-medium text-emerald-700">Inclusive</span>
                 </div>
 
                 {/* Prepaid Savings Banner */}

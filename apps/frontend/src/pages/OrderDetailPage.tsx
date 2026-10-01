@@ -193,10 +193,17 @@ export function OrderDetailPage() {
               <span>Shipping Fee</span>
               <span className="font-semibold text-ink">₹{order.shipping_fee}</span>
             </div>
-            <div className="flex justify-between text-muted">
-              <span>GST Tax</span>
-              <span className="font-semibold text-ink">₹{order.tax}</span>
-            </div>
+            {order.tax > 0 ? (
+              <div className="flex justify-between text-muted">
+                <span>Taxes</span>
+                <span className="font-semibold text-ink">₹{order.tax}</span>
+              </div>
+            ) : (
+              <div className="flex justify-between text-muted">
+                <span>Taxes</span>
+                <span className="font-semibold text-success">Inclusive</span>
+              </div>
+            )}
             <div className="flex justify-between text-body font-black text-ink pt-2 border-t border-border">
               <span>Total Amount</span>
               <span>₹{order.total}</span>

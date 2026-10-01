@@ -277,7 +277,7 @@ export class EmailService {
       <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:28px;">
         ${params.discount > 0 ? `<tr><td style="padding:4px 0;font-size:13px;color:#6B6356;">Discount</td><td style="padding:4px 0;font-size:13px;color:#2E9E58;text-align:right;">-${formatINR(params.discount)}</td></tr>` : ''}
         <tr><td style="padding:4px 0;font-size:13px;color:#6B6356;">Shipping</td><td style="padding:4px 0;font-size:13px;color:${BRAND.charcoal};text-align:right;">${params.shippingFee === 0 ? '<span style="color:#2E9E58;">FREE</span>' : formatINR(params.shippingFee)}</td></tr>
-        <tr><td style="padding:4px 0;font-size:13px;color:#6B6356;">GST</td><td style="padding:4px 0;font-size:13px;color:${BRAND.charcoal};text-align:right;">${formatINR(params.tax)}</td></tr>
+        ${params.tax > 0 ? `<tr><td style="padding:4px 0;font-size:13px;color:#6B6356;">Taxes</td><td style="padding:4px 0;font-size:13px;color:${BRAND.charcoal};text-align:right;">${formatINR(params.tax)}</td></tr>` : ''}
         <tr>
           <td style="padding:10px 0 0;font-size:16px;font-weight:800;color:${BRAND.charcoal};border-top:2px solid rgba(23,23,23,0.1);">Total</td>
           <td style="padding:10px 0 0;font-size:16px;font-weight:800;color:${BRAND.charcoal};text-align:right;border-top:2px solid rgba(23,23,23,0.1);">${formatINR(params.total)}</td>

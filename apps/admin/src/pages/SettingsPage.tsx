@@ -36,7 +36,7 @@ const DEFAULT_SETTINGS: StoreSettings = {
   cod_deposit_percentage: 15,
   shipping_fee_default: 99,
   free_shipping_threshold: 1999,
-  tax_rate_percentage: 18,
+  tax_rate_percentage: 0,
   max_upload_size_mb: 25,
   return_window_days: 7,
   dtg_print_lead_days: 3,

@@ -69,7 +69,7 @@ python -m graphify update .
 ### 🚨 Invariant 2: Authoritative Server-Side Pricing
 - **Issue:** Client-submitted shopping bags can be tampered with in DevTools to submit orders with ₹1 prices.
 - **Strict Rule:** The frontend is treated as completely untrusted. The client submits only `productId`, `variantId`, `quantity`, and `customizationSpecs`.
-- **Solution:** `CheckoutService` fetches the genuine product price from the database store, validates variant stock, applies official GST rates (12% under ₹1000, 18% above), applies validated coupon rules, and calculates shipping thresholds (free above ₹999).
+- **Solution:** `CheckoutService` fetches the genuine product price from the database store, validates variant stock, applies all-inclusive pricing (no extra tax surcharges), applies validated coupon rules, and calculates shipping thresholds (free above ₹999).
 
 ---
 

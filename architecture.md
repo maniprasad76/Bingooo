@@ -290,7 +290,7 @@ sequenceDiagram
 
     User->>Front: Clicks "Proceed to Payment"
     Front->>API: POST /api/v1/checkout/create-order<br/>Payload: { items: [{productId, variantId, quantity}], shippingAddress, couponCode }
-    Note over API: 1. Fetch live product prices from Store (IGNORE client prices)<br/>2. Verify variant inventory availability<br/>3. Calculate GST (12% or 18% based on threshold)<br/>4. Validate coupon code against rules & usage limits<br/>5. Add shipping fee (Free if subtotal >= ₹999)<br/>6. Total = Subtotal - Discount + Tax + Shipping
+    Note over API: 1. Fetch live product prices from Store (IGNORE client prices)<br/>2. Verify variant inventory availability<br/>3. Apply all-inclusive pricing (₹0 tax surcharge)<br/>4. Validate coupon code against rules & usage limits<br/>5. Add shipping fee (Free if subtotal >= ₹999)<br/>6. Total = Subtotal - Discount + Shipping
     API->>Store: Atomic stock decrement / reservation
     API->>RZP: POST /orders (amount in paise, currency: INR, receipt: orderId)
     RZP-->>API: Returns { id: "order_rzp_123", amount, currency }

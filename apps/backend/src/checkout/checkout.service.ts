@@ -86,8 +86,8 @@ export class CheckoutService {
     const finalSubtotal = Math.max(0, discountedSubtotal - prepaidDiscount);
     const freeShippingThreshold = db.settings.free_shipping_threshold || 999;
     const shippingFee = finalSubtotal >= freeShippingThreshold || finalSubtotal === 0 ? 0 : (db.settings.shipping_fee_default || 99);
-    const tax = Math.round(finalSubtotal * 0.05); // 5% GST
-    const total = finalSubtotal + shippingFee + tax;
+    const tax = 0; // All prices are all-inclusive (no extra GST)
+    const total = finalSubtotal + shippingFee;
 
     // COD calculation
     let codDeposit = 0;

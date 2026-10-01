@@ -116,6 +116,9 @@ async function runE2ECheckoutVerification() {
 
     // Dynamically retrieve active catalog variant
     const activeVariant = db.product_variants.find((v) => v.is_active) || db.product_variants[0];
+    if (activeVariant) {
+      activeVariant.stock_quantity = Math.max(activeVariant.stock_quantity, 50);
+    }
     const targetVariantId = activeVariant.id;
 
     // Add item to cart

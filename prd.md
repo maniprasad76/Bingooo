@@ -85,7 +85,7 @@ Bingooo bridges the gap between mass-market fast fashion and unaffordable bespok
   - Step 3: Shipping Method Selection (Standard Ground 3–5 days vs. Express Air 1–2 days).
   - Step 4: Authoritative Payment Selection (Razorpay UPI QR/Intent, Credit/Debit Cards, NetBanking, and Cash on Delivery / Partial COD).
 - **FR-CHECK-002 (Authoritative Server-Side Pricing):**
-  - Absolute enforcement that client cart prices, GST rates (12% for apparel under ₹1000, 18% for apparel above), shipping charges, and discount subtotals are recalculated on the NestJS backend.
+  - Absolute enforcement that client cart prices, all-inclusive pricing (₹0 tax surcharge), shipping charges, and discount subtotals are recalculated on the NestJS backend.
 - **FR-CHECK-003 (Order Confirmation & Tracking):**
   - Order success receipt with unique `BING-YYYYMMDD-XXXX` order number, downloadable invoice, delivery timeline, and real-time shipment status lookup via phone number / order ID.
 
@@ -103,7 +103,7 @@ The operations portal is structured into 7 core functional divisions spanning 27
 | **4. Marketing & Sales**| `/banners`, `/coupons` | Hero banner slider configuration (desktop 16:9 and mobile 4:5 preview cards), discount coupon creation (percentage vs. flat ₹ discount, usage limits, minimum cart spend). |
 | **5. Finance & Media** | `/payments`, `/returns`, `/uploads` (R2) | Razorpay transaction reconciliation ledger, reverse logistics and refund management, and Cloudflare R2 media library with instant CDN URL copying. |
 | **6. Customers & Team** | `/customers`, `/customers/:id`, `/reviews` | Customer profiles with lifetime spend (LTV), order frequency, customer notes, review moderation board with photo validation and star ratings. |
-| **7. Operations & System** | `/settings` | 8-tab system settings: Store Profile, Commerce & GST, Shipping Rules & Tiers, COD & Partial COD thresholds, Razorpay Credentials, Notification Webhooks, Cloudflare R2 Keys, and SEO metadata. |
+| **7. Operations & System** | `/settings` | 8-tab system settings: Store Profile, Commerce & Pricing, Shipping Rules & Tiers, COD & Partial COD thresholds, Razorpay Credentials, Notification Webhooks, Cloudflare R2 Keys, and SEO metadata. |
 
 ---
 

@@ -309,7 +309,7 @@ export function PrivacyPolicyPage() {
                   <li>Processing, tailoring, packaging, and dispatching your garments from our Srikakulam atelier.</li>
                   <li>Transmitting automated shipment tracking updates via SMS and WhatsApp.</li>
                   <li>Facilitating doorstep size exchanges, reverse pickups, and refund processing.</li>
-                  <li>Complying with Goods & Services Tax (GST) invoicing rules under Indian taxation laws.</li>
+                  <li>Complying with commercial invoicing, consumer protection, and statutory accounting regulations under Indian law.</li>
                 </ul>
               </div>
             </article>

@@ -31,7 +31,7 @@
 - [x] **Storefront Catalog & Discovery:** Built `HomePage`, `ShopPage`, `ProductPage` with GSM fabric specs, fit guide modal, and live stock countdown.
 - [x] **Shopping Bag & Flyout Cart:** Persistent slide-out cart drawer with free-shipping meter (₹999 threshold) and real-time coupon calculation.
 - [x] **Checkout & Payment Engine:** Integrated Razorpay checkout modal with UPI intent/QR, Cards, NetBanking, and COD fallback.
-- [x] **Authoritative Server Pricing:** Implemented strict backend recalculation of cart totals, GST (12%/18%), discounts, and shipping.
+- [x] **Authoritative Server Pricing:** Implemented strict backend recalculation of cart totals, all-inclusive pricing (no tax surcharges), discounts, and shipping.
 - [x] **Order Fulfillment State Machine:** 6-stage fulfillment workflow (`Placed → Confirmed → Processing → Shipped → Out for Delivery → Delivered`).
 
 ### Phase 2: Atelier Studio, Admin & Mobile (Completed)
@@ -53,7 +53,7 @@
 |:---|:---|:---|:---|:---|:---|
 | **TSK-ACT-001** | `apps/frontend` | Implement real-time 3D garment mockup preview (Three.js / React Three Fiber) as an optional toggle alongside the 2D customizer canvas. | High | Frontend Team | Completed |
 | **TSK-ACT-002** | `apps/backend` | Integrate WhatsApp & SMS notification webhooks for live parcel tracking updates upon status changes. | High | Backend Team | Completed |
-| **TSK-ACT-003** | `apps/admin` | Add exportable CSV/Excel reports for GST compliance (B2C tax breakdown, HSN 6109 summary). | Medium | Admin Team | In Progress |
+| **TSK-ACT-003** | `apps/admin` | Add exportable CSV/Excel sales and revenue ledger reports (orders, payment methods, revenue summary). | Medium | Admin Team | In Progress |
 | **TSK-ACT-004** | `apps/backend` | Configure automated PostgreSQL migration runner to seamlessly sync in-memory `store.json` changes with Supabase Prisma tables. | Medium | DevOps | In Progress |
 | **TSK-ACT-005** | `apps/frontend` | Implement PWA background synchronization for offline cart and wishlist mutations. | Medium | Mobile/PWA | In Progress |
 

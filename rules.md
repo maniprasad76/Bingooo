@@ -97,7 +97,7 @@
 ## 5. Security & Defensive Engineering Checklist
 
 ### 5.1 Financial & Payment Invariants
-- **Rule 21 (Authoritative Server Pricing):** Never trust line-item prices, GST percentages, or shipping fees sent by the client. The backend must strictly query the stored product price and recalculate totals.
+- **Rule 21 (Authoritative Server Pricing):** Never trust line-item prices, tax percentages, or shipping fees sent by the client. The backend must strictly query the stored product price and recalculate totals. All catalog prices are all-inclusive.
 - **Rule 22 (Webhook HMAC Verification):** All Razorpay webhook events must verify `x-razorpay-signature` using `req.rawBody` (the raw buffer) before parsing event JSON.
 - **Rule 23 (Payment Amount Matching):** When capturing payments, verify that `razorpay_payment.amount` matches `order.totalAmount * 100` (paise) exactly.
 

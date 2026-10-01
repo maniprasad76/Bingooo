@@ -10,8 +10,11 @@ services:
     envVars:
       - key: NODE_ENV
         value: production
+      # Set to "supabase" in the dashboard AFTER running
+      # supabase/migrations/004_app_records.sql (the API refuses to boot
+      # with DATA_STORE=supabase if the app_records table is missing).
       - key: DATA_STORE
-        value: supabase
+        sync: false
       - key: PORT
         value: "8080"
       - key: CORS_ORIGINS

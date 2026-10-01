@@ -178,9 +178,9 @@ export function HomePage() {
   return (
     <main className="bg-[#f7eedb] text-[#171717] font-sans antialiased selection:bg-[#e6321c] selection:text-white">
       <SEO
-        title="Bingooo® — 240 GSM Heavyweight Oversized Tees & Streetwear India"
-        description="Shop India's premier 240–280 GSM heavyweight combed cotton menswear or craft custom bespoke streetwear in our 3D Atelier. Express Pan-India delivery from Srikakulam."
-        keywords="oversized t-shirts, 240 gsm oversized tee, heavyweight streetwear india, custom t-shirt printing srikakulam, mens streetwear india, drop shoulder t-shirt, 3d atelier, bingooo menswear"
+        title="Bingooo® — Oversized T-Shirts for Men (240 GSM) & Luxury Streetwear India"
+        description="Shop India's #1 240–280 GSM heavyweight oversized t-shirts for men & streetwear. 100% super-combed cotton, drop-shoulder fit, 3D custom printing atelier. Cash on delivery & Pan-India free delivery."
+        keywords="oversized t-shirts for men, 240 gsm oversized t shirt, heavyweight t shirt india, drop shoulder t shirt, luxury streetwear india, custom oversized t shirt printing india, streetwear brand india, boxy fit t shirt men, 100 combed cotton oversized tee, 380 gsm fleece hoodie, acid wash oversized t shirt, dtf printing custom t shirt, oversized tees india, bingooo menswear"
         canonical="https://bingooo.co.in"
         schema={[
           generateWebSiteSchema(),

@@ -307,13 +307,18 @@ export function ShopPage() {
       <SEO
         title={
           slug
-            ? `${slug.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase())} — 240 GSM Heavyweight Menswear | Bingooo®`
-            : 'Buy Heavyweight Oversized T-Shirts & Menswear Online India | Bingooo®'
+            ? `${slug.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase())} (240 GSM) — Oversized Streetwear for Men | Bingooo®`
+            : 'Buy Oversized T-Shirts for Men (240 GSM) & Streetwear Online India | Bingooo®'
         }
         description={
           slug
-            ? `Shop premium ${slug.replace(/-/g, ' ')} crafted from 240–280 GSM heavyweight combed cotton. Streetwear boxy drape, express delivery & cash on delivery across India.`
-            : 'Explore Bingooo’s curated 240–280 GSM heavyweight cotton menswear. Oversized tees, drop-shoulder hoodies, boxy cuts, and custom streetwear. Pan-India express delivery.'
+            ? `Buy premium ${slug.replace(/-/g, ' ')} for men in India. Crafted with 240–280 GSM heavyweight super-combed cotton, boxy drop shoulder fit, COD & Pan-India express delivery.`
+            : "Shop India's best 240–280 GSM heavyweight oversized t-shirts for men, drop-shoulder hoodies, and streetwear. 100% super-combed cotton, boxy fit, COD & Pan-India free shipping."
+        }
+        keywords={
+          slug
+            ? `${slug.replace(/-/g, ' ')}, oversized t-shirts for men, 240 gsm oversized t shirt, heavyweight streetwear india, drop shoulder t shirt, bingooo menswear`
+            : 'oversized t-shirts for men, 240 gsm oversized t shirt, heavyweight t shirt india, drop shoulder t shirt, luxury streetwear india, streetwear brand india, boxy fit t shirt men, 100 combed cotton oversized tee, bingooo menswear'
         }
         canonical={slug ? `https://bingooo.co.in/category/${slug}` : 'https://bingooo.co.in/shop'}
         breadcrumbs={[

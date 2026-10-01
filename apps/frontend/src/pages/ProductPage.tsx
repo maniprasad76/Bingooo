@@ -18,6 +18,60 @@ import { ProductReviews } from '../components/product/ProductReviews';
 
 const DEFAULT_RELATED: any[] = [];
 
+interface SizeChartRow {
+  size: string;
+  chest: [number, number]; // [in, cm]
+  length: [number, number]; // length for tees, height for hoodie
+  shoulder?: [number, number];
+  sleeve?: [number, number];
+}
+
+const PRODUCT_SIZE_SPECS: Record<'oversized' | 'acidwash' | 'hoodie', {
+  title: string;
+  subtitle: string;
+  fabric: string;
+  isHoodie?: boolean;
+  rows: SizeChartRow[];
+}> = {
+  oversized: {
+    title: 'Drop-Shoulder / Oversized T-Shirt',
+    subtitle: 'Signature Drop-Shoulder Silhouette',
+    fabric: '240 GSM Loopknit French Terry Cotton 100% Biowash',
+    rows: [
+      { size: 'S', chest: [42, 106.7], length: [27.5, 69.9], shoulder: [20, 50.8], sleeve: [8.5, 21.6] },
+      { size: 'M', chest: [44, 111.8], length: [28, 71.1], shoulder: [21, 53.3], sleeve: [9.0, 22.9] },
+      { size: 'L', chest: [46, 116.8], length: [28.5, 72.4], shoulder: [22, 55.9], sleeve: [9.5, 24.1] },
+      { size: 'XL', chest: [48, 121.9], length: [29, 73.7], shoulder: [23, 58.4], sleeve: [10.0, 25.4] },
+      { size: 'XXL', chest: [50, 127.0], length: [29.5, 74.9], shoulder: [24, 61.0], sleeve: [10.5, 26.7] },
+    ],
+  },
+  acidwash: {
+    title: 'Acid Wash Drop-Shoulder T-Shirt',
+    subtitle: 'Vintage Mineral Wash Silhouette',
+    fabric: '240 GSM Loopknit French Terry Cotton 100% Biowash',
+    rows: [
+      { size: 'S', chest: [42, 106.7], length: [27.5, 69.9], shoulder: [20, 50.8], sleeve: [8.5, 21.6] },
+      { size: 'M', chest: [44, 111.8], length: [28, 71.1], shoulder: [21, 53.3], sleeve: [9.0, 22.9] },
+      { size: 'L', chest: [46, 116.8], length: [28.5, 72.4], shoulder: [22, 55.9], sleeve: [9.5, 24.1] },
+      { size: 'XL', chest: [48, 121.9], length: [29, 73.7], shoulder: [23, 58.4], sleeve: [10.0, 25.4] },
+      { size: 'XXL', chest: [50, 127.0], length: [29.5, 74.9], shoulder: [24, 61.0], sleeve: [10.5, 26.7] },
+    ],
+  },
+  hoodie: {
+    title: 'Drop Shoulder Hoodie (430gsm)',
+    subtitle: 'Heavyweight Loopknit Fleece Silhouette',
+    fabric: '430 GSM Heavyweight Loopknit Fleece',
+    isHoodie: true,
+    rows: [
+      { size: 'S', chest: [42, 106.7], length: [25, 63.5] },
+      { size: 'M', chest: [44, 111.8], length: [26, 66.0] },
+      { size: 'L', chest: [46, 116.8], length: [27, 68.6] },
+      { size: 'XL', chest: [48, 121.9], length: [28, 71.1] },
+      { size: 'XXL', chest: [50, 127.0], length: [29, 73.7] },
+    ],
+  },
+};
+
 export function ProductPage() {
   const { slug } = useParams<{ slug: string }>();
   const navigate = useNavigate();
@@ -92,12 +146,36 @@ export function ProductPage() {
         });
       }
     }
-    return ['S', 'M', 'L', 'XL'];
+    return ['S', 'M', 'L', 'XL', 'XXL'];
   }, [product, selectedColor]);
 
   const [selectedSize, setSelectedSize] = useState('M');
   const [quantity, setQuantity] = useState(1);
   const [isAddedFeedback, setIsAddedFeedback] = useState(false);
+
+  // Garment category detection for authoritative size specs
+  const productCategoryKey = useMemo<'oversized' | 'acidwash' | 'hoodie'>(() => {
+    const title = (product?.title || '').toLowerCase();
+    const desc = (product?.description || '').toLowerCase();
+    const cat = (product?.category?.name || product?.category || '').toLowerCase();
+    if (title.includes('hoodie') || cat.includes('hoodie') || desc.includes('hoodie')) {
+      return 'hoodie';
+    }
+    if (title.includes('acid') || desc.includes('acid')) {
+      return 'acidwash';
+    }
+    return 'oversized';
+  }, [product]);
+
+  // Size chart modal & on-page fit guide state
+  const [sizeModalCategory, setSizeModalCategory] = useState<'oversized' | 'acidwash' | 'hoodie'>('oversized');
+  const [fitGuideCategory, setFitGuideCategory] = useState<'oversized' | 'acidwash' | 'hoodie'>('oversized');
+  const [sizeUnit, setSizeUnit] = useState<'in' | 'cm'>('in');
+
+  useEffect(() => {
+    setSizeModalCategory(productCategoryKey);
+    setFitGuideCategory(productCategoryKey);
+  }, [productCategoryKey]);
 
   // Adjust selection during render if options changed
   if (colorOptions.length > 0 && !colorOptions.some((c) => c.name.toLowerCase() === selectedColor.toLowerCase())) {
@@ -217,11 +295,12 @@ export function ProductPage() {
   return (
     <main className="bg-[#f7eedb] text-[#171717] font-sans antialiased pb-[72px] sm:pb-0">
       <SEO
-        title={`${product?.title || 'Classic Oversized Tee'} | ${product?.fabric_gsm || 240} GSM Heavyweight Streetwear | Bingooo®`}
+        title={`${product?.title || 'Classic Oversized Tee'} (${product?.fabric_gsm || 240} GSM) — Oversized T-Shirt for Men | Bingooo®`}
         description={
           product?.description ||
-          `Buy ${product?.title || 'Classic Oversized Tee'} in ${product?.fabric_gsm || 240} GSM luxury combed cotton online at Bingooo. Boxy streetwear drape, anti-sag collar, COD available.`
+          `Buy ${product?.title || 'Classic Oversized Tee'} in ${product?.fabric_gsm || 240} GSM super-combed cotton online in India. Boxy streetwear drape, anti-sag collar, COD & Pan-India free delivery.`
         }
+        keywords={`${product?.title || 'oversized tee'}, 240 gsm oversized t shirt, oversized t-shirts for men, heavyweight streetwear india, drop shoulder t shirt, 100 combed cotton, bingooo menswear`}
         canonical={`https://bingooo.co.in/product/${slug || 'classic-logo-tee'}`}
         ogType="product"
         productPrice={price}
@@ -711,7 +790,9 @@ export function ProductPage() {
           <div>
             <p className="max-w-[700px] text-[12px] sm:text-[13px] leading-[1.8] text-[#6f6a63] m-0">
               {product?.description ||
-                'Designed for everyday movement and built around effortless styling. Combining premium cotton, a relaxed silhouette and the signature BINGOOO identity.'}
+                (productCategoryKey === 'hoodie'
+                  ? 'Engineered from ultra-heavyweight 430 GSM loopknit fleece with double-lined hood, kangaroo pocket, and modern boxy streetwear drop shoulders.'
+                  : 'Crafted from heavyweight 240 GSM loopknit French terry cotton 100% biowash. Engineered with structured drop shoulders, reinforced collar, and a modern boxy drape built to endure.')}
             </p>
 
             <div className="mt-[35px] grid grid-cols-1 sm:grid-cols-2 gap-[1px] bg-[#ddd3c5]">
@@ -720,7 +801,10 @@ export function ProductPage() {
                   Fabric
                 </h3>
                 <p className="m-0 text-[10px] text-[#6f6a63] leading-[1.6]">
-                  {product?.fabric || 'Premium 240 GSM combed cotton jersey with a soft, breathable finish.'}
+                  {product?.fabric ||
+                    (productCategoryKey === 'hoodie'
+                      ? '430 GSM Heavyweight Loopknit Fleece'
+                      : '240 GSM Loopknit French Terry Cotton 100% Biowash')}
                 </p>
               </div>
 
@@ -729,7 +813,10 @@ export function ProductPage() {
                   Fit
                 </h3>
                 <p className="m-0 text-[10px] text-[#6f6a63] leading-[1.6]">
-                  {product?.fit || 'Relaxed everyday fit with comfortable proportions and drop shoulder drape.'}
+                  {product?.fit ||
+                    (productCategoryKey === 'hoodie'
+                      ? 'Drop Shoulder Heavyweight boxy winter hoodie drape with relaxed proportions.'
+                      : 'Drop-Shoulder Oversized boxy streetwear fit with relaxed proportions.')}
                 </p>
               </div>
 
@@ -764,7 +851,7 @@ export function ProductPage() {
       ======================================================= */}
       <section className="py-[80px] bg-[#ede0cc]">
         <div className="container-bingooo">
-          <div className="flex justify-between items-end mb-[30px]">
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-4 mb-[30px]">
             <div>
               <div className="eyebrow text-[#171717]">
                 FIT GUIDE
@@ -775,58 +862,104 @@ export function ProductPage() {
               </h2>
             </div>
 
-            <div className="mono text-[11px] font-semibold text-[#171717] tracking-wider">
-              MEASUREMENTS / CM
+            <div className="flex flex-wrap items-center gap-3">
+              {/* Garment Selector Tabs */}
+              <div className="inline-flex border border-[#ddd3c5] bg-[#f7eedb] p-0.5">
+                {(['oversized', 'acidwash', 'hoodie'] as const).map((tabKey) => (
+                  <button
+                    key={tabKey}
+                    type="button"
+                    onClick={() => {
+                      triggerHaptic('light');
+                      setFitGuideCategory(tabKey);
+                    }}
+                    className={`px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider transition-all cursor-pointer ${
+                      fitGuideCategory === tabKey
+                        ? 'bg-[#171717] text-white'
+                        : 'text-[#6f6a63] hover:text-[#171717]'
+                    }`}
+                  >
+                    {tabKey === 'oversized'
+                      ? 'Drop-Shoulder (240 GSM)'
+                      : tabKey === 'acidwash'
+                      ? 'Acid Wash (240 GSM)'
+                      : 'Hoodie (430gsm)'}
+                  </button>
+                ))}
+              </div>
+
+              {/* Unit Toggle */}
+              <div className="inline-flex border border-[#ddd3c5] bg-[#f7eedb] p-0.5">
+                <button
+                  type="button"
+                  onClick={() => {
+                    triggerHaptic('light');
+                    setSizeUnit('in');
+                  }}
+                  className={`px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider transition-colors cursor-pointer ${
+                    sizeUnit === 'in' ? 'bg-[#171717] text-white' : 'text-[#6f6a63] hover:text-[#171717]'
+                  }`}
+                >
+                  IN
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    triggerHaptic('light');
+                    setSizeUnit('cm');
+                  }}
+                  className={`px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider transition-colors cursor-pointer ${
+                    sizeUnit === 'cm' ? 'bg-[#171717] text-white' : 'text-[#6f6a63] hover:text-[#171717]'
+                  }`}
+                >
+                  CM
+                </button>
+              </div>
             </div>
           </div>
 
-          <div className="overflow-x-auto">
-            <table className="size-table">
+          <div className="mb-4 flex items-center justify-between text-[11px] text-[#6f6a63]">
+            <span className="font-semibold text-[#171717]">
+              {PRODUCT_SIZE_SPECS[fitGuideCategory].title} — <span className="font-normal">{PRODUCT_SIZE_SPECS[fitGuideCategory].fabric}</span>
+            </span>
+            <span className="mono text-[10px] tracking-wider uppercase">
+              MEASUREMENTS / {sizeUnit === 'in' ? 'INCHES' : 'CENTIMETERS'}
+            </span>
+          </div>
+
+          <div className="overflow-x-auto bg-[#f7eedb] border border-[#ddd3c5]">
+            <table className="size-table w-full">
               <thead>
                 <tr>
                   <th>Size</th>
                   <th>Chest</th>
-                  <th>Shoulder</th>
-                  <th>Length</th>
-                  <th>Sleeve</th>
+                  {PRODUCT_SIZE_SPECS[fitGuideCategory].isHoodie ? (
+                    <th>Height</th>
+                  ) : (
+                    <>
+                      <th>Length</th>
+                      <th>Shoulder</th>
+                      <th>Sleeve Length</th>
+                    </>
+                  )}
                 </tr>
               </thead>
               <tbody>
-                <tr>
-                  <td className="font-bold">XS</td>
-                  <td>96</td>
-                  <td>42</td>
-                  <td>66</td>
-                  <td>20</td>
-                </tr>
-                <tr>
-                  <td className="font-bold">S</td>
-                  <td>102</td>
-                  <td>44</td>
-                  <td>68</td>
-                  <td>21</td>
-                </tr>
-                <tr>
-                  <td className="font-bold">M</td>
-                  <td>108</td>
-                  <td>46</td>
-                  <td>70</td>
-                  <td>22</td>
-                </tr>
-                <tr>
-                  <td className="font-bold">L</td>
-                  <td>114</td>
-                  <td>48</td>
-                  <td>72</td>
-                  <td>23</td>
-                </tr>
-                <tr>
-                  <td className="font-bold">XL</td>
-                  <td>120</td>
-                  <td>50</td>
-                  <td>74</td>
-                  <td>24</td>
-                </tr>
+                {PRODUCT_SIZE_SPECS[fitGuideCategory].rows.map((row) => (
+                  <tr key={row.size}>
+                    <td className="font-bold text-[#171717]">{row.size}</td>
+                    <td>{sizeUnit === 'in' ? row.chest[0] : row.chest[1]}</td>
+                    {PRODUCT_SIZE_SPECS[fitGuideCategory].isHoodie ? (
+                      <td>{sizeUnit === 'in' ? row.length[0] : row.length[1]}</td>
+                    ) : (
+                      <>
+                        <td>{sizeUnit === 'in' ? row.length[0] : row.length[1]}</td>
+                        <td>{sizeUnit === 'in' ? row.shoulder?.[0] : row.shoulder?.[1]}</td>
+                        <td>{sizeUnit === 'in' ? row.sleeve?.[0] : row.sleeve?.[1]}</td>
+                      </>
+                    )}
+                  </tr>
+                ))}
               </tbody>
             </table>
           </div>
@@ -913,10 +1046,15 @@ export function ProductPage() {
           className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-5 bg-black/60 backdrop-blur-xs"
         >
           <div className="w-[min(760px,100%)] max-h-[90vh] overflow-auto bg-[#f7eedb] p-6 sm:p-[30px] border border-[#ddd3c5] shadow-2xl relative">
-            <div className="flex justify-between items-center mb-[25px]">
-              <h2 id="sizeModalTitle" className="m-0 text-[28px] font-extrabold tracking-[-0.04em] uppercase text-[#171717]">
-                Size Chart
-              </h2>
+            <div className="flex justify-between items-center mb-[20px]">
+              <div>
+                <h2 id="sizeModalTitle" className="m-0 text-[26px] sm:text-[28px] font-extrabold tracking-[-0.04em] uppercase text-[#171717]">
+                  Size Chart
+                </h2>
+                <p className="m-0 mt-1 text-[11px] text-[#6f6a63]">
+                  {PRODUCT_SIZE_SPECS[sizeModalCategory].title} • {PRODUCT_SIZE_SPECS[sizeModalCategory].fabric}
+                </p>
+              </div>
               <button
                 type="button"
                 onClick={() => setIsSizeModalOpen(false)}
@@ -927,49 +1065,101 @@ export function ProductPage() {
               </button>
             </div>
 
-            <div className="overflow-x-auto">
-              <table className="size-table">
+            {/* Category selection & unit toggle */}
+            <div className="flex flex-wrap items-center justify-between gap-3 mb-5 pb-4 border-b border-[#ddd3c5]">
+              <div className="inline-flex border border-[#ddd3c5] bg-[#ede0cc] p-0.5">
+                {(['oversized', 'acidwash', 'hoodie'] as const).map((tabKey) => (
+                  <button
+                    key={tabKey}
+                    type="button"
+                    onClick={() => {
+                      triggerHaptic('light');
+                      setSizeModalCategory(tabKey);
+                    }}
+                    className={`px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider transition-all cursor-pointer ${
+                      sizeModalCategory === tabKey
+                        ? 'bg-[#171717] text-white'
+                        : 'text-[#6f6a63] hover:text-[#171717]'
+                    }`}
+                  >
+                    {tabKey === 'oversized'
+                      ? 'Drop-Shoulder (240 GSM)'
+                      : tabKey === 'acidwash'
+                      ? 'Acid Wash (240 GSM)'
+                      : 'Hoodie (430gsm)'}
+                  </button>
+                ))}
+              </div>
+
+              <div className="inline-flex border border-[#ddd3c5] bg-[#ede0cc] p-0.5">
+                <button
+                  type="button"
+                  onClick={() => {
+                    triggerHaptic('light');
+                    setSizeUnit('in');
+                  }}
+                  className={`px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider transition-colors cursor-pointer ${
+                    sizeUnit === 'in' ? 'bg-[#171717] text-white' : 'text-[#6f6a63] hover:text-[#171717]'
+                  }`}
+                >
+                  IN
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    triggerHaptic('light');
+                    setSizeUnit('cm');
+                  }}
+                  className={`px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider transition-colors cursor-pointer ${
+                    sizeUnit === 'cm' ? 'bg-[#171717] text-white' : 'text-[#6f6a63] hover:text-[#171717]'
+                  }`}
+                >
+                  CM
+                </button>
+              </div>
+            </div>
+
+            {/* Table */}
+            <div className="overflow-x-auto border border-[#ddd3c5]">
+              <table className="size-table w-full">
                 <thead>
                   <tr>
                     <th>Size</th>
                     <th>Chest</th>
-                    <th>Shoulder</th>
-                    <th>Length</th>
+                    {PRODUCT_SIZE_SPECS[sizeModalCategory].isHoodie ? (
+                      <th>Height</th>
+                    ) : (
+                      <>
+                        <th>Length</th>
+                        <th>Shoulder</th>
+                        <th>Sleeve Length</th>
+                      </>
+                    )}
                   </tr>
                 </thead>
                 <tbody>
-                  <tr>
-                    <td className="font-bold">XS</td>
-                    <td>96 cm</td>
-                    <td>42 cm</td>
-                    <td>66 cm</td>
-                  </tr>
-                  <tr>
-                    <td className="font-bold">S</td>
-                    <td>102 cm</td>
-                    <td>44 cm</td>
-                    <td>68 cm</td>
-                  </tr>
-                  <tr>
-                    <td className="font-bold">M</td>
-                    <td>108 cm</td>
-                    <td>46 cm</td>
-                    <td>70 cm</td>
-                  </tr>
-                  <tr>
-                    <td className="font-bold">L</td>
-                    <td>114 cm</td>
-                    <td>48 cm</td>
-                    <td>72 cm</td>
-                  </tr>
-                  <tr>
-                    <td className="font-bold">XL</td>
-                    <td>120 cm</td>
-                    <td>50 cm</td>
-                    <td>74 cm</td>
-                  </tr>
+                  {PRODUCT_SIZE_SPECS[sizeModalCategory].rows.map((row) => (
+                    <tr key={row.size}>
+                      <td className="font-bold text-[#171717]">{row.size}</td>
+                      <td>{sizeUnit === 'in' ? `${row.chest[0]}"` : `${row.chest[1]} cm`}</td>
+                      {PRODUCT_SIZE_SPECS[sizeModalCategory].isHoodie ? (
+                        <td>{sizeUnit === 'in' ? `${row.length[0]}"` : `${row.length[1]} cm`}</td>
+                      ) : (
+                        <>
+                          <td>{sizeUnit === 'in' ? `${row.length[0]}"` : `${row.length[1]} cm`}</td>
+                          <td>{sizeUnit === 'in' ? `${row.shoulder?.[0]}"` : `${row.shoulder?.[1]} cm`}</td>
+                          <td>{sizeUnit === 'in' ? `${row.sleeve?.[0]}"` : `${row.sleeve?.[1]} cm`}</td>
+                        </>
+                      )}
+                    </tr>
+                  ))}
                 </tbody>
               </table>
+            </div>
+
+            <div className="mt-4 pt-3 border-t border-[#ddd3c5] flex flex-wrap items-center justify-between text-[10px] text-[#6f6a63]">
+              <span>Tolerance: ±0.5" due to artisan 240+ GSM textile construction</span>
+              <span className="font-bold text-[#171717]">Complimentary 7-Day Doorstep Size Exchange</span>
             </div>
           </div>
         </div>

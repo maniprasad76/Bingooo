@@ -27,44 +27,45 @@ interface SizeRow {
   fitNote: string;
 }
 
-const SIZE_TABLES: Record<string, { title: string; subtitle: string; desc: string; gsm: string; rows: SizeRow[] }> = {
+const SIZE_TABLES: Record<string, { title: string; subtitle: string; desc: string; gsm: string; isHoodie?: boolean; rows: SizeRow[] }> = {
   oversized: {
-    title: 'Oversized Streetwear T-Shirt',
+    title: 'Drop-Shoulder / Oversized T-Shirt',
     subtitle: 'Signature Drop-Shoulder Silhouette',
-    desc: 'Intentionally boxy architectural streetwear cut with dropped shoulder seams and relaxed chest drape.',
-    gsm: '240 GSM Combed Cotton',
+    desc: 'Crafted with 240 GSM loopknit French terry cotton (100% biowash). Intentionally boxy architectural streetwear cut with dropped shoulder seams and anti-sag rib collar.',
+    gsm: '240 GSM Loopknit French Terry Cotton 100% Biowash',
     rows: [
-      { size: 'S', chest: [42, 107], length: [28, 71], shoulder: [20, 51], sleeve: [8.5, 21.5], fitNote: 'Fits chest 34–36" with relaxed drape' },
-      { size: 'M', chest: [44, 112], length: [29, 74], shoulder: [21, 53], sleeve: [9.0, 23.0], fitNote: 'Fits chest 37–39" with signature boxy drop' },
-      { size: 'L', chest: [46, 117], length: [30, 76], shoulder: [22, 56], sleeve: [9.5, 24.0], fitNote: 'Fits chest 40–42" with structured oversize' },
-      { size: 'XL', chest: [48, 122], length: [31, 79], shoulder: [23, 58], sleeve: [10.0, 25.5], fitNote: 'Fits chest 43–45" with exaggerated drape' },
-      { size: 'XXL', chest: [50, 127], length: [32, 81], shoulder: [24, 61], sleeve: [10.5, 26.5], fitNote: 'Fits chest 46–48" with roomy streetwear aesthetic' },
+      { size: 'S', chest: [42, 106.7], length: [27.5, 69.9], shoulder: [20, 50.8], sleeve: [8.5, 21.6], fitNote: 'Fits chest 34–36" with relaxed drape' },
+      { size: 'M', chest: [44, 111.8], length: [28, 71.1], shoulder: [21, 53.3], sleeve: [9.0, 22.9], fitNote: 'Fits chest 37–39" with signature boxy drop' },
+      { size: 'L', chest: [46, 116.8], length: [28.5, 72.4], shoulder: [22, 55.9], sleeve: [9.5, 24.1], fitNote: 'Fits chest 40–42" with structured oversize' },
+      { size: 'XL', chest: [48, 121.9], length: [29, 73.7], shoulder: [23, 58.4], sleeve: [10.0, 25.4], fitNote: 'Fits chest 43–45" with exaggerated drape' },
+      { size: 'XXL', chest: [50, 127.0], length: [29.5, 74.9], shoulder: [24, 61.0], sleeve: [10.5, 26.7], fitNote: 'Fits chest 46–48" with roomy streetwear aesthetic' },
+    ],
+  },
+  acidwash: {
+    title: 'Acid Wash Drop-Shoulder T-Shirt',
+    subtitle: 'Vintage Mineral Wash Silhouette',
+    desc: 'Crafted with 240 GSM loopknit French terry cotton (100% biowash). Vintage acid-wash mineral patina, pre-shrunk for zero post-wash distortion, and signature drop shoulders.',
+    gsm: '240 GSM Loopknit French Terry Cotton 100% Biowash',
+    rows: [
+      { size: 'S', chest: [42, 106.7], length: [27.5, 69.9], shoulder: [20, 50.8], sleeve: [8.5, 21.6], fitNote: 'Fits chest 34–36" with relaxed drape' },
+      { size: 'M', chest: [44, 111.8], length: [28, 71.1], shoulder: [21, 53.3], sleeve: [9.0, 22.9], fitNote: 'Fits chest 37–39" with signature boxy drop' },
+      { size: 'L', chest: [46, 116.8], length: [28.5, 72.4], shoulder: [22, 55.9], sleeve: [9.5, 24.1], fitNote: 'Fits chest 40–42" with structured oversize' },
+      { size: 'XL', chest: [48, 121.9], length: [29, 73.7], shoulder: [23, 58.4], sleeve: [10.0, 25.4], fitNote: 'Fits chest 43–45" with exaggerated drape' },
+      { size: 'XXL', chest: [50, 127.0], length: [29.5, 74.9], shoulder: [24, 61.0], sleeve: [10.5, 26.7], fitNote: 'Fits chest 46–48" with roomy streetwear aesthetic' },
     ],
   },
   hoodie: {
-    title: 'Heavyweight Fleece Hoodie',
-    subtitle: 'Structured French Terry Pullover',
-    desc: 'Structured double-lined hood with kangaroo pouch, snug rib-knit cuffs, and generous body insulation.',
-    gsm: '320 GSM French Terry Fleece',
+    title: 'Drop Shoulder Hoodie (430gsm)',
+    subtitle: 'Ultra-Dense Heavyweight Winter Silhouette',
+    desc: 'Structured double-lined hood with kangaroo pouch, snug rib-knit cuffs, and ultra-heavyweight 430 GSM loopknit fleece body insulation.',
+    gsm: '430 GSM Heavyweight Loopknit Fleece',
+    isHoodie: true,
     rows: [
-      { size: 'S', chest: [42, 107], length: [27, 69], shoulder: [19, 48], sleeve: [24.5, 62.0], fitNote: 'Fits chest 34–36" comfortably layered' },
-      { size: 'M', chest: [44, 112], length: [28, 71], shoulder: [20, 51], sleeve: [25.0, 63.5], fitNote: 'Fits chest 37–39" with tailored torso room' },
-      { size: 'L', chest: [46, 117], length: [29, 74], shoulder: [21, 53], sleeve: [25.5, 65.0], fitNote: 'Fits chest 40–42" with relaxed winter drape' },
-      { size: 'XL', chest: [48, 122], length: [30, 76], shoulder: [22, 56], sleeve: [26.0, 66.0], fitNote: 'Fits chest 43–45" with heavyweight drape' },
-      { size: 'XXL', chest: [50, 127], length: [31, 79], shoulder: [23, 58], sleeve: [26.5, 67.0], fitNote: 'Fits chest 46–48" with maximum comfort' },
-    ],
-  },
-  regular: {
-    title: 'Classic Crewneck T-Shirt',
-    subtitle: 'Tailored Everyday Silhouette',
-    desc: 'Classic tailored silhouette, true to size, sitting naturally at the waist and hugging shoulders cleanly.',
-    gsm: '220 GSM Single Jersey',
-    rows: [
-      { size: 'S', chest: [38, 97], length: [27, 69], shoulder: [17.5, 44.5], sleeve: [8.0, 20.3], fitNote: 'Fits chest 34–36" true to standard sizing' },
-      { size: 'M', chest: [40, 102], length: [28, 71], shoulder: [18.5, 47.0], sleeve: [8.5, 21.5], fitNote: 'Fits chest 37–39" with regular contour' },
-      { size: 'L', chest: [42, 107], length: [29, 74], shoulder: [19.5, 49.5], sleeve: [9.0, 22.8], fitNote: 'Fits chest 40–42" with classic taper' },
-      { size: 'XL', chest: [44, 112], length: [30, 76], shoulder: [20.5, 52.0], sleeve: [9.5, 24.1], fitNote: 'Fits chest 43–45" with athletic drape' },
-      { size: 'XXL', chest: [46, 117], length: [31, 79], shoulder: [21.5, 54.5], sleeve: [10.0, 25.4], fitNote: 'Fits chest 46–48" with relaxed fit' },
+      { size: 'S', chest: [42, 106.7], length: [25, 63.5], shoulder: [0, 0], sleeve: [0, 0], fitNote: 'Fits chest 34–36" comfortably layered' },
+      { size: 'M', chest: [44, 111.8], length: [26, 66.0], shoulder: [0, 0], sleeve: [0, 0], fitNote: 'Fits chest 37–39" with tailored torso room' },
+      { size: 'L', chest: [46, 116.8], length: [27, 68.6], shoulder: [0, 0], sleeve: [0, 0], fitNote: 'Fits chest 40–42" with relaxed winter drape' },
+      { size: 'XL', chest: [48, 121.9], length: [28, 71.1], shoulder: [0, 0], sleeve: [0, 0], fitNote: 'Fits chest 43–45" with heavyweight drape' },
+      { size: 'XXL', chest: [50, 127.0], length: [29, 73.7], shoulder: [0, 0], sleeve: [0, 0], fitNote: 'Fits chest 46–48" with maximum comfort' },
     ],
   },
 };
@@ -98,7 +99,7 @@ const FAQS = [
 ];
 
 export function SizeGuidePage() {
-  const [activeTab, setActiveTab] = useState<'oversized' | 'hoodie' | 'regular'>('oversized');
+  const [activeTab, setActiveTab] = useState<'oversized' | 'acidwash' | 'hoodie'>('oversized');
   const [unit, setUnit] = useState<Unit>('in');
   const [activeFaq, setActiveFaq] = useState<number | null>(0);
 
@@ -461,16 +462,16 @@ export function SizeGuidePage() {
           {/* Garment Silhouette Tab Selector */}
           <div className="flex flex-wrap gap-2 mb-6">
             {[
-              { id: 'oversized', label: 'Oversized Streetwear Tees (240 GSM)' },
-              { id: 'hoodie', label: 'Fleece Hoodies (320 GSM)' },
-              { id: 'regular', label: 'Classic Crewnecks (220 GSM)' },
+              { id: 'oversized', label: 'Drop-Shoulder / Oversized Tees (240 GSM)' },
+              { id: 'acidwash', label: 'Acid Wash T-Shirts (240 GSM)' },
+              { id: 'hoodie', label: 'Drop Shoulder Hoodie (430gsm)' },
             ].map((tab) => (
               <button
                 key={tab.id}
                 type="button"
                 onClick={() => {
                   triggerHaptic('light');
-                  setActiveTab(tab.id as 'oversized' | 'hoodie' | 'regular');
+                  setActiveTab(tab.id as 'oversized' | 'acidwash' | 'hoodie');
                 }}
                 className={`px-5 py-3 rounded-[2px] text-xs font-mono font-bold uppercase transition-all ${
                   activeTab === tab.id
@@ -505,9 +506,15 @@ export function SizeGuidePage() {
                   <tr className="border-b border-[#DDD3C5] bg-[#EDE0CC]/20 text-[10px] uppercase font-mono font-bold text-[#171717]">
                     <th className="py-4 px-6">Size Tag</th>
                     <th className="py-4 px-6">Chest Width ({unit})</th>
-                    <th className="py-4 px-6">Garment Length ({unit})</th>
-                    <th className="py-4 px-6">Shoulder Span ({unit})</th>
-                    <th className="py-4 px-6">Sleeve Drop ({unit})</th>
+                    {currentTable.isHoodie ? (
+                      <th className="py-4 px-6">Height ({unit})</th>
+                    ) : (
+                      <>
+                        <th className="py-4 px-6">Length ({unit})</th>
+                        <th className="py-4 px-6">Shoulder ({unit})</th>
+                        <th className="py-4 px-6">Sleeve Length ({unit})</th>
+                      </>
+                    )}
                     <th className="py-4 px-6">Recommended Frame</th>
                   </tr>
                 </thead>
@@ -523,12 +530,16 @@ export function SizeGuidePage() {
                       <td className="py-5 px-6 text-[#171717]">
                         {row.length[unitIndex]} {unit}
                       </td>
-                      <td className="py-5 px-6 text-[#171717]">
-                        {row.shoulder[unitIndex]} {unit}
-                      </td>
-                      <td className="py-5 px-6 text-[#E6321C] font-bold">
-                        {row.sleeve[unitIndex]} {unit}
-                      </td>
+                      {!currentTable.isHoodie && (
+                        <>
+                          <td className="py-5 px-6 text-[#171717]">
+                            {row.shoulder[unitIndex]} {unit}
+                          </td>
+                          <td className="py-5 px-6 text-[#E6321C] font-bold">
+                            {row.sleeve[unitIndex]} {unit}
+                          </td>
+                        </>
+                      )}
                       <td className="py-5 px-6 font-sans text-xs text-[#6F6A63]">
                         {row.fitNote}
                       </td>

@@ -130,7 +130,11 @@ export function QuickViewModal({ product, isOpen, onClose }: QuickViewModalProps
 
                 <div className="mt-4 flex items-center gap-4 text-caption text-muted font-mono">
                   <span className="flex items-center gap-1">
-                    <ShieldCheck size={14} className="text-brand-red" /> 220 GSM HEAVYWEIGHT
+                    <ShieldCheck size={14} className="text-brand-red" />{' '}
+                    {(product.title || '').toLowerCase().includes('hoodie') ||
+                    (product.category?.name || '').toLowerCase().includes('hoodie')
+                      ? '430 GSM HEAVYWEIGHT'
+                      : '240 GSM LOOPKNIT COTTON'}
                   </span>
                   <span className="flex items-center gap-1">
                     <Truck size={14} className="text-brand-red" /> FREE SHIPPING &gt; ₹999

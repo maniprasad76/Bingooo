@@ -216,7 +216,10 @@ export function ProductCard({
                   </span>
                 )}
                 <span className="text-[9px] sm:text-[10px] font-sans font-semibold text-[#6F6A63]/80 shrink-0">
-                  220 GSM
+                  {(title || '').toLowerCase().includes('hoodie') ||
+                  (category?.name || '').toLowerCase().includes('hoodie')
+                    ? '430 GSM'
+                    : '240 GSM'}
                 </span>
               </div>
 

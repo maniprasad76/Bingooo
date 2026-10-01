@@ -142,62 +142,56 @@ const HOODIE_COLORS: ColorOption[] = [
 
 const COLORS: ColorOption[] = SHIRT_COLORS;
 
-const SIZES = ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
+const SIZES = ['S', 'M', 'L', 'XL', 'XXL'];
 
 // ─── Size Measurements (cm / in) ─────────────────────────────────────────────
 const SIZE_TABLE = {
   oversized: {
-    cm: [
-      { size: 'XS', chest: '102 cm', length: '69 cm', shoulder: '51 cm', sleeve: '22 cm' },
-      { size: 'S', chest: '107 cm', length: '71 cm', shoulder: '53 cm', sleeve: '23 cm' },
-      { size: 'M', chest: '112 cm', length: '74 cm', shoulder: '56 cm', sleeve: '24 cm' },
-      { size: 'L', chest: '117 cm', length: '76 cm', shoulder: '58 cm', sleeve: '25 cm' },
-      { size: 'XL', chest: '122 cm', length: '79 cm', shoulder: '61 cm', sleeve: '26 cm' },
-      { size: 'XXL', chest: '127 cm', length: '81 cm', shoulder: '64 cm', sleeve: '27 cm' },
-    ],
     in: [
-      { size: 'XS', chest: '40 in', length: '27 in', shoulder: '20 in', sleeve: '8.5 in' },
-      { size: 'S', chest: '42 in', length: '28 in', shoulder: '21 in', sleeve: '9.0 in' },
-      { size: 'M', chest: '44 in', length: '29 in', shoulder: '22 in', sleeve: '9.5 in' },
-      { size: 'L', chest: '46 in', length: '30 in', shoulder: '23 in', sleeve: '10.0 in' },
-      { size: 'XL', chest: '48 in', length: '31 in', shoulder: '24 in', sleeve: '10.5 in' },
-      { size: 'XXL', chest: '50 in', length: '32 in', shoulder: '25 in', sleeve: '11.0 in' },
+      { size: 'S', chest: '42 in', length: '27.5 in', shoulder: '20 in', sleeve: '8.5 in' },
+      { size: 'M', chest: '44 in', length: '28 in', shoulder: '21 in', sleeve: '9.0 in' },
+      { size: 'L', chest: '46 in', length: '28.5 in', shoulder: '22 in', sleeve: '9.5 in' },
+      { size: 'XL', chest: '48 in', length: '29 in', shoulder: '23 in', sleeve: '10.0 in' },
+      { size: 'XXL', chest: '50 in', length: '29.5 in', shoulder: '24 in', sleeve: '10.5 in' },
+    ],
+    cm: [
+      { size: 'S', chest: '106.7 cm', length: '69.9 cm', shoulder: '50.8 cm', sleeve: '21.6 cm' },
+      { size: 'M', chest: '111.8 cm', length: '71.1 cm', shoulder: '53.3 cm', sleeve: '22.9 cm' },
+      { size: 'L', chest: '116.8 cm', length: '72.4 cm', shoulder: '55.9 cm', sleeve: '24.1 cm' },
+      { size: 'XL', chest: '121.9 cm', length: '73.7 cm', shoulder: '58.4 cm', sleeve: '25.4 cm' },
+      { size: 'XXL', chest: '127.0 cm', length: '74.9 cm', shoulder: '61.0 cm', sleeve: '26.7 cm' },
     ],
   },
   tshirt: {
-    cm: [
-      { size: 'XS', chest: '96 cm', length: '66 cm', shoulder: '42 cm', sleeve: '20 cm' },
-      { size: 'S', chest: '102 cm', length: '68 cm', shoulder: '44 cm', sleeve: '21 cm' },
-      { size: 'M', chest: '108 cm', length: '70 cm', shoulder: '46 cm', sleeve: '22 cm' },
-      { size: 'L', chest: '114 cm', length: '72 cm', shoulder: '48 cm', sleeve: '23 cm' },
-      { size: 'XL', chest: '120 cm', length: '74 cm', shoulder: '50 cm', sleeve: '24 cm' },
-      { size: 'XXL', chest: '126 cm', length: '76 cm', shoulder: '52 cm', sleeve: '25 cm' },
-    ],
     in: [
-      { size: 'XS', chest: '38 in', length: '26 in', shoulder: '16.5 in', sleeve: '8 in' },
-      { size: 'S', chest: '40 in', length: '27 in', shoulder: '17.5 in', sleeve: '8.2 in' },
-      { size: 'M', chest: '42.5 in', length: '27.5 in', shoulder: '18 in', sleeve: '8.6 in' },
-      { size: 'L', chest: '45 in', length: '28.5 in', shoulder: '19 in', sleeve: '9 in' },
-      { size: 'XL', chest: '47 in', length: '29 in', shoulder: '19.5 in', sleeve: '9.4 in' },
-      { size: 'XXL', chest: '49.5 in', length: '30 in', shoulder: '20.5 in', sleeve: '9.8 in' },
+      { size: 'S', chest: '42 in', length: '27.5 in', shoulder: '20 in', sleeve: '8.5 in' },
+      { size: 'M', chest: '44 in', length: '28 in', shoulder: '21 in', sleeve: '9.0 in' },
+      { size: 'L', chest: '46 in', length: '28.5 in', shoulder: '22 in', sleeve: '9.5 in' },
+      { size: 'XL', chest: '48 in', length: '29 in', shoulder: '23 in', sleeve: '10.0 in' },
+      { size: 'XXL', chest: '50 in', length: '29.5 in', shoulder: '24 in', sleeve: '10.5 in' },
+    ],
+    cm: [
+      { size: 'S', chest: '106.7 cm', length: '69.9 cm', shoulder: '50.8 cm', sleeve: '21.6 cm' },
+      { size: 'M', chest: '111.8 cm', length: '71.1 cm', shoulder: '53.3 cm', sleeve: '22.9 cm' },
+      { size: 'L', chest: '116.8 cm', length: '72.4 cm', shoulder: '55.9 cm', sleeve: '24.1 cm' },
+      { size: 'XL', chest: '121.9 cm', length: '73.7 cm', shoulder: '58.4 cm', sleeve: '25.4 cm' },
+      { size: 'XXL', chest: '127.0 cm', length: '74.9 cm', shoulder: '61.0 cm', sleeve: '26.7 cm' },
     ],
   },
   hoodie: {
-    cm: [
-      { size: 'XS', chest: '108 cm', length: '68 cm', shoulder: '52 cm', sleeve: '60 cm' },
-      { size: 'S', chest: '114 cm', length: '70 cm', shoulder: '54 cm', sleeve: '61 cm' },
-      { size: 'M', chest: '120 cm', length: '72 cm', shoulder: '56 cm', sleeve: '62 cm' },
-      { size: 'L', chest: '126 cm', length: '74 cm', shoulder: '58 cm', sleeve: '63 cm' },
-      { size: 'XL', chest: '132 cm', length: '76 cm', shoulder: '60 cm', sleeve: '64 cm' },
-      { size: 'XXL', chest: '138 cm', length: '78 cm', shoulder: '62 cm', sleeve: '65 cm' },
-    ],
     in: [
-      { size: 'XS', chest: '42.5 in', length: '26.8 in', shoulder: '20.5 in', sleeve: '23.6 in' },
-      { size: 'S', chest: '44.8 in', length: '27.5 in', shoulder: '21.2 in', sleeve: '24 in' },
-      { size: 'M', chest: '47.2 in', length: '28.3 in', shoulder: '22.0 in', sleeve: '24.4 in' },
-      { size: 'L', chest: '49.6 in', length: '29.1 in', shoulder: '22.8 in', sleeve: '24.8 in' },
-      { size: 'XL', chest: '52.0 in', length: '30.0 in', shoulder: '23.6 in', sleeve: '25.2 in' },
-      { size: 'XXL', chest: '54.3 in', length: '30.7 in', shoulder: '24.4 in', sleeve: '25.6 in' },
+      { size: 'S', chest: '42 in', length: '25 in', shoulder: '—', sleeve: '—' },
+      { size: 'M', chest: '44 in', length: '26 in', shoulder: '—', sleeve: '—' },
+      { size: 'L', chest: '46 in', length: '27 in', shoulder: '—', sleeve: '—' },
+      { size: 'XL', chest: '48 in', length: '28 in', shoulder: '—', sleeve: '—' },
+      { size: 'XXL', chest: '50 in', length: '29 in', shoulder: '—', sleeve: '—' },
+    ],
+    cm: [
+      { size: 'S', chest: '106.7 cm', length: '63.5 cm', shoulder: '—', sleeve: '—' },
+      { size: 'M', chest: '111.8 cm', length: '66.0 cm', shoulder: '—', sleeve: '—' },
+      { size: 'L', chest: '116.8 cm', length: '68.6 cm', shoulder: '—', sleeve: '—' },
+      { size: 'XL', chest: '121.9 cm', length: '71.1 cm', shoulder: '—', sleeve: '—' },
+      { size: 'XXL', chest: '127.0 cm', length: '73.7 cm', shoulder: '—', sleeve: '—' },
     ],
   },
 };
@@ -205,38 +199,38 @@ const SIZE_TABLE = {
 const GARMENTS: GarmentType[] = [
   {
     id: 'oversized',
-    name: 'Oversized',
+    name: 'Drop-Shoulder Oversized',
     price: 1299,
     compareAtPrice: 1699,
-    description: '240 GSM Heavyweight · Drop-Shoulder Streetwear Fit',
+    description: '240 GSM Loopknit French Terry Cotton 100% Biowash · Drop-Shoulder Fit',
     isActive: true,
     colors: SHIRT_COLORS.map(c => ({ ...c })),
-    sizes: ['XS', 'S', 'M', 'L', 'XL', 'XXL', '3XL'],
-    activeSizes: ['XS', 'S', 'M', 'L', 'XL', 'XXL'],
+    sizes: ['S', 'M', 'L', 'XL', 'XXL'],
+    activeSizes: ['S', 'M', 'L', 'XL', 'XXL'],
     sizeMeasurements: SIZE_TABLE.oversized,
   },
   {
     id: 'tshirt',
-    name: 'T-Shirt',
-    price: 999,
-    compareAtPrice: 1299,
-    description: '100% Combed Cotton · Classic Structured Crewneck',
+    name: 'Acid Wash Drop-Shoulder',
+    price: 1399,
+    compareAtPrice: 1799,
+    description: '240 GSM Loopknit French Terry Cotton 100% Biowash · Vintage Mineral Wash',
     isActive: true,
     colors: SHIRT_COLORS.map(c => ({ ...c })),
-    sizes: ['XS', 'S', 'M', 'L', 'XL', 'XXL', '3XL'],
-    activeSizes: ['XS', 'S', 'M', 'L', 'XL', 'XXL'],
+    sizes: ['S', 'M', 'L', 'XL', 'XXL'],
+    activeSizes: ['S', 'M', 'L', 'XL', 'XXL'],
     sizeMeasurements: SIZE_TABLE.tshirt,
   },
   {
     id: 'hoodie',
-    name: 'Hoodie',
+    name: 'Dropshoulder Hoodie (430gsm)',
     price: 2499,
     compareAtPrice: 3199,
-    description: '350 GSM Brushed Fleece · Heavy Pullover Silhouette',
+    description: '430 GSM Heavyweight Loopknit Fleece · Double-Lined Hood',
     isActive: true,
     colors: HOODIE_COLORS.map(c => ({ ...c })),
-    sizes: ['XS', 'S', 'M', 'L', 'XL', 'XXL', '3XL'],
-    activeSizes: ['XS', 'S', 'M', 'L', 'XL', 'XXL'],
+    sizes: ['S', 'M', 'L', 'XL', 'XXL'],
+    activeSizes: ['S', 'M', 'L', 'XL', 'XXL'],
     sizeMeasurements: SIZE_TABLE.hoodie,
   },
 ];
@@ -1306,9 +1300,9 @@ export function CustomizerPage() {
   return (
     <main className="bg-[#f7eedb] min-h-screen text-[#171717] font-sans antialiased pb-28 lg:pb-12">
       <SEO
-        title="3D Custom T-Shirt Designer & Atelier Studio | DTF Printing India | Bingooo®"
-        description="Design custom 240–280 GSM heavyweight oversized t-shirts and hoodies in Bingooo's interactive 3D Atelier. High-definition DTF printing, live 3D preview, express delivery across India."
-        keywords="custom t-shirt design, 3d custom t-shirt designer, custom oversized t-shirt india, dtf printing srikakulam, bespoke streetwear, custom heavyweight hoodie"
+        title="Custom Oversized T-Shirt Printing India | 3D Streetwear Studio | Bingooo®"
+        description="Design & print custom 240 GSM oversized t-shirts online in India. High-definition DTF printing, real-time 3D preview, zero minimum order, express delivery across India."
+        keywords="custom oversized t shirt printing india, 3d custom t-shirt designer, print your own t shirt online india, dtf printing custom t shirt, custom heavyweight hoodie india, bespoke streetwear studio"
         canonical="https://bingooo.co.in/customize"
       />
 

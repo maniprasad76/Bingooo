@@ -17,23 +17,32 @@ export interface SEOProps {
   breadcrumbs?: BreadcrumbItem[];
 }
 
-const DEFAULT_TITLE = "Bingooo — Premium Heavyweight Men's Wear";
+const DEFAULT_TITLE = "Bingooo® — Oversized T-Shirts for Men (240 GSM) & Luxury Streetwear India";
 const DEFAULT_DESCRIPTION =
-  "Shop curated 240–280 GSM heavyweight cotton menswear or craft custom bespoke streetwear in our 3D Atelier Studio. Pan-India express delivery.";
+  "Shop India's premier 240–280 GSM heavyweight oversized t-shirts for men & streetwear. 100% super-combed cotton, drop-shoulder fit, 3D custom printing atelier. COD & Pan-India free delivery.";
+const DEFAULT_KEYWORDS =
+  "oversized t-shirts for men, 240 gsm oversized t shirt, heavyweight t shirt india, drop shoulder t shirt, luxury streetwear india, custom oversized t shirt printing india, streetwear brand india, boxy fit t shirt men, 100 combed cotton oversized tee, bingooo menswear";
 const DEFAULT_IMAGE = '/brand-logo.png';
 const BASE_URL = 'https://bingooo.co.in';
 
 /**
- * Ensures title length is optimized for search engines (50-60 characters)
+ * Ensures title length is optimized for search engines (up to 68 characters, preserving keywords)
  */
 export function formatSeoTitle(rawTitle?: string): string {
   if (!rawTitle) return DEFAULT_TITLE;
-  const brandSuffix = ' | Bingooo';
+  const brandSuffix = ' | Bingooo®';
   let formatted = rawTitle.includes('Bingooo') ? rawTitle : `${rawTitle}${brandSuffix}`;
-  if (formatted.length > 60) {
-    // If appending brand pushed it over 60, check if core title fits with brand
-    const trimmed = rawTitle.slice(0, 60 - brandSuffix.length).trim();
-    formatted = rawTitle.includes('Bingooo') ? rawTitle.slice(0, 60).trim() : `${trimmed}${brandSuffix}`;
+  if (formatted.length > 70) {
+    if (rawTitle.includes('Bingooo')) {
+      // Find clean word boundary before 68 chars
+      const lastSpace = rawTitle.slice(0, 68).lastIndexOf(' ');
+      formatted = lastSpace > 45 ? rawTitle.slice(0, lastSpace).trim() : rawTitle.slice(0, 68).trim();
+    } else {
+      const budget = 70 - brandSuffix.length;
+      const lastSpace = rawTitle.slice(0, budget).lastIndexOf(' ');
+      const trimmed = lastSpace > 30 ? rawTitle.slice(0, lastSpace).trim() : rawTitle.slice(0, budget).trim();
+      formatted = `${trimmed}${brandSuffix}`;
+    }
   }
   return formatted;
 }
@@ -85,9 +94,7 @@ export function useSEO({
 
     // Meta descriptions and keywords
     setMetaTag('name', 'description', description.slice(0, 160));
-    if (keywords) {
-      setMetaTag('name', 'keywords', keywords);
-    }
+    setMetaTag('name', 'keywords', keywords || DEFAULT_KEYWORDS);
 
     // Robots meta tag (critical for noindex product scheme, unpublished drafts, checkout, cart)
     if (noindex) {

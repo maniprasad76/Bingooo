@@ -17,15 +17,15 @@ const baseHtml = fs.readFileSync(TEMPLATE_PATH, 'utf-8');
 const ROUTES = [
   {
     path: 'shop',
-    title: 'Buy Heavyweight Oversized T-Shirts & Menswear Online India | Bingooo®',
-    description: 'Explore Bingooo’s curated 240–280 GSM heavyweight streetwear collection. Oversized tees, drop-shoulder hoodies, boxy cut shirts, and bottomwear. Cash on delivery & Pan-India express shipping.',
+    title: 'Buy Oversized T-Shirts for Men (240 GSM) & Streetwear Online India | Bingooo®',
+    description: 'Shop India\'s best 240–280 GSM heavyweight oversized t-shirts for men, drop-shoulder hoodies, and streetwear. 100% super-combed cotton, boxy fit, COD & Pan-India free shipping.',
     canonical: 'https://bingooo.co.in/shop',
-    h1: 'Shop Heavyweight Menswear & Streetwear Fits',
+    h1: 'Shop 240 GSM Oversized T-Shirts & Luxury Streetwear for Men',
     schema: {
       '@context': 'https://schema.org',
       '@type': 'ItemList',
-      name: 'Bingooo Heavyweight Streetwear Collection',
-      description: 'Curated 240–280 GSM heavyweight cotton oversized tees, hoodies, and streetwear apparel.',
+      name: 'Bingooo 240 GSM Heavyweight Streetwear Collection',
+      description: 'Curated 240–280 GSM heavyweight cotton oversized t-shirts for men, drop-shoulder hoodies, and bespoke apparel.',
       url: 'https://bingooo.co.in/shop',
       numberOfItems: 4,
       itemListElement: [
@@ -38,78 +38,78 @@ const ROUTES = [
         {
           '@type': 'ListItem',
           position: 2,
-          name: 'Midnight Graphic Drop (240 GSM)',
+          name: 'Midnight Graphic Drop Oversized Tee (240 GSM)',
           url: 'https://bingooo.co.in/product/graphic-print-tee-midnight',
         },
         {
           '@type': 'ListItem',
           position: 3,
-          name: 'Essential Pullover Hoodie (380 GSM Fleece)',
+          name: 'Essential Heavyweight Pullover Hoodie (380 GSM Fleece)',
           url: 'https://bingooo.co.in/product/essential-pullover-hoodie',
         },
         {
           '@type': 'ListItem',
           position: 4,
-          name: '3D Custom Atelier T-Shirt (Custom Print)',
+          name: 'Custom 240 GSM Oversized T-Shirt (3D Atelier)',
           url: 'https://bingooo.co.in/customize',
         },
       ],
     },
     contentHtml: `
-      <h1>Buy Heavyweight Oversized T-Shirts &amp; Menswear Online India</h1>
-      <p>Discover India's premier collection of 240–280 GSM heavyweight oversized t-shirts, dropped shoulder hoodies, and custom streetwear. Tailored for an effortless boxy fit that lasts.</p>
+      <h1>Buy Oversized T-Shirts for Men (240 GSM) &amp; Luxury Streetwear Online India</h1>
+      <p>Discover India's top collection of 240–280 GSM heavyweight oversized t-shirts for men, dropped shoulder hoodies, and custom streetwear. Engineered with 100% super-combed cotton for an authentic boxy fit that holds shape wash after wash.</p>
       <ul>
-        <li><a href="/category/oversized-tees">240 GSM Oversized Tees (Boxy Streetwear Fit)</a></li>
-        <li><a href="/category/hoodies">Heavyweight Fleece Hoodies (380 GSM)</a></li>
-        <li><a href="/category/graphic-drops">Limited Edition Midnight Graphic Drops</a></li>
-        <li><a href="/customize">Design Custom Streetwear in 3D Atelier</a></li>
+        <li><a href="/category/oversized-tees">240 GSM Oversized T-Shirts for Men (Boxy Streetwear Fit)</a></li>
+        <li><a href="/category/hoodies">Heavyweight 380 GSM Fleece Hoodies for Men</a></li>
+        <li><a href="/category/graphic-drops">Limited Edition Midnight Graphic Drop Oversized Tees</a></li>
+        <li><a href="/customize">Custom Oversized T-Shirt Printing India in 3D Atelier</a></li>
       </ul>
     `,
   },
   {
     path: 'category/oversized-tees',
-    title: '240 GSM Oversized T-Shirts for Men | Heavyweight Streetwear | Bingooo®',
-    description: 'Shop premium 240 GSM heavyweight oversized t-shirts crafted from 100% super-combed cotton. Structured boxy drape, anti-sag French rib collar. Express delivery across India.',
+    title: '240 GSM Oversized T-Shirts for Men | Best Heavyweight Streetwear India | Bingooo®',
+    description: 'Buy premium 240 GSM oversized t-shirts for men in India. 100% super-combed cotton, drop-shoulder boxy drape, anti-sag French rib collar. Cash on delivery & express shipping.',
     canonical: 'https://bingooo.co.in/category/oversized-tees',
-    h1: '240 GSM Heavyweight Oversized T-Shirts',
+    h1: '240 GSM Heavyweight Oversized T-Shirts for Men',
     schema: {
       '@context': 'https://schema.org',
       '@type': 'CollectionPage',
-      name: '240 GSM Oversized T-Shirts',
+      name: '240 GSM Oversized T-Shirts for Men',
       url: 'https://bingooo.co.in/category/oversized-tees',
-      description: 'Men’s 240 GSM heavyweight oversized tees crafted with super-combed luxury cotton.',
+      description: 'Men’s 240 GSM heavyweight oversized tees crafted with super-combed luxury cotton in India.',
     },
     contentHtml: `
       <h1>240 GSM Heavyweight Oversized T-Shirts for Men</h1>
-      <p>Upgrade your streetwear wardrobe with Bingooo's signature 240 GSM combed cotton oversized tees. Engineered to resist wrinkling, drape squarely off the shoulders, and maintain structure wash after wash.</p>
-      <a href="/product/classic-oversized-tee">View Classic Oversized Tee — ₹1,299</a>
+      <p>Upgrade your streetwear wardrobe with Bingooo's signature 240 GSM combed cotton oversized tees. Engineered to resist wrinkling, drape squarely off the shoulders, and maintain structure wash after wash with anti-sag French rib collars.</p>
+      <a href="/product/classic-oversized-tee">View Classic 240 GSM Oversized Tee — ₹1,299</a>
     `,
   },
   {
     path: 'category/hoodies',
-    title: 'Heavyweight Fleece Hoodies for Men (380 GSM) | Bingooo® Streetwear',
-    description: 'Shop luxury 380 GSM brushed fleece pullover hoodies. Double-layered kangaroo hood, ribbed cuffs, and structured boxy silhouette. Made in India with express shipping.',
+    title: '380 GSM Heavyweight Fleece Hoodies for Men | Luxury Streetwear India | Bingooo®',
+    description: 'Shop 380 GSM heavyweight fleece pullover hoodies for men. Double-layered kangaroo hood, boxy streetwear fit, ultra-warm brushed cotton. Fast Pan-India delivery.',
     canonical: 'https://bingooo.co.in/category/hoodies',
-    h1: 'Heavyweight 380 GSM Fleece Hoodies',
+    h1: 'Heavyweight 380 GSM Fleece Hoodies for Men',
     schema: {
       '@context': 'https://schema.org',
       '@type': 'CollectionPage',
-      name: 'Heavyweight Hoodies',
+      name: '380 GSM Heavyweight Hoodies',
       url: 'https://bingooo.co.in/category/hoodies',
-      description: 'Premium 380 GSM brushed fleece pullover hoodies with double-layered hoods.',
+      description: 'Premium 380 GSM brushed fleece pullover hoodies with double-layered hoods and drop shoulders.',
     },
     contentHtml: `
-      <h1>380 GSM Luxury Fleece Hoodies</h1>
-      <p>Ultra-dense 380 GSM fleece pullover hoodies designed for unmatched warmth, silhouette retention, and streetwear luxury.</p>
-      <a href="/product/essential-pullover-hoodie">View Essential Pullover Hoodie — ₹2,499</a>
+      <h1>380 GSM Luxury Heavyweight Fleece Hoodies for Men</h1>
+      <p>Ultra-dense 380 GSM fleece pullover hoodies designed for unmatched warmth, drop-shoulder silhouette retention, and premium Indian streetwear luxury.</p>
+      <a href="/product/essential-pullover-hoodie">View Essential 380 GSM Pullover Hoodie — ₹2,499</a>
     `,
   },
   {
     path: 'customize',
-    title: '3D Custom T-Shirt Designer & Atelier Studio | DTF Printing India | Bingooo®',
-    description: 'Craft your own bespoke oversized streetwear in Bingooo’s interactive 3D Atelier. Upload high-res artwork, adjust placement, and order premium 240 GSM custom t-shirts with express dispatch.',
+    title: 'Custom Oversized T-Shirt Printing India | 3D Atelier Studio | Bingooo®',
+    description: 'Design & print custom 240 GSM oversized t-shirts online in India. High-density DTF printing, real-time 3D preview, zero minimum order, express dispatch across India.',
     canonical: 'https://bingooo.co.in/customize',
-    h1: '3D Custom Streetwear Atelier Studio',
+    h1: '3D Custom Oversized T-Shirt Printing Atelier Studio',
     schema: {
       '@context': 'https://schema.org',
       '@type': 'Service',
@@ -119,32 +119,32 @@ const ROUTES = [
         name: 'Bingooo Men\'s Wear',
         url: 'https://bingooo.co.in',
       },
-      serviceType: 'Custom T-Shirt Printing & Bespoke Streetwear',
+      serviceType: 'Custom Oversized T-Shirt Printing & Bespoke Streetwear',
       areaServed: 'IN',
       description: 'Interactive 3D preview and custom high-density DTF printing on 240–280 GSM heavyweight cotton blanks.',
     },
     contentHtml: `
-      <h1>3D Custom T-Shirt Designer &amp; Bespoke Atelier</h1>
-      <p>Print your personal artwork, logos, or typography on 240 GSM heavyweight blanks in our real-time 3D Atelier studio. Premium direct-to-film (DTF) vibrant finish with zero cracking.</p>
-      <a href="/customize">Launch 3D Atelier Customizer</a>
+      <h1>Custom Oversized T-Shirt Printing India &amp; 3D Atelier</h1>
+      <p>Print your custom graphics, brand artwork, or typography on 240 GSM heavyweight blanks in our real-time 3D Atelier studio. Premium direct-to-film (DTF) vibrant finish with zero cracking and wash resistance.</p>
+      <a href="/customize">Launch 3D Atelier Customizer Studio</a>
     `,
   },
   {
     path: 'product/classic-oversized-tee',
-    title: 'Classic Heavyweight Oversized Tee — 240 GSM Cotton | Bingooo®',
-    description: 'Buy the Classic Heavyweight Oversized Tee in 240 GSM 100% super-combed cotton. Streetwear boxy fit with anti-sag collar. Available in Charcoal Black, Vintage Cream & Crimson. ₹1,299 with COD.',
+    title: 'Classic 240 GSM Heavyweight Oversized T-Shirt for Men | Bingooo® Streetwear',
+    description: 'Buy the #1 Classic Heavyweight Oversized T-Shirt in 240 GSM super-combed cotton. Drop shoulder boxy fit, anti-sag collar, pre-shrunk fabric. COD & Pan-India free delivery.',
     canonical: 'https://bingooo.co.in/product/classic-oversized-tee',
     h1: 'Classic Heavyweight Oversized Tee (240 GSM)',
     schema: {
       '@context': 'https://schema.org',
       '@type': 'Product',
-      name: 'Classic Heavyweight Oversized Tee',
+      name: 'Classic Heavyweight Oversized Tee (240 GSM)',
       description: 'Boxy streetwear cut in 240 GSM super-combed cotton. Anti-pilling rib collar and drop shoulder drape.',
       image: ['https://bingooo.co.in/custom/tshirt-step-1.png'],
       sku: 'BG-CLASSIC-OVERSIZED-TEE',
       mpn: 'BG-CLASSIC-OVERSIZED-TEE',
-      brand: { '@type': 'Brand', name: 'Bingooo' },
-      material: '240 GSM 100% Combed Cotton',
+      brand: { '@type': 'Brand', name: 'Bingooo', alternateName: 'Bingooo Streetwear' },
+      material: '240 GSM 100% Super-Combed Cotton',
       offers: {
         '@type': 'Offer',
         url: 'https://bingooo.co.in/product/classic-oversized-tee',
@@ -227,8 +227,9 @@ const ROUTES = [
   },
   {
     path: 'faq',
-    title: 'Frequently Asked Questions (FAQ) | Shipping, Returns, 240 GSM Fabric | Bingooo®',
-    description: 'Find answers about Bingooo orders, Pan-India shipping timelines, 7-day returns, 240 GSM fabric care, and custom 3D printing guidelines.',
+    title: 'Frequently Asked Questions (FAQ) | 240 GSM Fabric, Shipping, Returns | Bingooo®',
+    description: 'Find answers about Bingooo 240 GSM oversized t-shirts, custom 3D Atelier printing, Pan-India shipping timelines, 7-day returns, and Cash on Delivery.',
+    keywords: 'oversized t-shirts faq, 240 gsm t-shirt meaning, custom t-shirt printing delivery, cash on delivery streetwear, bingooo help',
     canonical: 'https://bingooo.co.in/faq',
     h1: 'Bingooo Help & Frequently Asked Questions',
     schema: {
@@ -237,36 +238,46 @@ const ROUTES = [
       mainEntity: [
         {
           '@type': 'Question',
-          name: 'Where is Bingooo based and do you deliver across India?',
+          name: 'Which GSM is best for oversized t-shirts in India?',
           acceptedAnswer: {
             '@type': 'Answer',
-            text: 'Bingooo is based at 7 Roads Junction, Main Road, Srikakulam, Andhra Pradesh. We ship to all 28 states and 8 union territories across India.',
+            text: '240 GSM to 280 GSM 100% super-combed cotton is the gold standard for oversized t-shirts in India. Unlike flimsy 160-180 GSM tees that lose shape and cling to the body, 240 GSM fabric delivers a structured, boxy drop-shoulder drape that breathes well in tropical Indian climates and holds its shape through dozens of washes.',
           },
         },
         {
           '@type': 'Question',
-          name: 'What does 240 GSM mean?',
+          name: 'Where can I buy the best oversized t-shirts for men in India?',
           acceptedAnswer: {
             '@type': 'Answer',
-            text: 'GSM stands for Grams per Square Metre. 240 GSM represents a dense, heavyweight cotton fabric weave that provides a structured boxy fit that does not lose shape after washes.',
+            text: 'Bingooo (bingooo.co.in) offers India\'s premier collection of 240 GSM heavyweight oversized t-shirts for men. Featuring 100% super-combed cotton, anti-sag French rib collars, pre-shrunk fabric, and authentic streetwear silhouettes, with Cash on Delivery (COD) and express Pan-India shipping.',
           },
         },
         {
           '@type': 'Question',
-          name: 'How long does delivery take?',
+          name: 'How long does delivery take across India?',
           acceptedAnswer: {
             '@type': 'Answer',
             text: 'Orders are typically delivered within 3 to 7 business days depending on location, with live tracking sent via SMS and WhatsApp.',
           },
         },
+        {
+          '@type': 'Question',
+          name: 'Can I customize oversized t-shirts with my own artwork?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: 'Yes! Bingooo\'s 3D Atelier Studio lets you customize 240 GSM heavyweight blanks in real-time 3D. Upload high-resolution graphics, position prints, and receive bespoke apparel with zero minimum order quantity.',
+          },
+        },
       ],
     },
     contentHtml: `
-      <h1>Frequently Asked Questions (FAQ)</h1>
-      <h2>Orders, Shipping &amp; Delivery</h2>
-      <p>We deliver Pan-India in 3–7 business days with express tracking via WhatsApp and SMS.</p>
-      <h2>What is 240 GSM Fabric?</h2>
-      <p>240 GSM is luxury heavyweight combed cotton engineered for durability and structural streetwear drape.</p>
+      <h1>Frequently Asked Questions (FAQ) — 240 GSM Oversized Tees &amp; Streetwear</h1>
+      <h2>Orders, Shipping &amp; Cash on Delivery</h2>
+      <p>We deliver Pan-India in 3–7 business days with express tracking via WhatsApp and SMS. Cash on Delivery is supported on all domestic orders.</p>
+      <h2>What Makes 240 GSM Cotton the Best for Oversized T-Shirts?</h2>
+      <p>240 GSM is luxury heavyweight combed cotton engineered for durability and structural streetwear drape, eliminating collar sagging and flimsy drape.</p>
+      <h2>3D Custom Atelier Printing</h2>
+      <p>Design your own custom streetwear using our interactive 3D studio with high-definition DTF printing.</p>
     `,
   },
 ];
@@ -291,6 +302,14 @@ for (const r of ROUTES) {
     /<meta name="description" content=".*?" \/>/s,
     `<meta name="description" content="${r.description}" />`
   );
+
+  // Replace Keywords if route specifies
+  if (r.keywords) {
+    html = html.replace(
+      /<meta name="keywords" content=".*?" \/>/s,
+      `<meta name="keywords" content="${r.keywords}" />`
+    );
+  }
 
   // Replace OG / Twitter Tags
   html = html.replace(

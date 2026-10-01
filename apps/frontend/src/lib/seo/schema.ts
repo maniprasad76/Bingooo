@@ -24,11 +24,21 @@ export function generateOrganizationSchema() {
     '@type': 'ClothingStore',
     '@id': `${SITE_URL}/#organization`,
     name: BRAND_NAME,
+    alternateName: ['Bingooo Menswear', 'Bingooo Streetwear', 'Bingooo Clothing India'],
     url: SITE_URL,
     logo: `${SITE_URL}/brand-logo.png`,
     image: `${SITE_URL}/brand-logo.png`,
     description:
       'Contemporary Indian luxury menswear crafted with 240 to 280 GSM heavyweight cotton and bespoke 3D custom apparel.',
+    keywords:
+      'oversized t-shirts for men, 240 gsm oversized t shirt, heavyweight streetwear india, custom oversized t shirt printing india, drop shoulder t-shirt, 380 gsm fleece hoodie',
+    knowsAbout: [
+      '240 GSM Cotton Fabric',
+      'Oversized Streetwear',
+      'DTF Custom Printing',
+      'Heavyweight Hoodies',
+      '3D Apparel Design',
+    ],
     telephone: '+91-7981787317',
     email: 'bingooo.sklm@gmail.com',
     address: {
@@ -80,6 +90,9 @@ export function generateWebSiteSchema() {
     '@id': `${SITE_URL}/#website`,
     url: SITE_URL,
     name: BRAND_NAME,
+    alternateName: ['Bingooo Menswear', 'Bingooo Streetwear', 'Bingooo Clothing India'],
+    keywords:
+      'oversized t-shirts for men, 240 gsm oversized t shirt, heavyweight streetwear india, custom t-shirt printing india, drop shoulder t-shirt',
     potentialAction: {
       '@type': 'SearchAction',
       target: {
@@ -128,11 +141,13 @@ export function generateProductSchema(product: {
     description:
       product.description ||
       `Buy ${product.title} online at Bingooo. Premium heavyweight 240 GSM combed cotton menswear tailored for effortless streetwear expression.`,
+    keywords: `${product.title}, 240 gsm oversized t shirt, heavyweight t shirt india, drop shoulder t-shirt, mens streetwear india, 100 combed cotton`,
     image: images,
-    category: product.category?.name || "Men's Clothing",
+    category: product.category?.name || "Men's Oversized T-Shirts & Streetwear",
     brand: {
       '@type': 'Brand',
       name: BRAND_NAME,
+      alternateName: 'Bingooo Streetwear',
     },
     sku: `BG-${product.slug.toUpperCase()}`,
     mpn: `BG-${product.slug.toUpperCase()}`,
@@ -297,11 +312,22 @@ export function generateLocalBusinessSchema() {
     '@type': ['ClothingStore', 'LocalBusiness'],
     '@id': `${SITE_URL}/#localbusiness`,
     name: BRAND_NAME,
+    alternateName: ['Bingooo Men\'s Wear', 'Bingooo Atelier Srikakulam'],
     url: SITE_URL,
     image: `${SITE_URL}/brand-logo.png`,
     logo: `${SITE_URL}/brand-logo.png`,
     description:
-      'Bingooo is India\'s premium heavyweight menswear brand offering 240–420 GSM streetwear and bespoke custom-printed apparel. Located in Srikakulam, Andhra Pradesh.',
+      'Bingooo is India\'s premier heavyweight menswear brand offering 240–280 GSM oversized t-shirts, drop-shoulder hoodies, and bespoke custom-printed apparel engineered in our 3D Atelier. Located in Srikakulam, Andhra Pradesh.',
+    keywords:
+      'oversized t-shirts for men, 240 gsm oversized t shirt, heavyweight streetwear, custom t-shirt printing, drop shoulder t-shirt, mens clothing store srikakulam',
+    knowsAbout: [
+      '240 GSM Cotton Fabric',
+      'Oversized T-Shirts for Men',
+      'Streetwear Fashion',
+      'DTF Custom Printing',
+      'Heavyweight Hoodies',
+      'Drop Shoulder Silhouettes',
+    ],
     telephone: '+91-7981787317',
     email: 'bingooo.sklm@gmail.com',
     address: {

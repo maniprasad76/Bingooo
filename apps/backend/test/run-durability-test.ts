@@ -25,6 +25,8 @@ function assert(condition: boolean, name: string, details?: string) {
 // ── Fake PostgREST for the app_records table ─────────────────────────
 const rows = new Map<string, { collection: string; id: string; data: any }>();
 const stats = { posts: 0, deletes: 0, failNextPosts: 0 };
+/** Rows served for the legacy normalized tables (orders, products, ...). */
+const legacyTables: Record<string, any[]> = {};
 const rowKey = (c: string, id: string) => `${c}\u0000${id}`;
 
 function parseInList(raw: string): string[] {
@@ -47,7 +49,7 @@ const server = http.createServer((req, res) => {
       res.writeHead(status, { 'Content-Type': 'application/json' });
       res.end(payload === undefined ? '' : JSON.stringify(payload));
     };
-    if (table !== 'app_records') return send(200, []); // legacy tables: empty
+    if (table !== 'app_records') return send(200, legacyTables[table] || []);
     if (req.method === 'GET') {
       const limit = Number(url.searchParams.get('limit') || 1000);
       const offset = Number(url.searchParams.get('offset') || 0);
@@ -170,6 +172,23 @@ async function run() {
     process.env.SUPABASE_URL = savedUrl;
     await records.hydrateFromAppRecords(); // restore the healthy remote for later saves
     assert(failedClosed, 'Boot fails closed when the durable store is unreachable');
+
+    // Production without DATA_STORE keeps serving legacy data, read-only.
+    const savedNodeEnv = process.env.NODE_ENV;
+    process.env.NODE_ENV = 'production';
+    delete process.env.DATA_STORE;
+    legacyTables.orders = [
+      { id: `legacy-order-${stamp}`, order_number: 'LEGACY-1', status: 'processing', address_snapshot_json: { city: 'Pune' } },
+    ];
+    const writesBefore = stats.posts + stats.deletes;
+    await records.hydrateFromAppRecords();
+    const legacyOrder = db.orders.find((o) => o.id === `legacy-order-${stamp}`);
+    assert(
+      legacyOrder?.shipping_address?.city === 'Pune' && stats.posts + stats.deletes === writesBefore,
+      'Without DATA_STORE, production still loads legacy orders read-only (no writes)',
+    );
+    process.env.NODE_ENV = savedNodeEnv;
+    delete legacyTables.orders;
 
     // ── 2. Stock integrity ──────────────────────────────────────────
     console.log('\n📦 2. Stock integrity & coupons');

@@ -301,6 +301,25 @@ async function importLegacyTables(config: RemoteConfig) {
 }
 
 /**
+ * Until DATA_STORE=supabase is switched on, production keeps serving what the
+ * previous sync engine loaded (catalog, orders, payments from the legacy
+ * tables) so the live site does not regress. Read-only: nothing is written
+ * back, and it never runs outside production.
+ */
+async function importLegacyReadOnly() {
+  const url = (process.env.SUPABASE_URL || '').trim().replace(/\/$/, '');
+  const serviceKey = (process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SECRET_KEY || '').trim();
+  if (process.env.NODE_ENV !== 'production' || !url || !serviceKey) return;
+  try {
+    await importLegacyTables({ url, serviceKey });
+    saveDb();
+    console.log('[Records] Loaded legacy catalog/orders from Supabase (read-only).');
+  } catch (err) {
+    console.warn('[Records] Legacy read-only import failed; serving local data:', (err as Error).message);
+  }
+}
+
+/**
  * Load the durable store into memory before the API serves traffic.
  * Throws when remote persistence is enabled but unreachable: starting from
  * the bundled seed instead would later overwrite newer remote records.
@@ -309,6 +328,7 @@ export async function hydrateFromAppRecords(): Promise<void> {
   remote = getRemoteConfig();
   if (!remote) {
     console.warn('[Records] DATA_STORE is not "supabase": using local store.json only (not durable).');
+    await importLegacyReadOnly();
     return;
   }
 

@@ -12,12 +12,20 @@ import {
   BINGOOO_PHONE_DISPLAY,
   BINGOOO_YOUTUBE_URL,
   BINGOOO_YOUTUBE_HANDLE,
+  BINGOOO_TWITTER_URL,
+  BINGOOO_TWITTER_HANDLE,
   WhatsAppIcon,
   InstagramIcon,
   EmailIcon,
   YouTubeIcon,
-  PinterestIcon,
+  XTwitterIcon,
 } from '../ui/SocialIcons';
+import {
+  GooglePayIcon,
+  PhonePeIcon,
+  PaytmIcon,
+  UpiIcon,
+} from '../checkout/PaymentAppIcons';
 
 
 interface FooterLink {
@@ -157,24 +165,16 @@ export function Footer() {
               Wear what defines you.
             </p>
 
-            <div className="flex items-center justify-center md:justify-start gap-[11px]">
+            <div className="flex items-center justify-center md:justify-start gap-[10px]">
               <a
                 href={BINGOOO_INSTAGRAM_URL}
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="Follow Bingooo on Instagram"
                 title={`Instagram (${BINGOOO_INSTAGRAM_HANDLE})`}
-                className="w-[32px] h-[32px] border border-white/20 rounded-full grid place-items-center text-[#d4d1cc] hover:text-white hover:bg-[#E6321C] hover:border-[#E6321C] transition-all duration-150"
+                className="w-[34px] h-[34px] border border-white/20 rounded-full flex items-center justify-center bg-white/5 hover:bg-[#E1306C]/20 hover:border-[#E1306C] transition-all duration-150 p-1.5"
               >
-                <InstagramIcon className="w-3.5 h-3.5" />
-              </a>
-              <a
-                href={`mailto:${BINGOOO_EMAIL_SUPPORT}?subject=Inquiry%20from%20Bingooo%20Footer`}
-                aria-label="Email Bingooo Support"
-                title={`Email (${BINGOOO_EMAIL_SUPPORT})`}
-                className="w-[32px] h-[32px] border border-white/20 rounded-full grid place-items-center text-[#d4d1cc] hover:text-white hover:bg-[#E6321C] hover:border-[#E6321C] transition-all duration-150"
-              >
-                <EmailIcon className="w-3.5 h-3.5" />
+                <InstagramIcon className="w-4 h-4" />
               </a>
               <a
                 href={getWhatsAppUrl('Hi Bingooo, I would like to chat about your menswear.')}
@@ -182,9 +182,9 @@ export function Footer() {
                 rel="noopener noreferrer"
                 aria-label="Chat with Bingooo on WhatsApp"
                 title={`WhatsApp (${BINGOOO_PHONE_DISPLAY})`}
-                className="w-[32px] h-[32px] border border-white/20 rounded-full grid place-items-center text-[#d4d1cc] hover:text-white hover:bg-[#25D366] hover:border-[#25D366] transition-all duration-150"
+                className="w-[34px] h-[34px] border border-white/20 rounded-full flex items-center justify-center bg-white/5 hover:bg-[#25D366]/20 hover:border-[#25D366] transition-all duration-150 p-1.5"
               >
-                <WhatsAppIcon className="w-3.5 h-3.5" />
+                <WhatsAppIcon className="w-4 h-4" />
               </a>
               <a
                 href={BINGOOO_YOUTUBE_URL}
@@ -192,19 +192,27 @@ export function Footer() {
                 rel="noopener noreferrer"
                 aria-label="Follow Bingooo on YouTube"
                 title={`YouTube (${BINGOOO_YOUTUBE_HANDLE})`}
-                className="w-[32px] h-[32px] border border-white/20 rounded-full grid place-items-center text-[#d4d1cc] hover:text-white hover:bg-[#E6321C] hover:border-[#E6321C] transition-all duration-150"
+                className="w-[34px] h-[34px] border border-white/20 rounded-full flex items-center justify-center bg-white/5 hover:bg-[#FF0000]/20 hover:border-[#FF0000] transition-all duration-150 p-1.5"
               >
-                <YouTubeIcon className="w-3.5 h-3.5" />
+                <YouTubeIcon className="w-4 h-4" />
               </a>
               <a
-                href="https://pinterest.com"
+                href={BINGOOO_TWITTER_URL}
                 target="_blank"
                 rel="noopener noreferrer"
-                aria-label="Follow Bingooo on Pinterest"
-                title="Pinterest"
-                className="w-[32px] h-[32px] border border-white/20 rounded-full grid place-items-center text-[#d4d1cc] hover:text-white hover:bg-[#E6321C] hover:border-[#E6321C] transition-all duration-150"
+                aria-label="Follow Bingooo on Twitter"
+                title={`Twitter (${BINGOOO_TWITTER_HANDLE})`}
+                className="w-[34px] h-[34px] border border-white/20 rounded-full flex items-center justify-center bg-white/5 hover:bg-[#171717] hover:border-white/40 transition-all duration-150 p-1.5"
               >
-                <PinterestIcon className="w-3.5 h-3.5" />
+                <XTwitterIcon className="w-4 h-4" />
+              </a>
+              <a
+                href={`mailto:${BINGOOO_EMAIL_SUPPORT}?subject=Inquiry%20from%20Bingooo%20Footer`}
+                aria-label="Email Bingooo Support"
+                title={`Email (${BINGOOO_EMAIL_SUPPORT})`}
+                className="w-[34px] h-[34px] border border-white/20 rounded-full flex items-center justify-center text-[#d4d1cc] hover:text-white bg-white/5 hover:bg-[#E6321C] hover:border-[#E6321C] transition-all duration-150 p-1.5"
+              >
+                <EmailIcon className="w-4 h-4" />
               </a>
             </div>
           </div>
@@ -349,8 +357,59 @@ export function Footer() {
           </div>
         </div>
 
+        {/* ─── 100% Secure Payment Gateways Bar ─── */}
+        <div className="mt-[45px] pt-[22px] border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4 text-[#aaa7a1] text-[11px]">
+          <div className="flex items-center gap-2 font-mono uppercase tracking-[0.14em]">
+            <span className="w-2 h-2 rounded-full bg-[#238636] animate-pulse" />
+            <span>100% Secure Digital Payments • Powered by UPI & Razorpay</span>
+          </div>
+
+          <div className="flex items-center gap-2.5 flex-wrap justify-center">
+            <a
+              href="https://pay.google.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              title="Google Pay"
+              aria-label="Google Pay"
+              className="h-[32px] px-2.5 py-1 bg-white rounded-[4px] border border-white/20 flex items-center justify-center hover:opacity-90 transition-opacity shadow-xs"
+            >
+              <GooglePayIcon className="h-4.5 w-auto" />
+            </a>
+            <a
+              href="https://www.phonepe.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              title="PhonePe"
+              aria-label="PhonePe"
+              className="h-[32px] px-2.5 py-1 bg-white rounded-[4px] border border-white/20 flex items-center justify-center hover:opacity-90 transition-opacity shadow-xs"
+            >
+              <PhonePeIcon className="h-4.5 w-auto" />
+            </a>
+            <a
+              href="https://paytm.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              title="Paytm"
+              aria-label="Paytm"
+              className="h-[32px] px-2.5 py-1 bg-white rounded-[4px] border border-white/20 flex items-center justify-center hover:opacity-90 transition-opacity shadow-xs"
+            >
+              <PaytmIcon className="h-4 w-auto" />
+            </a>
+            <a
+              href="https://www.npci.org.in/what-we-do/upi/product-overview"
+              target="_blank"
+              rel="noopener noreferrer"
+              title="Unified Payments Interface (UPI)"
+              aria-label="UPI"
+              className="h-[32px] px-2.5 py-1 bg-white rounded-[4px] border border-white/20 flex items-center justify-center hover:opacity-90 transition-opacity shadow-xs"
+            >
+              <UpiIcon className="h-4 w-auto" />
+            </a>
+          </div>
+        </div>
+
         {/* ─── Bottom Bar ─── */}
-        <div className="mt-[50px] pt-[22px] border-t border-[#363636] flex flex-col md:flex-row items-center justify-between gap-4 md:gap-6 text-[#85827d] text-[11px] font-sans">
+        <div className="mt-[28px] pt-[20px] border-t border-[#363636] flex flex-col md:flex-row items-center justify-between gap-4 md:gap-6 text-[#85827d] text-[11px] font-sans">
           <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-3 text-center sm:text-left">
             <span>© 2026 Bingooo. All rights reserved.</span>
             <span className="hidden sm:inline text-white/20">•</span>

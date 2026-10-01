@@ -948,10 +948,10 @@
     "semantic_hash": ""
   },
   "apps/frontend/src/components/checkout/PaymentAppIcons.tsx": {
-    "mtime": 1789004484.2502234,
-    "seen": 1789634534.2679684,
-    "ast_hash": "ff830fbba9aa026c379e8efe6af210f3",
-    "semantic_hash": "ff830fbba9aa026c379e8efe6af210f3"
+    "mtime": 1790844760.6266556,
+    "seen": 1790845297.6679752,
+    "ast_hash": "5ee5974c52897d3e3b412a05de6997db",
+    "semantic_hash": ""
   },
   "apps/frontend/src/components/common/Breadcrumbs.tsx": {
     "mtime": 1789026202.3457737,
@@ -1014,9 +1014,9 @@
     "semantic_hash": "3d3052789d65f9ee5b93261397472811"
   },
   "apps/frontend/src/components/layout/Footer.tsx": {
-    "mtime": 1790559614.285648,
-    "seen": 1790559812.2268603,
-    "ast_hash": "dc99d5d352175897be56125a42132395",
+    "mtime": 1790845073.6391833,
+    "seen": 1790845297.6689742,
+    "ast_hash": "f26852403b46c4950feeed7914f606c5",
     "semantic_hash": ""
   },
   "apps/frontend/src/components/layout/MobileNav.tsx": {
@@ -1110,9 +1110,9 @@
     "semantic_hash": ""
   },
   "apps/frontend/src/components/ui/SocialIcons.tsx": {
-    "mtime": 1790129297.6948197,
-    "seen": 1790132718.1780868,
-    "ast_hash": "cb70d4af20b4fa316ff56c2531b84674",
+    "mtime": 1790844811.2716384,
+    "seen": 1790845297.670974,
+    "ast_hash": "f0ccc83542f9883ae2a0d46318bbb3d6",
     "semantic_hash": ""
   },
   "apps/frontend/src/components/ui/Toast.tsx": {
@@ -4494,9 +4494,9 @@
     "semantic_hash": ""
   },
   "BRAIN.md": {
-    "mtime": 1790819771.5343099,
-    "seen": 1790819929.8168523,
-    "ast_hash": "85841158c45f9400a7569811cde315e6",
+    "mtime": 1790836365.1276653,
+    "seen": 1790845297.7400687,
+    "ast_hash": "b2f282a2f0ec5662dddd95466ad3ab72",
     "semantic_hash": ""
   },
   ".agents/skills/bingooo-ui-ux/SKILL.md": {
@@ -5603,12 +5603,6 @@
     "ast_hash": "a66b68a22c29cb717b59dfcc61ebecee",
     "semantic_hash": ""
   },
-  "apps/frontend/public/custom/upi (2) copy.png": {
-    "mtime": 1790835580.3198948,
-    "seen": 1790836184.7006056,
-    "ast_hash": "774338f61d6b657bf7bf6d7826e94132",
-    "semantic_hash": ""
-  },
   "apps/frontend/public/custom/whatsapp.png": {
     "mtime": 1790835376.1081297,
     "seen": 1790836184.7006056,
@@ -5619,6 +5613,24 @@
     "mtime": 1790835855.9476855,
     "seen": 1790836184.7016077,
     "ast_hash": "fa8c59d2559e43845cacb1e1cd925c1b",
+    "semantic_hash": ""
+  },
+  "apps/frontend/public/custom/paytm.png": {
+    "mtime": 1790835627.7112253,
+    "seen": 1790845297.751057,
+    "ast_hash": "c080a1a293ed2cf019e5c192ccceedd0",
+    "semantic_hash": ""
+  },
+  "apps/frontend/public/custom/upi (2).png": {
+    "mtime": 1790835580.3198948,
+    "seen": 1790845297.751057,
+    "ast_hash": "774338f61d6b657bf7bf6d7826e94132",
+    "semantic_hash": ""
+  },
+  "apps/frontend/public/custom/upi.png": {
+    "mtime": 1790835580.3198948,
+    "seen": 1790845297.751057,
+    "ast_hash": "774338f61d6b657bf7bf6d7826e94132",
     "semantic_hash": ""
   }
 }

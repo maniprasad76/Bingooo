@@ -62,7 +62,7 @@ updated: 2026-10-01T06:40:00+05:30
 
 **Plans:**
 - [x] Plan 3.1: Implement real-time 3D garment mockup preview (Three.js / React Three Fiber) as an optional toggle in the customizer
-- [ ] Plan 3.2: Integrate WhatsApp & SMS notification webhooks for live parcel tracking updates
+- [x] Plan 3.2: Integrate WhatsApp & SMS notification webhooks for live parcel tracking updates
 - [ ] Plan 3.3: Implement admin exportable CSV/Excel reports for GST compliance (B2C tax breakdown, HSN 6109 summary)
 - [ ] Plan 3.4: Configure automated PostgreSQL migration & sync runner to bridge in-memory `store.json` with Supabase Prisma tables
 - [ ] Plan 3.5: Implement PWA background synchronization for offline cart and wishlist mutations
@@ -88,7 +88,7 @@ updated: 2026-10-01T06:40:00+05:30
 |-------|--------|-------|----------|
 | 1: Foundation | ✅ | 5/5 | 100% |
 | 2: Atelier & Admin | ✅ | 6/6 | 100% |
-| 3: Production Hardening | 🔄 | 1/5 | 20% |
+| 3: Production Hardening | 🔄 | 2/5 | 40% |
 | 4: Logistics & Scale | ⬜ | 0/4 | 0% |
 
 ---

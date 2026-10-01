@@ -11,6 +11,7 @@ import Razorpay from 'razorpay';
 import { IsString, IsOptional, IsNumber, IsObject } from 'class-validator';
 import { db, saveDb } from '../common/database/store';
 import { OrdersService } from '../orders/orders.service';
+import { WhatsAppService } from '../notifications/whatsapp.service';
 
 export class CreateOrderDto {
   @IsOptional()
@@ -76,7 +77,10 @@ export class VerifyPaymentDto {
 
 @Injectable()
 export class PaymentsService {
-  constructor(private readonly ordersService: OrdersService) {}
+  constructor(
+    private readonly ordersService: OrdersService,
+    private readonly whatsAppService: WhatsAppService,
+  ) {}
 
   getPaymentConfig() {
     return {
@@ -309,6 +313,7 @@ export class PaymentsService {
         order.payment_status = order.payment_method === 'partial_cod' ? 'partial_paid' : 'captured';
         order.status = 'processing';
         order.updated_at = new Date().toISOString();
+        this.whatsAppService.sendOrderConfirmation(this.ordersService.enrichOrder(order)).catch(() => {});
       }
       saveDb();
     }
@@ -380,6 +385,7 @@ export class PaymentsService {
           if (order) {
             order.payment_status = 'captured';
             order.status = 'processing';
+            this.whatsAppService.sendOrderConfirmation(this.ordersService.enrichOrder(order)).catch(() => {});
           }
         } else if (event.event === 'payment.failed') {
           payment.status = 'failed';

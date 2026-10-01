@@ -566,6 +566,36 @@ export function OrderSuccessPage() {
               </div>
             </div>
 
+            {/* WhatsApp Order Confirmation & Updates Card */}
+            <div className="border border-[#25D366]/40 bg-[#25D366]/5 p-5 rounded-[2px] space-y-3">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <WhatsAppIcon className="w-4 h-4 text-[#25D366]" />
+                  <span className="text-xs font-extrabold uppercase tracking-wider text-[#171717]">
+                    WhatsApp Confirmation
+                  </span>
+                </div>
+                <span className="text-[9px] font-mono font-bold text-[#25D366] bg-[#25D366]/15 px-2 py-0.5 rounded-full uppercase">
+                  INSTANT
+                </span>
+              </div>
+              <p className="text-[11px] text-[#6F6A63] leading-relaxed">
+                Receive live parcel tracking milestones, atelier dispatch alerts, and digital receipt directly on WhatsApp.
+              </p>
+              <a
+                href={getWhatsAppUrl(
+                  `*BINGOOO.* 🔴 — *Order Confirmed*\n\nOrder #${displayOrder.order_number || displayOrder.id}\nTotal Settled: ₹${Number(displayOrder.total).toLocaleString('en-IN')}\nPayment: ${displayOrder.payment_method || 'Prepaid'}\nDelivery: ${address.city || 'India'} (${address.postalCode || ''})\nAir Dispatch: Within 36 Hours via BlueDart Air\n\nTrack Live: ${typeof window !== 'undefined' ? window.location.origin : 'https://bingooo-frontend.vercel.app'}/track-order/${displayOrder.order_number}`
+                )}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => triggerHaptic('light')}
+                className="w-full inline-flex items-center justify-center gap-2 bg-[#25D366] text-white py-3 px-4 text-xs font-extrabold uppercase tracking-[0.14em] hover:bg-[#20ba57] transition-all rounded-[2px] shadow-xs cursor-pointer"
+              >
+                <WhatsAppIcon className="w-4 h-4 text-white" />
+                <span>Send Receipt To My WhatsApp</span>
+              </a>
+            </div>
+
             {/* Action Buttons */}
             <div className="space-y-3 pt-1">
               <Link
@@ -589,10 +619,10 @@ export function OrderSuccessPage() {
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={() => triggerHaptic('light')}
-                className="w-full inline-flex items-center justify-center gap-2 border border-[#25D366]/40 bg-[#25D366]/10 text-[#171717] py-3 px-6 text-xs font-bold uppercase tracking-wider hover:bg-[#25D366] hover:text-white transition-all rounded-[2px]"
+                className="w-full inline-flex items-center justify-center gap-2 border border-[#DDD3C5] bg-white text-[#6F6A63] py-2.5 px-4 text-[11px] font-bold uppercase tracking-wider hover:border-[#171717] hover:text-[#171717] transition-all rounded-[2px]"
               >
-                <WhatsAppIcon className="w-4 h-4 text-[#25D366]" />
-                <span>Order Help on WhatsApp</span>
+                <WhatsAppIcon className="w-3.5 h-3.5 text-[#25D366]" />
+                <span>Concierge Support on WhatsApp</span>
               </a>
             </div>
           </div>

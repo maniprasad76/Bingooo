@@ -3,6 +3,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { db, saveDb } from '../common/database/store';
 import { CheckoutService, CheckoutValidationDto } from '../checkout/checkout.service';
 import { getOrderById, getOrderByOrderNumber } from '../common/database/db-index.service';
+import { WhatsAppService } from '../notifications/whatsapp.service';
 
 
 export interface CreateOrderDto extends CheckoutValidationDto {
@@ -12,7 +13,10 @@ export interface CreateOrderDto extends CheckoutValidationDto {
 
 @Injectable()
 export class OrdersService {
-  constructor(private readonly checkoutService: CheckoutService) {}
+  constructor(
+    private readonly checkoutService: CheckoutService,
+    private readonly whatsAppService: WhatsAppService,
+  ) {}
 
   createOrder(dto: CreateOrderDto) {
     const calculation = this.checkoutService.validateAndCalculate(dto);
@@ -115,7 +119,14 @@ export class OrdersService {
     db.cart_items = db.cart_items.filter((i) => i.cart_id !== dto.cartId);
 
     saveDb();
-    return this.enrichOrder(order);
+    const enriched = this.enrichOrder(order);
+
+    // Send automated WhatsApp order confirmation to customer (async non-blocking)
+    this.whatsAppService
+      .sendOrderConfirmation(enriched, dto.shippingAddress?.phone)
+      .catch(() => {});
+
+    return enriched;
   }
 
   findByUser(userId: string) {
@@ -180,7 +191,14 @@ export class OrdersService {
     });
 
     saveDb();
-    return this.enrichOrder(order);
+    const enriched = this.enrichOrder(order);
+
+    // Send WhatsApp notification on key status updates (confirmed, processing, shipped, delivered)
+    if (['confirmed', 'processing', 'shipped', 'delivered'].includes(status.toLowerCase())) {
+      this.whatsAppService.sendOrderConfirmation(enriched).catch(() => {});
+    }
+
+    return enriched;
   }
 
   deleteOrder(orderId: string) {
@@ -215,7 +233,7 @@ export class OrdersService {
   }
 
 
-  private enrichOrder(order: any) {
+  enrichOrder(order: any) {
     const items = db.order_items
       .filter((i) => i.order_id === order.id)
       .map((i) => {

@@ -1,6 +1,7 @@
 import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { v4 as uuidv4 } from 'uuid';
 import { db } from '../common/database/store';
+import { getCategoryById, getImagesByProductId } from '../common/database/db-index.service';
 import { AddToCartDto, UpdateCartItemDto } from './dto/cart.dto';
 
 @Injectable()
@@ -139,6 +140,11 @@ export class CartService {
       const unitPrice = variant ? variant.price : 0;
       const total = unitPrice * item.quantity;
 
+      const category = product?.category_id ? getCategoryById(product.category_id) : null;
+      const productImages = product ? getImagesByProductId(product.id) : [];
+      const primaryImage = productImages.find((img: any) => img.is_primary) || productImages[0];
+      const imageUrl = primaryImage ? (primaryImage.url || primaryImage.object_key) : (product as any)?.image_url || null;
+
       return {
         id: item.id,
         variantId: item.variant_id,
@@ -146,9 +152,40 @@ export class CartService {
         customizationId: item.customization_id,
         unitPrice,
         total,
-        product: product ? { id: product.id, title: product.title, slug: product.slug } : null,
-        variant: variant ? { id: variant.id, sku: variant.sku, size: variant.size, color: variant.color, colorHex: variant.color_hex } : null,
-        customization: customization ? { id: customization.id, previewKey: customization.preview_key, status: customization.status } : null,
+        image: imageUrl,
+        imageUrl: imageUrl,
+        product: product
+          ? {
+              id: product.id,
+              title: product.title,
+              slug: product.slug,
+              category: category?.name || (product as any).category || 'Apparel',
+              fabric: product.fabric || null,
+              gsm: product.gsm || null,
+              fabricWeight: product.gsm ? `${product.gsm} GSM` : product.fabric || '240 GSM',
+              images: productImages.map((img: any) => ({
+                id: img.id,
+                url: img.url,
+                isPrimary: img.is_primary,
+              })),
+            }
+          : null,
+        variant: variant
+          ? {
+              id: variant.id,
+              sku: variant.sku,
+              size: variant.size,
+              color: variant.color,
+              colorHex: variant.color_hex,
+            }
+          : null,
+        customization: customization
+          ? {
+              id: customization.id,
+              previewKey: customization.preview_key,
+              status: customization.status,
+            }
+          : null,
       };
     });
 

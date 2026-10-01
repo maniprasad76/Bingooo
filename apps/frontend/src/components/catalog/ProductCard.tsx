@@ -78,7 +78,22 @@ export function ProductCard({
     e.preventDefault();
     e.stopPropagation();
     if (defaultVariant) {
-      addItem(defaultVariant.id, 1);
+      const gsmVal =
+        (title || '').toLowerCase().includes('hoodie') ||
+        (category?.name || '').toLowerCase().includes('hoodie')
+          ? '430 GSM'
+          : '240 GSM';
+
+      addItem(defaultVariant.id, 1, undefined, {
+        title,
+        image: mainImage,
+        color: defaultVariant.color || '',
+        size: defaultVariant.size || 'M',
+        category: category?.name || 'APPAREL',
+        gsm: gsmVal,
+        slug,
+        price: (defaultVariant as any).price || basePrice,
+      });
     }
   };
 

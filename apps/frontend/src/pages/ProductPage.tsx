@@ -107,7 +107,7 @@ export function ProductPage() {
 
   const [activeImageIndex, setActiveImageIndex] = useState(0);
 
-  // Dynamic colors derived from product.variants
+  // Dynamic colors derived from product.variants or product attributes
   const colorOptions = useMemo(() => {
     if (product?.variants && product.variants.length > 0) {
       const map = new Map<string, string>();
@@ -120,13 +120,54 @@ export function ProductPage() {
         return Array.from(map.entries()).map(([name, hex]) => ({ name, hex }));
       }
     }
-    return [
-      { name: 'Charcoal Black', hex: '#171717' },
-      { name: 'Vintage Cream', hex: '#F7EEDB' },
-    ];
+    // Infer color from product direct properties
+    const prodColor = (product as any)?.color || (product as any)?.color_name;
+    if (prodColor) {
+      const hex = (product as any)?.color_hex || (product as any)?.colorHex || '#171717';
+      return [{ name: prodColor, hex }];
+    }
+    // Check if title mentions a known color
+    const title = (product?.title || '').toLowerCase();
+    const colorKeywordMap: Record<string, string> = {
+      brown: '#6B4423',
+      black: '#171717',
+      white: '#F5F5F5',
+      cream: '#F7EEDB',
+      vintage: '#EDE0CC',
+      olive: '#556B2F',
+      green: '#2E5A36',
+      sage: '#9CAF88',
+      beige: '#D4C4A8',
+      navy: '#1B2A4A',
+      blue: '#2B4C7E',
+      maroon: '#6B1D2F',
+      terracotta: '#C86446',
+      charcoal: '#2D2D2D',
+      grey: '#777777',
+      gray: '#777777',
+      rust: '#A04218',
+    };
+    for (const [key, hex] of Object.entries(colorKeywordMap)) {
+      if (title.includes(key)) {
+        const capitalized = key.charAt(0).toUpperCase() + key.slice(1);
+        return [{ name: capitalized, hex }];
+      }
+    }
+    return [];
   }, [product]);
 
-  const [selectedColor, setSelectedColor] = useState('Charcoal Black');
+  const [selectedColor, setSelectedColor] = useState('');
+
+  // Keep selectedColor synchronized with available color options
+  useEffect(() => {
+    if (colorOptions.length > 0) {
+      if (!selectedColor || !colorOptions.some((c) => c.name.toLowerCase() === selectedColor.toLowerCase())) {
+        setSelectedColor(colorOptions[0].name);
+      }
+    } else {
+      setSelectedColor('');
+    }
+  }, [colorOptions, selectedColor]);
 
   // Dynamic sizes derived from product.variants for selected color
   const sizeOptions = useMemo(() => {
@@ -198,7 +239,7 @@ export function ProductPage() {
     return (
       product.variants.find(
         (v: any) =>
-          v.color?.toLowerCase() === selectedColor?.toLowerCase() &&
+          (!selectedColor || v.color?.toLowerCase() === selectedColor?.toLowerCase()) &&
           v.size?.toLowerCase() === selectedSize?.toLowerCase()
       ) ||
       product.variants.find(
@@ -221,8 +262,23 @@ export function ProductPage() {
       return;
     }
     triggerHaptic('medium');
-    const variantId = selectedVariant?.id || product?.variants?.[0]?.id || `var-${product?.id || 'prod'}-${selectedSize}-${selectedColor}`;
-    addItem(variantId, quantity);
+    const variantId = selectedVariant?.id || product?.variants?.[0]?.id || `var-${product?.id || 'prod'}-${selectedSize}-${selectedColor || 'std'}`;
+    
+    // Authoritative primary image
+    const mainImage = images[0] || resolveImageUrl(product?.images?.[0]?.url || product?.images?.[0]) || '';
+    const categoryName = product?.category?.name || product?.category || (productCategoryKey === 'hoodie' ? 'HOODIES' : productCategoryKey === 'acidwash' ? 'ACID WASH' : 'T-SHIRTS');
+    const fabricDesc = product?.gsm ? `${product.gsm} GSM` : product?.fabric || (productCategoryKey === 'hoodie' ? '430 GSM' : '240 GSM');
+
+    addItem(variantId, quantity, undefined, {
+      title: product?.title || 'Bingooo Garment',
+      image: mainImage,
+      color: selectedColor || selectedVariant?.color || '',
+      size: selectedSize,
+      category: categoryName,
+      gsm: fabricDesc,
+      slug: product?.slug || slug || '',
+      price: price,
+    });
 
     setIsAddedFeedback(true);
     setTimeout(() => {
@@ -514,7 +570,7 @@ export function ProductPage() {
               <p className="m-0 mt-[9px] text-[9px] text-[#6f6a63]">
                 {isOutOfStock ? (
                   <span className="text-[#C62828] font-bold">
-                    This variant ({selectedColor} / {selectedSize}) is currently sold out.
+                    This variant ({selectedColor ? `${selectedColor} / ` : ''}{selectedSize}) is currently sold out.
                   </span>
                 ) : currentStock <= 5 ? (
                   <span className="text-[#E6321C] font-semibold">
@@ -527,32 +583,34 @@ export function ProductPage() {
             </div>
 
             {/* Color Option */}
-            <div className="my-[27px]">
-              <div className="flex justify-between items-center mb-3">
-                <span className="text-[11px] font-bold uppercase text-[#171717]">
-                  Color
-                </span>
-                <span className="text-[10px] text-[#6f6a63]">
-                  {selectedColor}
-                </span>
-              </div>
+            {colorOptions.length > 0 && (
+              <div className="my-[27px]">
+                <div className="flex justify-between items-center mb-3">
+                  <span className="text-[11px] font-bold uppercase text-[#171717]">
+                    Color
+                  </span>
+                  <span className="text-[10px] text-[#6f6a63]">
+                    {selectedColor}
+                  </span>
+                </div>
 
-              <div className="flex gap-[9px]">
-                {colorOptions.map((c) => (
-                  <button
-                    key={c.name}
-                    type="button"
-                    onClick={() => {
-                      triggerHaptic('light');
-                      setSelectedColor(c.name);
-                    }}
-                    className={`color-swatch-ring ${selectedColor === c.name ? 'active' : ''}`}
-                    style={{ backgroundColor: c.hex }}
-                    aria-label={c.name}
-                  />
-                ))}
+                <div className="flex gap-[9px]">
+                  {colorOptions.map((c) => (
+                    <button
+                      key={c.name}
+                      type="button"
+                      onClick={() => {
+                        triggerHaptic('light');
+                        setSelectedColor(c.name);
+                      }}
+                      className={`color-swatch-ring ${selectedColor === c.name ? 'active' : ''}`}
+                      style={{ backgroundColor: c.hex }}
+                      aria-label={c.name}
+                    />
+                  ))}
+                </div>
               </div>
-            </div>
+            )}
 
             {/* Size Option */}
             <div className="my-[27px]">

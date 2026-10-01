@@ -4,6 +4,7 @@ import { useCartStore } from '../store/cart';
 import { useToast } from '../components/ui/Toast';
 import { useEffect } from 'react';
 import { triggerHaptic } from '../lib/native/capacitorBridge';
+import { saveCartItemMeta, type CartItemMeta } from '../lib/cartMeta';
 
 export function useCart() {
   const queryClient = useQueryClient();
@@ -191,8 +192,14 @@ export function useCart() {
     cart: cartQuery.data,
     isLoading: cartQuery.isLoading,
     isError: cartQuery.isError,
-    addItem: (variantId: string, quantity = 1, customizationId?: string) =>
-      addItemMutation.mutate({ variantId, quantity, customizationId }),
+    addItem: (variantId: string, quantity = 1, customizationId?: string, metadata?: CartItemMeta) => {
+      if (metadata) {
+        saveCartItemMeta(variantId, metadata);
+        if (metadata.slug) saveCartItemMeta(metadata.slug, metadata);
+        if (metadata.title) saveCartItemMeta(metadata.title, metadata);
+      }
+      return addItemMutation.mutate({ variantId, quantity, customizationId });
+    },
     updateQuantity: (itemId: string, quantity: number) =>
       updateItemMutation.mutate({ itemId, quantity }),
     removeItem: (itemId: string) => removeItemMutation.mutate(itemId),

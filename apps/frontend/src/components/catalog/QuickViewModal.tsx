@@ -6,6 +6,7 @@ import { Button } from '../ui/Button';
 import { Badge } from '../ui/Badge';
 import { useCart } from '../../hooks/useCart';
 import { useToast } from '../ui/Toast';
+import { resolveImageUrl } from '../../lib/utils';
 
 export interface QuickViewProduct {
   id: string;
@@ -77,7 +78,23 @@ export function QuickViewModal({ product, isOpen, onClose }: QuickViewModalProps
     ) || product.variants?.[0];
 
     if (matched) {
-      addItem(matched.id, 1);
+      const gsmVal =
+        (product.title || '').toLowerCase().includes('hoodie') ||
+        (product.category?.name || '').toLowerCase().includes('hoodie')
+          ? '430 GSM'
+          : '240 GSM';
+
+      addItem(matched.id, 1, undefined, {
+        title: product.title,
+        image: resolveImageUrl(mainImage),
+        color: matched.color || '',
+        size: selectedSize || matched.size || 'M',
+        category: product.category?.name || 'APPAREL',
+        gsm: gsmVal,
+        slug: product.slug,
+        price: (matched as any).price || product.basePrice,
+      });
+
       toast({
         title: 'Added to Bag',
         description: `${product.title} (${selectedSize}) is in your cart`,

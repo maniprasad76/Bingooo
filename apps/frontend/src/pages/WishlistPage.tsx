@@ -40,6 +40,7 @@ export function WishlistPage() {
       size: p.variants?.[0]?.size || 'L',
       variantId: p.variants?.[0]?.id,
       image: p.images?.[0]?.url || p.images?.[0]?.object_key || '',
+      category: p.category?.name || p.category || 'APPAREL',
     }));
   }, [wishlist]);
 
@@ -53,7 +54,14 @@ export function WishlistPage() {
       navigate(`/product/${item.slug}`);
       return;
     }
-    addItem(item.variantId, 1);
+    addItem(item.variantId, 1, undefined, {
+      title: item.title,
+      image: item.image,
+      size: item.size,
+      slug: item.slug,
+      price: item.price,
+      category: item.category || 'APPAREL',
+    });
     toast({
       title: `${item.title} added to bag`,
       description: `Size ${item.size} • ₹${item.price}`,
@@ -68,7 +76,16 @@ export function WishlistPage() {
     }
     triggerHaptic('success');
     items.forEach((item) => {
-      if (item.variantId) addItem(item.variantId, 1);
+      if (item.variantId) {
+        addItem(item.variantId, 1, undefined, {
+          title: item.title,
+          image: item.image,
+          size: item.size,
+          slug: item.slug,
+          price: item.price,
+          category: item.category || 'APPAREL',
+        });
+      }
     });
     toast({
       title: 'All items moved to shopping bag',

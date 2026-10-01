@@ -1,24 +1,24 @@
 # Graph Report - bingooo  (2026-10-01)
 
 ## Corpus Check
-- 826 files · ~902,211 words
+- 827 files · ~915,310 words
 - Verdict: corpus is large enough that graph structure adds value.
 - Unclassified: 44 file(s) not represented in the graph (top: (none) 14, .xml 12, .example 3)
 
 ## Summary
-- 8717 nodes · 11619 edges · 773 communities (664 shown, 109 thin omitted)
-- Extraction: 97% EXTRACTED · 3% INFERRED · 0% AMBIGUOUS · INFERRED: 291 edges (avg confidence: 0.87)
+- 8721 nodes · 11643 edges · 776 communities (664 shown, 112 thin omitted)
+- Extraction: 98% EXTRACTED · 2% INFERRED · 0% AMBIGUOUS · INFERRED: 291 edges (avg confidence: 0.87)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `23cb6fc2`
+- Built from commit: `0bb0dd34`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
 ## Community Hubs (Navigation)
 - GSD Planner Agent
 - UsersController
-- run-checkout-e2e.ts
+- cn
 - auth.controller.ts
 - Configuration Patterns
 - frontend/src/app/router.tsx
@@ -37,14 +37,14 @@
 - compilerOptions
 - scripts
 - BannersController
-- ref_lucide_react
+- triggerHaptic
 - main.ts
 - Gotchas & Debugging
 - AdminController
 - CustomizerPage.tsx
 - NotificationsController
 - RolesController
-- useToast
+- admin/src/app/router.tsx
 - Bingooo --- UI/UX Skill --- Single Source of Truth
 - CategoriesController
 - ReturnsController
@@ -56,7 +56,7 @@
 - dependencies
 - 📋 BINGOOO — Product Requirements Document (PRD)
 - ⚖️ BINGOOO — Engineering Rules, Invariants & Guidelines (`rules.md`)
-- triggerHaptic
+- useToast
 - compilerOptions
 - compilerOptions
 - compilerOptions
@@ -65,7 +65,7 @@
 - admin/package.json
 - spectrum/api.md
 - orders.service.ts
-- db-index.service.ts
+- saveDb
 - compilerOptions
 - Browser Rendering Patterns
 - compilerOptions
@@ -94,7 +94,7 @@
 - Guardrails
 - agents-sdk/SKILL.md
 - .oxlintrc.json
-- 3. Non-Negotiable Architectural Invariants & Solved Gotchas
+- 🧠 BINGOOO — Persistent System Memory & Agent Context (`memory.md`)
 - GSD-STYLE.md
 - Code Review — Workers
 - validate.sh
@@ -117,11 +117,11 @@
 - Durable Objects Rules & Best Practices
 - Cloudflare Workers Best Practices
 - Common Errors
-- Common Errors
+- Tunnel Gotchas
 - Binding Patterns and Best Practices
 - RealtimeKit Configuration
 - Workerd Patterns
-- TCP Sockets API Reference
+- Properties
 - Zaraz Reference Implementation Summary
 - Supabase
 - Web Performance Audit
@@ -300,7 +300,7 @@
 - Cloudflare Bot Management
 - C3 (create-cloudflare)
 - Cron Triggers API
-- do-storage/README.md
+- DO Storage Configuration
 - DO Storage API Reference
 - Common Errors
 - Queues API Reference
@@ -439,12 +439,12 @@
 - Configuration
 - Server-Driven Messages (Trigger Patterns)
 - Sending Emails — REST API
-- saveDb
+- store.ts
 - Best Practices
 - Patterns & Use Cases
 - Cloudflare AI Search Reference
 - Integration Patterns
-- devDependencies
+- Concurrency Model (CRITICAL)
 - lib/auth.ts
 - DDoS API
 - REST API (Flag Management)
@@ -474,7 +474,7 @@
 - DO Storage Testing
 - types/tsconfig.json
 - R2 Configuration
-- client.ts
+- ref_lucide_react
 - Voice (Experimental)
 - Monitoring Deliverability
 - Critical Issues
@@ -499,7 +499,7 @@
 - Supabase Postgres Best Practices
 - D1 (SQL Database)
 - Store and Reply Later (Human-in-the-Loop)
-- PaymentsService
+- payments.service.ts
 - When to Use AI Search
 - Common Errors
 - Core Concepts
@@ -619,7 +619,7 @@
 - security-rls-performance.md
 - _template.md
 - workflows/graphify.md
-- ProductsService
+- Cloudflare R2 Object Storage
 - apps_frontend_src_components_brand_index_brandintroscreen
 - /execute Workflow
 - app.module.ts
@@ -641,9 +641,9 @@
 - Context Compressor Skill
 - SDK Approach Decision Tree
 - admin/vercel.json
-- Gotchas
-- admin/src/app/router.tsx
-- cache.interceptor.ts
+- TCP Sockets API Reference
+- useToast
+- CacheServiceImpl
 - Sprint {N} — {Sprint Name}
 - /debug Workflow
 - apps_frontend_src_components_brand_index_brandintromodal
@@ -654,7 +654,7 @@
 - Empirical Validation
 - CustomizerStudioPage.tsx
 - PROJECT_RULES.md — GSD Canonical Rules
-- 🧠 BINGOOO — Persistent System Memory & Agent Context (`memory.md`)
+- Core Concepts
 - Example: Add User Authentication
 - Session: YYYY-MM-DD HH:MM
 - Technology Stack
@@ -708,7 +708,7 @@
 - user-setup.md
 - 2. Enterprise Relational Database (`prisma/schema.prisma` & Supabase)
 - /check-todos Workflow
-- payments.service.ts
+- Common Errors
 - Discovery Template
 - Milestone Template
 - Project Template
@@ -732,9 +732,11 @@
 - search_repo.sh script
 - Project State
 - LoggerServiceImpl
-- prerender-seo.mjs
 - d1/README.md
 - AppController
+- Connectivity Requirements
+- DashboardPage.tsx
+- Best Practices
 
 ## God Nodes (most connected - your core abstractions)
 1. `@nestjs/common` - 94 edges
@@ -763,7 +765,7 @@
 ## Import Cycles
 - None detected.
 
-## Communities (773 total, 109 thin omitted)
+## Communities (776 total, 112 thin omitted)
 
 ### Community 0 - "GSD Planner Agent"
 Cohesion: 0.04
@@ -773,9 +775,9 @@ Nodes (46): `<action>`, Anti-Patterns to Avoid, Building Dependencies, Checklist
 Cohesion: 0.12
 Nodes (17): ApiBearerAuth, ApiOperation, ApiTags, Body, Controller, Delete, Get, Param (+9 more)
 
-### Community 2 - "run-checkout-e2e.ts"
+### Community 2 - "cn"
 Cohesion: 0.12
-Nodes (26): AppModule, Module, RequestIdInterceptor, Injectable, ResponseInterceptor, Injectable, assert(), results (+18 more)
+Nodes (17): Card(), CardHeader(), CardHeaderProps, CardProps, CardTitle(), CardTitleProps, paddingStyles, Drawer() (+9 more)
 
 ### Community 3 - "auth.controller.ts"
 Cohesion: 0.08
@@ -786,12 +788,12 @@ Cohesion: 0.04
 Nodes (44): Analytics Engine Binding Types, Analytics Engine SQL API, API Reference, Console Logging API, GraphQL Analytics API, Tail Consumer Event Type, Configuration Patterns, Configure Analytics Engine (+36 more)
 
 ### Community 5 - "frontend/src/app/router.tsx"
-Cohesion: 0.04
-Nodes (71): AdminGuard(), lazyPage(), AboutPage, AccountPage, ArtworkGuidelinesPage, CancellationPolicyPage, CartPage, ContactPage (+63 more)
+Cohesion: 0.05
+Nodes (51): AdminGuard(), lazyPage(), AboutPage, ArtworkGuidelinesPage, CartPage, ContactPage, FaqPage, PoliciesPage (+43 more)
 
 ### Community 6 - "ui/index.ts"
 Cohesion: 0.08
-Nodes (44): Footer(), FOOTER_SECTIONS, FooterLink, FooterSection, Card(), CardHeader(), CardHeaderProps, CardProps (+36 more)
+Nodes (43): CancellationPolicyPage, NotFoundPage, ReturnsRefundsPage, SizeGuidePage, FOOTER_SECTIONS, FooterLink, FooterSection, SOCIAL_ITEMS (+35 more)
 
 ### Community 7 - "Production Gotchas"
 Cohesion: 0.22
@@ -799,11 +801,11 @@ Nodes (9): "Batch size exceeded", "BLOB data corrupted on export", "Database siz
 
 ### Community 8 - "CheckoutPage.tsx"
 Cohesion: 0.06
-Nodes (48): AuthCallbackPage, CheckoutPage, GooglePayIcon(), PaytmIcon(), PhonePeIcon(), UpiIcon(), RouteErrorBoundary(), StickyMobileActionBar() (+40 more)
+Nodes (49): AuthCallbackPage, CheckoutPage, GooglePayIcon(), PaytmIcon(), PhonePeIcon(), UpiIcon(), RouteErrorBoundary(), Button (+41 more)
 
 ### Community 9 - ".uploadFile"
-Cohesion: 0.12
-Nodes (20): ApiConsumes, MediaController, ApiBearerAuth, ApiOperation, ApiTags, Body, Controller, Get (+12 more)
+Cohesion: 0.17
+Nodes (17): ApiConsumes, MediaController, ApiBearerAuth, ApiOperation, ApiTags, Body, Controller, Get (+9 more)
 
 ### Community 10 - "HealthController"
 Cohesion: 0.16
@@ -818,7 +820,7 @@ Cohesion: 0.09
 Nodes (28): CartController, ApiBearerAuth, ApiHeader, ApiOperation, ApiTags, Body, Controller, Delete (+20 more)
 
 ### Community 13 - "PaymentsController"
-Cohesion: 0.14
+Cohesion: 0.13
 Nodes (15): PaymentsController, ApiBearerAuth, ApiHeader, ApiOperation, ApiTags, Body, Controller, Get (+7 more)
 
 ### Community 14 - "CreateReviewDto"
@@ -831,11 +833,11 @@ Nodes (6): rebuildIndexes(), BackupServiceImpl, 1. In-Memory Store with O(1) Has
 
 ### Community 16 - "HomePage.tsx"
 Cohesion: 0.05
-Nodes (49): ShopPage, CATEGORY_QUICK_LINKS, SmartSearchModal(), TRENDING_TAGS, ProductPlaceholder(), ProductPlaceholderProps, FALLBACK_CATEGORIES, FALLBACK_FILTERS (+41 more)
+Nodes (45): SearchPage, ShopPage, FALLBACK_CATEGORIES, FALLBACK_FILTERS, FALLBACK_PRODUCTS, FallbackProduct, ProductVariant, CATEGORY_ALIASES (+37 more)
 
 ### Community 17 - "@nestjs/common"
-Cohesion: 0.18
-Nodes (16): 1. Project Identity (Load Once, Stay Lean), 5. Security Audit Checklist Before Shipping, Permissions(), PERMISSIONS_KEY, AuthGuard, SUPER_ADMIN_EMAILS, Injectable, RolesGuard (+8 more)
+Cohesion: 0.16
+Nodes (15): 1. Project Identity (Load Once, Stay Lean), 5. Security Audit Checklist Before Shipping, AdminService, Injectable, Permissions(), PERMISSIONS_KEY, AuthGuard, SUPER_ADMIN_EMAILS (+7 more)
 
 ### Community 18 - "compilerOptions"
 Cohesion: 0.11
@@ -849,13 +851,13 @@ Nodes (36): dependencies, @supabase/ssr, @supabase/supabase-js, description, dev
 Cohesion: 0.13
 Nodes (17): BannersController, ApiBearerAuth, ApiOperation, ApiTags, Body, Controller, Delete, Get (+9 more)
 
-### Community 21 - "ref_lucide_react"
-Cohesion: 0.08
-Nodes (32): CartDrawer(), ProductCardProps, QuickViewModal(), QuickViewModalProps, QuickViewProduct, EmptyState(), EmptyStateProps, ICONS (+24 more)
+### Community 21 - "triggerHaptic"
+Cohesion: 0.09
+Nodes (40): CartDrawer(), ProductCard(), ProductCardProps, QuickViewModal(), QuickViewModalProps, QuickViewProduct, ScrollProgressBar(), Footer() (+32 more)
 
 ### Community 22 - "main.ts"
-Cohesion: 0.13
-Nodes (18): HttpExceptionFilter, mapStatusToCode(), CacheInterceptor, Injectable, IdempotencyInterceptor, Injectable, LoggingInterceptor, Injectable (+10 more)
+Cohesion: 0.08
+Nodes (48): AppModule, Module, HttpExceptionFilter, mapStatusToCode(), CACHE_TTL_KEY, CacheInterceptor, Injectable, IdempotencyInterceptor (+40 more)
 
 ### Community 23 - "Gotchas & Debugging"
 Cohesion: 0.05
@@ -877,16 +879,16 @@ Nodes (15): NotificationsController, ApiBearerAuth, ApiOperation, ApiTags, Body,
 Cohesion: 0.12
 Nodes (14): RolesController, ApiBearerAuth, ApiOperation, ApiTags, Body, Controller, Delete, Get (+6 more)
 
-### Community 28 - "useToast"
-Cohesion: 0.13
-Nodes (18): ConfirmModal(), ConfirmModalProps, useToast(), BannerItem, BannersPage(), EMPTY_FORM, CategoriesPage(), Category (+10 more)
+### Community 28 - "admin/src/app/router.tsx"
+Cohesion: 0.14
+Nodes (15): ConfirmModal(), ConfirmModalProps, RouteErrorBoundary(), BannerItem, BannersPage(), EMPTY_FORM, CategoriesPage(), Category (+7 more)
 
 ### Community 29 - "Bingooo --- UI/UX Skill --- Single Source of Truth"
 Cohesion: 0.03
 Nodes (79): 10. Forms, 11. Iconography, 12. Photography, 13. Global Header, 14. Hamburger Drawer, 15. Footer, 16. Customer Routes, 17. Homepage / Landing Page (+71 more)
 
 ### Community 30 - "CategoriesController"
-Cohesion: 0.13
+Cohesion: 0.12
 Nodes (15): CategoriesController, ApiBearerAuth, ApiOperation, ApiTags, Body, Controller, Delete, Get (+7 more)
 
 ### Community 31 - "ReturnsController"
@@ -925,9 +927,9 @@ Nodes (20): 1.1 Brand Identity & Proposition, 1.2 Target Channels & Distribution
 Cohesion: 0.10
 Nodes (19): 1. Core Principles & Philosophy, 2.1 Monorepo Boundaries, 2.2 TypeScript Standards, 2. Monorepo & TypeScript Guidelines, 3.1 Color Palette Tokens (Audited from `design.md`), 3.2 Typography Standards, 3.3 Iconography & Visual Assets, 3.4 Responsive Containers & Spacing (+11 more)
 
-### Community 40 - "triggerHaptic"
+### Community 40 - "useToast"
 Cohesion: 0.09
-Nodes (46): ProductPage, ProductCard(), RequireAuth(), compressImage(), ProductReviews(), ProductReviewsProps, Review, ReviewsResponse (+38 more)
+Nodes (40): AccountPage, EmptyState(), EmptyStateProps, ICONS, SUGGESTIONS, ProductPlaceholder(), ProductPlaceholderProps, OrderRowSkeleton() (+32 more)
 
 ### Community 41 - "compilerOptions"
 Cohesion: 0.10
@@ -947,7 +949,7 @@ Nodes (18): dependencies, class-transformer, class-validator, compression, cooki
 
 ### Community 45 - "ref_react"
 Cohesion: 0.08
-Nodes (28): App(), queryClient, router, loadRazorpayScript(), RazorpayCheckoutButton(), RazorpayCheckoutButtonProps, RazorpaySuccessPayload, Props (+20 more)
+Nodes (26): App(), queryClient, router, loadRazorpayScript(), RazorpayCheckoutButton(), RazorpayCheckoutButtonProps, RazorpaySuccessPayload, Props (+18 more)
 
 ### Community 46 - "admin/package.json"
 Cohesion: 0.05
@@ -961,9 +963,9 @@ Nodes (44): Analytics API, CreateSpectrumAppRequest, Go SDK, Python SDK, Request
 Cohesion: 0.08
 Nodes (25): CheckoutController, ApiOperation, ApiTags, Body, Controller, Post, CheckoutService, CheckoutValidationDto (+17 more)
 
-### Community 49 - "db-index.service.ts"
-Cohesion: 0.07
-Nodes (22): addressesByUserId, categoriesById, categoriesBySlug, collectionsById, collectionsByProductId, collectionsBySlug, getCategoryBySlug(), getCollectionBySlug() (+14 more)
+### Community 49 - "saveDb"
+Cohesion: 0.06
+Nodes (33): addressesByUserId, categoriesById, categoriesBySlug, collectionsById, collectionsByProductId, collectionsBySlug, getCategoryById(), getCategoryBySlug() (+25 more)
 
 ### Community 50 - "compilerOptions"
 Cohesion: 0.12
@@ -1057,10 +1059,6 @@ Nodes (8): EmailModule, Module, BRAND, EmailService, emailShell(), sendViaResend
 Cohesion: 0.15
 Nodes (12): 1. Project Health & Status Dashboard, 2. Completed Milestones Archive, 3. Active Sprint (Current Focus: Production Hardening & Enhancement), 4.1 Customer Storefront & Custom Atelier, 4.2 Admin Operations & Logistics, 4.3 Native Mobile (Capacitor), 4.4 DevOps, Infrastructure & Performance, 4. Product Backlog & Future Roadmap (+4 more)
 
-### Community 73 - "idempotencyService"
-Cohesion: 0.28
-Nodes (3): idempotencyService, IdempotentRecord, Injectable
-
 ### Community 74 - "frontend/vercel.json"
 Cohesion: 0.25
 Nodes (7): buildCommand, framework, headers, outputDirectory, redirects, rewrites, $schema
@@ -1077,9 +1075,9 @@ Nodes (19): Durable Execution, Important, Key APIs, `runFiber`, Available Channe
 Cohesion: 0.33
 Nodes (5): plugins, rules, react/only-export-components, react/rules-of-hooks, $schema
 
-### Community 78 - "3. Non-Negotiable Architectural Invariants & Solved Gotchas"
-Cohesion: 0.15
-Nodes (10): PrismaService, Injectable, 3. Non-Negotiable Architectural Invariants & Solved Gotchas, 🚨 Invariant 1: Database Store & Index Decoupling (`store.ts` vs. `db-index.service.ts`), 🚨 Invariant 2: Authoritative Server-Side Pricing, 🚨 Invariant 3: Presigned Cloudflare R2 Upload Pipeline, 🚨 Invariant 4: Razorpay Webhook Raw Buffer Capture, 🚨 Invariant 5: Zero Frontend Secrets (+2 more)
+### Community 78 - "🧠 BINGOOO — Persistent System Memory & Agent Context (`memory.md`)"
+Cohesion: 0.10
+Nodes (18): PrismaService, Injectable, 1. System Identity & Mission, 2. Graphify Knowledge Graph Memory Layer, 3. Non-Negotiable Architectural Invariants & Solved Gotchas, 5. Environment Variables & Secret Configuration, 6. Development Runbook & Common Commands, 7. Changelog & Architectural Decisions (+10 more)
 
 ### Community 79 - "GSD-STYLE.md"
 Cohesion: 0.06
@@ -1102,8 +1100,8 @@ Cohesion: 0.15
 Nodes (12): Cloudflare Workflows, Core Concepts, In This Reference, Key Features, Quick Start, Reading Order, Retrieval, See Also (+4 more)
 
 ### Community 84 - "Cloudflare Durable Objects"
-Cohesion: 0.10
-Nodes (20): Accessing from Workers, Class Structure, Cloudflare Durable Objects, Core Concepts, Decision Trees, Essential Commands, ID Generation, In This Reference (+12 more)
+Cohesion: 0.15
+Nodes (13): Cloudflare Durable Objects, Decision Trees, Essential Commands, In This Reference, Overview, Quick Start, Reading Order, Resources (+5 more)
 
 ### Community 85 - "config/package.json"
 Cohesion: 0.50
@@ -1137,9 +1135,9 @@ Nodes (19): Cloudflare Workers Best Practices, CORS Handling, Development Comman
 Cohesion: 0.11
 Nodes (19): "Cold Starts Are Slow", Common Errors, "Constructor Runs on Every Wake", "CPU Time Exceeded (Terminated)", "deleted_classes Destroys Data", "Durable Object Overloaded (503 errors)", Durable Objects Gotchas, Hibernation Caveats (+11 more)
 
-### Community 110 - "Common Errors"
-Cohesion: 0.11
-Nodes (18): Best Practices, Common Errors, Configuration, "Connection already registered", "Connection timeout", Debug Mode, "Error 1016 (Origin DNS Error)", From Ngrok (+10 more)
+### Community 110 - "Tunnel Gotchas"
+Cohesion: 0.18
+Nodes (6): Debug Mode, From Ngrok, From VPN, Limits, Migration Strategies, Tunnel Gotchas
 
 ### Community 111 - "Binding Patterns and Best Practices"
 Cohesion: 0.11
@@ -1153,9 +1151,9 @@ Nodes (18): Angular, Backend Setup, Basic Configuration, Create App & Credential
 Cohesion: 0.11
 Nodes (18): Background Tasks, Best Practices, Common Patterns, Compiled Binary (Recommended), Dev vs Prod Configs, Docker, Durable Objects, Error Handling (+10 more)
 
-### Community 114 - "TCP Sockets API Reference"
-Cohesion: 0.11
-Nodes (18): `close(): Promise<void>`, `closed: Promise<void>`, Complete Example, Core Function: `connect()`, Methods, `opened: Promise<SocketInfo>`, Parameters, Properties (+10 more)
+### Community 114 - "Properties"
+Cohesion: 0.22
+Nodes (9): `close(): Promise<void>`, `closed: Promise<void>`, Methods, `opened: Promise<SocketInfo>`, Properties, `readable: ReadableStream<Uint8Array>`, Socket Interface, `startTls(): Socket` (+1 more)
 
 ### Community 115 - "Zaraz Reference Implementation Summary"
 Cohesion: 0.11
@@ -1174,8 +1172,8 @@ Cohesion: 0.12
 Nodes (16): 1. Dashboard (GUI), 2. REST API, 3. Terraform, 4. Pulumi, API Key (Legacy), API Token (Recommended), Authentication, Common Expression Patterns (+8 more)
 
 ### Community 119 - "Tunnel Networking"
-Cohesion: 0.12
-Nodes (17): Bandwidth and Rate Limits, Common Connectivity Errors, Connection Diagnostics, Connectivity Requirements, Corporate Network Considerations, Firewall Rules, Full (Recommended), IP Ranges (+9 more)
+Cohesion: 0.18
+Nodes (11): Bandwidth and Rate Limits, Common Connectivity Errors, Connection Diagnostics, Corporate Network Considerations, Network Diagnostics, Pre-Flight Check, Private Network Routing, Protocol Selection (+3 more)
 
 ### Community 120 - "Tunnel Patterns"
 Cohesion: 0.12
@@ -1238,7 +1236,7 @@ Cohesion: 0.12
 Nodes (16): Best Practices, Data Pipeline, ✅ DO, ❌ DON'T, Fan-Out (Parallel Processing), Human-in-the-Loop Approval, Image Processing Pipeline, Introspection API (+8 more)
 
 ### Community 135 - "Wrangler Configuration"
-Cohesion: 0.18
+Cohesion: 0.17
 Nodes (11): Advanced, Auto-Provisioning (Beta), Bindings, Config Format, Environments, Field Inheritance, Placement, Routing (+3 more)
 
 ### Community 136 - "Wrangler Development Patterns"
@@ -1458,8 +1456,8 @@ Cohesion: 0.15
 Nodes (13): Base, CNI API Reference, CNI Objects (BGP config), cURL, Health Checks, Interconnects, Not Available via API, Python SDK (+5 more)
 
 ### Community 190 - "supabase-sync.service.ts"
-Cohesion: 0.43
-Nodes (7): getSupabaseConfig(), hydrateStoreFromSupabase(), SupabaseConfig, supabaseRequest(), syncedOrderIds, syncedPaymentIds, syncPendingChangesToSupabase()
+Cohesion: 0.31
+Nodes (9): registerSaveHook(), getSupabaseConfig(), hydrateStoreFromSupabase(), SupabaseConfig, supabaseRequest(), syncedOrderIds, syncedPaymentIds, syncPendingChangesToSupabase() (+1 more)
 
 ### Community 191 - "R2 Gotchas & Troubleshooting"
 Cohesion: 0.11
@@ -1638,8 +1636,8 @@ Cohesion: 0.17
 Nodes (12): 4.10 Quotes & Testimonials, 4.11 Page Theme Lock (Light / Dark Mode Consistency), 4.1 Typography, 4.2 Color Calibration, 4.3 Layout Diversification, 4.4 Materiality, Shadows, Cards, 4.5 Interactive UI States, 4.6 Data & Form Patterns (+4 more)
 
 ### Community 235 - "WhatsAppService"
-Cohesion: 0.11
-Nodes (14): getOrderById(), getOrderByOrderNumber(), registerSaveHook(), Injectable, WhatsAppService, OrdersService, Injectable, 6. Changelog & Recent Decisions (+6 more)
+Cohesion: 0.12
+Nodes (13): getOrderById(), getOrderByOrderNumber(), Injectable, WhatsAppService, OrdersService, Injectable, Context, Must-Haves (+5 more)
 
 ### Community 236 - "Codemode (Experimental)"
 Cohesion: 0.18
@@ -1678,7 +1676,7 @@ Cohesion: 0.18
 Nodes (11): "Adaptive rules not working", "Attacks getting through", "Cannot disable DDoS protection", "Cannot override rule", Common Errors, "Expression not allowed", "False positives blocking legitimate traffic", "Log action not available" (+3 more)
 
 ### Community 245 - "DO Storage Patterns & Best Practices"
-Cohesion: 0.20
+Cohesion: 0.18
 Nodes (10): Batch Processing with Alarms, Cleanup, DO Storage Patterns & Best Practices, In-Memory Caching, Initialization Pattern, Parent-Child Coordination, Rate Limiting, Safe Counter / Optimized Write (+2 more)
 
 ### Community 246 - "Email Workers Configuration"
@@ -1694,8 +1692,8 @@ Cohesion: 0.18
 Nodes (11): "429 Too Many Requests", Adaptive Bit Rate (ABR) Sampling, DateTime & Timezone Handling, GraphQL Analytics API Gotchas & Troubleshooting, "node is not available" / "node is disabled", Performance Tips, Plan-Based Availability, Rate Limits (+3 more)
 
 ### Community 249 - "Common Errors"
-Cohesion: 0.18
-Nodes (11): Common Errors, "connection_refused", "Environment variable not working", "Failed to acquire a connection (Pool exhausted)", "Local database connection failed", "password authentication failed", "Queries not being cached", "Query timeout (deadline exceeded)" (+3 more)
+Cohesion: 0.14
+Nodes (14): Common Errors, "connection_refused", "Environment variable not working", "Failed to acquire a connection (Pool exhausted)", Gotchas, Limits, "Local database connection failed", "password authentication failed" (+6 more)
 
 ### Community 250 - "Configuration"
 Cohesion: 0.18
@@ -1869,17 +1867,17 @@ Nodes (9): C3 (create-cloudflare), In This Reference, Installation Methods, Inte
 Cohesion: 0.20
 Nodes (10): Basic Handler, Cron Triggers API, ctx.waitUntil Usage, Error Handling, Handler Parameters, Multiple Schedules, ScheduledController, See Also (+2 more)
 
-### Community 293 - "do-storage/README.md"
-Cohesion: 0.18
+### Community 293 - "DO Storage Configuration"
+Cohesion: 0.25
 Nodes (7): CPU Limits, DO Storage Configuration, Initialization, KV-backed (Legacy), Location Control, SQLite-backed (Recommended), TypeScript Setup
 
 ### Community 295 - "DO Storage API Reference"
-Cohesion: 0.22
+Cohesion: 0.20
 Nodes (9): Alarms, Async KV API (Both backends), DO Storage API Reference, Misc, Point-in-Time Recovery, SQL API, Storage Options, Sync KV API (SQLite only) (+1 more)
 
 ### Community 296 - "Common Errors"
-Cohesion: 0.11
-Nodes (18): "Alarm Not Deleted with deleteAll()", allowConcurrency Option, "Async in transactionSync", Breaking Gates (DANGER), Common Errors, Concurrency Model (CRITICAL), "Direct SQL Transaction Statements", DO Storage Gotchas & Troubleshooting (+10 more)
+Cohesion: 0.20
+Nodes (10): "Alarm Not Deleted with deleteAll()", "Async in transactionSync", Common Errors, "Direct SQL Transaction Statements", "Durable Object Overloaded", "High Billing from Storage Operations", "Race Condition in Concurrent Calls", "Silent Data Corruption with Large IDs" (+2 more)
 
 ### Community 297 - "Queues API Reference"
 Cohesion: 0.22
@@ -1914,7 +1912,7 @@ Cohesion: 0.20
 Nodes (10): Delete Operations, Error Handling, Get with Metadata, KV API Reference, List Operations, Parallel Reads, Performance Considerations, Read Operations (+2 more)
 
 ### Community 305 - "KV Configuration"
-Cohesion: 0.22
+Cohesion: 0.20
 Nodes (9): Bulk Operations, CLI Operations, Create Namespace, KV Configuration, Local Development, REST API, Single Operations, TypeScript Types (+1 more)
 
 ### Community 306 - "Cloudflare Containers Skill Reference"
@@ -2102,7 +2100,7 @@ Cohesion: 0.12
 Nodes (14): ⚠️ Activity Timeout on Long Operations, Best Practices, Beta Caveats, ⚠️ blockConcurrencyWhile for Startup, Common Errors, "Container memory exceeded", "Container start timeout", Critical Gotchas (+6 more)
 
 ### Community 353 - "OrdersController"
-Cohesion: 0.15
+Cohesion: 0.16
 Nodes (15): OrdersController, ApiBearerAuth, ApiOperation, ApiTags, Body, Controller, Delete, Get (+7 more)
 
 ### Community 354 - "Common Errors"
@@ -2146,8 +2144,8 @@ Cohesion: 0.22
 Nodes (9): Behavioral Notes, Debug Checklist, Events accepted but never appear (most common), Everything is immutable, Pipelines Gotchas, REST API field names ≠ CLI flags, See Also, Worker binding undefined (`env.MY_STREAM`) (+1 more)
 
 ### Community 364 - "ProductsController"
-Cohesion: 0.20
-Nodes (13): ProductsController, ApiBearerAuth, ApiOperation, ApiTags, Body, Controller, Delete, Get (+5 more)
+Cohesion: 0.22
+Nodes (14): Cacheable(), ProductsController, ApiBearerAuth, ApiOperation, ApiTags, Body, Controller, Delete (+6 more)
 
 ### Community 365 - "InventoryController"
 Cohesion: 0.13
@@ -2158,8 +2156,8 @@ Cohesion: 0.22
 Nodes (9): Concurrency, Connection / Auth, Debug Checklist, Maintenance Behavior (updated), Nested Namespaces, PySpark / Iceberg, R2 Data Catalog Gotchas, See Also (+1 more)
 
 ### Community 367 - "backend/package.json"
-Cohesion: 0.11
-Nodes (18): @supabase/supabase-js, @types/node, typescript, name, private, version, compression, @nestjs/config (+10 more)
+Cohesion: 0.09
+Nodes (19): @supabase/supabase-js, @types/node, typescript, name, private, version, class-transformer, class-validator (+11 more)
 
 ### Community 368 - "Cloudflare R2 SQL"
 Cohesion: 0.22
@@ -2406,8 +2404,8 @@ Cohesion: 0.25
 Nodes (7): Running all cases, Skill validation cases, Test 1: Dummy Siteverify returns a structured error, Test 2: Metadata matches the sitekey and secret, Test 3: Runtime checks match the protected surface, Test 4: Same-page retries reset the correct widget, Test 5: Skill persists to a bundle location
 
 ### Community 430 - "scripts"
-Cohesion: 0.17
-Nodes (12): scripts, build, dev, lint, start, test:admin, test:backup, test:checkout (+4 more)
+Cohesion: 0.08
+Nodes (23): devDependencies, prisma, @swc/core, @swc-node/register, @types/compression, @types/cookie-parser, @types/express, @types/multer (+15 more)
 
 ### Community 431 - "Plan 3.1: Real-Time 3D Garment Mockup Studio (Three.js)"
 Cohesion: 0.29
@@ -2425,9 +2423,9 @@ Nodes (6): Client Status, `onChatResponse`, `persistMessages` — Save Without T
 Cohesion: 0.29
 Nodes (7): Authentication, Endpoint, Error Handling, Examples, Request Fields, Response, Sending Emails — REST API
 
-### Community 435 - "saveDb"
-Cohesion: 0.08
-Nodes (32): AdminService, Injectable, getProductBySlug(), DATA_DIR, db, saveDb(), SaveHook, saveHooks (+24 more)
+### Community 435 - "store.ts"
+Cohesion: 0.07
+Nodes (37): DATA_DIR, db, SaveHook, saveHooks, STORE_FILE, BACKUP_DIR, BackupInfo, backupService (+29 more)
 
 ### Community 436 - "Best Practices"
 Cohesion: 0.20
@@ -2445,9 +2443,9 @@ Nodes (7): Cloudflare AI Search Reference, In This Reference, Overview, Platform
 Cohesion: 0.29
 Nodes (7): Enable Argo + Tiered Cache, Full Setup Pattern, Integration Patterns, Post-Enable Verification, Pre-Flight Validation, Spectrum TCP Integration, Usage Analytics (GraphQL)
 
-### Community 440 - "devDependencies"
-Cohesion: 0.18
-Nodes (11): devDependencies, prisma, @swc/core, @swc-node/register, @types/compression, @types/cookie-parser, @types/express, @types/multer (+3 more)
+### Community 440 - "Concurrency Model (CRITICAL)"
+Cohesion: 0.22
+Nodes (8): allowConcurrency Option, Breaking Gates (DANGER), Concurrency Model (CRITICAL), DO Storage Gotchas & Troubleshooting, Input Gates, Limits, Output Gates, Write Coalescing
 
 ### Community 441 - "lib/auth.ts"
 Cohesion: 0.15
@@ -2554,7 +2552,7 @@ Cohesion: 0.29
 Nodes (6): 1. Gate — confirm the package line, 2. Contract — non-negotiables, 3. Retrieve — open the doc for the task, 4. Before you ship, Deprecated-API cleanup (stay on stable), Sandbox SDK — stable package
 
 ### Community 467 - "DO Storage Testing"
-Cohesion: 0.22
+Cohesion: 0.20
 Nodes (9): Basic Testing, DO Storage Testing, Setup, Test Isolation, Testing Alarms, Testing Concurrency, Testing PITR, Testing SQL Storage (+1 more)
 
 ### Community 468 - "types/tsconfig.json"
@@ -2565,9 +2563,9 @@ Nodes (6): compilerOptions, outDir, rootDir, extends, include, ../../tsconfig.ba
 Cohesion: 0.20
 Nodes (10): API Token Scopes, Bucket Management, CORS Configuration, Event Notifications, Location Hints, Object Lifecycles, R2 Configuration, S3 SDK Setup (+2 more)
 
-### Community 470 - "client.ts"
-Cohesion: 0.09
-Nodes (22): AddressesPage, OrderDetailPage, OrderSuccessPage, SavedDesignsPage, Badge(), BadgeProps, BadgeSize, BadgeVariant (+14 more)
+### Community 470 - "ref_lucide_react"
+Cohesion: 0.07
+Nodes (31): AddressesPage, OrderDetailPage, OrderSuccessPage, SavedDesignsPage, RouteFallback(), compressImage(), ProductReviews(), ProductReviewsProps (+23 more)
 
 ### Community 471 - "Voice (Experimental)"
 Cohesion: 0.33
@@ -2590,8 +2588,8 @@ Cohesion: 0.33
 Nodes (3): Additional Resources, Best Practices Summary, Limits
 
 ### Community 476 - "components/Toast.tsx"
-Cohesion: 0.15
-Nodes (13): App(), queryClient, router, ToastContext, ToastContextValue, ToastItem, ToastOptions, ToastProvider() (+5 more)
+Cohesion: 0.14
+Nodes (14): App(), queryClient, router, ToastContext, ToastContextValue, ToastItem, ToastOptions, ToastProvider() (+6 more)
 
 ### Community 477 - "Cloudflare DDoS Protection"
 Cohesion: 0.33
@@ -2626,8 +2624,8 @@ Cohesion: 0.33
 Nodes (6): 400 Bad Request: "invalid facility code", 400 Bad Request: "slot_id already occupied", 403 Forbidden: "Enterprise plan required", 422 Unprocessable: "validate_only request failed", API Errors, Rate Limiting
 
 ### Community 485 - "lib/api.ts"
-Cohesion: 0.16
-Nodes (13): api, ApiError, configuredApiUrl, ReqOptions, request(), Customer, CustomersPage(), formatDate() (+5 more)
+Cohesion: 0.19
+Nodes (11): api, ApiError, configuredApiUrl, ReqOptions, request(), resolveImageUrl(), Customer, CustomersPage() (+3 more)
 
 ### Community 486 - "Cloudflare Durable Objects Storage"
 Cohesion: 0.25
@@ -2665,9 +2663,9 @@ Nodes (6): Config Binding, D1 (SQL Database), Execute SQL, Export/Backup, Manage
 Cohesion: 0.40
 Nodes (5): Architecture, Key Design Points, Receive and Store, Reply Later, Store and Reply Later (Human-in-the-Loop)
 
-### Community 497 - "PaymentsService"
-Cohesion: 0.21
-Nodes (8): ApiRazorpayController, ApiOperation, ApiTags, Body, Controller, Post, PaymentsService, Injectable
+### Community 497 - "payments.service.ts"
+Cohesion: 0.14
+Nodes (16): ApiRazorpayController, ApiOperation, ApiTags, Body, Controller, Post, CreateOrderDto, PaymentsService (+8 more)
 
 ### Community 499 - "When to Use AI Search"
 Cohesion: 0.40
@@ -2742,8 +2740,8 @@ Cohesion: 0.33
 Nodes (5): Chat Tool Approvals (`needsApproval`), Decision Guide, Human-in-the-Loop, Important, Workflow Approvals
 
 ### Community 529 - "ProductEditorPage.tsx"
-Cohesion: 0.18
-Nodes (12): resolveImageUrl(), Category, FABRIC_PRESETS, FIT_PRESETS, IMAGE_SLOT_LABELS, PRESET_COLORS, PRESET_SIZES, ProductEditorPage() (+4 more)
+Cohesion: 0.22
+Nodes (9): Category, FABRIC_PRESETS, FIT_PRESETS, IMAGE_SLOT_LABELS, PRESET_COLORS, PRESET_SIZES, ProductEditorPage(), ProductVariantForm (+1 more)
 
 ### Community 530 - "Verification Process"
 Cohesion: 0.08
@@ -3005,24 +3003,24 @@ Nodes (3): Config Logging, Observability, Tail Logs
 Cohesion: 0.67
 Nodes (3): Local Testing with Vitest, Test Scheduled Events, Testing
 
-### Community 646 - "ProductsService"
-Cohesion: 0.23
-Nodes (6): getCategoryById(), getImagesByProductId(), getProductById(), getReviewsByProductId(), ProductsService, Injectable
+### Community 646 - "Cloudflare R2 Object Storage"
+Cohesion: 0.22
+Nodes (9): Cloudflare R2 Object Storage, Core Operations, Event Notifications, In This Reference, Overview, Quick Start, Reading Order, See Also (+1 more)
 
 ### Community 648 - "/execute Workflow"
 Cohesion: 0.10
 Nodes (19): 10. Offer Next Steps, 1. Validate Environment, 2. Validate Phase Exists, 3. Ensure Phase Directory Exists, 4. Discover Plans, 5. Group Plans by Wave, 6. Execute Waves, 6a. Check Delegation Capability (+11 more)
 
 ### Community 649 - "app.module.ts"
-Cohesion: 0.05
+Cohesion: 0.06
 Nodes (47): AdminModule, Module, AuditModule, Module, AuthModule, Module, BannersModule, Module (+39 more)
 
 ### Community 650 - "R2 Patterns & Best Practices"
-Cohesion: 0.08
-Nodes (20): Batch Delete, Caching with Cache API, Checksum Validation & Storage Transitions, Client-Side Uploads (Presigned URLs), Conditional GET (304 Not Modified), Multipart with Progress, Public Bucket with Custom Domain, r2.dev Public URLs (+12 more)
+Cohesion: 0.18
+Nodes (11): Batch Delete, Caching with Cache API, Checksum Validation & Storage Transitions, Client-Side Uploads (Presigned URLs), Conditional GET (304 Not Modified), Multipart with Progress, Public Bucket with Custom Domain, r2.dev Public URLs (+3 more)
 
 ### Community 651 - "CreateProductDto"
-Cohesion: 0.37
+Cohesion: 0.36
 Nodes (14): CreateProductDto, CreateVariantDto, ProductQueryDto, ApiProperty, ApiPropertyOptional, IsEnum, IsNumber, IsOptional (+6 more)
 
 ### Community 653 - "2c. Action: Close"
@@ -3081,17 +3079,13 @@ Nodes (4): Native Binding (Recommended), REST API, SDK Approach Decision Tree, V
 Cohesion: 0.29
 Nodes (6): buildCommand, framework, headers, outputDirectory, rewrites, $schema
 
-### Community 669 - "Gotchas"
-Cohesion: 0.67
-Nodes (3): Gotchas, Limits, Resources
+### Community 669 - "TCP Sockets API Reference"
+Cohesion: 0.22
+Nodes (9): Complete Example, Core Function: `connect()`, Parameters, Quick Reference, Returns, See Also, `SocketAddress`, `SocketOptions` (+1 more)
 
-### Community 670 - "admin/src/app/router.tsx"
-Cohesion: 0.19
-Nodes (9): RouteErrorBoundary(), REASON_LABELS, ReturnRequest, ReturnsPage(), STATUS_BADGES, STATUS_FILTERS, DEFAULT_SETTINGS, SettingsPage() (+1 more)
-
-### Community 671 - "cache.interceptor.ts"
-Cohesion: 0.17
-Nodes (5): CACHE_TTL_KEY, CacheEntry, cacheService, CacheServiceImpl, @nestjs/core
+### Community 670 - "useToast"
+Cohesion: 0.16
+Nodes (12): useToast(), InventoryItem, InventoryPage(), StockMovement, REASON_LABELS, ReturnRequest, ReturnsPage(), STATUS_BADGES (+4 more)
 
 ### Community 672 - "Sprint {N} — {Sprint Name}"
 Cohesion: 0.13
@@ -3121,9 +3115,9 @@ Nodes (9): ALL_AVAILABLE_SIZES, CustomizerStudioConfig, CustomizerStudioPage(), 
 Cohesion: 0.15
 Nodes (13): Commit Conventions, Context Management, Core Protocol, Delegation, Model Independence, PROJECT_RULES.md — GSD Canonical Rules, Proof Requirements, Quick Reference (+5 more)
 
-### Community 682 - "🧠 BINGOOO — Persistent System Memory & Agent Context (`memory.md`)"
-Cohesion: 0.20
-Nodes (9): 1. System Identity & Mission, 2. Graphify Knowledge Graph Memory Layer, 5. Environment Variables & Secret Configuration, 6. Development Runbook & Common Commands, 7. Changelog & Architectural Decisions, 🧠 BINGOOO — Persistent System Memory & Agent Context (`memory.md`), Command Line Querying:, Graph Memory Telemetry: (+1 more)
+### Community 682 - "Core Concepts"
+Cohesion: 0.29
+Nodes (7): Accessing from Workers, Class Structure, Core Concepts, ID Generation, Lifecycle States, Special Features, Storage Options
 
 ### Community 683 - "Example: Add User Authentication"
 Cohesion: 0.17
@@ -3337,9 +3331,9 @@ Nodes (11): 2. Enterprise Relational Database (`prisma/schema.prisma` & Supabase
 Cohesion: 0.40
 Nodes (4): 1. Load TODO.md, 2. Parse and Filter, 3. Display, /check-todos Workflow
 
-### Community 736 - "payments.service.ts"
-Cohesion: 0.36
-Nodes (7): CreateOrderDto, RazorpayOrderDto, IsNumber, IsOptional, IsString, VerifyPaymentDto, IsObject
+### Community 736 - "Common Errors"
+Cohesion: 0.29
+Nodes (7): Common Errors, "Connection already registered", "Connection timeout", "Error 1016 (Origin DNS Error)", "Self-signed certificate rejected", "Tunnel credentials rotated but connections fail", "Tunnel not starting"
 
 ### Community 737 - "Discovery Template"
 Cohesion: 0.40
@@ -3410,36 +3404,44 @@ Cohesion: 0.50
 Nodes (3): Items, Priority Levels, TODO.md — Pending Items
 
 ### Community 767 - "Project State"
-Cohesion: 0.22
-Nodes (8): Active Decisions, Blockers, Concerns, Current Position, Last Action, Next Steps, Project State, Session Context
-
-### Community 769 - "prerender-seo.mjs"
 Cohesion: 0.25
-Nodes (7): baseHtml, __dirname, DIST_DIR, __filename, ROUTES, TEMPLATE_PATH, ref_url
+Nodes (7): Active Decisions, Blockers, Concerns, Current Position, Next Steps, Project State, Session Context
 
 ### Community 771 - "AppController"
 Cohesion: 0.33
 Nodes (5): AppController, ApiOperation, ApiTags, Controller, Get
 
+### Community 773 - "Connectivity Requirements"
+Cohesion: 0.33
+Nodes (6): Connectivity Requirements, Firewall Rules, Full (Recommended), IP Ranges, Minimal (Production), Outbound Ports
+
+### Community 774 - "DashboardPage.tsx"
+Cohesion: 0.47
+Nodes (5): DashboardData, DashboardPage(), formatCurrency(), formatDate(), STATUS_BADGE
+
+### Community 775 - "Best Practices"
+Cohesion: 0.40
+Nodes (5): Best Practices, Configuration, Operations, Performance, Security
+
 ## Knowledge Gaps
 - **5429 isolated node(s):** `supabase`, `name`, `private`, `version`, `type` (+5424 more)
   These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 5935 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
-- **109 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **112 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
 - **Why does `fetch()` connect `fetch` to `Smart Placement Gotchas`, `Workers VPC Connectivity`, `workers-best-practices/SKILL.md`, `Network Access`, `Gotchas & Best Practices`, `Configuration`, `Artifacts Configuration`, `Workers Best Practices — Rules`, `GraphQL Analytics API Configuration`, `R2 SQL Patterns`, `Smart Placement Configuration`, `Common Errors`, `Bingooo App Store & Play Store Compliance & Production Hardening Audit`, `Browse the Web (Experimental)`, `containers/patterns.md`, `Gotchas and Troubleshooting`, `Critical Gotchas`, `Cloudflare Workers Smart Placement`, `Web Platform APIs`, `Durable Objects Rules & Best Practices`, `Codemode (Experimental)`, `Cloudflare R2 SQL`, `containers/api.md`, `Snippets API Reference`, `Durable Objects`, `Turnstile Spin skill`?**
-  _High betweenness centrality (0.084) - this node is a cross-community bridge._
-- **Why does `HealthController` connect `HealthController` to `app.module.ts`, `saveDb`?**
+  _High betweenness centrality (0.083) - this node is a cross-community bridge._
+- **Why does `HealthController` connect `HealthController` to `app.module.ts`, `store.ts`?**
   _High betweenness centrality (0.080) - this node is a cross-community bridge._
+- **Why does `Streaming Chat with AIChatAgent` connect `Streaming Chat with AIChatAgent` to `HealthController`?**
+  _High betweenness centrality (0.040) - this node is a cross-community bridge._
 - **What connects `supabase`, `name`, `private` to the rest of the system?**
   _5429 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `GSD Planner Agent` be split into smaller, more focused modules?**
   _Cohesion score 0.0425531914893617 - nodes in this community are weakly interconnected._
 - **Should `UsersController` be split into smaller, more focused modules?**
   _Cohesion score 0.12473572938689217 - nodes in this community are weakly interconnected._
-- **Should `run-checkout-e2e.ts` be split into smaller, more focused modules?**
-  _Cohesion score 0.11693548387096774 - nodes in this community are weakly interconnected._
-- **Should `auth.controller.ts` be split into smaller, more focused modules?**
-  _Cohesion score 0.07577639751552795 - nodes in this community are weakly interconnected._
+- **Should `cn` be split into smaller, more focused modules?**
+  _Cohesion score 0.12380952380952381 - nodes in this community are weakly interconnected._

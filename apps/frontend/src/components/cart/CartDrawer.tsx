@@ -5,6 +5,8 @@ import { Drawer } from '../ui/Drawer';
 import { useCartStore } from '../../store/cart';
 import { useCart } from '../../hooks/useCart';
 import { triggerHaptic } from '../../lib/native/capacitorBridge';
+import { getCartItemMeta } from '../../lib/cartMeta';
+import { resolveImageUrl } from '../../lib/utils';
 
 export function CartDrawer() {
   const { drawerOpen, closeDrawer } = useCartStore();
@@ -118,13 +120,31 @@ export function CartDrawer() {
           ) : (
             <AnimatePresence initial={false}>
               {items.map((item: any) => {
-                const productTitle = item.product?.title || item.productTitle || 'Bingooo Garment';
-                const productSlug = item.product?.slug || '';
-                const category = item.product?.category || 'T-SHIRTS';
-                const variantColor = item.variant?.color || 'Black';
-                const variantSize = item.variant?.size || 'M';
-                const gsm = item.product?.fabricWeight || '240 GSM';
-                const imageUrl = item.product?.images?.[0]?.url || item.product?.images?.[0] || 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&w=500&q=85';
+                const meta = getCartItemMeta(
+                  item.variantId || item.variant_id || item.variant?.id || item.id,
+                  item.product?.title || item.productTitle,
+                  item.product?.slug
+                );
+                const productTitle = item.product?.title || item.productTitle || meta?.title || 'Bingooo Garment';
+                const productSlug = item.product?.slug || meta?.slug || '';
+                const rawCategory = item.product?.category?.name || item.product?.category || meta?.category || '';
+                const category = (typeof rawCategory === 'string' && rawCategory.trim()) ? rawCategory.trim() : 'APPAREL';
+
+                const variantColor = item.variant?.color || meta?.color || '';
+                const variantSize = item.variant?.size || meta?.size || '';
+                const gsm = item.product?.fabricWeight || (item.product?.gsm ? `${item.product.gsm} GSM` : '') || meta?.gsm || '';
+
+                const rawImg =
+                  item.image ||
+                  item.imageUrl ||
+                  item.product?.images?.[0]?.url ||
+                  item.product?.images?.[0] ||
+                  meta?.image;
+                const imageUrl = rawImg
+                  ? resolveImageUrl(typeof rawImg === 'string' ? rawImg : rawImg.url || rawImg.object_key)
+                  : '';
+
+                const attributes = [variantColor, variantSize, gsm].filter(Boolean);
 
                 return (
                   <motion.div
@@ -137,25 +157,34 @@ export function CartDrawer() {
                   >
                     <div className="flex gap-4 py-4.5">
                       {/* Image Thumbnail */}
-                      <div className="relative h-[105px] w-[82px] shrink-0 overflow-hidden bg-[#EDE0CC] border border-[#DDD3C5]">
-                        {productSlug ? (
-                          <Link
-                            to={`/product/${productSlug}`}
-                            onClick={closeDrawer}
-                            className="block w-full h-full"
-                          >
+                      <div className="relative h-[105px] w-[82px] shrink-0 overflow-hidden bg-[#EDE0CC] border border-[#DDD3C5] flex items-center justify-center">
+                        {imageUrl ? (
+                          productSlug ? (
+                            <Link
+                              to={`/product/${productSlug}`}
+                              onClick={closeDrawer}
+                              className="block w-full h-full"
+                            >
+                              <img
+                                src={imageUrl}
+                                alt={productTitle}
+                                className="h-full w-full object-cover"
+                              />
+                            </Link>
+                          ) : (
                             <img
                               src={imageUrl}
                               alt={productTitle}
                               className="h-full w-full object-cover"
                             />
-                          </Link>
+                          )
                         ) : (
-                          <img
-                            src={imageUrl}
-                            alt={productTitle}
-                            className="h-full w-full object-cover"
-                          />
+                          <div className="h-full w-full flex flex-col items-center justify-center p-2 text-center bg-[#EDE0CC]">
+                            <span className="font-heading font-black text-sm tracking-widest text-[#E6321C]">B.</span>
+                            <span className="text-[7px] font-mono text-[#6F6A63] uppercase tracking-wider mt-0.5 line-clamp-1">
+                              {category}
+                            </span>
+                          </div>
                         )}
                         {item.customization && (
                           <span className="absolute bottom-1 right-1 px-1 py-0.5 bg-[#E6321C] text-white text-[7px] font-mono font-bold uppercase">
@@ -201,13 +230,16 @@ export function CartDrawer() {
                             </button>
                           </div>
 
-                          <div className="mt-1 flex flex-wrap items-center gap-1.5 text-[10px] text-[#6F6A63] font-semibold">
-                            <span>{variantColor}</span>
-                            <span>/</span>
-                            <span>{variantSize}</span>
-                            <span>/</span>
-                            <span>{gsm}</span>
-                          </div>
+                          {attributes.length > 0 && (
+                            <div className="mt-1 flex flex-wrap items-center gap-1.5 text-[10px] text-[#6F6A63] font-semibold">
+                              {attributes.map((attr, idx) => (
+                                <span key={idx} className="flex items-center gap-1.5">
+                                  {idx > 0 && <span>/</span>}
+                                  <span>{attr}</span>
+                                </span>
+                              ))}
+                            </div>
+                          )}
                         </div>
 
                         {/* Stepper & Price */}

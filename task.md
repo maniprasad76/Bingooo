@@ -51,7 +51,7 @@
 
 | Task ID | Feature / Component | Description | Priority | Assignee | Status |
 |:---|:---|:---|:---|:---|:---|
-| **TSK-ACT-001** | `apps/frontend` | Implement real-time 3D garment mockup preview (Three.js / React Three Fiber) as an optional toggle alongside the 2D customizer canvas. | High | Frontend Team | In Progress |
+| **TSK-ACT-001** | `apps/frontend` | Implement real-time 3D garment mockup preview (Three.js / React Three Fiber) as an optional toggle alongside the 2D customizer canvas. | High | Frontend Team | Completed |
 | **TSK-ACT-002** | `apps/backend` | Integrate WhatsApp & SMS notification webhooks for live parcel tracking updates upon status changes. | High | Backend Team | In Progress |
 | **TSK-ACT-003** | `apps/admin` | Add exportable CSV/Excel reports for GST compliance (B2C tax breakdown, HSN 6109 summary). | Medium | Admin Team | In Progress |
 | **TSK-ACT-004** | `apps/backend` | Configure automated PostgreSQL migration runner to seamlessly sync in-memory `store.json` changes with Supabase Prisma tables. | Medium | DevOps | In Progress |

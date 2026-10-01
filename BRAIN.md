@@ -122,6 +122,10 @@ python -m graphify update .
   - Added missing `/api/(.*)` rewrite in `apps/admin/vercel.json` and production API fallback in `apps/admin/src/lib/api.ts`.
   - Normalized media upload and product enrichment URLs to eliminate broken `localhost:3000` URLs across all environments.
   - Integrated `@vercel/speed-insights` in `@bingooo/frontend` and `@bingooo/admin`.
+- **2026-10-01: Phase 3 Real-Time 3D Garment Mockup Studio (Three.js)**
+  - Built procedural Three.js 3D garment geometries (Oversized Boxy, Heavyweight Crewneck, Double-Layered Hoodie) with cotton weave bump mapping.
+  - Implemented real-time dynamic texture projection for custom typography and artwork in `CustomizerPage.tsx`.
+  - Added seamless 2D/3D studio toggle with 360° turntable orbit, view snapping, and studio lighting presets.
 - **2026-09-28: Security Hardening, Auth Guard Fixes & Catalog Restoration**
   - Patched zero-day unauthenticated password reset vulnerability with cryptographically signed tokens.
   - Hardened backend `AuthGuard` to automatically grant `SUPER_ADMIN` grants to authorized admin Google OAuth logins.

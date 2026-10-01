@@ -25,6 +25,7 @@
     "@hookform/resolvers": "^3.9.0",
     "@supabase/supabase-js": "^2.109.0",
     "@tanstack/react-query": "^5.62.0",
+    "@types/three": "^0.186.0",
     "@vercel/speed-insights": "^2.0.0",
     "canvas-confetti": "^1.9.4",
     "clsx": "^2.1.0",
@@ -35,6 +36,7 @@
     "react-dom": "^19.2.8",
     "react-hook-form": "^7.54.0",
     "react-router-dom": "^7.1.0",
+    "three": "^0.186.1",
     "zod": "^3.24.0",
     "zustand": "^5.0.0"
   },

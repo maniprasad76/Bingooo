@@ -5,7 +5,7 @@ import {
   Image as ImageIcon, Bold, Italic, Crosshair, ShoppingBag,
   RotateCw, Undo2, Redo2, Trash2, Sparkles,
   Eye, Share2, Bookmark, Download, Ruler, Copy, X,
-  User, Palette
+  User, Palette, Box, Layers
 } from 'lucide-react';
 import { useCart } from '../hooks/useCart';
 import { useToast } from '../components/ui/Toast';
@@ -13,6 +13,7 @@ import { triggerHaptic } from '../lib/native/capacitorBridge';
 import { SEO } from '../components/common/SEO';
 import { WhatsAppIcon } from '../components/ui/SocialIcons';
 import { api } from '../lib/api/client';
+import { Garment3DViewer } from '../components/studio/Garment3DViewer';
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 interface ColorOption {
@@ -360,6 +361,7 @@ export function CustomizerPage() {
   const [selectedColor, setSelectedColor] = useState<ColorOption>(GARMENTS[0].colors?.[0] || COLORS[0]);
   const [selectedSize, setSelectedSize] = useState<string>('L');
   const [viewSide, setViewSide] = useState<'FRONT' | 'BACK'>('FRONT');
+  const [studioMode, setStudioMode] = useState<'2D' | '3D'>('2D');
 
   // Dynamic active sizes and colors for currently selected garment
   const availableSizes = (selectedGarment.activeSizes && selectedGarment.activeSizes.length > 0)
@@ -1351,6 +1353,73 @@ export function CustomizerPage() {
 
           {/* ── LEFT: INTERACTIVE GARMENT CANVAS ──────────────────────────────── */}
           <div className="flex flex-col gap-3">
+            {/* Studio Mode Switcher & 3D Telemetry Bar */}
+            <div className="flex items-center justify-between px-1">
+              <div className="flex items-center gap-1.5 p-1 bg-[#ede0cc] rounded-2xl border border-[#ddd3c5]">
+                <button
+                  type="button"
+                  onClick={() => {
+                    triggerHaptic('light');
+                    setStudioMode('2D');
+                  }}
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[10px] font-bold uppercase tracking-wider transition-all cursor-pointer ${
+                    studioMode === '2D'
+                      ? 'bg-[#171717] text-white shadow-sm'
+                      : 'text-[#6f6a63] hover:text-[#171717]'
+                  }`}
+                >
+                  <Layers size={13} />
+                  <span>2D Canvas</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    triggerHaptic('medium');
+                    setStudioMode('3D');
+                  }}
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[10px] font-bold uppercase tracking-wider transition-all cursor-pointer ${
+                    studioMode === '3D'
+                      ? 'bg-[#E6321C] text-white shadow-sm'
+                      : 'text-[#6f6a63] hover:text-[#171717]'
+                  }`}
+                >
+                  <Box size={13} />
+                  <span>3D Studio</span>
+                  <span className="text-[8px] bg-white/20 px-1 py-0.2 rounded font-mono">NEW</span>
+                </button>
+              </div>
+
+              {studioMode === '3D' && (
+                <div className="hidden sm:flex items-center gap-1.5 text-[10px] font-semibold text-[#6f6a63]">
+                  <Sparkles size={12} className="text-[#E6321C]" />
+                  <span>Photorealistic WebGL 360° Mockup</span>
+                </div>
+              )}
+            </div>
+
+            {studioMode === '3D' ? (
+              <div className="w-full aspect-[4/5] sm:aspect-square max-h-[580px]">
+                <Garment3DViewer
+                  garmentId={selectedGarment.id}
+                  color={selectedColor.hex}
+                  viewSide={viewSide}
+                  customText={customText}
+                  fontFamily={activeFont.family}
+                  textColor={textColor || selectedColor.textContrast}
+                  letterSpacing={letterSpacing}
+                  isBold={isBold}
+                  isItalic={isItalic}
+                  isUppercase={isUppercase}
+                  uploadedImage={uploadedImage}
+                  designMode={designMode}
+                  dragXVal={dragX.get()}
+                  dragYVal={dragY.get()}
+                  zoomScale={zoomScale}
+                  rotation={rotation}
+                  onViewSideChange={setViewSide}
+                />
+              </div>
+            ) : (
             <div
               ref={canvasRef}
               className="relative w-full aspect-[4/5] sm:aspect-square max-h-[580px] rounded-3xl bg-[#ede0cc] border border-[#ddd3c5] overflow-hidden flex items-center justify-center select-none shadow-sm"
@@ -1542,6 +1611,7 @@ export function CustomizerPage() {
                 </button>
               </div>
             </div>
+            )}
 
             {/* Quality Specs Pill */}
             <div className="p-3 bg-white border border-[#ddd3c5] rounded-2xl text-[10px] text-[#6f6a63] flex items-center justify-between shadow-sm">

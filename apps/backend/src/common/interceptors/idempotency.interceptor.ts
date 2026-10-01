@@ -33,7 +33,11 @@ export class IdempotencyInterceptor implements NestInterceptor {
       return next.handle();
     }
 
-    const cleanKey = idempotencyKey.trim();
+    // Scope the cache to caller + route: a replayed key from another user (or
+    // another endpoint) must never return someone else's stored response.
+    const caller = (req as any).user?.id || req.ip || 'anonymous';
+    const route = `${method}:${req.originalUrl.split('?')[0]}`;
+    const cleanKey = `${caller}:${route}:${idempotencyKey.trim()}`;
 
     // Check if response is already cached
     const cached = idempotencyService.get(cleanKey);
@@ -46,7 +50,7 @@ export class IdempotencyInterceptor implements NestInterceptor {
       }
 
       res.setHeader('X-Cache-Lookup', 'HIT');
-      res.setHeader('X-Idempotency-Key', cleanKey);
+      res.setHeader('X-Idempotency-Key', idempotencyKey.trim());
       if (cached.statusCode) {
         res.status(cached.statusCode);
       }
@@ -63,7 +67,7 @@ export class IdempotencyInterceptor implements NestInterceptor {
     }
 
     res.setHeader('X-Cache-Lookup', 'MISS');
-    res.setHeader('X-Idempotency-Key', cleanKey);
+    res.setHeader('X-Idempotency-Key', idempotencyKey.trim());
 
     return next.handle().pipe(
       tap((data) => {

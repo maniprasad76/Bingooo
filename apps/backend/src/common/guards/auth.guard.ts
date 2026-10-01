@@ -8,18 +8,33 @@ import { Request } from 'express';
 import { verifyToken, isTokenRevoked } from '../utils/crypto.util';
 import { db, saveDb } from '../database/store';
 
-const SUPER_ADMIN_EMAILS = [
-  'basaprasaduu@gmail.com',
-  'admin@bingooo.in',
-  'prasad@bingooo.co.in',
-];
+const SUPABASE_FETCH_TIMEOUT_MS = 3000;
+
+/** Super-admin emails come only from the ADMIN_EMAILS env var (comma-separated). */
+function getAdminEmails(): string[] {
+  return (process.env.ADMIN_EMAILS || '')
+    .split(',')
+    .map((e) => e.trim().toLowerCase())
+    .filter(Boolean);
+}
+
+/** Suspended/disabled accounts must not authenticate, whatever token they hold. */
+function isActiveUser(user: any): boolean {
+  return !user.status || String(user.status).toLowerCase() === 'active';
+}
+
+function rejectInactive(): never {
+  throw new UnauthorizedException({
+    code: 'ACCOUNT_DISABLED',
+    message: 'This account has been disabled. Please contact support.',
+  });
+}
 
 /**
  * Validates authentication tokens and resolves caller's RBAC grants.
  * Supports:
  * 1. Backend-issued JWT tokens (via Bearer header or HTTP-only cookie)
  * 2. Supabase Auth tokens when service role key is present
- * 3. Local development admin token (only in non-production with explicit flag)
  */
 @Injectable()
 export class AuthGuard implements CanActivate {
@@ -56,13 +71,32 @@ export class AuthGuard implements CanActivate {
     // 1. Backend-issued JWT token
     const tokenPayload = verifyToken(token);
     if (tokenPayload) {
-      const user = db.users.find((u) => u.id === tokenPayload.sub || u.email === tokenPayload.email);
-      const roleCode = user?.role || tokenPayload.role || 'CUSTOMER';
+      // Roles always come from the stored user, never from the token claim, so
+      // a deleted account cannot keep acting on a still-unexpired token.
+      const user = db.users.find((u) => u.id === tokenPayload.sub);
+      if (!user) {
+        throw new UnauthorizedException({
+          code: 'AUTH_INVALID',
+          message: 'Your session is invalid or has expired. Please log in again.',
+        });
+      }
+      if (!isActiveUser(user)) rejectInactive();
+
+      // A password change/reset invalidates every token issued before it.
+      const changedAt = user.password_changed_at ? Date.parse(user.password_changed_at) : NaN;
+      if (!Number.isNaN(changedAt) && (tokenPayload.iat ?? 0) < Math.floor(changedAt / 1000)) {
+        throw new UnauthorizedException({
+          code: 'SESSION_REVOKED',
+          message: 'Your password was changed. Please log in again.',
+        });
+      }
+
+      const roleCode = user.role || 'CUSTOMER';
       const roleObj = db.roles.find((r) => r.code === roleCode || r.name.toUpperCase() === roleCode.toUpperCase());
 
       (request as any).user = {
-        id: user ? user.id : tokenPayload.sub,
-        email: user ? user.email : tokenPayload.email,
+        id: user.id,
+        email: user.email,
         roles: [roleCode.toUpperCase()],
         permissions: roleObj?.permissions || (roleCode === 'SUPER_ADMIN' ? ['*'] : ['orders.own', 'profile.own']),
         token,
@@ -74,8 +108,7 @@ export class AuthGuard implements CanActivate {
     // 2. Supabase Auth verification
     // Uses direct REST call to Supabase /auth/v1/user: zero-dependency, works in all Node/Docker
     // environments without WebSocket crashes or heavy client instantiation overhead.
-    const supabaseUrl =
-      process.env.SUPABASE_URL || 'https://zqmrmgwxhrdscippanuv.supabase.co';
+    const supabaseUrl = process.env.SUPABASE_URL;
     const supabaseKey =
       process.env.SUPABASE_SECRET_KEY ||
       process.env.SUPABASE_SERVICE_ROLE_KEY ||
@@ -91,23 +124,32 @@ export class AuthGuard implements CanActivate {
             Authorization: `Bearer ${token}`,
             apikey: supabaseKey,
           },
+          signal: AbortSignal.timeout(SUPABASE_FETCH_TIMEOUT_MS),
         });
 
         if (response.ok) {
           const authData = (await response.json()) as any;
           if (authData && authData.id) {
             const userEmail = (authData.email || '').toLowerCase().trim();
+            // An email only proves identity once Supabase has confirmed it.
+            // Without this, anyone could register an admin's (or customer's)
+            // address and inherit that account or super-admin rights.
+            const emailConfirmed = Boolean(authData.email_confirmed_at);
             const isAuthorizedSuperAdmin =
-              SUPER_ADMIN_EMAILS.includes(userEmail) ||
-              (Boolean(process.env.ADMIN_EMAILS) &&
-                (process.env.ADMIN_EMAILS || '')
-                  .split(',')
-                  .map((e) => e.trim().toLowerCase())
-                  .includes(userEmail));
+              emailConfirmed && Boolean(userEmail) && getAdminEmails().includes(userEmail);
 
-            let user = db.users.find(
-              (u) => u.id === authData.id || u.email?.toLowerCase() === userEmail,
-            );
+            let user = db.users.find((u) => u.id === authData.id);
+            if (!user && userEmail) {
+              const emailMatch = db.users.find((u) => u.email?.toLowerCase() === userEmail);
+              if (emailMatch && !emailConfirmed) {
+                throw new UnauthorizedException({
+                  code: 'EMAIL_NOT_CONFIRMED',
+                  message: 'Please confirm your email address before signing in.',
+                });
+              }
+              user = emailMatch;
+            }
+            if (user && !isActiveUser(user)) rejectInactive();
 
             if (!user && authData.email) {
               user = {
@@ -151,8 +193,9 @@ export class AuthGuard implements CanActivate {
           }
 
         }
-      } catch {
-        // Fall through to unauthorized exception
+      } catch (err) {
+        if (err instanceof UnauthorizedException) throw err;
+        // Network/timeout errors fall through to the generic unauthorized response
       }
     }
 

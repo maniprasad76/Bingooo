@@ -18,6 +18,18 @@ const BRAND = {
   logoText: 'BINGOOO<span style="color:#E6321C">.</span>',
 };
 
+// ── HTML escaping ─────────────────────────────────────────────────
+// Customer- and admin-entered values (names, addresses, tracking text) are
+// interpolated into HTML; escape them so they cannot inject markup or links.
+function escapeHtml(value: unknown): string {
+  return String(value ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
 // ── Resend REST helper ─────────────────────────────────────────────
 async function sendViaResend(payload: {
   from: string;
@@ -149,13 +161,13 @@ export class EmailService {
     recipientName?: string,
   ): Promise<void> {
     const resetUrl = `${BRAND.url}/reset-password?token=${encodeURIComponent(resetToken)}`;
-    const greeting = recipientName ? `Hi ${recipientName.split(' ')[0]},` : 'Hi there,';
+    const greeting = recipientName ? `Hi ${escapeHtml(recipientName.split(' ')[0])},` : 'Hi there,';
 
     const body = `
       <h1 style="margin:0 0 8px;font-size:24px;font-weight:800;color:${BRAND.charcoal};letter-spacing:-0.5px;">Reset your password</h1>
       <p style="margin:0 0 24px;font-size:14px;color:#6B6356;">${greeting}</p>
       <p style="margin:0 0 24px;font-size:15px;line-height:1.6;color:${BRAND.charcoal};">
-        We received a request to reset the password for your BINGOOO. account associated with <strong>${to}</strong>.
+        We received a request to reset the password for your BINGOOO. account associated with <strong>${escapeHtml(to)}</strong>.
         If you made this request, click the button below. This link expires in <strong>1 hour</strong>.
       </p>
 
@@ -235,8 +247,8 @@ export class EmailService {
         (item) => `
         <tr>
           <td style="padding:10px 0;border-bottom:1px solid rgba(23,23,23,0.06);">
-            <p style="margin:0 0 2px;font-size:14px;font-weight:600;color:${BRAND.charcoal};">${item.title}</p>
-            <p style="margin:0;font-size:12px;color:#9E9285;">SKU: ${item.sku} &middot; Qty: ${item.quantity}</p>
+            <p style="margin:0 0 2px;font-size:14px;font-weight:600;color:${BRAND.charcoal};">${escapeHtml(item.title)}</p>
+            <p style="margin:0;font-size:12px;color:#9E9285;">SKU: ${escapeHtml(item.sku)} &middot; Qty: ${item.quantity}</p>
           </td>
           <td style="padding:10px 0;border-bottom:1px solid rgba(23,23,23,0.06);text-align:right;font-size:14px;font-weight:600;color:${BRAND.charcoal};">
             ${formatINR(item.price * item.quantity)}
@@ -249,7 +261,7 @@ export class EmailService {
 
     const body = `
       <h1 style="margin:0 0 6px;font-size:22px;font-weight:800;color:${BRAND.charcoal};letter-spacing:-0.5px;">Order confirmed! 🎉</h1>
-      <p style="margin:0 0 24px;font-size:14px;color:#6B6356;">Hi ${firstName}, thanks for your order. We're on it!</p>
+      <p style="margin:0 0 24px;font-size:14px;color:#6B6356;">Hi ${escapeHtml(firstName)}, thanks for your order. We're on it!</p>
 
       <!-- Order number badge -->
       <div style="background-color:rgba(23,23,23,0.04);border-radius:8px;padding:16px 20px;margin-bottom:28px;display:flex;justify-content:space-between;align-items:center;">
@@ -292,9 +304,9 @@ export class EmailService {
       <div style="background-color:rgba(23,23,23,0.04);border-radius:8px;padding:16px 20px;">
         <p style="margin:0 0 8px;font-size:11px;font-weight:600;color:#9E9285;letter-spacing:1px;text-transform:uppercase;">Shipping To</p>
         <p style="margin:0;font-size:14px;line-height:1.6;color:${BRAND.charcoal};">
-          ${params.shippingAddress.full_name || recipientName}<br/>
-          ${params.shippingAddress.address_line1 || ''}<br/>
-          ${params.shippingAddress.city || ''}, ${params.shippingAddress.state || ''} ${params.shippingAddress.pincode || ''}
+          ${escapeHtml(params.shippingAddress.full_name || recipientName)}<br/>
+          ${escapeHtml(params.shippingAddress.address_line1)}<br/>
+          ${escapeHtml(params.shippingAddress.city)}, ${escapeHtml(params.shippingAddress.state)} ${escapeHtml(params.shippingAddress.pincode)}
         </p>
       </div>
     `;
@@ -374,8 +386,8 @@ export class EmailService {
 
     const config = statusConfig[newStatus] || {
       emoji: '📋',
-      title: `Order Update: ${newStatus}`,
-      message: `Your order <strong>${orderNumber}</strong> status has been updated to <strong>${newStatus}</strong>.`,
+      title: `Order Update: ${escapeHtml(newStatus)}`,
+      message: `Your order <strong>${orderNumber}</strong> status has been updated to <strong>${escapeHtml(newStatus)}</strong>.`,
       color: BRAND.charcoal,
     };
 
@@ -383,9 +395,9 @@ export class EmailService {
       params.trackingNumber
         ? `<div style="background-color:rgba(23,23,23,0.04);border-radius:8px;padding:16px 20px;margin-top:20px;">
           <p style="margin:0 0 4px;font-size:11px;font-weight:600;color:#9E9285;letter-spacing:1px;text-transform:uppercase;">Tracking</p>
-          <p style="margin:0;font-size:15px;font-weight:700;color:${BRAND.charcoal};">${params.trackingNumber}</p>
-          ${params.carrier ? `<p style="margin:2px 0 0;font-size:13px;color:#6B6356;">via ${params.carrier}</p>` : ''}
-          ${params.estimatedDelivery ? `<p style="margin:4px 0 0;font-size:13px;color:#6B6356;">Estimated delivery: <strong>${params.estimatedDelivery}</strong></p>` : ''}
+          <p style="margin:0;font-size:15px;font-weight:700;color:${BRAND.charcoal};">${escapeHtml(params.trackingNumber)}</p>
+          ${params.carrier ? `<p style="margin:2px 0 0;font-size:13px;color:#6B6356;">via ${escapeHtml(params.carrier)}</p>` : ''}
+          ${params.estimatedDelivery ? `<p style="margin:4px 0 0;font-size:13px;color:#6B6356;">Estimated delivery: <strong>${escapeHtml(params.estimatedDelivery)}</strong></p>` : ''}
         </div>`
         : '';
 
@@ -393,7 +405,7 @@ export class EmailService {
       <div style="text-align:center;margin-bottom:28px;">
         <div style="font-size:44px;margin-bottom:12px;">${config.emoji}</div>
         <h1 style="margin:0 0 8px;font-size:22px;font-weight:800;color:${BRAND.charcoal};">${config.title}</h1>
-        <p style="margin:0;font-size:14px;color:#6B6356;">Hi ${firstName},</p>
+        <p style="margin:0;font-size:14px;color:#6B6356;">Hi ${escapeHtml(firstName)},</p>
       </div>
 
       <p style="margin:0 0 24px;font-size:15px;line-height:1.6;color:${BRAND.charcoal};">${config.message}</p>

@@ -16,6 +16,7 @@ import { UsersService } from './users.service';
 import { AuthGuard } from '../common/guards/auth.guard';
 import { RolesGuard } from '../common/guards/roles.guard';
 import { Permissions } from '../common/decorators/permissions.decorator';
+import { CreateStaffDto, UpdateStaffDto } from './dto/staff.dto';
 
 @ApiTags('Users')
 @Controller('users')
@@ -111,8 +112,8 @@ export class UsersController {
   @Permissions('staff.manage')
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Create a new staff user (Staff Manager only)' })
-  createStaffUser(@Body() body: { name: string; email: string; role: string; password?: string }) {
-    return this.usersService.createStaffUser(body);
+  createStaffUser(@Body() body: CreateStaffDto, @Req() req: any) {
+    return this.usersService.createStaffUser(body, req.user);
   }
 
   @Patch('staff/:id')
@@ -120,11 +121,8 @@ export class UsersController {
   @Permissions('staff.manage')
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Update staff user role or status (Staff Manager only)' })
-  updateStaffUser(
-    @Param('id') id: string,
-    @Body() body: Partial<{ role: string; status: string; name: string }>,
-  ) {
-    return this.usersService.updateStaffUser(id, body);
+  updateStaffUser(@Param('id') id: string, @Body() body: UpdateStaffDto, @Req() req: any) {
+    return this.usersService.updateStaffUser(id, body, req.user);
   }
 
   @Get()

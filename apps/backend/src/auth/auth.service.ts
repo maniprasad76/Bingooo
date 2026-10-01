@@ -22,6 +22,7 @@ import {
   ForgotPasswordDto,
   ResetPasswordDto,
 } from './dto/auth.dto';
+import { EmailService } from '../email/email.service';
 
 export {
   SignupDto,
@@ -32,6 +33,11 @@ export {
   ResetPasswordDto,
 };
 
+/** Reset tokens are stored hashed so a leaked store/backup cannot be replayed. */
+function hashResetToken(token: string): string {
+  return crypto.createHash('sha256').update(token).digest('hex');
+}
+
 function sanitizeUser(user: any) {
   const { password_hash, ...rest } = user;
   return rest;
@@ -39,6 +45,7 @@ function sanitizeUser(user: any) {
 
 @Injectable()
 export class AuthService {
+  constructor(private readonly emailService: EmailService) {}
 
   async signup(dto: SignupDto) {
     const existing = db.users.find((u) => u.email.toLowerCase() === dto.email.toLowerCase());
@@ -189,10 +196,13 @@ export class AuthService {
       });
     }
 
+    const now = new Date().toISOString();
     user.password_hash = hashPassword(dto.newPassword);
-    user.updated_at = new Date().toISOString();
+    user.password_changed_at = now; // AuthGuard rejects tokens issued before this
+    user.updated_at = now;
+    saveDb();
 
-    return { success: true, message: 'Password changed successfully.' };
+    return { success: true, message: 'Password changed successfully. Please log in again.' };
   }
 
   async forgotPassword(email: string) {
@@ -200,11 +210,13 @@ export class AuthService {
     if (user) {
       const resetToken = crypto.randomBytes(32).toString('hex');
       const resetTokenExpiry = Date.now() + 3600000; // 1 hour validity
-      user.reset_token = resetToken;
+      user.reset_token = hashResetToken(resetToken);
       user.reset_token_expiry = resetTokenExpiry;
       user.updated_at = new Date().toISOString();
       saveDb();
-      console.log(`[Auth Security] Password reset token dispatched for ${user.email}: ${resetToken}`);
+      this.emailService
+        .sendPasswordResetEmail(user.email, resetToken, user.full_name)
+        .catch(() => {});
     }
     // Always return generic success to prevent email enumeration
     return {
@@ -228,8 +240,9 @@ export class AuthService {
       });
     }
 
+    const tokenHash = hashResetToken(token);
     const user = db.users.find(
-      (u) => u.reset_token && u.reset_token === token && u.reset_token_expiry > Date.now(),
+      (u) => u.reset_token && u.reset_token === tokenHash && u.reset_token_expiry > Date.now(),
     );
 
     if (!user) {
@@ -239,10 +252,12 @@ export class AuthService {
       });
     }
 
+    const now = new Date().toISOString();
     user.password_hash = hashPassword(newPass);
+    user.password_changed_at = now; // AuthGuard rejects tokens issued before this
     user.reset_token = null;
     user.reset_token_expiry = null;
-    user.updated_at = new Date().toISOString();
+    user.updated_at = now;
     saveDb();
 
     return {

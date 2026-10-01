@@ -143,7 +143,8 @@ export class ReviewsService {
       body: data.body || '',
       fit_feedback: data.fitFeedback || 'true_to_size',
       status: 'approved',
-      verified_buyer: true,
+      // Only a real purchase earns the badge; staff-entered reviews do not.
+      verified_buyer: hasPurchased,
       image_url: data.imageUrl || null,
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),

@@ -44,6 +44,9 @@ export const db = {
     { key: 'users.manage', label: 'Manage Staff Members', group: 'Team' },
     { key: 'roles.manage', label: 'Modify Permissions Matrix', group: 'Team' },
     { key: 'settings.manage', label: 'Configure Store Parameters', group: 'Settings' },
+    { key: 'analytics.read', label: 'View Dashboard & Analytics', group: 'Settings' },
+    { key: 'audit.read', label: 'View Audit Trail', group: 'Settings' },
+    { key: 'backups.manage', label: 'Create & Restore Backups', group: 'Settings' },
   ] as any[],
 
   inventory_movements: [] as any[],
@@ -101,12 +104,30 @@ export function registerSaveHook(hook: SaveHook): void {
   saveHooks.push(hook);
 }
 
+/**
+ * Write via a temp file + rename so a crash mid-write can never leave a
+ * truncated store.json behind (rename is atomic on the same filesystem).
+ */
+function writeFileAtomic(file: string, contents: string) {
+  const tmp = `${file}.${process.pid}.tmp`;
+  fs.writeFileSync(tmp, contents, 'utf-8');
+  try {
+    fs.renameSync(tmp, file);
+  } catch (err: any) {
+    // Windows can refuse to replace a file another process holds open
+    // (editor, antivirus). Fall back to copy so the save is not lost.
+    if (err?.code !== 'EPERM' && err?.code !== 'EBUSY') throw err;
+    fs.copyFileSync(tmp, file);
+    fs.unlinkSync(tmp);
+  }
+}
+
 export function saveDb() {
   try {
     if (!fs.existsSync(DATA_DIR)) {
       fs.mkdirSync(DATA_DIR, { recursive: true });
     }
-    fs.writeFileSync(STORE_FILE, JSON.stringify(db, null, 2), 'utf-8');
+    writeFileAtomic(STORE_FILE, JSON.stringify(db, null, 2));
 
     // Notify registered hooks (e.g. rebuild in-memory indexes) without circular import
     for (const hook of saveHooks) {
@@ -121,27 +142,32 @@ export function saveDb() {
   }
 }
 
-// Load persisted state from disk if available, otherwise initialize file
-try {
-  let storePathToLoad: string | null = null;
-  if (fs.existsSync(STORE_FILE)) {
-    storePathToLoad = STORE_FILE;
-  } else if (fs.existsSync(BUNDLED_STORE_FILE)) {
-    storePathToLoad = BUNDLED_STORE_FILE;
-  }
+// Load persisted state from disk if available, otherwise initialize file.
+// A store that exists but cannot be parsed is fatal: falling back to the empty
+// seed would let the next saveDb() overwrite every user, order and product.
+let storePathToLoad: string | null = null;
+if (fs.existsSync(STORE_FILE)) {
+  storePathToLoad = STORE_FILE;
+} else if (fs.existsSync(BUNDLED_STORE_FILE)) {
+  storePathToLoad = BUNDLED_STORE_FILE;
+}
 
-  if (storePathToLoad) {
-    const raw = fs.readFileSync(storePathToLoad, 'utf-8');
-    const parsed = JSON.parse(raw);
-    if (parsed && typeof parsed === 'object') {
-      for (const [key, val] of Object.entries(parsed)) {
-        (db as any)[key] = val;
-      }
-    }
-  } else {
-    saveDb();
+if (storePathToLoad) {
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(fs.readFileSync(storePathToLoad, 'utf-8'));
+  } catch (err) {
+    throw new Error(
+      `[Database] ${storePathToLoad} is unreadable or corrupt; refusing to start so it is not ` +
+        `overwritten. Restore it from data/backups/ before restarting. Cause: ${(err as Error).message}`,
+    );
   }
-} catch (err) {
-  console.error('[Database] Could not load persisted store.json, using in-memory seed:', err);
+  if (parsed && typeof parsed === 'object') {
+    for (const [key, val] of Object.entries(parsed)) {
+      (db as any)[key] = val;
+    }
+  }
+} else {
+  saveDb();
 }
 

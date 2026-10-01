@@ -61,14 +61,19 @@ export class CartController {
 
   @Patch('items/:id')
   @ApiOperation({ summary: 'Update cart item quantity' })
-  updateItem(@Param('id') id: string, @Body() dto: UpdateCartItemDto) {
-    return this.cartService.updateItem(id, dto);
+  updateItem(
+    @Req() req: any,
+    @Param('id') id: string,
+    @Body() dto: UpdateCartItemDto,
+    @Headers('x-session-id') sessionId?: string,
+  ) {
+    return this.cartService.updateItem(id, dto, this.extractVerifiedUserId(req), sessionId);
   }
 
   @Delete('items/:id')
   @ApiOperation({ summary: 'Remove item from cart' })
-  removeItem(@Param('id') id: string) {
-    return this.cartService.removeItem(id);
+  removeItem(@Req() req: any, @Param('id') id: string, @Headers('x-session-id') sessionId?: string) {
+    return this.cartService.removeItem(id, this.extractVerifiedUserId(req), sessionId);
   }
 
   @Delete()

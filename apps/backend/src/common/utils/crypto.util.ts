@@ -105,7 +105,9 @@ export function generateToken(payload: { userId: string; email: string; role: st
   };
 }
 
-export function verifyToken(token: string): { sub: string; email: string; role: string; jti?: string } | null {
+export function verifyToken(
+  token: string,
+): { sub: string; email: string; role: string; jti?: string; iat?: number; exp: number } | null {
   try {
     if (isTokenRevoked(token)) return null;
 
@@ -124,7 +126,8 @@ export function verifyToken(token: string): { sub: string; email: string; role: 
     }
 
     const payload = JSON.parse(Buffer.from(body, 'base64url').toString('utf8'));
-    if (payload.exp && payload.exp < Math.floor(Date.now() / 1000)) return null;
+    // Every token this server issues carries `exp`; one without it is not ours.
+    if (typeof payload.exp !== 'number' || payload.exp < Math.floor(Date.now() / 1000)) return null;
     if (payload.jti && isTokenRevoked(payload.jti)) return null;
 
     return payload;

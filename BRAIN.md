@@ -124,6 +124,13 @@ python -m graphify update .
   - Integrated `@vercel/speed-insights` in `@bingooo/frontend` and `@bingooo/admin`.
 - **2026-10-01: Cart Drawer Item Integrity & Image Accuracy Fix**
   - Resolved cart drawer and cart page displaying mismatching placeholder t-shirt images and fake swatch colors by enriching backend cart item payloads and persisting client-side product metadata.
+- **2026-10-01: Security Audit Phase 1 — Payment, RBAC & Identity Hardening**
+  - Razorpay verify now binds the signature to its own payment record and the caller's order (closes ₹1-capture-any-order); create/verify require auth; webhook dedupes on `x-razorpay-event-id`, requires raw body, only moves forward.
+  - `RolesGuard` denies by default when a route has no `@Permissions`; admin/backup/audit routes now declare `analytics.read`, `settings.manage`, `backups.manage`, `audit.read`; settings use an allow-listed DTO.
+  - `AuthGuard`: super-admin only for confirmed Supabase emails in `ADMIN_EMAILS` (hardcoded list removed), no unverified email account-linking, suspended/deleted users rejected, password change/reset revokes older tokens.
+  - Backup label path traversal fixed; staff roles validated (only SUPER_ADMIN grants ADMIN/SUPER_ADMIN, no default password); reviews/checkout/cart/returns bound to the authenticated owner; idempotency cache scoped per caller+route; email templates HTML-escaped; Vercel CORS allow-list enforced; `store.json` written atomically and never overwritten when corrupt.
+  - `EmailModule` registered (transactional email was never wired); password reset now emails a hashed-at-rest token instead of logging it.
+  - Frontend: `admin_origin` allow-listed before tokens are forwarded; service worker caches public catalog API only and caches are cleared on sign-out.
 - **2026-10-01: Phase 3 Automated WhatsApp Order Confirmation & Live Tracking (Plan 3.2)**
   - Implemented `WhatsAppService` in `apps/backend/src/notifications/` with support for Meta Cloud API, webhooks, and simulated fallbacks.
   - Automatically triggers formatted WhatsApp notifications upon order placement (`OrdersService.createOrder`) and payment capture (`PaymentsService`).

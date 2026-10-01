@@ -1,31 +1,41 @@
 import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { v4 as uuidv4 } from 'uuid';
+import { IsIn, IsNotEmpty, IsNumber, IsOptional, IsString, MaxLength } from 'class-validator';
 import { db, saveDb } from '../common/database/store';
 
-export interface CreateReturnDto {
-  orderId?: string;
-  orderNumber: string;
-  garmentTitle: string;
-  size: string;
-  reason: 'size_fit' | 'print_defect' | 'wrong_item' | 'fabric_feel';
-  comments: string;
-  refundAmount?: number;
+export class CreateReturnDto {
+  @IsOptional() @IsString() @MaxLength(100) orderId?: string;
+  @IsString() @IsNotEmpty() @MaxLength(50) orderNumber!: string;
+  @IsString() @MaxLength(200) garmentTitle!: string;
+  @IsString() @MaxLength(20) size!: string;
+  @IsIn(['size_fit', 'print_defect', 'wrong_item', 'fabric_feel'])
+  reason!: 'size_fit' | 'print_defect' | 'wrong_item' | 'fabric_feel';
+  @IsString() @MaxLength(2000) comments!: string;
+  /** Accepted for client compatibility but ignored: refunds are derived from the order. */
+  @IsOptional() @IsNumber() refundAmount?: number;
 }
 
 @Injectable()
 export class ReturnsService {
   /** Create customer return request */
   create(userId: string, dto: CreateReturnDto) {
+    // Returns can only be raised against the caller's own orders.
+    const orderNumber = dto.orderNumber.trim().toUpperCase();
     const order = db.orders.find(
-      (o) => o.order_number === dto.orderNumber || o.id === dto.orderId,
+      (o) =>
+        o.user_id === userId &&
+        (o.order_number?.toUpperCase() === orderNumber || (!!dto.orderId && o.id === dto.orderId)),
     );
+    if (!order) {
+      throw new NotFoundException({ code: 'ORDER_NOT_FOUND', message: 'Order not found on your account.' });
+    }
 
     const user = db.users.find((u) => u.id === userId);
 
     const newReturn = {
-      id: `ret-${Date.now()}`,
-      order_id: order ? order.id : (dto.orderId || uuidv4()),
-      order_number: dto.orderNumber,
+      id: `ret-${uuidv4()}`,
+      order_id: order.id,
+      order_number: order.order_number,
       user_id: userId,
       customer_name: user ? user.full_name : (order?.shipping_address?.name || 'Customer'),
       customer_phone: user ? user.phone : (order?.shipping_address?.phone || ''),
@@ -33,7 +43,7 @@ export class ReturnsService {
       size: dto.size,
       reason: dto.reason,
       comments: dto.comments,
-      refund_amount: dto.refundAmount || order?.total || 1299,
+      refund_amount: order.total,
       status: 'requested',
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
@@ -46,7 +56,7 @@ export class ReturnsService {
       id: `notif-${Date.now()}`,
       category: 'order',
       severity: 'warning',
-      title: `New Return Request (#${dto.orderNumber})`,
+      title: `New Return Request (#${order.order_number})`,
       description: `${newReturn.customer_name} requested return for ${dto.garmentTitle} (${dto.reason})`,
       link_href: '/returns',
       link_text: 'Review in Returns Queue →',

@@ -21,15 +21,23 @@ export class RolesGuard implements CanActivate {
       context.getClass(),
     ]);
 
-    // No permissions required — allow
-    if (!requiredPermissions || requiredPermissions.length === 0) {
-      return true;
-    }
-
     const request = context.switchToHttp().getRequest();
     const user = request.user;
 
     if (!user) {
+      throw new ForbiddenException({
+        code: 'FORBIDDEN',
+        message: 'Access denied',
+      });
+    }
+
+    // Deny by default: a route guarded by RolesGuard but missing @Permissions
+    // would otherwise be open to every authenticated customer. Only wildcard
+    // holders may reach such a route until it declares what it needs.
+    if (!requiredPermissions || requiredPermissions.length === 0) {
+      if (user.roles?.includes('SUPER_ADMIN') || user.permissions?.includes('*')) {
+        return true;
+      }
       throw new ForbiddenException({
         code: 'FORBIDDEN',
         message: 'Access denied',

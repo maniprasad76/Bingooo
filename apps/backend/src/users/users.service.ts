@@ -1,7 +1,17 @@
-import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  ConflictException,
+  BadRequestException,
+  ForbiddenException,
+} from '@nestjs/common';
 import { v4 as uuidv4 } from 'uuid';
 import { db, saveDb } from '../common/database/store';
 import { hashPassword } from '../common/utils/crypto.util';
+import { CreateStaffDto, UpdateStaffDto } from './dto/staff.dto';
+
+/** Roles that bypass every permission check in RolesGuard. */
+const PRIVILEGED_ROLES = ['SUPER_ADMIN', 'ADMIN'];
 
 
 @Injectable()
@@ -199,41 +209,67 @@ export class UsersService {
       });
   }
 
-  createStaffUser(data: { name: string; email: string; role: string; password?: string }) {
-    const existing = db.users.find((u) => u.email.toLowerCase() === data.email.toLowerCase().trim());
+  /**
+   * Resolve and authorise a staff role assignment. The role must exist, cannot
+   * be CUSTOMER, and the roles that bypass every permission check (ADMIN,
+   * SUPER_ADMIN) can only be granted by a SUPER_ADMIN.
+   */
+  private resolveStaffRole(rawRole: string, caller: { roles?: string[] }): string {
+    const code = rawRole.toUpperCase().trim().replace(/\s+/g, '_');
+    const role = db.roles.find((r) => r.code === code);
+    if (!role || code === 'CUSTOMER') {
+      throw new BadRequestException({ code: 'INVALID_ROLE', message: `Unknown staff role "${rawRole}".` });
+    }
+    if (PRIVILEGED_ROLES.includes(code) && !caller.roles?.includes('SUPER_ADMIN')) {
+      throw new ForbiddenException({ code: 'FORBIDDEN', message: 'Only a Super Admin can grant this role.' });
+    }
+    return code;
+  }
+
+  createStaffUser(data: CreateStaffDto, caller: { id: string; roles?: string[] }) {
+    const email = data.email.toLowerCase().trim();
+    const existing = db.users.find((u) => u.email.toLowerCase() === email);
     if (existing) {
       throw new ConflictException({ code: 'USER_EXISTS', message: 'User with this email already exists.' });
     }
 
-    const defaultPass = data.password || 'Staff@123456';
+    const now = new Date().toISOString();
     const newStaff = {
-      id: `staff-${Date.now()}`,
-      email: data.email.toLowerCase().trim(),
-      password_hash: hashPassword(defaultPass),
+      id: `staff-${uuidv4()}`,
+      email,
+      password_hash: hashPassword(data.password),
       full_name: data.name.trim(),
       phone: '',
-      role: data.role.toUpperCase().replace(/\s+/g, '_'),
+      role: this.resolveStaffRole(data.role, caller),
       status: 'active',
       avatar_key: null,
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
+      created_at: now,
+      updated_at: now,
     };
 
     db.users.push(newStaff);
+    saveDb();
     const { password_hash, ...safe } = newStaff;
     return { ...safe, name: newStaff.full_name, twoFactorEnabled: false, lastActive: newStaff.updated_at };
   }
 
-  updateStaffUser(id: string, data: Partial<{ role: string; status: string; name: string }>) {
-    const user = db.users.find((u) => u.id === id);
+  updateStaffUser(id: string, data: UpdateStaffDto, caller: { id: string; roles?: string[] }) {
+    const user = db.users.find((u) => u.id === id && u.role !== 'CUSTOMER');
     if (!user) {
       throw new NotFoundException({ code: 'STAFF_NOT_FOUND', message: 'Staff member not found.' });
     }
+    if (user.id === caller.id && (data.role || data.status)) {
+      throw new ForbiddenException({ code: 'FORBIDDEN', message: 'You cannot change your own role or status.' });
+    }
+    if (PRIVILEGED_ROLES.includes(user.role) && !caller.roles?.includes('SUPER_ADMIN')) {
+      throw new ForbiddenException({ code: 'FORBIDDEN', message: 'Only a Super Admin can modify this account.' });
+    }
 
     if (data.name) user.full_name = data.name.trim();
-    if (data.role) user.role = data.role.toUpperCase().replace(/\s+/g, '_');
+    if (data.role) user.role = this.resolveStaffRole(data.role, caller);
     if (data.status) user.status = data.status;
     user.updated_at = new Date().toISOString();
+    saveDb();
 
     const { password_hash, ...safe } = user;
     return { ...safe, name: user.full_name, twoFactorEnabled: false, lastActive: user.updated_at };

@@ -43,8 +43,8 @@ export async function bootstrapServer(): Promise<Express> {
     logger: process.env.NODE_ENV === 'production' ? ['error', 'warn'] : ['log', 'error', 'warn'],
   });
 
-  const explicitCors = process.env.CORS_ORIGINS?.split(',').map((o) => o.trim());
-  const allowedOrigins = explicitCors || [
+  const explicitCors = process.env.CORS_ORIGINS?.split(',').map((o) => o.trim()).filter(Boolean);
+  const allowedOrigins = explicitCors && explicitCors.length > 0 ? explicitCors : [
     'http://localhost:5173',
     'http://localhost:5174',
     'https://bingooo.co.in',
@@ -56,11 +56,25 @@ export async function bootstrapServer(): Promise<Express> {
     'https://bingooo-admin-three.vercel.app',
   ];
   app.enableCors({
+    // Credentialed CORS must never reflect arbitrary origins. `*.vercel.app` is
+    // deliberately not trusted: anyone can deploy a site under that domain.
     origin: (origin, callback) => {
-      if (!origin || allowedOrigins.includes(origin) || origin.endsWith('.vercel.app') || origin.endsWith('bingooo.co.in') || origin.includes('localhost')) {
+      if (!origin) return callback(null, true);
+
+      const isAllowed =
+        allowedOrigins.includes(origin) ||
+        origin === 'https://bingooo.co.in' ||
+        origin.endsWith('.bingooo.co.in') ||
+        // Capacitor native shell origins (not reachable by a remote website)
+        origin === 'https://localhost' ||
+        origin === 'capacitor://localhost' ||
+        (process.env.NODE_ENV !== 'production' &&
+          (origin.startsWith('http://localhost:') || origin.startsWith('http://127.0.0.1:')));
+
+      if (isAllowed) {
         callback(null, true);
       } else {
-        callback(null, true);
+        callback(new Error('Not allowed by CORS'));
       }
     },
     credentials: true,

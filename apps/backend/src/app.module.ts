@@ -25,6 +25,7 @@ import { ReturnsModule } from './returns/returns.module';
 import { AdminModule } from './admin/admin.module';
 import { AuditModule } from './audit/audit.module';
 import { BannersModule } from './banners/banners.module';
+import { EmailModule } from './email/email.module';
 
 import { AppController } from './app.controller';
 
@@ -52,6 +53,7 @@ import { AppController } from './app.controller';
     ]),
 
     // ── Core ──
+    EmailModule, // @Global: EmailService is injectable everywhere
     HealthModule,
     AuthModule,
     UsersModule,

@@ -41,15 +41,25 @@ class BackupServiceImpl {
 
     const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
     const backupId = `backup-${timestamp}`;
-    const filename = `${backupId}${label ? `-${label}` : ''}.json`;
+    // The label is caller-supplied and ends up in a filename: reduce it to a
+    // safe slug so it can never introduce path separators or `..` segments.
+    const safeLabel = (label || '')
+      .toLowerCase()
+      .replace(/[^a-z0-9-]+/g, '-')
+      .replace(/^-+|-+$/g, '')
+      .slice(0, 40);
+    const filename = `${backupId}${safeLabel ? `-${safeLabel}` : ''}.json`;
     const backupPath = path.join(BACKUP_DIR, filename);
+    if (path.dirname(path.resolve(backupPath)) !== path.resolve(BACKUP_DIR)) {
+      throw new Error('Invalid backup label');
+    }
 
     // Snapshot current store
     const snapshot = {
       _meta: {
         backupId,
         createdAt: new Date().toISOString(),
-        label: label || null,
+        label: safeLabel || null,
         uploadsManifest: this.getUploadsManifest(),
       },
       store: JSON.parse(JSON.stringify(db)),

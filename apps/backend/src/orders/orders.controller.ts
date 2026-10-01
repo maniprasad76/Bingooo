@@ -10,6 +10,7 @@ import {
   Req,
   UseGuards,
   ForbiddenException,
+  Headers,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { Throttle } from '@nestjs/throttler';
@@ -28,10 +29,13 @@ export class OrdersController {
   @Throttle({ default: { limit: 10, ttl: 60000 } })
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Create and place order for authenticated user (Rate limited: 10 req/min)' })
-  createOrder(@Req() req: any, @Body() body: CreateOrderDto) {
-    // Strictly isolate to authenticated caller's identity
-    const activeUserId = req.user.id;
-    return this.ordersService.createOrder({ ...body, userId: activeUserId });
+  createOrder(
+    @Req() req: any,
+    @Body() body: CreateOrderDto,
+    @Headers('x-session-id') sessionId?: string,
+  ) {
+    // Strictly isolate to the authenticated caller and a cart they own
+    return this.ordersService.createOrder(body, { userId: req.user.id, sessionId });
   }
 
   @Get()

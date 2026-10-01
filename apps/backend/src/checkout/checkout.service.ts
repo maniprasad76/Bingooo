@@ -1,28 +1,33 @@
-import { Injectable, BadRequestException } from '@nestjs/common';
+import { Injectable, BadRequestException, NotFoundException } from '@nestjs/common';
 import { db } from '../common/database/store';
 import { CouponsService } from '../coupons/coupons.service';
+import { CheckoutValidationDto, CartOwner } from './dto/checkout.dto';
 
-export interface CheckoutValidationDto {
-  cartId: string;
-  couponCode?: string;
-  paymentMethod: 'prepaid' | 'cod' | 'partial_cod';
-  shippingAddress: {
-    name: string;
-    phone: string;
-    line1: string;
-    line2?: string;
-    city: string;
-    state: string;
-    postalCode: string;
-    country: string;
-  };
-}
+export { CheckoutValidationDto };
+export type { CartOwner };
 
 @Injectable()
 export class CheckoutService {
   constructor(private readonly couponsService: CouponsService) {}
 
-  validateAndCalculate(dto: CheckoutValidationDto) {
+  /**
+   * A cart may only be checked out by its owner: the signed-in user it is
+   * bound to, or (for a guest cart) the browser session that created it.
+   */
+  assertCartOwnership(cartId: string, owner: CartOwner) {
+    const cart = db.carts.find((c) => c.id === cartId);
+    const ownsCart =
+      !!cart &&
+      ((!!owner.userId && cart.user_id === owner.userId) ||
+        (!cart.user_id && !!owner.sessionId && cart.session_id === owner.sessionId));
+    if (!ownsCart) {
+      throw new NotFoundException({ code: 'CART_NOT_FOUND', message: 'Cart not found' });
+    }
+    return cart;
+  }
+
+  validateAndCalculate(dto: CheckoutValidationDto, owner: CartOwner) {
+    this.assertCartOwnership(dto.cartId, owner);
     const rawItems = db.cart_items.filter((i) => i.cart_id === dto.cartId);
     if (rawItems.length === 0) {
       throw new BadRequestException({ code: 'EMPTY_CART', message: 'Cart is empty' });

@@ -4,6 +4,13 @@ import { supabase } from '../lib/auth/supabase';
 import { useAuthStore } from '../store/auth';
 import { Logo } from '../components/ui/Logo';
 
+const TRUSTED_ADMIN_ORIGINS = [
+  'https://admin.bingooo.co.in',
+  'https://bingooo-admin.vercel.app',
+  'https://bingooo-admin-three.vercel.app',
+  'http://localhost:5174',
+];
+
 export function AuthCallbackPage() {
   const navigate = useNavigate();
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
@@ -33,11 +40,17 @@ export function AuthCallbackPage() {
           hashParams.get('source') === 'admin' ||
           hasAdminCookie;
 
+        // admin_origin comes from the URL/cookie, so it is attacker-controllable.
+        // Session tokens are appended to it below, so only known admin hosts are
+        // accepted; anything else falls back to the default admin origin.
+        const defaultAdminOrigin =
+          window.location.hostname === 'localhost' ? 'http://localhost:5174' : 'https://admin.bingooo.co.in';
+        const requestedAdminOrigin =
+          searchParams.get('admin_origin') || hashParams.get('admin_origin') || cookieAdminOrigin;
         const adminOrigin =
-          searchParams.get('admin_origin') ||
-          hashParams.get('admin_origin') ||
-          cookieAdminOrigin ||
-          (window.location.hostname === 'localhost' ? 'http://localhost:5174' : 'https://admin.bingooo.co.in');
+          requestedAdminOrigin && TRUSTED_ADMIN_ORIGINS.includes(requestedAdminOrigin)
+            ? requestedAdminOrigin
+            : defaultAdminOrigin;
 
         const handleUserSession = (session: any) => {
           const authStorageKey = 'bingooo_auth_token';

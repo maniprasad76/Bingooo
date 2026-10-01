@@ -1,13 +1,17 @@
 import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { v4 as uuidv4 } from 'uuid';
 import { db, saveDb } from '../common/database/store';
-import { CheckoutService, CheckoutValidationDto } from '../checkout/checkout.service';
+import { IsOptional, IsString, MaxLength } from 'class-validator';
+import { CheckoutService } from '../checkout/checkout.service';
+import { CheckoutValidationDto, CartOwner } from '../checkout/dto/checkout.dto';
 import { getOrderById, getOrderByOrderNumber } from '../common/database/db-index.service';
 import { WhatsAppService } from '../notifications/whatsapp.service';
 
 
-export interface CreateOrderDto extends CheckoutValidationDto {
-  userId?: string;
+export class CreateOrderDto extends CheckoutValidationDto {
+  @IsOptional()
+  @IsString()
+  @MaxLength(500)
   notes?: string;
 }
 
@@ -18,8 +22,8 @@ export class OrdersService {
     private readonly whatsAppService: WhatsAppService,
   ) {}
 
-  createOrder(dto: CreateOrderDto) {
-    const calculation = this.checkoutService.validateAndCalculate(dto);
+  createOrder(dto: CreateOrderDto, owner: CartOwner & { userId: string }) {
+    const calculation = this.checkoutService.validateAndCalculate(dto, owner);
     const orderId = uuidv4();
     const dateStr = new Date().toISOString().slice(0, 10).replace(/-/g, '');
     const randSuffix = Math.floor(1000 + Math.random() * 9000);
@@ -28,7 +32,7 @@ export class OrdersService {
     const order = {
       id: orderId,
       order_number: orderNumber,
-      user_id: dto.userId || 'usr-cust-1',
+      user_id: owner.userId,
       status: dto.paymentMethod === 'cod' ? 'processing' : 'pending_payment',
       payment_status: dto.paymentMethod === 'cod' ? 'pending' : 'pending',
       payment_method: dto.paymentMethod,
@@ -81,7 +85,7 @@ export class OrdersService {
           quantity: -item.quantity,
           reference_type: 'order',
           reference_id: orderId,
-          created_by: dto.userId || null,
+          created_by: owner.userId,
           created_at: new Date().toISOString(),
         });
       }
@@ -95,7 +99,7 @@ export class OrdersService {
         db.coupon_redemptions.push({
           id: uuidv4(),
           coupon_id: coupon.id,
-          user_id: dto.userId || 'usr-cust-1',
+          user_id: owner.userId,
           order_id: orderId,
           created_at: new Date().toISOString(),
         });

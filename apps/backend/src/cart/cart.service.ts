@@ -41,6 +41,15 @@ export class CartService {
       throw new BadRequestException({ code: 'INSUFFICIENT_STOCK', message: `Only ${availableStock} items available in stock` });
     }
 
+    // A design can only be added by the customer who created it; otherwise its
+    // artwork (design_json / print_spec) would leak through the cart and order.
+    if (dto.customizationId) {
+      const customization = db.customizations.find((c) => c.id === dto.customizationId);
+      if (!customization || !userId || customization.user_id !== userId) {
+        throw new NotFoundException({ code: 'CUSTOMIZATION_NOT_FOUND', message: 'Customization not found' });
+      }
+    }
+
     const cart = this.getOrCreateCart(userId, dto.sessionId);
 
     // Look for existing item with identical variant & customization
@@ -68,10 +77,26 @@ export class CartService {
     return this.getEnrichedCart(cart.id);
   }
 
+  /**
+   * Resolve a cart item only if its cart belongs to the caller: the signed-in
+   * user it is bound to, or the guest session that created it.
+   */
+  private findOwnedItem(itemId: string, userId?: string, sessionId?: string) {
+    const item = db.cart_items.find((i) => i.id === itemId);
+    const cart = item && db.carts.find((c) => c.id === item.cart_id);
+    const owned =
+      !!cart &&
+      ((!!userId && cart.user_id === userId) ||
+        (!cart.user_id && !!sessionId && cart.session_id === sessionId));
+    if (!item || !owned) {
+      throw new NotFoundException({ code: 'ITEM_NOT_FOUND', message: 'Cart item not found' });
+    }
+    return item;
+  }
+
   /** Update quantity of an item */
   updateItem(itemId: string, dto: UpdateCartItemDto, userId?: string, sessionId?: string) {
-    const item = db.cart_items.find((i) => i.id === itemId);
-    if (!item) throw new NotFoundException({ code: 'ITEM_NOT_FOUND', message: 'Cart item not found' });
+    const item = this.findOwnedItem(itemId, userId, sessionId);
 
     const variant = db.product_variants.find((v) => v.id === item.variant_id);
     if (variant && (variant.stock_quantity - variant.reserved_quantity) < dto.quantity) {
@@ -83,11 +108,10 @@ export class CartService {
   }
 
   /** Remove item */
-  removeItem(itemId: string) {
-    const idx = db.cart_items.findIndex((i) => i.id === itemId);
-    if (idx === -1) throw new NotFoundException({ code: 'ITEM_NOT_FOUND', message: 'Cart item not found' });
-    const cartId = db.cart_items[idx].cart_id;
-    db.cart_items.splice(idx, 1);
+  removeItem(itemId: string, userId?: string, sessionId?: string) {
+    const item = this.findOwnedItem(itemId, userId, sessionId);
+    const cartId = item.cart_id;
+    db.cart_items = db.cart_items.filter((i) => i.id !== itemId);
     return this.getEnrichedCart(cartId);
   }
 
@@ -105,7 +129,11 @@ export class CartService {
 
   /** Merge guest session cart into authenticated user cart */
   mergeCart(guestSessionId: string, userId: string) {
-    const guestCart = db.carts.find((c) => c.session_id === guestSessionId && c.status === 'active');
+    // Only unclaimed guest carts can be merged; a cart already bound to a
+    // user is never pulled into someone else's account.
+    const guestCart = db.carts.find(
+      (c) => c.session_id === guestSessionId && c.status === 'active' && !c.user_id,
+    );
     if (!guestCart) return this.getOrCreateCart(userId);
 
     const userCart = this.getOrCreateCart(userId);

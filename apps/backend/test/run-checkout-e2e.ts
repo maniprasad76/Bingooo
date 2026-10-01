@@ -34,9 +34,13 @@ function assert(condition: boolean, step: string, name: string, details?: string
 
 async function runE2ECheckoutVerification() {
   process.env.NODE_ENV = 'test';
-  process.env.JWT_SECRET = process.env.JWT_SECRET || '9b9d584c98fd7b7196c98bbb695aefd4572f5048aaf3a874d06b67cbb25337f3';
-  process.env.RAZORPAY_KEY_ID = process.env.RAZORPAY_KEY_ID || 'rzp_test_TeDKAHYRPQMMFC';
-  process.env.RAZORPAY_KEY_SECRET = process.env.RAZORPAY_KEY_SECRET || 'ajYpsEIAwpp6GetIUo5xC8Dv';
+  // Secrets come only from the environment (apps/backend/.env); never commit fallbacks.
+  for (const key of ['JWT_SECRET', 'RAZORPAY_KEY_ID', 'RAZORPAY_KEY_SECRET']) {
+    if (!process.env[key]) {
+      console.error(`Missing required env var ${key} (set it in apps/backend/.env)`);
+      process.exit(1);
+    }
+  }
   console.log('\n======================================================');
   console.log('🛍️  BINGOOO END-TO-END CHECKOUT & PAYMENT VERIFICATION');
   console.log('======================================================\n');
@@ -210,7 +214,7 @@ async function runE2ECheckoutVerification() {
     // ─────────────────────────────────────────────────────────
     console.log('\n📦 STEP 5: Payment Signature Verification & Fraud Detection');
     const fakePaymentId = `pay_test_${Date.now()}`;
-    const keySecret = process.env.RAZORPAY_KEY_SECRET || 'ajYpsEIAwpp6GetIUo5xC8Dv';
+    const keySecret = process.env.RAZORPAY_KEY_SECRET!;
 
     // 5a. Tampered signature attempt
     const tamperedRes = await fetch(`${BASE_URL}/payments/razorpay/verify`, {

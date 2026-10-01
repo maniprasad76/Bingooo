@@ -24,3 +24,5 @@ services:
         sync: false
       - key: RAZORPAY_KEY_SECRET
         sync: false
+      - key: ADMIN_EMAILS
+        sync: false

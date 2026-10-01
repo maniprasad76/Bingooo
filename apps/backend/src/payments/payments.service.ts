@@ -16,7 +16,7 @@ import { WhatsAppService } from '../notifications/whatsapp.service';
 export class CreateOrderDto {
   @IsOptional()
   @IsNumber()
-  amount?: number; // amount in paise
+  amount?: number; // ignored: the charge is always derived from the order record
 
   @IsOptional()
   @IsString()
@@ -126,16 +126,19 @@ export class PaymentsService {
    * Create Razorpay order
    * Minimum amount: 100 paise
    */
-  async createRazorpayOrder(dto: CreateOrderDto) {
+  async createRazorpayOrder(dto: CreateOrderDto, userId: string) {
     let amountInPaise: number;
-    let currency = (dto.currency || 'INR').toUpperCase();
+    const currency = (dto.currency || 'INR').toUpperCase();
     let receipt = dto.receipt;
     let order: any = null;
     let notes: Record<string, any> = dto.notes || {};
 
+    // Every Razorpay order must be bound to a local order owned by the caller.
+    // Free-floating amount-only orders are rejected: a paid one would yield a
+    // valid signature that could be replayed against a different order.
     if (dto.orderId) {
       order = db.orders.find((o) => o.id === dto.orderId);
-      if (!order) {
+      if (!order || order.user_id !== userId) {
         throw new NotFoundException({ code: 'ORDER_NOT_FOUND', message: 'Order not found' });
       }
       if (order.payment_status === 'captured') {
@@ -169,14 +172,11 @@ export class PaymentsService {
       // the full order as captured.
       amountInPaise = Math.round(payableAmount * 100);
       receipt = receipt || order.order_number;
-      notes = { orderId: order.id, orderNumber: order.order_number, ...notes };
-    } else if (dto.amount !== undefined) {
-      amountInPaise = Math.round(dto.amount);
-      receipt = receipt || `rcpt_${Date.now()}`;
+      notes = { ...notes, orderId: order.id, orderNumber: order.order_number };
     } else {
       throw new BadRequestException({
         code: 'INVALID_REQUEST',
-        message: 'Either amount (in paise) or orderId must be provided',
+        message: 'orderId is required',
       });
     }
 
@@ -223,31 +223,28 @@ export class PaymentsService {
       }
     }
 
-    if (order) {
-      const payment = {
-        id: uuidv4(),
-        order_id: order.id,
-        provider: 'razorpay',
-        provider_order_id: rzpOrder.id,
-        provider_payment_id: null,
-        status: 'pending',
-        amount: amountInPaise / 100,
-        currency: rzpOrder.currency,
-        raw_event_id: null,
-        idempotency_key: uuidv4(),
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-      };
-      db.payments.push(payment);
-      saveDb();
-    }
+    db.payments.push({
+      id: uuidv4(),
+      order_id: order.id,
+      provider: 'razorpay',
+      provider_order_id: rzpOrder.id,
+      provider_payment_id: null,
+      status: 'pending',
+      amount: amountInPaise / 100,
+      currency: rzpOrder.currency,
+      raw_event_id: null,
+      idempotency_key: uuidv4(),
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    });
+    saveDb();
 
     return {
       order_id: rzpOrder.id,
       amount: rzpOrder.amount,
       currency: rzpOrder.currency,
       razorpayOrderId: rzpOrder.id,
-      orderNumber: order?.order_number,
+      orderNumber: order.order_number,
       keyId: process.env.RAZORPAY_KEY_ID,
     };
   }
@@ -256,7 +253,7 @@ export class PaymentsService {
    * Verify Razorpay signature and update order status
    * Algorithm: HMAC-SHA256(order_id + "|" + payment_id, KEY_SECRET)
    */
-  verifyPayment(dto: VerifyPaymentDto) {
+  verifyPayment(dto: VerifyPaymentDto, userId: string) {
     const orderId = dto.order_id || dto.razorpayOrderId || dto.razorpay_order_id;
     const paymentId = dto.payment_id || dto.razorpayPaymentId || dto.razorpay_payment_id;
     const signature = dto.razorpay_signature || dto.razorpaySignature;
@@ -281,66 +278,80 @@ export class PaymentsService {
       expectedSignature.length === signature.length &&
       crypto.timingSafeEqual(Buffer.from(expectedSignature, 'utf-8'), Buffer.from(signature, 'utf-8'));
 
-    // Find associated payment in store
-    const payment = db.payments.find(
-      (p) =>
-        p.provider_order_id === orderId ||
-        (dto.orderId && p.order_id === dto.orderId),
-    );
-
+    // A failed check must not mutate anything: the payment record is only
+    // touched once the signature proves Razorpay settled this exact order.
     if (!signaturesMatch) {
-      if (payment) {
-        payment.status = 'failed';
-        payment.updated_at = new Date().toISOString();
-      }
       throw new BadRequestException({
         code: 'INVALID_SIGNATURE',
         message: 'Razorpay payment signature mismatch. Verification failed.',
       });
     }
 
-    if (payment) {
-      // If already captured, return immediately (Idempotent response)
-      if (payment.status === 'captured') {
-        return {
-          success: true,
-          verified: true,
-          order_id: orderId,
-          payment_id: payment.provider_payment_id || paymentId,
-          orderNumber: payment?.order_number,
-          paymentId: payment?.id,
-          status: 'captured',
-          idempotent: true,
-        };
-      }
-
-      payment.status = 'captured';
-      payment.provider_payment_id = paymentId;
-      payment.updated_at = new Date().toISOString();
-
-      const order = db.orders.find((o) => o.id === payment.order_id);
-      if (order) {
-        order.payment_status = order.payment_method === 'partial_cod' ? 'partial_paid' : 'captured';
-        order.status = 'processing';
-        order.updated_at = new Date().toISOString();
-        this.whatsAppService.sendOrderConfirmation(this.ordersService.enrichOrder(order)).catch(() => {});
-      }
-      saveDb();
+    // The signature covers `${orderId}|${paymentId}` only, so the local record
+    // must be found by that same Razorpay order id. Matching on a client-sent
+    // local order id would let a payment for one order settle another.
+    const payment = db.payments.find((p) => p.provider_order_id === orderId);
+    const paymentOrder = payment && db.orders.find((o) => o.id === payment.order_id);
+    if (
+      !payment ||
+      !paymentOrder ||
+      paymentOrder.user_id !== userId ||
+      (dto.orderId && dto.orderId !== payment.order_id)
+    ) {
+      throw new BadRequestException({
+        code: 'PAYMENT_ORDER_MISMATCH',
+        message: 'This payment does not belong to the specified order.',
+      });
     }
+
+    // Already settled (by an earlier verify call or the webhook): idempotent response.
+    if (payment.status !== 'pending' && payment.status !== 'failed') {
+      return {
+        success: true,
+        verified: true,
+        order_id: orderId,
+        payment_id: payment.provider_payment_id || paymentId,
+        orderNumber: paymentOrder.order_number,
+        paymentId: payment.id,
+        status: payment.status,
+        idempotent: true,
+      };
+    }
+
+    this.markPaymentCaptured(payment, paymentOrder, paymentId);
+    saveDb();
 
     return {
       success: true,
       verified: true,
       order_id: orderId,
       payment_id: paymentId,
-      orderNumber: payment?.order_number,
-      paymentId: payment?.id,
+      orderNumber: paymentOrder.order_number,
+      paymentId: payment.id,
       status: 'captured',
     };
   }
 
+  /** Shared capture transition for the client verify call and the webhook. */
+  private markPaymentCaptured(payment: any, order: any, providerPaymentId: string) {
+    const now = new Date().toISOString();
+    payment.status = 'captured';
+    payment.provider_payment_id = providerPaymentId;
+    payment.updated_at = now;
+
+    if (!order) return;
+    order.payment_status = order.payment_method === 'partial_cod' ? 'partial_paid' : 'captured';
+    // Only advance orders still awaiting payment; never pull a cancelled,
+    // shipped or refunded order back to processing.
+    if (['pending', 'pending_payment'].includes(order.status)) {
+      order.status = 'processing';
+    }
+    order.updated_at = now;
+    this.whatsAppService.sendOrderConfirmation(this.ordersService.enrichOrder(order)).catch(() => {});
+  }
+
   /** Webhook listener for async Razorpay events */
-  handleWebhook(event: any, signature?: string, rawBody?: Buffer | string) {
+  handleWebhook(event: any, signature?: string, rawBody?: Buffer | string, eventIdHeader?: string) {
     const webhookSecret = process.env.RAZORPAY_WEBHOOK_SECRET?.trim();
     if (!webhookSecret) {
       throw new InternalServerErrorException({
@@ -357,9 +368,15 @@ export class PaymentsService {
       });
     }
 
-    const payloadString = rawBody
-      ? (Buffer.isBuffer(rawBody) ? rawBody.toString('utf8') : rawBody)
-      : JSON.stringify(event);
+    // The HMAC must be checked against the exact bytes Razorpay sent;
+    // re-serialised JSON can differ, so a missing raw body is a hard failure.
+    if (!rawBody) {
+      throw new BadRequestException({
+        code: 'MISSING_RAW_BODY',
+        message: 'Webhook raw body unavailable for signature verification',
+      });
+    }
+    const payloadString = Buffer.isBuffer(rawBody) ? rawBody.toString('utf8') : rawBody;
 
     try {
       const isValid = Razorpay.validateWebhookSignature(payloadString, signature, webhookSecret);
@@ -377,43 +394,53 @@ export class PaymentsService {
       });
     }
 
-    const eventId = event?.id || uuidv4();
-    const existing = db.payments.find((p) => p.raw_event_id === eventId);
-    if (existing) {
+    // Razorpay puts the unique event id in the x-razorpay-event-id header
+    // (the body has none). Without it, retries cannot be de-duplicated.
+    const eventId = (eventIdHeader || '').trim();
+    if (!eventId) {
+      throw new BadRequestException({
+        code: 'MISSING_WEBHOOK_EVENT_ID',
+        message: 'Missing x-razorpay-event-id header',
+      });
+    }
+    if (db.payments.some((p) => p.webhook_event_ids?.includes(eventId))) {
       return { received: true, idempotent: true };
     }
+    const recordEvent = (payment: any) => {
+      const seen: string[] = payment.webhook_event_ids || [];
+      payment.webhook_event_ids = seen.includes(eventId) ? seen : [...seen, eventId];
+      payment.raw_event_id = eventId;
+      payment.updated_at = new Date().toISOString();
+    };
 
-    const payload = event?.payload?.payment?.entity;
-    if (payload?.order_id) {
-      const payment = db.payments.find((p) => p.provider_order_id === payload.order_id);
+    const paymentEntity = event?.payload?.payment?.entity;
+    if (paymentEntity?.order_id) {
+      const payment = db.payments.find((p) => p.provider_order_id === paymentEntity.order_id);
       if (payment) {
-        payment.raw_event_id = eventId;
+        recordEvent(payment);
+        const isOpen = payment.status === 'pending' || payment.status === 'failed';
         if (event.event === 'payment.captured' || event.event === 'order.paid') {
-          payment.status = 'captured';
-          payment.provider_payment_id = payload.id;
-          const order = db.orders.find((o) => o.id === payment.order_id);
-          if (order) {
-            order.payment_status = 'captured';
-            order.status = 'processing';
-            this.whatsAppService.sendOrderConfirmation(this.ordersService.enrichOrder(order)).catch(() => {});
+          const expectedPaise = Math.round(Number(payment.amount) * 100);
+          if (isOpen && Number(paymentEntity.amount) === expectedPaise) {
+            const order = db.orders.find((o) => o.id === payment.order_id);
+            this.markPaymentCaptured(payment, order, paymentEntity.id);
           }
-        } else if (event.event === 'payment.failed') {
+        } else if (event.event === 'payment.failed' && payment.status === 'pending') {
           payment.status = 'failed';
         }
       }
     }
 
-    // Handle refund events
     const refundEntity = event?.payload?.refund?.entity;
-    if (refundEntity?.payment_id) {
+    if (refundEntity?.payment_id && event.event === 'refund.processed') {
       const payment = db.payments.find((p) => p.provider_payment_id === refundEntity.payment_id);
       if (payment) {
-        if (event.event === 'refund.processed') {
-          payment.status = 'refunded';
-          const order = db.orders.find((o) => o.id === payment.order_id);
-          if (order) {
-            order.payment_status = 'refunded';
-          }
+        recordEvent(payment);
+        payment.status = 'refunded';
+        const order = db.orders.find((o) => o.id === payment.order_id);
+        if (order) {
+          order.payment_status = 'refunded';
+          order.updated_at = new Date().toISOString();
         }
       }
     }

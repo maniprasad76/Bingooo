@@ -3,7 +3,28 @@
 // Cache-First for static assets, Network-First for API data
 // ─────────────────────────────────────────────────────────
 
-const CACHE_NAME = 'bingooo-cache-v1';
+// v2: earlier versions cached authenticated API responses; bumping the name
+// makes the activate handler purge those caches from existing installs.
+const CACHE_NAME = 'bingooo-cache-v2';
+
+// Only public, user-independent catalog endpoints may be cached. Anything
+// tied to a session (profile, cart, orders, addresses, ...) must never be
+// written to Cache Storage, where the next user on the device could read it.
+const PUBLIC_API_PREFIXES = [
+  '/api/v1/products',
+  '/api/v1/categories',
+  '/api/v1/collections',
+  '/api/v1/banners',
+  '/api/v1/reviews/product/',
+  '/api/v1/payments/config',
+  '/api/v1/customizations/studio',
+];
+
+function isPublicApiRequest(request, url) {
+  if (request.headers.has('Authorization')) return false;
+  if (url.pathname.startsWith('/api/v1/products/admin')) return false;
+  return PUBLIC_API_PREFIXES.some((prefix) => url.pathname.startsWith(prefix));
+}
 const STATIC_ASSETS = [
   '/',
   '/index.html',
@@ -48,7 +69,12 @@ self.addEventListener('fetch', (event) => {
   // Ignore non-http(s) requests (e.g. chrome-extension://)
   if (!url.protocol.startsWith('http')) return;
 
-  // 1. API GET requests: Network-first, fallback to cache
+  // 1a. Private API requests: always network, never cached
+  if (url.pathname.startsWith('/api/v1/') && !isPublicApiRequest(request, url)) {
+    return;
+  }
+
+  // 1b. Public catalog API GET requests: Network-first, fallback to cache
   if (url.pathname.startsWith('/api/v1/')) {
     event.respondWith(
       fetch(request)

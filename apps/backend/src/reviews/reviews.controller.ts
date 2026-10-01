@@ -24,14 +24,11 @@ export class ReviewsController {
   constructor(private readonly reviewsService: ReviewsService) {}
 
   @Get('eligibility')
-  @ApiOperation({ summary: 'Check if user is eligible to review a product (verified purchase)' })
-  checkEligibility(
-    @Query('productId') productId: string,
-    @Req() req: any,
-    @Query('userId') userId?: string,
-  ) {
-    const activeUserId = req?.user?.id || userId;
-    return this.reviewsService.checkEligibility(productId, activeUserId);
+  @UseGuards(AuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Check if the caller is eligible to review a product (verified purchase)' })
+  checkEligibility(@Query('productId') productId: string, @Req() req: any) {
+    return this.reviewsService.checkEligibility(productId, req.user.id);
   }
 
   @Get('product/:productId')
@@ -41,29 +38,29 @@ export class ReviewsController {
   }
 
   @Get('my')
+  @UseGuards(AuthGuard)
+  @ApiBearerAuth()
   @ApiOperation({ summary: 'Get current user submitted reviews' })
-  findMyReviews(@Req() req: any, @Query('userId') userId?: string) {
-    const activeUserId = req?.user?.id || userId || 'usr-cust-1';
-    return this.reviewsService.findByUser(activeUserId);
+  findMyReviews(@Req() req: any) {
+    return this.reviewsService.findByUser(req.user.id);
   }
 
   @Post()
+  @UseGuards(AuthGuard)
+  @ApiBearerAuth()
   @Throttle({ default: { limit: 5, ttl: 60000 } })
   @ApiOperation({ summary: 'Submit product review (Rate limited: 5 req/min)' })
-  create(
-    @Req() req: any,
-    @Body() dto: CreateReviewDto,
-  ) {
-    const activeUserId = req?.user?.id || dto.userId || 'usr-cust-1';
-    const isAdminOrTest = Boolean(
-      req?.user?.roles?.includes('ADMIN') ||
-      req?.user?.roles?.includes('SUPER_ADMIN') ||
-      process.env.NODE_ENV === 'test',
-    );
+  create(@Req() req: any, @Body() dto: CreateReviewDto) {
+    // The reviewer is always the authenticated caller; any client-sent userId is ignored.
+    const { userId: _ignored, ...review } = dto;
     return this.reviewsService.createReview({
-      ...dto,
-      userId: activeUserId,
-      bypassPurchaseCheck: isAdminOrTest,
+      ...review,
+      userId: req.user.id,
+      bypassPurchaseCheck: Boolean(
+        req.user.permissions?.includes('reviews.manage') ||
+          req.user.permissions?.includes('*') ||
+          process.env.NODE_ENV === 'test',
+      ),
     });
   }
 

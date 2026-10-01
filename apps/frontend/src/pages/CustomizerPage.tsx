@@ -1641,10 +1641,10 @@ export function CustomizerPage() {
 
             {/* Tab Body */}
             <div className="overflow-y-auto max-h-[calc(100vh-250px)]">
-              {activeTab === 'garment' && <GarmentTab />}
-              {activeTab === 'design' && <DesignTab />}
-              {activeTab === 'placement' && <PlacementTab />}
-              {activeTab === 'order' && <OrderTab />}
+              {activeTab === 'garment' && GarmentTab()}
+              {activeTab === 'design' && DesignTab()}
+              {activeTab === 'placement' && PlacementTab()}
+              {activeTab === 'order' && OrderTab()}
             </div>
 
             {/* Quick Next Button */}
@@ -1808,10 +1808,10 @@ export function CustomizerPage() {
 
               {/* Drawer Content Body */}
               <div className="overflow-y-auto p-4 flex-1">
-                {activeMobileTool === 'color' && <GarmentTab />}
-                {activeMobileTool === 'text' && <DesignTab />}
-                {activeMobileTool === 'upload' && <DesignTab />}
-                {activeMobileTool === 'placement' && <PlacementTab />}
+                {activeMobileTool === 'color' && GarmentTab()}
+                {activeMobileTool === 'text' && DesignTab()}
+                {activeMobileTool === 'upload' && DesignTab()}
+                {activeMobileTool === 'placement' && PlacementTab()}
               </div>
 
               {/* Done Button */}

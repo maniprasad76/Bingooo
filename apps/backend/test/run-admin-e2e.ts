@@ -33,6 +33,12 @@ async function runAdminVerification() {
   console.log('🛡️  BINGOOO ADMIN PANEL OPERATIONS VERIFICATION');
   console.log('======================================================\n');
 
+  process.env.NODE_ENV = 'test';
+
+  // No admin account is seeded, so the test signs one up and promotes it in the store.
+  const adminEmail = `test_admin_${Date.now()}@bingooo.in`;
+  const adminPassword = 'AdminPassword123!';
+
   const app = await NestFactory.create(AppModule, { logger: false });
   app.use(helmet());
   app.use(cookieParser());
@@ -60,13 +66,21 @@ async function runAdminVerification() {
     // ─────────────────────────────────────────────────────────
     console.log('📦 1. Role-Based Access Control (Admin Login)');
     // Admin login
-    const adminLoginRes = await fetch(`${BASE_URL}/auth/login`, {
+    await fetch(`${BASE_URL}/auth/signup`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        email: 'admin@bingooo.in',
-        password: 'Admin@123456',
+        email: adminEmail,
+        password: adminPassword,
+        fullName: 'Atelier Admin',
       }),
+    });
+    const adminUser = db.users.find((u) => u.email === adminEmail);
+    if (adminUser) adminUser.role = 'SUPER_ADMIN';
+    const adminLoginRes = await fetch(`${BASE_URL}/auth/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: adminEmail, password: adminPassword }),
     });
     const adminData = await adminLoginRes.json();
     const adminToken = adminData?.data?.token;

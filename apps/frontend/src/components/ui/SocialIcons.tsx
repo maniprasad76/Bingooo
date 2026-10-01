@@ -34,7 +34,7 @@ export function WhatsAppIcon({ className = 'w-5 h-5', size, style, ...props }: S
     <img
       src="/custom/whatsapp.png"
       alt="WhatsApp"
-      className={`${className} object-contain shrink-0`}
+      className={`max-h-full max-w-full object-contain shrink-0 ${className}`}
       style={styleObj}
       loading="lazy"
       {...props}
@@ -48,7 +48,7 @@ export function InstagramIcon({ className = 'w-5 h-5', size, style, ...props }: 
     <img
       src="/custom/instagram.png"
       alt="Instagram"
-      className={`${className} object-contain shrink-0`}
+      className={`max-h-full max-w-full object-contain shrink-0 ${className}`}
       style={styleObj}
       loading="lazy"
       {...props}
@@ -81,7 +81,7 @@ export function YouTubeIcon({ className = 'w-5 h-5', size, style, ...props }: So
     <img
       src="/custom/youtube.png"
       alt="YouTube"
-      className={`${className} object-contain shrink-0`}
+      className={`max-h-full max-w-full object-contain shrink-0 ${className}`}
       style={styleObj}
       loading="lazy"
       {...props}
@@ -109,7 +109,7 @@ export function XTwitterIcon({ className = 'w-5 h-5', size, style, ...props }: S
     <img
       src="/custom/twitter.png"
       alt="Twitter (X)"
-      className={`${className} object-contain shrink-0`}
+      className={`max-h-full max-w-full object-contain shrink-0 ${className}`}
       style={styleObj}
       loading="lazy"
       {...props}

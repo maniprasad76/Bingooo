@@ -371,9 +371,9 @@ export function Footer() {
               rel="noopener noreferrer"
               title="Google Pay"
               aria-label="Google Pay"
-              className="h-[32px] px-2.5 py-1 bg-white rounded-[4px] border border-white/20 flex items-center justify-center hover:opacity-90 transition-opacity shadow-xs"
+              className="h-[28px] px-2.5 py-1 bg-white rounded-[4px] border border-white/20 flex items-center justify-center hover:opacity-90 transition-opacity shadow-xs overflow-hidden"
             >
-              <GooglePayIcon className="h-4.5 w-auto" />
+              <GooglePayIcon className="h-4 w-auto max-h-[16px]" />
             </a>
             <a
               href="https://www.phonepe.com"
@@ -381,9 +381,9 @@ export function Footer() {
               rel="noopener noreferrer"
               title="PhonePe"
               aria-label="PhonePe"
-              className="h-[32px] px-2.5 py-1 bg-white rounded-[4px] border border-white/20 flex items-center justify-center hover:opacity-90 transition-opacity shadow-xs"
+              className="h-[28px] px-2.5 py-1 bg-white rounded-[4px] border border-white/20 flex items-center justify-center hover:opacity-90 transition-opacity shadow-xs overflow-hidden"
             >
-              <PhonePeIcon className="h-4.5 w-auto" />
+              <PhonePeIcon className="h-4 w-auto max-h-[16px]" />
             </a>
             <a
               href="https://paytm.com"
@@ -391,9 +391,9 @@ export function Footer() {
               rel="noopener noreferrer"
               title="Paytm"
               aria-label="Paytm"
-              className="h-[32px] px-2.5 py-1 bg-white rounded-[4px] border border-white/20 flex items-center justify-center hover:opacity-90 transition-opacity shadow-xs"
+              className="h-[28px] px-2.5 py-1 bg-white rounded-[4px] border border-white/20 flex items-center justify-center hover:opacity-90 transition-opacity shadow-xs overflow-hidden"
             >
-              <PaytmIcon className="h-4 w-auto" />
+              <PaytmIcon className="h-3.5 w-auto max-h-[14px]" />
             </a>
             <a
               href="https://www.npci.org.in/what-we-do/upi/product-overview"
@@ -401,9 +401,9 @@ export function Footer() {
               rel="noopener noreferrer"
               title="Unified Payments Interface (UPI)"
               aria-label="UPI"
-              className="h-[32px] px-2.5 py-1 bg-white rounded-[4px] border border-white/20 flex items-center justify-center hover:opacity-90 transition-opacity shadow-xs"
+              className="h-[28px] px-2.5 py-1 bg-white rounded-[4px] border border-white/20 flex items-center justify-center hover:opacity-90 transition-opacity shadow-xs overflow-hidden"
             >
-              <UpiIcon className="h-4 w-auto" />
+              <UpiIcon className="h-3.5 w-auto max-h-[14px]" />
             </a>
           </div>
         </div>

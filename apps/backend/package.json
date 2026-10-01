@@ -13,6 +13,7 @@
     "test:upload": "node --require @swc-node/register test/run-upload-e2e.ts",
     "test:load": "node --require @swc-node/register test/run-load-test.ts",
     "test:backup": "node --require @swc-node/register test/run-backup-test.ts",
+    "test:durability": "node --require @swc-node/register test/run-durability-test.ts",
     "lint": "echo 'TODO: add linter'"
   },
   "dependencies": {

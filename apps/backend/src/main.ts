@@ -13,7 +13,7 @@ import { RequestIdInterceptor } from './common/interceptors/request-id.intercept
 import { IdempotencyInterceptor } from './common/interceptors/idempotency.interceptor';
 import { LoggingInterceptor } from './common/interceptors/logging.interceptor';
 import { CacheInterceptor } from './common/interceptors/cache.interceptor';
-import { hydrateStoreFromSupabase } from './common/database/supabase-sync.service';
+import { hydrateFromAppRecords } from './common/database/app-records.service';
 
 
 async function bootstrap() {
@@ -146,19 +146,21 @@ async function bootstrap() {
   // ── Graceful Shutdown for Cloud Run / Container Lifecycle ──
   app.enableShutdownHooks();
 
+  // ── Load durable store before serving (fatal on failure: serving the seed
+  // and then writing would overwrite newer production records) ──
+  await hydrateFromAppRecords();
+
   // ── Start ──
   const port = Number(process.env.PORT) || 8080;
   const host = '0.0.0.0';
   await app.listen(port, host);
   console.log(`🚀 Bingooo API running on http://${host}:${port}`);
   console.log(`📖 Swagger docs at http://${host}:${port}/api/docs`);
-
-  // ── Hydrate Store from Supabase PostgreSQL ──
-  hydrateStoreFromSupabase().catch((err) => {
-    console.warn('[Startup] Supabase hydration warning:', err?.message || err);
-  });
 }
 
 
-bootstrap();
+bootstrap().catch((err) => {
+  console.error('[Startup] Fatal:', err?.message || err);
+  process.exit(1);
+});
 

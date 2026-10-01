@@ -89,6 +89,7 @@ export class OrdersController {
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Update order status and tracking details (Admin/Staff only)' })
   updateStatus(
+    @Req() req: any,
     @Param('id') id: string,
     @Body()
     body: {
@@ -104,6 +105,7 @@ export class OrdersController {
       body.paymentStatus,
       body.trackingNumber,
       body.carrier,
+      { email: req.user.email, ip: req.ip },
     );
   }
 
@@ -112,8 +114,8 @@ export class OrdersController {
   @Permissions('orders.manage')
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Delete order permanently (Admin only)' })
-  deleteOrder(@Param('id') id: string) {
-    return this.ordersService.deleteOrder(id);
+  deleteOrder(@Req() req: any, @Param('id') id: string) {
+    return this.ordersService.deleteOrder(id, { email: req.user.email, ip: req.ip });
   }
 }
 

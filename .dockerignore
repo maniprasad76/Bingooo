@@ -30,3 +30,7 @@ Thumbs.db
 *.md
 !README.md
 .agents
+
+# Local runtime data (customer records) must never be baked into the image
+apps/backend/data/store.json
+apps/backend/data/backups

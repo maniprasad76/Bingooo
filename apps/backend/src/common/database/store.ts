@@ -10,7 +10,10 @@ import { getDataDir } from '../utils/paths.util';
 
 const DATA_DIR = getDataDir();
 const STORE_FILE = path.join(DATA_DIR, 'store.json');
-const BUNDLED_STORE_FILE = STORE_FILE;
+// Sanitized first-boot seed shipped with the code (catalog, roles, settings;
+// no customer data). Resolved next to the source/dist tree so it is found
+// even where DATA_DIR points elsewhere (e.g. /tmp on Vercel).
+const SEED_FILE = path.resolve(__dirname, '..', '..', '..', 'data', 'seed.json');
 
 
 export const db = {
@@ -128,17 +131,19 @@ export function saveDb() {
       fs.mkdirSync(DATA_DIR, { recursive: true });
     }
     writeFileAtomic(STORE_FILE, JSON.stringify(db, null, 2));
-
-    // Notify registered hooks (e.g. rebuild in-memory indexes) without circular import
-    for (const hook of saveHooks) {
-      try {
-        hook();
-      } catch (err) {
-        console.error('[Database] Save hook error:', err);
-      }
-    }
   } catch (err) {
     console.error('[Database] Failed to save store to disk:', err);
+  }
+
+  // Hooks run even if the local write failed: index rebuilds and the durable
+  // remote store must not depend on an ephemeral or read-only disk.
+  // Notified without a circular import (observer pattern).
+  for (const hook of saveHooks) {
+    try {
+      hook();
+    } catch (err) {
+      console.error('[Database] Save hook error:', err);
+    }
   }
 }
 
@@ -148,8 +153,8 @@ export function saveDb() {
 let storePathToLoad: string | null = null;
 if (fs.existsSync(STORE_FILE)) {
   storePathToLoad = STORE_FILE;
-} else if (fs.existsSync(BUNDLED_STORE_FILE)) {
-  storePathToLoad = BUNDLED_STORE_FILE;
+} else if (fs.existsSync(SEED_FILE)) {
+  storePathToLoad = SEED_FILE;
 }
 
 if (storePathToLoad) {

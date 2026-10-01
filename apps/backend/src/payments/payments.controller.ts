@@ -15,6 +15,7 @@ import {
   PaymentsService,
   CreateOrderDto,
   RazorpayOrderDto,
+  RefundDto,
   VerifyPaymentDto,
 } from './payments.service';
 import { AuthGuard } from '../common/guards/auth.guard';
@@ -34,7 +35,7 @@ export class PaymentsController {
 
   @Get()
   @UseGuards(AuthGuard, RolesGuard)
-  @Permissions('payments.manage')
+  @Permissions('payments.read')
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Admin list all payments ledger entries' })
   findAll(@Query('status') status?: string, @Query('search') search?: string) {
@@ -43,11 +44,11 @@ export class PaymentsController {
 
   @Post(':id/refund')
   @UseGuards(AuthGuard, RolesGuard)
-  @Permissions('payments.manage')
+  @Permissions('refunds.manage')
   @ApiBearerAuth()
-  @ApiOperation({ summary: 'Process refund for payment transaction (Staff/Admin only)' })
-  refund(@Param('id') id: string, @Body() body: { amount?: number; reason?: string }) {
-    return this.paymentsService.refund(id, body);
+  @ApiOperation({ summary: 'Issue a real Razorpay refund for a captured payment (Finance staff only)' })
+  refund(@Param('id') id: string, @Body() body: RefundDto, @Req() req: any) {
+    return this.paymentsService.issueRefund(id, body, { email: req.user.email, ip: req.ip });
   }
 
   @Post('create-order')

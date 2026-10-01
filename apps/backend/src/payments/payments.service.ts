@@ -8,7 +8,7 @@ import {
 import { v4 as uuidv4 } from 'uuid';
 import * as crypto from 'crypto';
 import Razorpay from 'razorpay';
-import { IsString, IsOptional, IsNumber, IsObject } from 'class-validator';
+import { IsString, IsOptional, IsNumber, IsObject, IsPositive, MaxLength } from 'class-validator';
 import { db, saveDb } from '../common/database/store';
 import { OrdersService } from '../orders/orders.service';
 import { WhatsAppService } from '../notifications/whatsapp.service';
@@ -36,6 +36,19 @@ export class CreateOrderDto {
 }
 
 export class RazorpayOrderDto extends CreateOrderDto {}
+
+export class RefundDto {
+  /** Rupees; omit to refund everything still refundable. */
+  @IsOptional()
+  @IsNumber({ maxDecimalPlaces: 2 })
+  @IsPositive()
+  amount?: number;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(200)
+  reason?: string;
+}
 
 export class VerifyPaymentDto {
   @IsOptional()
@@ -140,6 +153,12 @@ export class PaymentsService {
       order = db.orders.find((o) => o.id === dto.orderId);
       if (!order || order.user_id !== userId) {
         throw new NotFoundException({ code: 'ORDER_NOT_FOUND', message: 'Order not found' });
+      }
+      if (order.status === 'cancelled') {
+        throw new BadRequestException({
+          code: 'ORDER_CANCELLED',
+          message: `Order #${order.order_number} was cancelled. Please place a new order.`,
+        });
       }
       if (order.payment_status === 'captured') {
         throw new BadRequestException({
@@ -340,6 +359,11 @@ export class PaymentsService {
     payment.updated_at = now;
 
     if (!order) return;
+    // Paid after the unpaid-order sweep cancelled it: take the stock back if
+    // possible, otherwise leave it cancelled (admins are alerted to refund).
+    if (order.status === 'cancelled' && order.cancel_reason === 'payment_timeout') {
+      if (this.ordersService.reclaimInventory(order)) order.status = 'pending_payment';
+    }
     order.payment_status = order.payment_method === 'partial_cod' ? 'partial_paid' : 'captured';
     // Only advance orders still awaiting payment; never pull a cancelled,
     // shipped or refunded order back to processing.
@@ -436,12 +460,26 @@ export class PaymentsService {
       const payment = db.payments.find((p) => p.provider_payment_id === refundEntity.payment_id);
       if (payment) {
         recordEvent(payment);
-        payment.status = 'refunded';
-        const order = db.orders.find((o) => o.id === payment.order_id);
-        if (order) {
-          order.payment_status = 'refunded';
-          order.updated_at = new Date().toISOString();
+        // Refunds may come from issueRefund (already recorded) or the Razorpay
+        // dashboard (not yet known): upsert, then derive the payment status.
+        const existingRefund = db.refunds.find((r) => r.provider_refund_id === refundEntity.id);
+        if (existingRefund) {
+          existingRefund.status = 'processed';
+          existingRefund.updated_at = new Date().toISOString();
+        } else {
+          db.refunds.push({
+            id: uuidv4(),
+            payment_id: payment.id,
+            provider_refund_id: refundEntity.id,
+            amount: Number(refundEntity.amount) / 100,
+            status: 'processed',
+            reason: 'Issued from Razorpay dashboard',
+            created_by: 'razorpay',
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
+          });
         }
+        this.applyRefundTotals(payment);
       }
     }
 
@@ -487,39 +525,111 @@ export class PaymentsService {
     });
   }
 
-  /** Admin: Process refund */
-  refund(id: string, dto?: { amount?: number; reason?: string }) {
-    const payment = db.payments.find((p) => p.id === id);
+  /** Rupees already refunded (or in flight) against a payment. */
+  private refundedAmount(payment: any): number {
+    return db.refunds
+      .filter((r) => r.payment_id === payment.id && r.status !== 'failed')
+      .reduce((sum, r) => sum + Number(r.amount || 0), 0);
+  }
+
+  /** Derive payment/order refund status from the recorded refunds. */
+  private applyRefundTotals(payment: any) {
+    const refunded = this.refundedAmount(payment);
+    const fully = Math.round(refunded * 100) >= Math.round(Number(payment.amount) * 100);
+    payment.status = fully ? 'refunded' : 'partially_refunded';
+    payment.updated_at = new Date().toISOString();
+    const order = db.orders.find((o) => o.id === payment.order_id);
+    if (order) {
+      order.payment_status = payment.status;
+      if (fully) order.status = 'refunded';
+      order.updated_at = new Date().toISOString();
+    }
+  }
+
+  /**
+   * Issue a real refund through Razorpay. Local state changes only after
+   * Razorpay accepts it, so a rejected refund never shows as refunded.
+   * @param amount rupees; defaults to everything still refundable.
+   */
+  async issueRefund(
+    paymentId: string,
+    dto: { amount?: number; reason?: string },
+    actor: { email?: string; ip?: string },
+  ) {
+    const payment = db.payments.find((p) => p.id === paymentId);
     if (!payment) {
       throw new NotFoundException({ code: 'PAYMENT_NOT_FOUND', message: 'Payment record not found.' });
     }
-
-    payment.status = 'refunded';
-    payment.updated_at = new Date().toISOString();
-
-    const order = db.orders.find((o) => o.id === payment.order_id);
-    if (order) {
-      order.status = 'refunded';
-      order.payment_status = 'refunded';
-      order.updated_at = new Date().toISOString();
+    if (payment.provider !== 'razorpay' || !payment.provider_payment_id) {
+      throw new BadRequestException({
+        code: 'NOT_REFUNDABLE',
+        message: 'Only captured Razorpay payments can be refunded online.',
+      });
+    }
+    if (!['captured', 'partially_refunded'].includes(payment.status)) {
+      throw new BadRequestException({
+        code: 'NOT_REFUNDABLE',
+        message: `Payment is ${payment.status}; only captured payments can be refunded.`,
+      });
     }
 
-    // Log audit trail
+    const refundablePaise = Math.round(Number(payment.amount) * 100) - Math.round(this.refundedAmount(payment) * 100);
+    const amountPaise = dto.amount !== undefined ? Math.round(dto.amount * 100) : refundablePaise;
+    if (amountPaise <= 0 || amountPaise > refundablePaise) {
+      throw new BadRequestException({
+        code: 'INVALID_REFUND_AMOUNT',
+        message: `Refund must be between ₹0.01 and ₹${(refundablePaise / 100).toFixed(2)}.`,
+      });
+    }
+
+    const reason = (dto.reason || 'Customer request').slice(0, 200);
+    let rzpRefund: any;
+    try {
+      rzpRefund = await this.getRazorpayClient().payments.refund(payment.provider_payment_id, {
+        amount: amountPaise,
+        notes: { reason, payment_id: payment.id },
+      });
+    } catch (err: any) {
+      throw new BadRequestException({
+        code: 'RAZORPAY_REFUND_FAILED',
+        message: err?.error?.description || err?.message || 'Razorpay rejected the refund.',
+      });
+    }
+
+    const now = new Date().toISOString();
+    const refund = {
+      id: uuidv4(),
+      payment_id: payment.id,
+      provider_refund_id: rzpRefund.id,
+      amount: amountPaise / 100,
+      status: rzpRefund.status || 'pending',
+      reason,
+      created_by: actor.email || 'system',
+      created_at: now,
+      updated_at: now,
+    };
+    db.refunds.push(refund);
+    this.applyRefundTotals(payment);
+
     db.audit_logs.unshift({
-      id: `log-${Date.now()}`,
-      admin_email: 'admin@bingooo.in',
+      id: `log-${uuidv4()}`,
+      admin_email: actor.email || 'system',
       action: 'payment.refund_issued',
       resource: 'payments',
       resource_id: payment.id,
-      details: `Refund of ₹${dto?.amount || payment.amount} issued. Reason: ${dto?.reason || 'Customer request'}`,
-      ip_address: '103.24.12.89',
-      created_at: new Date().toISOString(),
+      details: `Refund of ₹${refund.amount} issued via Razorpay (${rzpRefund.id}). Reason: ${reason}`,
+      ip_address: actor.ip || null,
+      created_at: now,
     });
+    saveDb();
 
     return {
       success: true,
-      message: 'Refund issued successfully.',
+      message: 'Refund issued via Razorpay.',
       paymentId: payment.id,
+      refundId: refund.id,
+      providerRefundId: rzpRefund.id,
+      amount: refund.amount,
       status: payment.status,
     };
   }

@@ -12,6 +12,7 @@ import { RequestIdInterceptor } from './common/interceptors/request-id.intercept
 import { IdempotencyInterceptor } from './common/interceptors/idempotency.interceptor';
 import { LoggingInterceptor } from './common/interceptors/logging.interceptor';
 import { CacheInterceptor } from './common/interceptors/cache.interceptor';
+import { hydrateFromAppRecords } from './common/database/app-records.service';
 
 let cachedServer: Express | null = null;
 
@@ -114,6 +115,7 @@ export async function bootstrapServer(): Promise<Express> {
     new IdempotencyInterceptor(),
   );
 
+  await hydrateFromAppRecords();
   await app.init();
   cachedServer = server;
   return cachedServer;

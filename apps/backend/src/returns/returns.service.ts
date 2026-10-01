@@ -2,6 +2,7 @@ import { Injectable, NotFoundException, BadRequestException } from '@nestjs/comm
 import { v4 as uuidv4 } from 'uuid';
 import { IsIn, IsNotEmpty, IsNumber, IsOptional, IsString, MaxLength } from 'class-validator';
 import { db, saveDb } from '../common/database/store';
+import { PaymentsService } from '../payments/payments.service';
 
 export class CreateReturnDto {
   @IsOptional() @IsString() @MaxLength(100) orderId?: string;
@@ -15,8 +16,17 @@ export class CreateReturnDto {
   @IsOptional() @IsNumber() refundAmount?: number;
 }
 
+export class UpdateReturnStatusDto {
+  @IsIn(['requested', 'approved', 'received', 'refunded', 'rejected'])
+  status!: 'requested' | 'approved' | 'received' | 'refunded' | 'rejected';
+
+  @IsOptional() @IsString() @MaxLength(1000) notes?: string;
+}
+
 @Injectable()
 export class ReturnsService {
+  constructor(private readonly paymentsService: PaymentsService) {}
+
   /** Create customer return request */
   create(userId: string, dto: CreateReturnDto) {
     // Returns can only be raised against the caller's own orders.
@@ -94,25 +104,56 @@ export class ReturnsService {
     return items;
   }
 
-  /** Admin update status */
-  updateStatus(id: string, status: string, notes?: string) {
+  /**
+   * Admin update status. Moving a return to "refunded" issues the real
+   * Razorpay refund first; if Razorpay rejects it the status is not changed.
+   * COD amounts (paid in cash) are flagged for a manual refund.
+   */
+  async updateStatus(id: string, dto: UpdateReturnStatusDto, actor: { email?: string; ip?: string }) {
     const ret = db.returns.find((r) => r.id === id);
     if (!ret) {
       throw new NotFoundException({ code: 'RETURN_NOT_FOUND', message: 'Return request not found.' });
     }
 
-    ret.status = status;
-    if (notes) ret.admin_notes = notes;
-    ret.updated_at = new Date().toISOString();
-
-    // If status is refunded, update associated payment/order if found
-    if (status === 'refunded') {
+    if (dto.status === 'refunded' && ret.status !== 'refunded') {
       const order = db.orders.find((o) => o.id === ret.order_id || o.order_number === ret.order_number);
-      if (order) {
-        order.status = 'refunded';
-        order.payment_status = 'refunded';
+      if (!order) {
+        throw new BadRequestException({ code: 'ORDER_NOT_FOUND', message: 'The order for this return no longer exists.' });
       }
+      const payment = db.payments.find(
+        (p) =>
+          p.order_id === order.id &&
+          p.provider === 'razorpay' &&
+          ['captured', 'partially_refunded'].includes(p.status),
+      );
+
+      let onlineAmount = 0;
+      if (payment) {
+        const alreadyRefunded = db.refunds
+          .filter((r) => r.payment_id === payment.id && r.status !== 'failed')
+          .reduce((sum, r) => sum + Number(r.amount || 0), 0);
+        const refundable = Math.round((Number(payment.amount) - alreadyRefunded) * 100) / 100;
+        onlineAmount = Math.min(Number(ret.refund_amount) || refundable, refundable);
+        if (onlineAmount > 0) {
+          const result = await this.paymentsService.issueRefund(
+            payment.id,
+            { amount: onlineAmount, reason: `Return ${ret.id}: ${ret.reason}` },
+            actor,
+          );
+          ret.provider_refund_id = result.providerRefundId;
+        }
+      } else {
+        order.payment_status = 'refunded';
+        order.status = 'refunded';
+        order.updated_at = new Date().toISOString();
+      }
+      ret.refunded_online = onlineAmount;
+      ret.refund_manual = Math.max(0, Math.round((Number(ret.refund_amount) - onlineAmount) * 100) / 100);
     }
+
+    ret.status = dto.status;
+    if (dto.notes) ret.admin_notes = dto.notes;
+    ret.updated_at = new Date().toISOString();
 
     saveDb();
     return ret;

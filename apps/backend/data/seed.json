@@ -1,0 +1,1020 @@
+{
+  "categories": [
+    {
+      "id": "c84b5a5d-517a-4630-9eb7-42ba0481bd88",
+      "name": "T-Shirts",
+      "slug": "t-shirts",
+      "parent_id": null,
+      "image_key": null,
+      "is_active": true,
+      "created_at": "2026-09-10T10:35:47.741Z",
+      "updated_at": "2026-09-10T10:35:47.741Z"
+    },
+    {
+      "id": "af43a6b0-e988-48d1-9c3a-d0d54e842140",
+      "name": "Hoodies",
+      "slug": "hoodies",
+      "parent_id": null,
+      "image_key": null,
+      "is_active": true,
+      "created_at": "2026-09-10T10:35:47.741Z",
+      "updated_at": "2026-09-10T10:35:47.741Z"
+    }
+  ],
+  "collections": [
+    {
+      "id": "518431b3-ec78-45a3-a2c9-18c32663c8bc",
+      "name": "Summer 2025",
+      "slug": "summer-2025",
+      "description": "Fresh summer collection with bold prints and light fabrics.",
+      "banner_key": null,
+      "is_active": true,
+      "created_at": "2026-09-10T10:35:47.741Z",
+      "updated_at": "2026-09-10T10:35:47.741Z"
+    },
+    {
+      "id": "32fa7d60-b3ed-4182-8468-3703618f19db",
+      "name": "Streetwear Essentials",
+      "slug": "streetwear-essentials",
+      "description": "Core streetwear pieces for everyday style.",
+      "banner_key": null,
+      "is_active": true,
+      "created_at": "2026-09-10T10:35:47.741Z",
+      "updated_at": "2026-09-10T10:35:47.741Z"
+    },
+    {
+      "id": "b08f2466-8540-4758-876c-c79805584670",
+      "name": "Custom Favourites",
+      "slug": "custom-favourites",
+      "description": "Most popular customizable products.",
+      "banner_key": null,
+      "is_active": true,
+      "created_at": "2026-09-10T10:35:47.741Z",
+      "updated_at": "2026-09-10T10:35:47.741Z"
+    },
+    {
+      "id": "556c19fe-f381-4d43-924c-fce110277b04",
+      "name": "Best Sellers",
+      "slug": "best-sellers",
+      "description": "Our top-selling products.",
+      "banner_key": null,
+      "is_active": true,
+      "created_at": "2026-09-10T10:35:47.741Z",
+      "updated_at": "2026-09-10T10:35:47.741Z"
+    }
+  ],
+  "products": [
+    {
+      "id": "ead1024d-1153-4446-9e62-ded6616078f3",
+      "category_id": "d99d20a3-2e63-4998-8232-f030be087d2f",
+      "title": "Classic Oversized Tee",
+      "slug": "classic-oversized-tee",
+      "description": "Crafted from 240 GSM loopknit French terry cotton (100% biowash). Signature drop-shoulder streetwear cut with double-needle anti-sag ribbed collar for an effortless structured boxy drape.",
+      "status": "active",
+      "base_price": 1299,
+      "compare_at_price": 1599,
+      "customization_enabled": true,
+      "seo_title": "Classic Oversized Tee (240 GSM) — Bingooo",
+      "seo_description": "240 GSM loopknit French terry cotton 100% biowash drop-shoulder oversized tee. Structured boxy fit.",
+      "fabric": "240 GSM Loopknit French Terry Cotton 100% Biowash",
+      "gsm": 240,
+      "fit": "Drop-Shoulder / Oversized Boxy Fit",
+      "created_at": "2026-09-17T09:37:42.520Z",
+      "updated_at": "2026-09-17T09:37:42.520Z"
+    },
+    {
+      "id": "1d9df779-ffde-49de-bdb2-5ce81e8bbf54",
+      "category_id": "d99d20a3-2e63-4998-8232-f030be087d2f",
+      "title": "Graphic Print Tee — Midnight",
+      "slug": "graphic-print-tee-midnight",
+      "description": "Crafted from 240 GSM loopknit French terry cotton (100% biowash). Features a bold midnight graphic print on drop-shoulder streetwear silhouette.",
+      "status": "active",
+      "base_price": 1499,
+      "compare_at_price": null,
+      "customization_enabled": false,
+      "seo_title": "Graphic Print Tee Midnight (240 GSM) — Bingooo",
+      "seo_description": "240 GSM loopknit French terry cotton 100% biowash drop-shoulder tee with midnight graphic print.",
+      "fabric": "240 GSM Loopknit French Terry Cotton 100% Biowash",
+      "gsm": 240,
+      "fit": "Drop-Shoulder / Oversized Boxy Fit",
+      "created_at": "2026-09-17T09:37:42.520Z",
+      "updated_at": "2026-09-17T09:37:42.520Z"
+    },
+    {
+      "id": "a18a1763-6a59-4d9b-81b9-b4ae03461ddf",
+      "category_id": "86a9bc46-ff00-4bff-9dc7-9b5123caae74",
+      "title": "Essential Pullover Hoodie",
+      "slug": "essential-pullover-hoodie",
+      "description": "430 GSM ultra-heavyweight drop-shoulder pullover hoodie. Features a double-lined structured hood, seamless kangaroo pouch, and snug rib-knit cuffs.",
+      "status": "active",
+      "base_price": 2499,
+      "compare_at_price": 2999,
+      "customization_enabled": true,
+      "seo_title": "Essential Dropshoulder Hoodie (430gsm) — Bingooo",
+      "seo_description": "430 GSM ultra-heavyweight drop-shoulder fleece hoodie with double-lined hood.",
+      "fabric": "430 GSM Heavyweight Loopknit Fleece",
+      "gsm": 430,
+      "fit": "Drop-Shoulder Heavyweight Hoodie Silhouette",
+      "created_at": "2026-09-17T09:37:42.520Z",
+      "updated_at": "2026-09-17T09:37:42.520Z"
+    },
+    {
+      "id": "2294ff04-7315-4755-90e8-ec57be4a8ad9",
+      "category_id": "c84b5a5d-517a-4630-9eb7-42ba0481bd88",
+      "title": "240 GSM Acid Wash Drop-Shoulder Tee — Drop 02",
+      "slug": "acid-wash-tee-1789884729996",
+      "description": "Crafted from 240 GSM loopknit French terry cotton (100% biowash). Vintage acid-washed mineral treatment on an authentic drop-shoulder boxy silhouette.",
+      "status": "draft",
+      "base_price": 1499,
+      "compare_at_price": 2299,
+      "customization_enabled": true,
+      "seo_title": "240 GSM Acid Wash Drop-Shoulder Tee — Bingooo",
+      "seo_description": "240 GSM loopknit French terry cotton 100% biowash vintage acid wash tee.",
+      "fabric": "240 GSM Loopknit French Terry Cotton 100% Biowash",
+      "gsm": 240,
+      "fit": "Drop-Shoulder / Vintage Acid Wash Boxy Fit",
+      "design_details": "Vintage acid-wash patina with double-stitched collar",
+      "care_instructions": "Machine wash cold inside out. Gentle cycle. Do not iron directly on graphics.",
+      "tags": [
+        "acid-wash",
+        "drop-shoulder",
+        "240-gsm",
+        "french-terry"
+      ],
+      "featured": false,
+      "bestseller": false,
+      "is_sale": false,
+      "sale_tag": null,
+      "badge_text": "DROP 02",
+      "created_at": "2026-09-20T06:12:10.001Z",
+      "updated_at": "2026-09-20T06:12:10.012Z"
+    }
+  ],
+  "product_images": [
+    {
+      "id": "58bb9367-e794-4a6f-a4f2-566cebbc0ce2",
+      "product_id": "ead1024d-1153-4446-9e62-ded6616078f3",
+      "url": "/custom/tshirt-step-1.png",
+      "object_key": "/custom/tshirt-step-1.png",
+      "alt_text": "Classic Oversized Tee in Natural Beige",
+      "sort_order": 0,
+      "is_primary": true
+    },
+    {
+      "id": "6b61c246-7414-4c07-9051-48c132737fd8",
+      "product_id": "1d9df779-ffde-49de-bdb2-5ce81e8bbf54",
+      "url": "/custom/tshirt-step-3-black.png",
+      "object_key": "/custom/tshirt-step-3-black.png",
+      "alt_text": "Graphic Print Tee in Midnight Obsidian",
+      "sort_order": 0,
+      "is_primary": true
+    },
+    {
+      "id": "32065035-11bd-485d-becf-3bbf002d4666",
+      "product_id": "a18a1763-6a59-4d9b-81b9-b4ae03461ddf",
+      "url": "/custom/tshirt-step-2.png",
+      "object_key": "/custom/tshirt-step-2.png",
+      "alt_text": "Essential Custom Apparel in Sandstone",
+      "sort_order": 0,
+      "is_primary": true
+    },
+    {
+      "id": "img-drop2-1",
+      "product_id": "2294ff04-7315-4755-90e8-ec57be4a8ad9",
+      "url": "/custom/tshirt-step-1.png",
+      "object_key": "/custom/tshirt-step-1.png",
+      "alt_text": "300 GSM Heavy French Terry Acid Wash Tee — Drop 02",
+      "sort_order": 0,
+      "is_primary": true
+    }
+  ],
+  "product_variants": [
+    {
+      "id": "4be24ccd-295f-4efc-b7bb-b8cfc2a35936",
+      "product_id": "ead1024d-1153-4446-9e62-ded6616078f3",
+      "sku": "COT-S-BLK",
+      "size": "S",
+      "color": "Black",
+      "color_hex": "#111111",
+      "price": 1299,
+      "stock_quantity": 47,
+      "reserved_quantity": 0,
+      "is_active": true,
+      "created_at": "2026-09-17T09:37:42.519Z",
+      "updated_at": "2026-09-17T09:37:42.520Z"
+    },
+    {
+      "id": "bd7dcdb5-c946-48ad-9355-888179e58dc1",
+      "product_id": "ead1024d-1153-4446-9e62-ded6616078f3",
+      "sku": "COT-S-WHT",
+      "size": "S",
+      "color": "White",
+      "color_hex": "#FFFFFF",
+      "price": 1299,
+      "stock_quantity": 25,
+      "reserved_quantity": 0,
+      "is_active": true,
+      "created_at": "2026-09-17T09:37:42.520Z",
+      "updated_at": "2026-09-17T09:37:42.520Z"
+    },
+    {
+      "id": "eb15ab94-214e-4269-b014-8c823f0dbbda",
+      "product_id": "ead1024d-1153-4446-9e62-ded6616078f3",
+      "sku": "COT-S-SNS",
+      "size": "S",
+      "color": "Sandstone",
+      "color_hex": "#D4C4A8",
+      "price": 1299,
+      "stock_quantity": 25,
+      "reserved_quantity": 0,
+      "is_active": true,
+      "created_at": "2026-09-17T09:37:42.520Z",
+      "updated_at": "2026-09-17T09:37:42.520Z"
+    },
+    {
+      "id": "424f3b98-d99b-4a48-b49f-195b076fa8b7",
+      "product_id": "ead1024d-1153-4446-9e62-ded6616078f3",
+      "sku": "COT-M-BLK",
+      "size": "M",
+      "color": "Black",
+      "color_hex": "#111111",
+      "price": 1299,
+      "stock_quantity": 25,
+      "reserved_quantity": 0,
+      "is_active": true,
+      "created_at": "2026-09-17T09:37:42.520Z",
+      "updated_at": "2026-09-17T09:37:42.520Z"
+    },
+    {
+      "id": "9a3879ff-84b9-4fe0-bba9-7c34aab89a88",
+      "product_id": "ead1024d-1153-4446-9e62-ded6616078f3",
+      "sku": "COT-M-WHT",
+      "size": "M",
+      "color": "White",
+      "color_hex": "#FFFFFF",
+      "price": 1299,
+      "stock_quantity": 25,
+      "reserved_quantity": 0,
+      "is_active": true,
+      "created_at": "2026-09-17T09:37:42.520Z",
+      "updated_at": "2026-09-17T09:37:42.520Z"
+    },
+    {
+      "id": "d8438b35-6c5a-433d-bfb1-99fa61381572",
+      "product_id": "ead1024d-1153-4446-9e62-ded6616078f3",
+      "sku": "COT-M-SNS",
+      "size": "M",
+      "color": "Sandstone",
+      "color_hex": "#D4C4A8",
+      "price": 1299,
+      "stock_quantity": 25,
+      "reserved_quantity": 0,
+      "is_active": true,
+      "created_at": "2026-09-17T09:37:42.520Z",
+      "updated_at": "2026-09-17T09:37:42.520Z"
+    },
+    {
+      "id": "d68a418b-0cb3-4453-b342-a1d5e7c034e3",
+      "product_id": "ead1024d-1153-4446-9e62-ded6616078f3",
+      "sku": "COT-L-BLK",
+      "size": "L",
+      "color": "Black",
+      "color_hex": "#111111",
+      "price": 1299,
+      "stock_quantity": 25,
+      "reserved_quantity": 0,
+      "is_active": true,
+      "created_at": "2026-09-17T09:37:42.520Z",
+      "updated_at": "2026-09-17T09:37:42.520Z"
+    },
+    {
+      "id": "d4e7d86a-d493-4db3-8315-458cc0221234",
+      "product_id": "ead1024d-1153-4446-9e62-ded6616078f3",
+      "sku": "COT-L-WHT",
+      "size": "L",
+      "color": "White",
+      "color_hex": "#FFFFFF",
+      "price": 1299,
+      "stock_quantity": 25,
+      "reserved_quantity": 0,
+      "is_active": true,
+      "created_at": "2026-09-17T09:37:42.520Z",
+      "updated_at": "2026-09-17T09:37:42.520Z"
+    },
+    {
+      "id": "0c2af497-94d6-45a5-9202-ffa4eb59b215",
+      "product_id": "ead1024d-1153-4446-9e62-ded6616078f3",
+      "sku": "COT-L-SNS",
+      "size": "L",
+      "color": "Sandstone",
+      "color_hex": "#D4C4A8",
+      "price": 1299,
+      "stock_quantity": 25,
+      "reserved_quantity": 0,
+      "is_active": true,
+      "created_at": "2026-09-17T09:37:42.520Z",
+      "updated_at": "2026-09-17T09:37:42.520Z"
+    },
+    {
+      "id": "bd301380-4cf4-42fb-8f08-e9647b742c2c",
+      "product_id": "ead1024d-1153-4446-9e62-ded6616078f3",
+      "sku": "COT-XL-BLK",
+      "size": "XL",
+      "color": "Black",
+      "color_hex": "#111111",
+      "price": 1299,
+      "stock_quantity": 25,
+      "reserved_quantity": 0,
+      "is_active": true,
+      "created_at": "2026-09-17T09:37:42.520Z",
+      "updated_at": "2026-09-17T09:37:42.520Z"
+    },
+    {
+      "id": "c4e5049f-7c7f-4610-b89c-ea70135d1605",
+      "product_id": "ead1024d-1153-4446-9e62-ded6616078f3",
+      "sku": "COT-XL-WHT",
+      "size": "XL",
+      "color": "White",
+      "color_hex": "#FFFFFF",
+      "price": 1299,
+      "stock_quantity": 25,
+      "reserved_quantity": 0,
+      "is_active": true,
+      "created_at": "2026-09-17T09:37:42.520Z",
+      "updated_at": "2026-09-17T09:37:42.520Z"
+    },
+    {
+      "id": "5fe37dd0-03ac-4a49-895d-9400464a2f5a",
+      "product_id": "ead1024d-1153-4446-9e62-ded6616078f3",
+      "sku": "COT-XL-SNS",
+      "size": "XL",
+      "color": "Sandstone",
+      "color_hex": "#D4C4A8",
+      "price": 1299,
+      "stock_quantity": 25,
+      "reserved_quantity": 0,
+      "is_active": true,
+      "created_at": "2026-09-17T09:37:42.520Z",
+      "updated_at": "2026-09-17T09:37:42.520Z"
+    },
+    {
+      "id": "6bb29f8b-11dc-4f0e-b2ac-57a203bed729",
+      "product_id": "ead1024d-1153-4446-9e62-ded6616078f3",
+      "sku": "COT-XXL-BLK",
+      "size": "XXL",
+      "color": "Black",
+      "color_hex": "#111111",
+      "price": 1299,
+      "stock_quantity": 25,
+      "reserved_quantity": 0,
+      "is_active": true,
+      "created_at": "2026-09-17T09:37:42.520Z",
+      "updated_at": "2026-09-17T09:37:42.520Z"
+    },
+    {
+      "id": "49b3725a-983a-4c0a-973b-dc47d696ffba",
+      "product_id": "ead1024d-1153-4446-9e62-ded6616078f3",
+      "sku": "COT-XXL-WHT",
+      "size": "XXL",
+      "color": "White",
+      "color_hex": "#FFFFFF",
+      "price": 1299,
+      "stock_quantity": 25,
+      "reserved_quantity": 0,
+      "is_active": true,
+      "created_at": "2026-09-17T09:37:42.520Z",
+      "updated_at": "2026-09-17T09:37:42.520Z"
+    },
+    {
+      "id": "04853476-0ef4-4bad-8325-d83debba1a33",
+      "product_id": "ead1024d-1153-4446-9e62-ded6616078f3",
+      "sku": "COT-XXL-SNS",
+      "size": "XXL",
+      "color": "Sandstone",
+      "color_hex": "#D4C4A8",
+      "price": 1299,
+      "stock_quantity": 25,
+      "reserved_quantity": 0,
+      "is_active": true,
+      "created_at": "2026-09-17T09:37:42.520Z",
+      "updated_at": "2026-09-17T09:37:42.520Z"
+    },
+    {
+      "id": "e7a03827-ba90-480f-a0b4-0f3768b68c20",
+      "product_id": "1d9df779-ffde-49de-bdb2-5ce81e8bbf54",
+      "sku": "GPT-S-BLK",
+      "size": "S",
+      "color": "Black",
+      "color_hex": "#111111",
+      "price": 1499,
+      "stock_quantity": 15,
+      "reserved_quantity": 0,
+      "is_active": true,
+      "created_at": "2026-09-17T09:37:42.520Z",
+      "updated_at": "2026-09-17T09:37:42.520Z"
+    },
+    {
+      "id": "868070f5-7a08-4a68-85d7-78208fb42767",
+      "product_id": "1d9df779-ffde-49de-bdb2-5ce81e8bbf54",
+      "sku": "GPT-M-BLK",
+      "size": "M",
+      "color": "Black",
+      "color_hex": "#111111",
+      "price": 1499,
+      "stock_quantity": 15,
+      "reserved_quantity": 0,
+      "is_active": true,
+      "created_at": "2026-09-17T09:37:42.520Z",
+      "updated_at": "2026-09-17T09:37:42.520Z"
+    },
+    {
+      "id": "e61a803f-43c0-4a1c-b136-fb8f62bfc5dc",
+      "product_id": "1d9df779-ffde-49de-bdb2-5ce81e8bbf54",
+      "sku": "GPT-L-BLK",
+      "size": "L",
+      "color": "Black",
+      "color_hex": "#111111",
+      "price": 1499,
+      "stock_quantity": 15,
+      "reserved_quantity": 0,
+      "is_active": true,
+      "created_at": "2026-09-17T09:37:42.520Z",
+      "updated_at": "2026-09-17T09:37:42.520Z"
+    },
+    {
+      "id": "45569148-be76-45b6-a459-4821107f8d59",
+      "product_id": "1d9df779-ffde-49de-bdb2-5ce81e8bbf54",
+      "sku": "GPT-XL-BLK",
+      "size": "XL",
+      "color": "Black",
+      "color_hex": "#111111",
+      "price": 1499,
+      "stock_quantity": 15,
+      "reserved_quantity": 0,
+      "is_active": true,
+      "created_at": "2026-09-17T09:37:42.520Z",
+      "updated_at": "2026-09-17T09:37:42.520Z"
+    },
+    {
+      "id": "e19070fd-403b-4b92-b743-c9f3840afca2",
+      "product_id": "a18a1763-6a59-4d9b-81b9-b4ae03461ddf",
+      "sku": "EPH-S-CHR",
+      "size": "S",
+      "color": "Charcoal",
+      "color_hex": "#333333",
+      "price": 2499,
+      "stock_quantity": 10,
+      "reserved_quantity": 0,
+      "is_active": true,
+      "created_at": "2026-09-17T09:37:42.520Z",
+      "updated_at": "2026-09-17T09:37:42.520Z"
+    },
+    {
+      "id": "f04b2304-c12b-447b-ae43-a30776382dbc",
+      "product_id": "a18a1763-6a59-4d9b-81b9-b4ae03461ddf",
+      "sku": "EPH-S-OAT",
+      "size": "S",
+      "color": "Oatmeal",
+      "color_hex": "#E8DCC8",
+      "price": 2499,
+      "stock_quantity": 10,
+      "reserved_quantity": 0,
+      "is_active": true,
+      "created_at": "2026-09-17T09:37:42.520Z",
+      "updated_at": "2026-09-17T09:37:42.520Z"
+    },
+    {
+      "id": "e07df583-d249-47a0-a2eb-e8bb14355fbb",
+      "product_id": "a18a1763-6a59-4d9b-81b9-b4ae03461ddf",
+      "sku": "EPH-M-CHR",
+      "size": "M",
+      "color": "Charcoal",
+      "color_hex": "#333333",
+      "price": 2499,
+      "stock_quantity": 10,
+      "reserved_quantity": 0,
+      "is_active": true,
+      "created_at": "2026-09-17T09:37:42.520Z",
+      "updated_at": "2026-09-17T09:37:42.520Z"
+    },
+    {
+      "id": "0bae49c1-b678-4c82-a615-8799154f0db3",
+      "product_id": "a18a1763-6a59-4d9b-81b9-b4ae03461ddf",
+      "sku": "EPH-M-OAT",
+      "size": "M",
+      "color": "Oatmeal",
+      "color_hex": "#E8DCC8",
+      "price": 2499,
+      "stock_quantity": 10,
+      "reserved_quantity": 0,
+      "is_active": true,
+      "created_at": "2026-09-17T09:37:42.520Z",
+      "updated_at": "2026-09-17T09:37:42.520Z"
+    },
+    {
+      "id": "014085d4-fdac-4540-9116-661cd6471ea3",
+      "product_id": "a18a1763-6a59-4d9b-81b9-b4ae03461ddf",
+      "sku": "EPH-L-CHR",
+      "size": "L",
+      "color": "Charcoal",
+      "color_hex": "#333333",
+      "price": 2499,
+      "stock_quantity": 10,
+      "reserved_quantity": 0,
+      "is_active": true,
+      "created_at": "2026-09-17T09:37:42.520Z",
+      "updated_at": "2026-09-17T09:37:42.520Z"
+    },
+    {
+      "id": "42947b5a-14c8-4f70-8360-4201fa3e8e00",
+      "product_id": "a18a1763-6a59-4d9b-81b9-b4ae03461ddf",
+      "sku": "EPH-L-OAT",
+      "size": "L",
+      "color": "Oatmeal",
+      "color_hex": "#E8DCC8",
+      "price": 2499,
+      "stock_quantity": 10,
+      "reserved_quantity": 0,
+      "is_active": true,
+      "created_at": "2026-09-17T09:37:42.520Z",
+      "updated_at": "2026-09-17T09:37:42.520Z"
+    },
+    {
+      "id": "6e61361a-c19a-4a99-a0e4-d505b4d51459",
+      "product_id": "a18a1763-6a59-4d9b-81b9-b4ae03461ddf",
+      "sku": "EPH-XL-CHR",
+      "size": "XL",
+      "color": "Charcoal",
+      "color_hex": "#333333",
+      "price": 2499,
+      "stock_quantity": 10,
+      "reserved_quantity": 0,
+      "is_active": true,
+      "created_at": "2026-09-17T09:37:42.520Z",
+      "updated_at": "2026-09-17T09:37:42.520Z"
+    },
+    {
+      "id": "f21ba943-fc57-4cc0-bae5-ab5a13c0ac80",
+      "product_id": "a18a1763-6a59-4d9b-81b9-b4ae03461ddf",
+      "sku": "EPH-XL-OAT",
+      "size": "XL",
+      "color": "Oatmeal",
+      "color_hex": "#E8DCC8",
+      "price": 2499,
+      "stock_quantity": 10,
+      "reserved_quantity": 0,
+      "is_active": true,
+      "created_at": "2026-09-17T09:37:42.520Z",
+      "updated_at": "2026-09-17T09:37:42.520Z"
+    },
+    {
+      "id": "2d4291a9-a6ad-4c42-ada0-f9004750c156",
+      "product_id": "a18a1763-6a59-4d9b-81b9-b4ae03461ddf",
+      "sku": "EPH-XXL-CHR",
+      "size": "XXL",
+      "color": "Charcoal",
+      "color_hex": "#333333",
+      "price": 2499,
+      "stock_quantity": 10,
+      "reserved_quantity": 0,
+      "is_active": true,
+      "created_at": "2026-09-17T09:37:42.520Z",
+      "updated_at": "2026-09-17T09:37:42.520Z"
+    },
+    {
+      "id": "6c4b7b1a-51cc-40e1-a86a-e26be721b481",
+      "product_id": "a18a1763-6a59-4d9b-81b9-b4ae03461ddf",
+      "sku": "EPH-XXL-OAT",
+      "size": "XXL",
+      "color": "Oatmeal",
+      "color_hex": "#E8DCC8",
+      "price": 2499,
+      "stock_quantity": 10,
+      "reserved_quantity": 0,
+      "is_active": true,
+      "created_at": "2026-09-17T09:37:42.520Z",
+      "updated_at": "2026-09-17T09:37:42.520Z"
+    },
+    {
+      "id": "4bbc28f5-14b0-470c-bb2d-d3a1f01e7a6d",
+      "product_id": "2294ff04-7315-4755-90e8-ec57be4a8ad9",
+      "sku": "AWT-M-1789884730005",
+      "size": "M",
+      "color": "Acid Charcoal",
+      "color_hex": "#222222",
+      "price": 1599,
+      "stock_quantity": 30,
+      "reserved_quantity": 0,
+      "is_active": true,
+      "created_at": "2026-09-20T06:12:10.008Z",
+      "updated_at": "2026-09-20T06:12:10.008Z"
+    }
+  ],
+  "product_collections": [
+    {
+      "product_id": "ead1024d-1153-4446-9e62-ded6616078f3",
+      "collection_id": "a0e82fa6-25cb-48eb-84c2-1a1126a0bbcf"
+    },
+    {
+      "product_id": "ead1024d-1153-4446-9e62-ded6616078f3",
+      "collection_id": "11f0d7dd-7e01-4400-b7cd-bff8e8f633a7"
+    },
+    {
+      "product_id": "ead1024d-1153-4446-9e62-ded6616078f3",
+      "collection_id": "77622f0c-0658-4f99-8087-d6aff87c39ba"
+    },
+    {
+      "product_id": "1d9df779-ffde-49de-bdb2-5ce81e8bbf54",
+      "collection_id": "9b37aed6-4ca3-4c11-a7eb-44f238721b3b"
+    },
+    {
+      "product_id": "a18a1763-6a59-4d9b-81b9-b4ae03461ddf",
+      "collection_id": "a0e82fa6-25cb-48eb-84c2-1a1126a0bbcf"
+    },
+    {
+      "product_id": "a18a1763-6a59-4d9b-81b9-b4ae03461ddf",
+      "collection_id": "11f0d7dd-7e01-4400-b7cd-bff8e8f633a7"
+    }
+  ],
+  "roles": [
+    {
+      "id": "role-super-admin",
+      "name": "Super Admin",
+      "code": "SUPER_ADMIN",
+      "description": "Full unrestricted system and database access.",
+      "is_system": true,
+      "permissions": [
+        "*"
+      ]
+    },
+    {
+      "id": "role-admin",
+      "name": "Admin",
+      "code": "ADMIN",
+      "description": "Comprehensive store management.",
+      "is_system": true,
+      "permissions": [
+        "products.read",
+        "products.create",
+        "products.update",
+        "products.delete",
+        "orders.read",
+        "orders.update",
+        "customizations.review",
+        "payments.read",
+        "refunds.manage",
+        "inventory.read",
+        "inventory.update",
+        "reviews.manage",
+        "banners.manage",
+        "coupons.manage"
+      ]
+    },
+    {
+      "id": "role-order-manager",
+      "name": "Order Manager",
+      "code": "ORDER_MANAGER",
+      "description": "Handle order verification, fulfillment and logistics.",
+      "is_system": false,
+      "permissions": [
+        "orders.read",
+        "orders.update",
+        "customizations.review",
+        "payments.read"
+      ]
+    },
+    {
+      "id": "role-product-manager",
+      "name": "Product Manager",
+      "code": "PRODUCT_MANAGER",
+      "description": "Manage catalog, garments, inventory and banners.",
+      "is_system": false,
+      "permissions": [
+        "products.read",
+        "products.create",
+        "products.update",
+        "inventory.read",
+        "inventory.update",
+        "banners.manage"
+      ]
+    },
+    {
+      "id": "role-support",
+      "name": "Customer Support",
+      "code": "SUPPORT",
+      "description": "Assist customers with orders, returns and reviews.",
+      "is_system": false,
+      "permissions": [
+        "orders.read",
+        "reviews.manage",
+        "returns.manage"
+      ]
+    },
+    {
+      "id": "role-customer",
+      "name": "Customer",
+      "code": "CUSTOMER",
+      "description": "End customer shopping permissions.",
+      "is_system": true,
+      "permissions": [
+        "orders.own",
+        "profile.own",
+        "reviews.create",
+        "customizations.create"
+      ]
+    }
+  ],
+  "permissions": [
+    {
+      "key": "products.read",
+      "label": "View Products & Catalog",
+      "group": "Products"
+    },
+    {
+      "key": "products.create",
+      "label": "Create New Garments",
+      "group": "Products"
+    },
+    {
+      "key": "products.update",
+      "label": "Update Pricing & Specs",
+      "group": "Products"
+    },
+    {
+      "key": "products.delete",
+      "label": "Archive / Delete Garments",
+      "group": "Products"
+    },
+    {
+      "key": "orders.read",
+      "label": "View Customer Orders",
+      "group": "Orders"
+    },
+    {
+      "key": "orders.update",
+      "label": "Update Fulfillment & Status",
+      "group": "Orders"
+    },
+    {
+      "key": "customizations.review",
+      "label": "Review Custom Artwork",
+      "group": "Custom Studio"
+    },
+    {
+      "key": "payments.read",
+      "label": "View Payment Ledgers",
+      "group": "Finance"
+    },
+    {
+      "key": "refunds.manage",
+      "label": "Issue & Authorize Refunds",
+      "group": "Finance"
+    },
+    {
+      "key": "users.manage",
+      "label": "Manage Staff Members",
+      "group": "Team"
+    },
+    {
+      "key": "roles.manage",
+      "label": "Modify Permissions Matrix",
+      "group": "Team"
+    },
+    {
+      "key": "settings.manage",
+      "label": "Configure Store Parameters",
+      "group": "Settings"
+    }
+  ],
+  "coupons": [],
+  "banners": [
+    {
+      "id": "ban-1",
+      "title": "Wear What Feels Like You",
+      "subtitle": "Streetwear silhouettes. Heavyweight 240 GSM combed cotton.",
+      "ctaText": "Shop Men's Wear",
+      "targetUrl": "/shop",
+      "desktopImageUrl": "/real-fit-1.jpg",
+      "mobileImageUrl": "/real-fit-1.jpg",
+      "badge": "DROP 01 • OVERSIZED FIT",
+      "priority": 1,
+      "isActive": true,
+      "created_at": "2026-09-10T10:35:47.741Z",
+      "updated_at": "2026-09-10T10:35:47.741Z"
+    },
+    {
+      "id": "ban-2",
+      "title": "Everyday Luxury. Built to Last.",
+      "subtitle": "Minimalist cuts crafted from premium combed cotton. Elevated aesthetics.",
+      "ctaText": "Explore Drop 02",
+      "targetUrl": "/shop",
+      "desktopImageUrl": "/real-fit-2.jpg",
+      "mobileImageUrl": "/real-fit-2.jpg",
+      "badge": "STUDIO DROP • ARCHITECTURAL EDIT",
+      "priority": 2,
+      "isActive": true,
+      "created_at": "2026-09-10T10:35:47.741Z",
+      "updated_at": "2026-09-10T10:35:47.741Z"
+    },
+    {
+      "id": "ban-3",
+      "title": "Tailored Statement Menswear",
+      "subtitle": "Signature back prints, relaxed drape, and confident proportions.",
+      "ctaText": "Shop The Look",
+      "targetUrl": "/shop",
+      "desktopImageUrl": "/real-fit-3.jpg",
+      "mobileImageUrl": "/real-fit-3.jpg",
+      "badge": "CAMPAIGN 2026 • SIGNATURE FIT",
+      "priority": 3,
+      "isActive": true,
+      "created_at": "2026-09-10T10:35:47.741Z",
+      "updated_at": "2026-09-10T10:35:47.741Z"
+    },
+    {
+      "id": "ban-4",
+      "title": "Natural Earth Tones & Minimalism",
+      "subtitle": "Warm cream streetwear essentials with precision embroidery.",
+      "ctaText": "Discover Essentials",
+      "targetUrl": "/shop",
+      "desktopImageUrl": "/real-fit-4.jpg",
+      "mobileImageUrl": "/real-fit-4.jpg",
+      "badge": "LIMITED EDITION • NATURAL PALETTE",
+      "priority": 4,
+      "isActive": true,
+      "created_at": "2026-09-10T10:35:47.741Z",
+      "updated_at": "2026-09-10T10:35:47.741Z"
+    },
+    {
+      "id": "ban-5",
+      "title": "Heavyweight Crimson Collection",
+      "subtitle": "Ultra-warm drop-shoulder hoodies with iconic distressed B artwork.",
+      "ctaText": "Create Your Design",
+      "targetUrl": "/customize",
+      "desktopImageUrl": "/real-fit-5.jpg",
+      "mobileImageUrl": "/real-fit-5.jpg",
+      "badge": "CUSTOM STUDIO • HOODIES & TEES",
+      "priority": 5,
+      "isActive": true,
+      "created_at": "2026-09-10T10:35:47.741Z",
+      "updated_at": "2026-09-10T10:35:47.741Z"
+    }
+  ],
+  "settings": {
+    "store_name": "Bingooo Luxury Streetwear",
+    "store_email": "care@bingooo.in",
+    "store_phone": "+91 98765 43210",
+    "support_hours": "Mon - Sat: 10:00 AM - 7:00 PM IST",
+    "cod_enabled": true,
+    "partial_cod_enabled": true,
+    "partial_cod_advance_amount": 79,
+    "max_cod_limit": 5000,
+    "cod_deposit_percentage": 30,
+    "shipping_fee_default": 99,
+    "free_shipping_threshold": 999,
+    "tax_rate_percentage": 5,
+    "max_upload_size_mb": 15,
+    "currency": "INR",
+    "return_window_days": 7,
+    "dtg_print_lead_days": 3,
+    "prepaid_discount_percentage": 5
+  },
+  "media_assets": [],
+  "customizer_config": {
+    "garments": [
+      {
+        "id": "tshirt",
+        "name": "T-SHIRT",
+        "price": 999,
+        "description": "100% Combed Cotton Classic Crewneck",
+        "isActive": true,
+        "colors": [
+          {
+            "id": "black",
+            "name": "Black",
+            "hex": "#171717",
+            "textContrast": "#FFFFFF",
+            "frontImageUrl": "/custom/black-front.png",
+            "isActive": true,
+            "backImageUrl": "/custom/black-back.png"
+          },
+          {
+            "id": "white",
+            "name": "White",
+            "hex": "#FFFFFF",
+            "textContrast": "#171717",
+            "frontImageUrl": "/custom/white-front.png",
+            "isActive": true,
+            "backImageUrl": "/custom/white-back.png"
+          },
+          {
+            "id": "beige",
+            "name": "Beige",
+            "hex": "#D8C8B1",
+            "textContrast": "#171717",
+            "frontImageUrl": "/custom/beige-front.png",
+            "backImageUrl": "/custom/beige-back.png",
+            "isActive": true
+          },
+          {
+            "id": "red",
+            "name": "Red",
+            "hex": "#E6321C",
+            "textContrast": "#FFFFFF",
+            "frontImageUrl": "/custom/red-front.png",
+            "backImageUrl": "/custom/red-back.png",
+            "isActive": true
+          }
+        ]
+      },
+      {
+        "id": "oversized",
+        "name": "OVERSIZED",
+        "price": 1299,
+        "description": "240 GSM Loopknit French Terry Cotton (100% Biowash) Drop-Shoulder Fit",
+        "isActive": true,
+        "colors": [
+          {
+            "id": "black",
+            "name": "Black",
+            "hex": "#171717",
+            "textContrast": "#FFFFFF",
+            "frontImageUrl": "/custom/black-front.png",
+            "isActive": true,
+            "backImageUrl": "/custom/black-back.png"
+          },
+          {
+            "id": "white",
+            "name": "White",
+            "hex": "#FFFFFF",
+            "textContrast": "#171717",
+            "frontImageUrl": "/custom/white-front.png",
+            "isActive": true,
+            "backImageUrl": "/custom/white-back.png"
+          },
+          {
+            "id": "beige",
+            "name": "Beige",
+            "hex": "#D8C8B1",
+            "textContrast": "#171717",
+            "frontImageUrl": "/custom/beige-front.png",
+            "backImageUrl": "/custom/beige-back.png",
+            "isActive": true
+          },
+          {
+            "id": "red",
+            "name": "Red",
+            "hex": "#E6321C",
+            "textContrast": "#FFFFFF",
+            "frontImageUrl": "/custom/red-front.png",
+            "backImageUrl": "/custom/red-back.png",
+            "isActive": true
+          }
+        ]
+      },
+      {
+        "id": "hoodie",
+        "name": "HOODIE",
+        "price": 2499,
+        "description": "430 GSM Heavyweight Drop-Shoulder Fleece Hoodie",
+        "isActive": true,
+        "colors": [
+          {
+            "id": "black",
+            "name": "Black",
+            "hex": "#171717",
+            "textContrast": "#FFFFFF",
+            "frontImageUrl": "/custom/hoodie-black-front.png",
+            "isActive": true,
+            "backImageUrl": "/custom/hoodie-black-back.png"
+          },
+          {
+            "id": "white",
+            "name": "White",
+            "hex": "#FFFFFF",
+            "textContrast": "#171717",
+            "frontImageUrl": "/custom/hoodie-white-front.png",
+            "isActive": true,
+            "backImageUrl": "/custom/hoodie-white-back.png"
+          },
+          {
+            "id": "beige",
+            "name": "Beige",
+            "hex": "#D8C8B1",
+            "textContrast": "#171717",
+            "frontImageUrl": "",
+            "isActive": true
+          },
+          {
+            "id": "red",
+            "name": "Red",
+            "hex": "#E6321C",
+            "textContrast": "#FFFFFF",
+            "frontImageUrl": "",
+            "isActive": true
+          }
+        ]
+      }
+    ],
+    "updatedAt": "2026-09-15T05:58:00.923Z"
+  }
+}

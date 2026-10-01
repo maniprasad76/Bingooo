@@ -72,7 +72,7 @@ export class CheckoutService {
     let couponInfo: any = null;
     if (dto.couponCode) {
       try {
-        couponInfo = this.couponsService.validateCoupon(dto.couponCode, subtotal);
+        couponInfo = this.couponsService.validateCoupon(dto.couponCode, subtotal, owner.userId);
         discount = couponInfo.discountAmount;
       } catch (err: any) {
         throw new BadRequestException(err.response || { message: 'Coupon validation failed' });

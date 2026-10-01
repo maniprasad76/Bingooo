@@ -5,10 +5,31 @@ import { db, saveDb } from '../common/database/store';
 
 @Injectable()
 export class CouponsService {
-  validateCoupon(code: string, orderSubtotal: number) {
+  /**
+   * @param userId when known (checkout), per-customer limits are enforced too.
+   */
+  validateCoupon(code: string, orderSubtotal: number, userId?: string) {
     const coupon = db.coupons.find((c) => c.code.toUpperCase() === code.toUpperCase() && c.is_active);
     if (!coupon) {
       throw new NotFoundException({ code: 'COUPON_INVALID', message: 'Invalid or inactive coupon code' });
+    }
+
+    const now = Date.now();
+    if (coupon.starts_at && Date.parse(coupon.starts_at) > now) {
+      throw new BadRequestException({ code: 'COUPON_NOT_STARTED', message: 'This coupon is not active yet' });
+    }
+    if (coupon.ends_at && Date.parse(coupon.ends_at) < now) {
+      throw new BadRequestException({ code: 'COUPON_EXPIRED', message: 'This coupon has expired' });
+    }
+
+    if (userId && coupon.per_user_limit) {
+      const used = db.coupon_redemptions.filter((r) => r.coupon_id === coupon.id && r.user_id === userId).length;
+      if (used >= Number(coupon.per_user_limit)) {
+        throw new BadRequestException({
+          code: 'COUPON_USER_LIMIT',
+          message: 'You have already used this coupon the maximum number of times',
+        });
+      }
     }
 
     if (coupon.min_order_value && orderSubtotal < coupon.min_order_value) {
@@ -55,6 +76,7 @@ export class CouponsService {
       min_order_value: data.minOrderValue ? Number(data.minOrderValue) : null,
       max_discount: data.maxDiscount ? Number(data.maxDiscount) : null,
       usage_limit: data.usageLimit ? Number(data.usageLimit) : null,
+      per_user_limit: data.perUserLimit ? Number(data.perUserLimit) : null,
       usage_count: 0,
       starts_at: data.startsAt || null,
       ends_at: data.endsAt || null,

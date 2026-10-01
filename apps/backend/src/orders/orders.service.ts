@@ -1,4 +1,10 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+  OnModuleInit,
+  OnModuleDestroy,
+} from '@nestjs/common';
 import { v4 as uuidv4 } from 'uuid';
 import { db, saveDb } from '../common/database/store';
 import { IsOptional, IsString, MaxLength } from 'class-validator';
@@ -15,12 +21,129 @@ export class CreateOrderDto extends CheckoutValidationDto {
   notes?: string;
 }
 
+/** Unpaid prepaid orders release their stock after this long. */
+export const UNPAID_ORDER_TTL_MS = 30 * 60 * 1000;
+const EXPIRY_SWEEP_INTERVAL_MS = 5 * 60 * 1000;
+
+/** Who performed an admin action, for the audit trail. */
+export interface AuditActor {
+  email?: string;
+  ip?: string;
+}
+
 @Injectable()
-export class OrdersService {
+export class OrdersService implements OnModuleInit, OnModuleDestroy {
+  private expiryTimer: NodeJS.Timeout | null = null;
+
   constructor(
     private readonly checkoutService: CheckoutService,
     private readonly whatsAppService: WhatsAppService,
   ) {}
+
+  onModuleInit() {
+    this.expiryTimer = setInterval(() => this.expireUnpaidOrders(), EXPIRY_SWEEP_INTERVAL_MS);
+    this.expiryTimer.unref?.();
+  }
+
+  onModuleDestroy() {
+    if (this.expiryTimer) clearInterval(this.expiryTimer);
+  }
+
+  /**
+   * Return an order's stock and coupon usage. Idempotent: guarded by
+   * `inventory_released` so repeated cancels never double-restock.
+   * Caller is responsible for saveDb().
+   */
+  releaseOrderInventory(order: any, reason: string, actorId: string | null = null) {
+    if (order.inventory_released) return;
+    const now = new Date().toISOString();
+    for (const item of db.order_items.filter((i) => i.order_id === order.id)) {
+      const variant = db.product_variants.find((v) => v.id === item.variant_id);
+      if (!variant) continue;
+      variant.stock_quantity += item.quantity;
+      db.inventory_movements.push({
+        id: uuidv4(),
+        variant_id: variant.id,
+        type: 'release',
+        quantity: item.quantity,
+        reference_type: 'order',
+        reference_id: order.id,
+        notes: reason,
+        created_by: actorId,
+        created_at: now,
+      });
+    }
+    if (order.coupon_code) {
+      const coupon = db.coupons.find((c) => c.code.toUpperCase() === String(order.coupon_code).toUpperCase());
+      if (coupon) coupon.usage_count = Math.max(0, (coupon.usage_count || 0) - 1);
+      db.coupon_redemptions = db.coupon_redemptions.filter((r) => r.order_id !== order.id);
+    }
+    order.inventory_released = true;
+  }
+
+  /**
+   * A payment can still arrive after an order expired. Take the stock back if
+   * it is still available; otherwise the order stays cancelled and admins are
+   * alerted to refund it. Returns true when the order can be fulfilled.
+   */
+  reclaimInventory(order: any): boolean {
+    if (!order.inventory_released) return true;
+    const items = db.order_items.filter((i) => i.order_id === order.id);
+    const available = items.every((item) => {
+      const variant = db.product_variants.find((v) => v.id === item.variant_id);
+      return variant && variant.stock_quantity - (variant.reserved_quantity || 0) >= item.quantity;
+    });
+    if (!available) {
+      db.notifications.unshift({
+        id: `notif-${uuidv4()}`,
+        category: 'order',
+        severity: 'critical',
+        title: `Refund needed: #${order.order_number} paid after expiry`,
+        description: 'Payment was captured after the order expired and the stock is no longer available.',
+        link_href: '/orders',
+        link_text: 'Review order →',
+        is_read: false,
+        created_at: new Date().toISOString(),
+      });
+      return false;
+    }
+    const now = new Date().toISOString();
+    for (const item of items) {
+      const variant = db.product_variants.find((v) => v.id === item.variant_id)!;
+      variant.stock_quantity -= item.quantity;
+      db.inventory_movements.push({
+        id: uuidv4(),
+        variant_id: variant.id,
+        type: 'sale',
+        quantity: -item.quantity,
+        reference_type: 'order',
+        reference_id: order.id,
+        notes: 'reclaimed after late payment',
+        created_by: order.user_id,
+        created_at: now,
+      });
+    }
+    order.inventory_released = false;
+    order.cancel_reason = null;
+    return true;
+  }
+
+  /** Cancel prepaid orders left unpaid past the TTL and return their stock. */
+  expireUnpaidOrders(now = Date.now()) {
+    let expired = 0;
+    for (const order of db.orders) {
+      if (order.status !== 'pending_payment') continue;
+      if (now - Date.parse(order.created_at) < UNPAID_ORDER_TTL_MS) continue;
+      order.status = 'cancelled';
+      order.payment_status = 'expired';
+      order.cancel_reason = 'payment_timeout';
+      order.updated_at = new Date(now).toISOString();
+      this.releaseOrderInventory(order, 'unpaid order expired');
+      expired += 1;
+    }
+    if (expired > 0) saveDb();
+    return expired;
+  }
 
   createOrder(dto: CreateOrderDto, owner: CartOwner & { userId: string }) {
     const calculation = this.checkoutService.validateAndCalculate(dto, owner);
@@ -173,9 +296,15 @@ export class OrdersService {
     paymentStatus?: string,
     trackingNumber?: string,
     carrier?: string,
+    actor: AuditActor = {},
   ) {
     const order = db.orders.find((o) => o.id === orderId || o.order_number === orderId);
     if (!order) throw new NotFoundException({ code: 'ORDER_NOT_FOUND', message: 'Order not found' });
+    if (status === 'cancelled' && order.status !== 'cancelled') {
+      // Returned stock is only automatic for cancellations; refunds after a
+      // return need the garment inspected before it goes back on sale.
+      this.releaseOrderInventory(order, 'order cancelled by staff');
+    }
     order.status = status;
     if (paymentStatus) order.payment_status = paymentStatus;
     if (trackingNumber) order.tracking_number = trackingNumber;
@@ -184,13 +313,13 @@ export class OrdersService {
 
     // Log audit
     db.audit_logs.unshift({
-      id: `log-${Date.now()}`,
-      admin_email: 'admin@bingooo.in',
+      id: `log-${uuidv4()}`,
+      admin_email: actor.email || 'system',
       action: 'order.status_update',
       resource: 'orders',
       resource_id: order.order_number,
       details: `Status updated to ${status}.${trackingNumber ? ` Carrier: ${carrier || 'BlueDart'} AWB: ${trackingNumber}` : ''}`,
-      ip_address: '103.24.12.89',
+      ip_address: actor.ip || null,
       created_at: new Date().toISOString(),
     });
 
@@ -205,10 +334,14 @@ export class OrdersService {
     return enriched;
   }
 
-  deleteOrder(orderId: string) {
+  deleteOrder(orderId: string, actor: AuditActor = {}) {
     const index = db.orders.findIndex((o) => o.id === orderId || o.order_number === orderId);
     if (index === -1) {
       throw new NotFoundException({ code: 'ORDER_NOT_FOUND', message: 'Order not found' });
+    }
+    const target = db.orders[index];
+    if (!['shipped', 'delivered', 'refunded'].includes(target.status)) {
+      this.releaseOrderInventory(target, 'order deleted by staff');
     }
     const [deleted] = db.orders.splice(index, 1);
     db.order_items = db.order_items.filter((i) => i.order_id !== deleted.id);
@@ -217,13 +350,13 @@ export class OrdersService {
 
     if (db.audit_logs) {
       db.audit_logs.unshift({
-        id: `log-${Date.now()}`,
-        admin_email: 'admin@bingooo.in',
+        id: `log-${uuidv4()}`,
+        admin_email: actor.email || 'system',
         action: 'order.deleted',
         resource: 'orders',
         resource_id: deleted.order_number,
         details: `Order #${deleted.order_number} was permanently removed.`,
-        ip_address: '127.0.0.1',
+        ip_address: actor.ip || null,
         created_at: new Date().toISOString(),
       });
     }

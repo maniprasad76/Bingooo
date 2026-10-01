@@ -2,4 +2,7 @@
 .env.*
 data/backups/
 data/*.tmp
+# Runtime store (customer data). The durable copy lives in Supabase app_records;
+# first boot loads the sanitized data/seed.json.
+data/store.json
 .vercel

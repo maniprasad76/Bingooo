@@ -124,6 +124,11 @@ python -m graphify update .
   - Integrated `@vercel/speed-insights` in `@bingooo/frontend` and `@bingooo/admin`.
 - **2026-10-01: Cart Drawer Item Integrity & Image Accuracy Fix**
   - Resolved cart drawer and cart page displaying mismatching placeholder t-shirt images and fake swatch colors by enriching backend cart item payloads and persisting client-side product metadata.
+- **2026-10-01: Audit Phase 2 — Durable Storage, Stock Integrity & Real Refunds**
+  - All in-memory collections now persist to Supabase `app_records` (JSONB, migration `supabase/migrations/004_app_records.sql`) via `common/database/app-records.service.ts`: diffed write-through on `saveDb()`, retry with backoff, flush on shutdown, hydration awaited before serving (fatal if unreachable). Opt-in with `DATA_STORE=supabase` (set in `render.yaml`). Replaces the broken `supabase-sync.service.ts`.
+  - `data/store.json` is no longer tracked; first boot loads the sanitized `data/seed.json` (catalog, roles, settings — no customer data).
+  - Stock/coupons returned on cancellation, deletion of unshipped orders, and 30-minute unpaid-order expiry; late payments re-reserve stock or alert admins. Coupon date windows and optional `per_user_limit` enforced.
+  - Real Razorpay refunds (`PaymentsService.issueRefund`, partial/full, `refunds.manage`) wired to `POST /payments/:id/refund` and the Returns "Refunded" status; refund webhooks reconcile totals; audit logs record the real admin and IP.
 - **2026-10-01: Security Audit Phase 1 — Payment, RBAC & Identity Hardening**
   - Razorpay verify now binds the signature to its own payment record and the caller's order (closes ₹1-capture-any-order); create/verify require auth; webhook dedupes on `x-razorpay-event-id`, requires raw body, only moves forward.
   - `RolesGuard` denies by default when a route has no `@Permissions`; admin/backup/audit routes now declare `analytics.read`, `settings.manage`, `backups.manage`, `audit.read`; settings use an allow-listed DTO.

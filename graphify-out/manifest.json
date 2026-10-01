@@ -210,9 +210,9 @@
     "semantic_hash": ""
   },
   "apps/backend/data/store.json": {
-    "mtime": 1790819839.5308173,
-    "seen": 1790819929.7136524,
-    "ast_hash": "28d1e47081b02561b7a5115418e9d1b0",
+    "mtime": 1790824073.1929958,
+    "seen": 1790824442.3285196,
+    "ast_hash": "2591ef19e8b7326a62244d22f3a6fc44",
     "semantic_hash": ""
   },
   "apps/backend/package.json": {
@@ -630,9 +630,9 @@
     "semantic_hash": ""
   },
   "apps/backend/src/payments/payments.service.ts": {
-    "mtime": 1790818440.9891274,
-    "seen": 1790818889.2988865,
-    "ast_hash": "f4751e917f67772875b1bb17eb24c585",
+    "mtime": 1790823883.6415374,
+    "seen": 1790824442.3375196,
+    "ast_hash": "cd21a1bf554c6213ecf659820b5a0299",
     "semantic_hash": ""
   },
   "apps/backend/src/products/dto/product.dto.ts": {
@@ -678,16 +678,16 @@
     "semantic_hash": ""
   },
   "apps/backend/src/reviews/dto/review.dto.ts": {
-    "mtime": 1788699325.6535046,
-    "seen": 1789634534.2679684,
-    "ast_hash": "dcd485551d0fbd663474ce60212079c0",
-    "semantic_hash": "dcd485551d0fbd663474ce60212079c0"
+    "mtime": 1790822314.0037878,
+    "seen": 1790824442.3385139,
+    "ast_hash": "6b636e975bf0c50a8827d712d04fc7f6",
+    "semantic_hash": ""
   },
   "apps/backend/src/reviews/reviews.controller.ts": {
-    "mtime": 1789452169.087746,
-    "seen": 1789634534.2679684,
-    "ast_hash": "f4f8072380751ab5359f75e590fe7519",
-    "semantic_hash": "f4f8072380751ab5359f75e590fe7519"
+    "mtime": 1790822437.9191139,
+    "seen": 1790824442.3385139,
+    "ast_hash": "af49d72581d21948ddbf30c0ee525e61",
+    "semantic_hash": ""
   },
   "apps/backend/src/reviews/reviews.module.ts": {
     "mtime": 1788329887.7164,
@@ -696,10 +696,10 @@
     "semantic_hash": "ca9cb2000effe82cd46a2675f89bd284"
   },
   "apps/backend/src/reviews/reviews.service.ts": {
-    "mtime": 1789036659.4836059,
-    "seen": 1789634534.2679684,
-    "ast_hash": "9dcca47a162b50a1cba0d4d1043765fe",
-    "semantic_hash": "9dcca47a162b50a1cba0d4d1043765fe"
+    "mtime": 1790822356.2404046,
+    "seen": 1790824442.3385139,
+    "ast_hash": "9d444778760d3ceec4661065c2da3634",
+    "semantic_hash": ""
   },
   "apps/backend/src/roles/roles.controller.ts": {
     "mtime": 1789955605.090755,
@@ -786,9 +786,9 @@
     "semantic_hash": "d25ac64ca87cde8bc59fb974eece7cf9"
   },
   "apps/backend/test/run-checkout-e2e.ts": {
-    "mtime": 1790819494.5941503,
-    "seen": 1790819929.7281468,
-    "ast_hash": "a66b76b1909c7f82446e9d5bd27f8b4a",
+    "mtime": 1790823972.242952,
+    "seen": 1790824442.3405206,
+    "ast_hash": "64b4c73c869ffe9821117816d7872278",
     "semantic_hash": ""
   },
   "apps/backend/test/run-load-test.ts": {
@@ -828,8 +828,8 @@
     "semantic_hash": "938b98cbf69e07d17011dd5550f0e3c0"
   },
   "apps/frontend/android/app/capacitor.build.gradle": {
-    "mtime": 1788952000.8913717,
-    "seen": 1789634534.2679684,
+    "mtime": 1790824279.1412015,
+    "seen": 1790824442.3415198,
     "ast_hash": "67fb26451c51fe4745fc67dd693033a0",
     "semantic_hash": "67fb26451c51fe4745fc67dd693033a0"
   },
@@ -858,8 +858,8 @@
     "semantic_hash": "edcd663b51acb2986e22ef151e00036f"
   },
   "apps/frontend/android/capacitor.settings.gradle": {
-    "mtime": 1788952000.8903716,
-    "seen": 1789634534.2679684,
+    "mtime": 1790824279.1412015,
+    "seen": 1790824442.3415198,
     "ast_hash": "c727c4487c3b5acbdc5a765af5f3a0da",
     "semantic_hash": "c727c4487c3b5acbdc5a765af5f3a0da"
   },
@@ -1320,9 +1320,9 @@
     "semantic_hash": ""
   },
   "apps/frontend/src/pages/ProductPage.tsx": {
-    "mtime": 1790750244.5135713,
-    "seen": 1790752760.0273843,
-    "ast_hash": "4988c6ffa5b5f72da9dab0914c1d3946",
+    "mtime": 1790824178.891116,
+    "seen": 1790824442.3515127,
+    "ast_hash": "0d7e06d0a66efe8a477c9130a3c082d3",
     "semantic_hash": ""
   },
   "apps/frontend/src/pages/RecentlyViewedPage.tsx": {
@@ -4884,9 +4884,9 @@
     "semantic_hash": ""
   },
   "plan.md": {
-    "mtime": 1790818015.155669,
-    "seen": 1790818889.3909738,
-    "ast_hash": "39067524d70ac01138e10b883f492d57",
+    "mtime": 1790822285.6020198,
+    "seen": 1790824442.417577,
+    "ast_hash": "ef53e838d37e6918cfe2beac549dd322",
     "semantic_hash": ""
   },
   "apps/backend/src/common/database/supabase-sync.service.ts": {
@@ -5559,6 +5559,12 @@
     "mtime": 1790818032.8450575,
     "seen": 1790818889.3849628,
     "ast_hash": "39067524d70ac01138e10b883f492d57",
+    "semantic_hash": ""
+  },
+  "apps/frontend/src/components/product/ProductReviews.tsx": {
+    "mtime": 1790824150.9161737,
+    "seen": 1790824442.3455155,
+    "ast_hash": "1164906e4e7a9c2676c15fc841bdb1a1",
     "semantic_hash": ""
   }
 }

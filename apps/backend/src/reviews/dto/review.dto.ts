@@ -41,6 +41,11 @@ export class CreateReviewDto {
   @IsOptional()
   @IsString()
   imageUrl?: string;
+
+  @ApiPropertyOptional({ enum: ['runs_small', 'true_to_size', 'runs_large'] })
+  @IsOptional()
+  @IsEnum(['runs_small', 'true_to_size', 'runs_large'])
+  fitFeedback?: 'runs_small' | 'true_to_size' | 'runs_large';
 }
 
 export class UpdateReviewStatusDto {

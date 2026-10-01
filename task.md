@@ -53,9 +53,10 @@
 |:---|:---|:---|:---|:---|:---|
 | **TSK-ACT-001** | `apps/frontend` | Implement real-time 3D garment mockup preview (Three.js / React Three Fiber) as an optional toggle alongside the 2D customizer canvas. | High | Frontend Team | Completed |
 | **TSK-ACT-002** | `apps/backend` | Integrate WhatsApp & SMS notification webhooks for live parcel tracking updates upon status changes. | High | Backend Team | Completed |
-| **TSK-ACT-003** | `apps/admin` | Add exportable CSV/Excel sales and revenue ledger reports (orders, payment methods, revenue summary). | Medium | Admin Team | In Progress |
-| **TSK-ACT-004** | `apps/backend` | Configure automated PostgreSQL migration runner to seamlessly sync in-memory `store.json` changes with Supabase Prisma tables. | Medium | DevOps | In Progress |
-| **TSK-ACT-005** | `apps/frontend` | Implement PWA background synchronization for offline cart and wishlist mutations. | Medium | Mobile/PWA | In Progress |
+| **TSK-ACT-003** | `apps/frontend` | Real Verified Reviews Engine: Removed all dummy reviews, added verified buyer order gate, 1–5 stars, fit telemetry, and client-side photo canvas compression. | High | Fullstack Team | Completed |
+| **TSK-ACT-004** | `apps/frontend` | Capacitor 8 Android Shell Packaging & Production Sync: Verified assets, minimal permissions, and tactile haptic bridges. | High | Mobile Team | Completed |
+| **TSK-ACT-005** | `apps/admin` | Add exportable CSV/Excel sales and revenue ledger reports (orders, payment methods, revenue summary). | Medium | Admin Team | In Progress |
+| **TSK-ACT-006** | `apps/backend` | Configure automated PostgreSQL migration runner to seamlessly sync in-memory `store.json` changes with Supabase Prisma tables. | Medium | DevOps | In Progress |
 
 ---
 

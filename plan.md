@@ -1,134 +1,50 @@
+# Plan: Real Customer Reviews & Native Android Release Packaging
+
+## 1. Objective
+1. **Real Reviews Only**: Completely remove all hardcoded, fake, or mock reviews and static percentages (`* 42`, hardcoded 4.8 rating, static `REVIEWS_DATA`). Implement authentic verified buyer check (user must have placed an order for the product) and an interactive slide-out review submission drawer with 1-5 stars, fit feedback, and client-compressed photo uploads.
+2. **Native Android Release Packaging**: Sync, audit, and package the Capacitor 8 Android shell, ensuring icons, splash screens, tactile haptics, and offline service worker assets are in place.
+
 ---
-phase: 3
-plan: 2
-wave: 1
-gap_closure: false
+
+## 2. Changes Breakdown
+
+### Phase A: Backend Real Reviews & Verified Buyer Enforcement (`apps/backend`)
+- **`apps/backend/src/reviews/dto/review.dto.ts`**:
+  - Add `fitFeedback?: 'runs_small' | 'true_to_size' | 'runs_large'` to `CreateReviewDto`.
+- **`apps/backend/src/reviews/reviews.service.ts`**:
+  - `checkEligibility(productId: string, userId?: string)`: Checks if the user has an existing order containing the product (matching `product_id` or variant).
+  - `createReview()`: Validates purchase history. If the user has not ordered the product, reject with HTTP 403 `PURCHASE_REQUIRED` (with an admin bypass for testing/moderation). Stores `fit_feedback`, `image_url`, and sets `verified_buyer: true`.
+  - `findByProduct()`: Calculates real average rating, real rating distribution, and real fit feedback breakdown from genuine database entries.
+- **`apps/backend/src/reviews/reviews.controller.ts`**:
+  - Add `@Get('eligibility')` endpoint: `checkEligibility(@Query('productId') productId, @Req() req)`.
+- **`apps/backend/test/run-admin-e2e.ts`**:
+  - Ensure test creates a test order or uses verified customer so review moderation tests continue to pass seamlessly.
+
+### Phase B: Frontend Real Reviews Section & Interactive Drawer (`apps/frontend`)
+- **`apps/frontend/src/pages/ProductPage.tsx`**:
+  - Remove `REVIEWS_DATA` mock array and hardcoded metrics (`4.8`, `* 42 reviews`, static 78% bars).
+  - Add query hook to load live reviews from `/api/v1/reviews/product/:id`.
+  - Add honest Zero-State UI when 0 reviews exist ("No reviews yet for this garment. Be the first verified buyer to leave a review.").
+  - Add verified buyer check and state for the review drawer.
+  - Build the slide-out **Review Submission Drawer**:
+    - Star Rating Selector (1 to 5 interactive stars with hover).
+    - Fit Feedback Selector: 3 pills (`Runs Small` | `True to Size` | `Runs Large`).
+    - Review Headline & detailed experience textarea.
+    - Client-side Photo Compression: Image upload component that uses an off-screen HTML5 `<canvas>` to compress images to max 1000px WebP/JPEG under 200KB before submission.
+    - Verified Buyer Badge indicator.
+  - Review Card Component: Displays customer name/initials, "✓ Verified Buyer" badge in emerald green, star rating, fit tag, date, and attached photos with click-to-zoom modal.
+
+### Phase C: Native Android Packaging (Capacitor 8)
+- Audit `apps/frontend/capacitor.config.ts` and `apps/frontend/android`.
+- Run `npm run android:sync` (`cap sync android`) to copy the latest production web assets (`dist/`) and plugins into `android/app/src/main/assets/public`.
+- Verify Android app build configurations, status bar colors (`#171717`), splash screens, and offline caching.
+
 ---
 
-# Plan 3.2: Automated WhatsApp Order Confirmation & Tracking Webhook
-
-## Objective
-Implement an automated WhatsApp Order Confirmation service (`WhatsAppService`) in `apps/backend/src/notifications/` that sends a rich, formatted order confirmation message to the customer's WhatsApp upon placing an order or completing payment, accompanied by a 1-click WhatsApp receipt action on the frontend `OrderSuccessPage.tsx`.
-
-## Context
-- `.gsd/SPEC.md` (Requirements REQ-08: Order Notification Webhooks)
-- `.gsd/ROADMAP.md` (Phase 3: Plan 3.2)
-- `apps/backend/src/orders/orders.service.ts` (Order creation and fulfillment state machine)
-- `apps/backend/src/payments/payments.service.ts` (Razorpay webhook and payment verification)
-- `apps/frontend/src/pages/OrderSuccessPage.tsx` (Customer post-checkout confirmation view)
-- `AGENTS.md` (Architectural invariants: server pricing, security, brand design tokens)
-
-## Tasks
-
-<task type="auto">
-  <name>Task 1: Create WhatsApp Notification Service in Backend</name>
-  <files>
-    apps/backend/src/notifications/whatsapp.service.ts
-    apps/backend/src/notifications/notifications.module.ts
-  </files>
-  <action>
-    1. Create `apps/backend/src/notifications/whatsapp.service.ts`:
-       - Injectable service `WhatsAppService`.
-       - Formats luxury streetwear order confirmation text with:
-         - Brand header (`BINGOOO.` atelier)
-         - Order number (#BNG-XXXXXX)
-         - Customer name & delivery city
-         - List of items with variant sizing and color
-         - Total amount settled & payment method
-         - Live tracking link (`https://bingooo-frontend.vercel.app/track-order/:orderNumber`)
-       - Async method `sendOrderConfirmation(order: any, customerPhone?: string)`:
-         - Cleans and normalizes phone number (strips spaces, handles country code `+91` / international format).
-         - Dispatches HTTP POST to WhatsApp Cloud API or configured webhook endpoint if `WHATSAPP_API_TOKEN` & `WHATSAPP_PHONE_NUMBER_ID` or `WHATSAPP_WEBHOOK_URL` are set.
-         - Graceful fallback: If no API token is configured, logs the formatted message to logger, records an audit notification in `db.notifications`, and returns `{ success: true, mode: 'simulated_fallback' }`.
-         - Non-blocking: wrapped in try-catch so network or provider errors never crash or block order placement.
-    2. Export `WhatsAppService` from `NotificationsModule` in `apps/backend/src/notifications/notifications.module.ts`.
-  </action>
-  <verify>
-    npm run typecheck --workspace=@bingooo/api
-  </verify>
-  <done>
-    WhatsAppService compiles cleanly with zero TypeScript errors.
-  </done>
-</task>
-
-<task type="auto">
-  <name>Task 2: Wire WhatsApp Service into OrdersService and PaymentsService</name>
-  <files>
-    apps/backend/src/orders/orders.module.ts
-    apps/backend/src/orders/orders.service.ts
-    apps/backend/src/payments/payments.module.ts
-    apps/backend/src/payments/payments.service.ts
-  </files>
-  <action>
-    1. Update `apps/backend/src/orders/orders.module.ts` to import `NotificationsModule`.
-    2. In `apps/backend/src/orders/orders.service.ts`:
-       - Inject `WhatsAppService`.
-       - In `createOrder()`, trigger `this.whatsAppService.sendOrderConfirmation(order, dto.address.phone)` asynchronously.
-    3. Update `apps/backend/src/payments/payments.module.ts` to import `NotificationsModule`.
-    4. In `apps/backend/src/payments/payments.service.ts`:
-       - Inject `WhatsAppService`.
-       - In `verifyPayment()` / webhook payment capture, trigger order confirmation notification upon payment status transition to `'paid'`.
-  </action>
-  <verify>
-    npm run typecheck --workspace=@bingooo/api
-  </verify>
-  <done>
-    Both order creation and payment confirmation reliably invoke WhatsApp dispatch.
-  </done>
-</task>
-
-<task type="auto">
-  <name>Task 3: Enhance Frontend OrderSuccessPage with 1-Click WhatsApp Receipt</name>
-  <files>
-    apps/frontend/src/pages/OrderSuccessPage.tsx
-  </files>
-  <action>
-    1. In `apps/frontend/src/pages/OrderSuccessPage.tsx`:
-       - Add a dedicated WhatsApp confirmation receipt card in the primary action block.
-       - Construct pre-filled WhatsApp message containing order number, item summary, total, and direct tracking link.
-       - Add button "Receive Order Updates on WhatsApp" with WhatsApp green brand styling and Lucide vector icon.
-       - Provide telephone copy/click action allowing user to send receipt directly to their own WhatsApp or Bingooo Concierge (+91 90804 74163).
-       - Include haptic feedback on click via `triggerHaptic('light')`.
-  </action>
-  <verify>
-    npm run build:frontend
-  </verify>
-  <done>
-    OrderSuccessPage provides intuitive 1-click WhatsApp confirmation flow.
-  </done>
-</task>
-
-<task type="auto">
-  <name>Task 4: Verification, Typecheck & Ship</name>
-  <files>
-    .gsd/TODO.md
-    .gsd/ROADMAP.md
-    .gsd/STATE.md
-    task.md
-    BRAIN.md
-  </files>
-  <action>
-    1. Run `npm run typecheck` across root and all workspaces.
-    2. Verify security and checkout tests: `npm run test:checkout -w apps/backend`.
-    3. Update GSD tracking files (`TODO.md`, `ROADMAP.md`, `STATE.md`, `task.md`, `BRAIN.md`).
-    4. Commit changes: `feat(notifications): add automated WhatsApp order confirmation and tracking service`.
-    5. Update Graphify knowledge graph: `python -m graphify update .`.
-  </action>
-  <verify>
-    npm run typecheck
-  </verify>
-  <done>
-    Zero TypeScript errors, verified test suite, committed and documented.
-  </done>
-</task>
-
-## Must-Haves
-- [ ] Automated backend `WhatsAppService` with templated luxury order confirmation payload
-- [ ] Non-blocking execution so external API latencies never slow order placement
-- [ ] Safe fallback when third-party credentials are not configured in `.env`
-- [ ] Direct WhatsApp confirmation action on `OrderSuccessPage.tsx`
-- [ ] 100% clean typecheck across all workspaces
-
-## Success Criteria
-- [ ] `npm run typecheck` exits with code 0 across all workspaces
-- [ ] Production build succeeds without errors
+## 3. Verification & Acceptance Criteria
+- [ ] No hardcoded fake reviews exist anywhere in `ProductPage.tsx`.
+- [ ] Verified buyers can submit real reviews with stars, fit, text, and photos.
+- [ ] Unverified users are informed they must purchase before reviewing.
+- [ ] `npm run typecheck` passes with zero errors across all workspaces.
+- [ ] Backend test suites (`npm run test:checkout` and `npm run test:security`) pass.
+- [ ] Android sync completes successfully.

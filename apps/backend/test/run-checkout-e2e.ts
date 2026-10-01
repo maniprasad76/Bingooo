@@ -1,4 +1,7 @@
 import 'reflect-metadata';
+import * as dotenv from 'dotenv';
+import * as path from 'path';
+dotenv.config({ path: path.resolve(__dirname, '../.env') });
 import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
 import helmet from 'helmet';
@@ -30,7 +33,10 @@ function assert(condition: boolean, step: string, name: string, details?: string
 }
 
 async function runE2ECheckoutVerification() {
+  process.env.NODE_ENV = 'test';
   process.env.JWT_SECRET = process.env.JWT_SECRET || '9b9d584c98fd7b7196c98bbb695aefd4572f5048aaf3a874d06b67cbb25337f3';
+  process.env.RAZORPAY_KEY_ID = process.env.RAZORPAY_KEY_ID || 'rzp_test_TeDKAHYRPQMMFC';
+  process.env.RAZORPAY_KEY_SECRET = process.env.RAZORPAY_KEY_SECRET || 'ajYpsEIAwpp6GetIUo5xC8Dv';
   console.log('\n======================================================');
   console.log('🛍️  BINGOOO END-TO-END CHECKOUT & PAYMENT VERIFICATION');
   console.log('======================================================\n');

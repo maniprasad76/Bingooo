@@ -1,6 +1,6 @@
 import { useState, useMemo, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import { Heart, Star, Check, CheckCircle2, Lock, Truck, RotateCcw, ShoppingBag, Zap } from 'lucide-react';
+import { Heart, Star, Check, Lock, Truck, RotateCcw, ShoppingBag, Zap } from 'lucide-react';
 import { useProduct } from '../hooks/useProducts';
 import { useCart } from '../hooks/useCart';
 import { useWishlist, useIsInWishlist } from '../hooks/useWishlist';
@@ -14,48 +14,9 @@ import { StickyMobileActionBar } from '../components/product/StickyMobileActionB
 import { ProductPlaceholder } from '../components/ui/ProductPlaceholder';
 import { WhatsAppIcon } from '../components/ui/SocialIcons';
 import { resolveImageUrl } from '../lib/utils';
+import { ProductReviews } from '../components/product/ProductReviews';
 
 const DEFAULT_RELATED: any[] = [];
-
-interface ReviewItem {
-  id: string;
-  name: string;
-  verified: boolean;
-  rating: number;
-  title: string;
-  body: string;
-  date: string;
-}
-
-const REVIEWS_DATA: ReviewItem[] = [
-  {
-    id: 'rev-1',
-    name: 'Rahul K.',
-    verified: true,
-    rating: 5,
-    title: 'Really clean fit.',
-    body: 'The fabric feels premium and the relaxed fit is exactly what I wanted. Logo is subtle and looks great.',
-    date: '12 Aug 2026',
-  },
-  {
-    id: 'rev-2',
-    name: 'Arjun M.',
-    verified: true,
-    rating: 5,
-    title: 'Better than expected.',
-    body: 'Very comfortable for everyday wear. Ordered my normal size and the fit was perfect.',
-    date: '04 Aug 2026',
-  },
-  {
-    id: 'rev-3',
-    name: 'Vishal R.',
-    verified: true,
-    rating: 4,
-    title: 'Love the quality.',
-    body: 'Good material and clean construction. Would definitely try another Bingooo collection.',
-    date: '29 Jul 2026',
-  },
-];
 
 export function ProductPage() {
   const { slug } = useParams<{ slug: string }>();
@@ -153,14 +114,6 @@ export function ProductPage() {
   // Size modal state
   const [isSizeModalOpen, setIsSizeModalOpen] = useState(false);
 
-  // Reviews submission state
-  const [reviewsList, setReviewsList] = useState<ReviewItem[]>(REVIEWS_DATA);
-  const [reviewName, setReviewName] = useState('');
-  const [reviewRating, setReviewRating] = useState('5');
-  const [reviewTitle, setReviewTitle] = useState('');
-  const [reviewBody, setReviewBody] = useState('');
-  const [reviewSubmitted, setReviewSubmitted] = useState(false);
-
   // Find authoritative matching variant
   const selectedVariant = useMemo(() => {
     if (!product?.variants || product.variants.length === 0) return null;
@@ -240,31 +193,7 @@ export function ProductPage() {
     });
   };
 
-  // Handle Review submission
-  const handleReviewSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!reviewName.trim() || !reviewTitle.trim() || !reviewBody.trim()) {
-      toast({ title: 'Please fill in all review fields', variant: 'danger' });
-      return;
-    }
 
-    const newRev: ReviewItem = {
-      id: `rev-${Date.now()}`,
-      name: reviewName.trim(),
-      verified: true,
-      rating: parseInt(reviewRating, 10) || 5,
-      title: reviewTitle.trim(),
-      body: reviewBody.trim(),
-      date: 'Today',
-    };
-
-    setReviewsList([newRev, ...reviewsList]);
-    setReviewSubmitted(true);
-    setReviewName('');
-    setReviewTitle('');
-    setReviewBody('');
-    toast({ title: 'Review submitted!', description: 'Thank you for your rating.', variant: 'success' });
-  };
 
   if (isProductLoading && !remoteProduct) {
     return <ProductDetailSkeleton />;
@@ -440,7 +369,7 @@ export function ProductPage() {
                 ))}
               </div>
               <a href="#reviews" className="text-[11px] underline underline-offset-[3px] text-[#171717] hover:text-[#e6321c] transition-colors">
-                4.8 · {reviewsList.length} reviews
+                Verified Reviews
               </a>
             </div>
 
@@ -905,183 +834,13 @@ export function ProductPage() {
       </section>
 
       {/* =======================================================
-           REVIEWS SECTION
+           REVIEWS SECTION (Real Verified Reviews Only)
       ======================================================= */}
-      <section className="py-[65px] sm:py-[100px]" id="reviews">
-        <div className="container-bingooo">
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-5 mb-[45px]">
-            <div>
-              <div className="eyebrow text-[#171717]">
-                CUSTOMER REVIEWS
-              </div>
-              <h2 className="m-0 mt-2 text-[clamp(38px,5vw,64px)] font-extrabold leading-[0.9] tracking-[-0.06em] uppercase text-[#171717]">
-                WHAT PEOPLE<br />
-                SAY.
-              </h2>
-            </div>
-
-            <div className="flex items-center gap-[15px]">
-              <div className="text-[45px] font-extrabold leading-none text-[#171717]">
-                4.8
-              </div>
-              <div>
-                <div className="flex items-center gap-0.5 text-[#171717]">
-                  {[1, 2, 3, 4, 5].map((s) => (
-                    <Star key={s} size={14} className="fill-[#171717] text-[#171717]" />
-                  ))}
-                </div>
-                <small className="text-[#6f6a63] text-[10px]">
-                  Based on {reviewsList.length * 42} reviews
-                </small>
-              </div>
-            </div>
-          </div>
-
-          {/* Rating Breakdown */}
-          <div className="max-w-[480px] mb-[50px]">
-            <div className="grid grid-cols-[50px_1fr_40px] items-center gap-[10px] mb-[9px] text-[10px] text-[#171717]">
-              <span className="inline-flex items-center gap-1">5 <Star size={10} className="fill-[#171717] text-[#171717]" /></span>
-              <div className="rating-track">
-                <div className="rating-fill w-[78%]" />
-              </div>
-              <span>78%</span>
-            </div>
-
-            <div className="grid grid-cols-[50px_1fr_40px] items-center gap-[10px] mb-[9px] text-[10px] text-[#171717]">
-              <span className="inline-flex items-center gap-1">4 <Star size={10} className="fill-[#171717] text-[#171717]" /></span>
-              <div className="rating-track">
-                <div className="rating-fill w-[14%]" />
-              </div>
-              <span>14%</span>
-            </div>
-
-            <div className="grid grid-cols-[50px_1fr_40px] items-center gap-[10px] mb-[9px] text-[10px] text-[#171717]">
-              <span className="inline-flex items-center gap-1">3 <Star size={10} className="fill-[#171717] text-[#171717]" /></span>
-              <div className="rating-track">
-                <div className="rating-fill w-[5%]" />
-              </div>
-              <span>5%</span>
-            </div>
-
-            <div className="grid grid-cols-[50px_1fr_40px] items-center gap-[10px] mb-[9px] text-[10px] text-[#171717]">
-              <span className="inline-flex items-center gap-1">2 <Star size={10} className="fill-[#171717] text-[#171717]" /></span>
-              <div className="rating-track">
-                <div className="rating-fill w-[2%]" />
-              </div>
-              <span>2%</span>
-            </div>
-
-            <div className="grid grid-cols-[50px_1fr_40px] items-center gap-[10px] mb-[9px] text-[10px] text-[#171717]">
-              <span className="inline-flex items-center gap-1">1 <Star size={10} className="fill-[#171717] text-[#171717]" /></span>
-              <div className="rating-track">
-                <div className="rating-fill w-[1%]" />
-              </div>
-              <span>1%</span>
-            </div>
-          </div>
-
-          {/* Reviews Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-            {reviewsList.map((rev) => (
-              <article key={rev.id} className="p-[25px] bg-[#faf6ee] border border-[#ddd3c5]">
-                <div className="flex justify-between items-center mb-[13px]">
-                  <div className="text-[11px] font-bold text-[#171717]">
-                    {rev.name}
-                  </div>
-                  {rev.verified && (
-                    <div className="text-[#238636] text-[8px] font-bold uppercase tracking-wider flex items-center gap-1">
-                      <CheckCircle2 size={11} />
-                      <span>Verified</span>
-                    </div>
-                  )}
-                </div>
-
-                <div className="flex items-center gap-0.5 mb-[13px] text-[#171717]">
-                  {[1, 2, 3, 4, 5].map((s) => (
-                    <Star
-                      key={s}
-                      size={12}
-                      className={s <= rev.rating ? 'fill-[#171717] text-[#171717]' : 'text-[#ddd3c5]'}
-                    />
-                  ))}
-                </div>
-
-                <h3 className="m-0 mb-2 text-[13px] font-bold text-[#171717]">
-                  {rev.title}
-                </h3>
-
-                <p className="m-0 text-[#6f6a63] text-[11px] leading-[1.7]">
-                  {rev.body}
-                </p>
-
-                <div className="mt-5 text-[9px] text-[#6f6a63]">
-                  {rev.date}
-                </div>
-              </article>
-            ))}
-          </div>
-
-          {/* Write Review */}
-          <div className="mt-[35px] p-[24px] sm:p-[35px] border border-[#ddd3c5] bg-[#f7eedb]">
-            <h3 className="m-0 mb-[18px] text-[18px] font-bold text-[#171717]">
-              Share your experience
-            </h3>
-
-            {reviewSubmitted ? (
-              <div className="p-4 bg-white border border-[#ddd3c5] text-xs font-semibold text-[#171717] flex items-center gap-2">
-                <CheckCircle2 className="w-4 h-4 text-[#238636] shrink-0" />
-                <span>Thank you! Your review has been submitted and posted.</span>
-              </div>
-            ) : (
-              <form onSubmit={handleReviewSubmit} className="grid gap-3 max-w-[700px]">
-                <input
-                  type="text"
-                  required
-                  value={reviewName}
-                  onChange={(e) => setReviewName(e.target.value)}
-                  placeholder="Your name"
-                  className="w-full border border-[#ddd3c5] bg-white p-[13px] outline-none text-[11px] text-[#171717] focus:border-[#171717]"
-                />
-
-                <select
-                  value={reviewRating}
-                  onChange={(e) => setReviewRating(e.target.value)}
-                  className="w-full border border-[#ddd3c5] bg-white p-[13px] outline-none text-[11px] text-[#171717] focus:border-[#171717]"
-                >
-                  <option value="5">5 Stars — Excellent</option>
-                  <option value="4">4 Stars — Great</option>
-                  <option value="3">3 Stars — Average</option>
-                  <option value="2">2 Stars — Below Average</option>
-                  <option value="1">1 Star — Poor</option>
-                </select>
-
-                <input
-                  type="text"
-                  required
-                  value={reviewTitle}
-                  onChange={(e) => setReviewTitle(e.target.value)}
-                  placeholder="Review title"
-                  className="w-full border border-[#ddd3c5] bg-white p-[13px] outline-none text-[11px] text-[#171717] focus:border-[#171717]"
-                />
-
-                <textarea
-                  required
-                  value={reviewBody}
-                  onChange={(e) => setReviewBody(e.target.value)}
-                  placeholder="Tell us about the product..."
-                  className="w-full border border-[#ddd3c5] bg-white p-[13px] outline-none text-[11px] text-[#171717] min-h-[120px] resize-y focus:border-[#171717]"
-                />
-
-                <div>
-                  <button type="submit" className="btn btn-black w-full sm:w-auto">
-                    SUBMIT REVIEW →
-                  </button>
-                </div>
-              </form>
-            )}
-          </div>
-        </div>
-      </section>
+      <ProductReviews
+        productId={product?.id || ''}
+        productTitle={product?.title || ''}
+        productThumbnail={images[0]}
+      />
 
       {/* =======================================================
            RELATED PRODUCTS

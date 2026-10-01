@@ -4549,38 +4549,38 @@
   },
   "supabase/migrations/001_initial_schema.sql": {
     "mtime": 1788696131.6980247,
-    "seen": 1790849810.0569236,
-    "ast_hash": "",
+    "seen": 1790850781.75853,
+    "ast_hash": "511734fbd97fdc8ec1381348db6bc7d0",
     "semantic_hash": ""
   },
   "supabase/migrations/002_rls_policies.sql": {
     "mtime": 1788696372.6242847,
-    "seen": 1790849810.0569236,
-    "ast_hash": "",
+    "seen": 1790850781.75853,
+    "ast_hash": "1287794d4f8e2c809e0b9f1b837b4eba",
     "semantic_hash": ""
   },
   "supabase/migrations/003_auth_triggers_and_seed.sql": {
     "mtime": 1788697071.165675,
-    "seen": 1790849810.0569236,
-    "ast_hash": "",
+    "seen": 1790850781.75853,
+    "ast_hash": "628af20998c57d4fd8febba5153356a1",
     "semantic_hash": ""
   },
   "supabase/seed.sql": {
     "mtime": 1788330022.1644168,
-    "seen": 1790849810.0569236,
-    "ast_hash": "",
+    "seen": 1790850781.75853,
+    "ast_hash": "7edb632f6096923dbd6081ffedff31f6",
     "semantic_hash": ""
   },
   "supabase/verify_rls.sql": {
     "mtime": 1788694551.5578887,
-    "seen": 1790849810.0569236,
-    "ast_hash": "",
+    "seen": 1790850781.75853,
+    "ast_hash": "0e2318a86d8336b1b95a55eaeffd2f19",
     "semantic_hash": ""
   },
   "render.yaml": {
-    "mtime": 1790850468.1695936,
-    "seen": 1790850747.077513,
-    "ast_hash": "0b55b1efd40ead36fe092192a15a2446",
+    "mtime": 1790850906.9791574,
+    "seen": 1790851007.477119,
+    "ast_hash": "f658a6127df3ca8c5b6ca99da1f76bff",
     "semantic_hash": ""
   },
   ".github/workflows/keep-alive.yml": {
@@ -5646,21 +5646,27 @@
     "semantic_hash": ""
   },
   "apps/backend/src/common/database/app-records.service.ts": {
-    "mtime": 1790850290.3362658,
-    "seen": 1790850746.9239826,
-    "ast_hash": "8b955973571e084555a7536da0967b54",
+    "mtime": 1790850930.94432,
+    "seen": 1790851007.475129,
+    "ast_hash": "c6483650b708c18f2996d4cb9ba2a1e3",
     "semantic_hash": ""
   },
   "apps/backend/test/run-durability-test.ts": {
-    "mtime": 1790850531.2733338,
-    "seen": 1790850746.9418585,
-    "ast_hash": "f3ae307853104147fdb3a20090a90910",
+    "mtime": 1790850943.5393374,
+    "seen": 1790851007.475129,
+    "ast_hash": "38d1b2d09d4c637f8f2a321a350edb91",
     "semantic_hash": ""
   },
   ".project/archive/2026-10-01-audit-phase2-durability.md": {
     "mtime": 1790850126.0672657,
     "seen": 1790850747.0745895,
     "ast_hash": "f8256b44089c99a327c2dd8d26aa23a2",
+    "semantic_hash": ""
+  },
+  "supabase/migrations/004_app_records.sql": {
+    "mtime": 1790850198.9773214,
+    "seen": 1790851007.4764614,
+    "ast_hash": "68e7372bc816d4d7dff44da1a75d63d7",
     "semantic_hash": ""
   }
 }

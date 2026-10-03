@@ -24,7 +24,7 @@ export type PaymentStatus =
   | 'partially_refunded';
 
 /** Payment method */
-export type PaymentMethod = 'prepaid' | 'cod' | 'partial_cod';
+export type PaymentMethod = 'prepaid';
 
 export interface Order {
   id: string;
@@ -124,8 +124,6 @@ export interface CheckoutSummary {
   total: number;
   currency: string;
   items: CheckoutItem[];
-  codDeposit?: number;
-  codRemaining?: number;
 }
 
 export interface CheckoutItem {

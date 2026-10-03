@@ -97,10 +97,7 @@ export class PaymentsService {
 
   getPaymentConfig() {
     return {
-      cod_enabled: db.settings.cod_enabled !== false,
-      partial_cod_enabled: db.settings.partial_cod_enabled !== false,
-      partial_cod_advance_amount: Number(db.settings.partial_cod_advance_amount) || 79,
-      max_cod_limit: Number(db.settings.max_cod_limit) || 5000,
+      razorpay_enabled: true,
       free_shipping_threshold: Number(db.settings.free_shipping_threshold) || 999,
       shipping_fee_default: Number(db.settings.shipping_fee_default) || 99,
       prepaid_discount_percentage: Number(db.settings.prepaid_discount_percentage) || 5,
@@ -182,8 +179,7 @@ export class PaymentsService {
         };
       }
 
-      const payableAmount =
-        order.payment_method === 'partial_cod' ? (order.cod_deposit || order.total) : order.total;
+      const payableAmount = order.total;
       // Always derive the charge amount from the authoritative order record.
       // A client-supplied `amount` is intentionally ignored here: trusting it
       // would let a caller pay less than the order's real total and then use
@@ -364,7 +360,7 @@ export class PaymentsService {
     if (order.status === 'cancelled' && order.cancel_reason === 'payment_timeout') {
       if (this.ordersService.reclaimInventory(order)) order.status = 'pending_payment';
     }
-    order.payment_status = order.payment_method === 'partial_cod' ? 'partial_paid' : 'captured';
+    order.payment_status = 'captured';
     // Only advance orders still awaiting payment; never pull a cancelled,
     // shipped or refunded order back to processing.
     if (['pending', 'pending_payment'].includes(order.status)) {
@@ -517,7 +513,7 @@ export class PaymentsService {
         customerEmail: p.customer_email || 'customer@bingooo.in',
         amount: p.amount,
         currency: p.currency || 'INR',
-        method: p.method || (p.provider === 'razorpay' ? 'Razorpay Gateway' : 'Cash on Delivery'),
+        method: p.method || 'Razorpay Gateway',
         status: p.status === 'captured' ? 'paid' : p.status,
         razorpayPaymentId: p.provider_payment_id || null,
         created_at: p.created_at,

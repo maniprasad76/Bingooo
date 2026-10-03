@@ -48,9 +48,9 @@ const RETURN_STEPS = [
 
 const FAQS = [
   {
-    question: 'How do Cash on Delivery (COD) refunds work?',
+    question: 'How and when do refunds get processed?',
     answer:
-      'For COD orders, we do not require your bank account numbers or IFSC codes over chat. Once reverse pickup is verified, you receive a secure automated Razorpay UPI Payout link via SMS and WhatsApp. Simply input your UPI ID (Google Pay, PhonePe, Paytm, or BHIM) and the full funds transfer directly into your bank account within seconds.',
+      'All orders are processed through our encrypted Razorpay gateway. Once reverse pickup is verified and inspected by our atelier team, refunds are credited directly back to your original payment method (UPI account or bank card) within 24 to 48 hours.',
   },
   {
     question: 'How long does a size exchange take from pickup to delivery?',

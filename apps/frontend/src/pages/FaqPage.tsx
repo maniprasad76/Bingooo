@@ -83,8 +83,8 @@ const FAQ_ITEMS: FaqItem[] = [
     category: 'returns',
     question: 'How long do refunds take to reflect in my account?',
     answer:
-      'Once our quality team inspects the returned package at our facility, refunds are initiated within 24–48 hours. For UPI and debit/credit card payments, the credit takes 3–5 working days to appear in your bank statement. For COD orders, we transfer refunds directly to your verified UPI ID or bank account.',
-    searchKeywords: 'refund time processing bank account crediting cod refund money back',
+      'Once our quality team inspects the returned package at our facility, refunds are initiated within 24–48 hours. Refunds are credited directly back to the original source (UPI account or debit/credit card) via Razorpay, taking 2–4 business days depending on your bank.',
+    searchKeywords: 'refund time processing bank account crediting refund money back razorpay',
   },
 
   // Products & Sizing
@@ -119,8 +119,8 @@ const FAQ_ITEMS: FaqItem[] = [
     category: 'payments',
     question: 'Is Cash on Delivery (COD) available?',
     answer:
-      'Cash on Delivery (COD) is supported for eligible serviceable pin codes across India on all standard catalog orders. For custom on-demand studio pieces, a nominal advance token (or full prepayment) is requested to verify custom print commitment before fabric pressing begins.',
-    searchKeywords: 'cash on delivery cod payment pay on doorstep cash method eligible pincode',
+      'To guarantee priority courier dispatch, zero transit delays, and avoid cash-handling surcharges, Bingooo operates exclusively as a 100% secure prepaid store. We provide an instant 5% prepaid discount on all orders placed via UPI (Google Pay, PhonePe, Paytm), Cards, or Net Banking.',
+    searchKeywords: 'cash on delivery cod payment prepaid methods discounts online razorpay upi',
   },
   {
     id: 'payments-2',

@@ -65,7 +65,7 @@ const LOGISTICS_STEPS = [
     step: '03',
     label: 'DOORSTEP',
     title: 'Express Doorstep Arrival',
-    desc: 'Verified courier executive delivers directly to your door with contactless OTP or Cash on Delivery options.',
+    desc: 'Verified courier executive delivers directly to your door with contactless OTP secure arrival verification.',
     highlight: 'Up to 3 delivery attempts guaranteed',
   },
 ];
@@ -87,9 +87,9 @@ const FAQS = [
       'Yes. Off-the-rack catalog pieces dispatch within 24 hours. Because bespoke custom garments require rasterization, multi-pass film printing, thermal curing, and strict wash-fastness testing, custom pieces dispatch within 24 to 48 business hours.',
   },
   {
-    question: 'Is Cash on Delivery (COD) available in my area?',
+    question: 'Why are all orders prepaid at Bingooo?',
     answer:
-      'Cash on Delivery is supported across 19,000+ Indian postal codes. Please keep the exact invoice amount ready in cash or UPI at the time of delivery. A standard nominal COD processing fee of ₹49 applies for courier cash-handling.',
+      'Operating exclusively via 100% secure prepaid payments (UPI, Cards, Net Banking via Razorpay) enables zero-delay priority dispatch, transit insurance, and eliminates courier cash-handling fees. Plus, customers enjoy an instant 5% prepaid discount at checkout.',
   },
   {
     question: 'What should I do if the courier parcel arrives damaged or opened?',
@@ -151,7 +151,7 @@ export function ShippingPolicyPage() {
       setPincodeResult({
         status: 'serviceable',
         timeline: '3 to 5 Business Days (Pan-India Doorstep Logistics)',
-        message: 'Full Cash on Delivery and prepaid coverage across all verified zones.',
+        message: '100% verified express delivery coverage across all service zones.',
       });
     }
   };
@@ -533,7 +533,7 @@ export function ShippingPolicyPage() {
               COMMON SHIPPING QUESTIONS
             </h2>
             <p className="text-[#6F6A63] text-[13px] leading-[1.8] mt-3">
-              Clear answers regarding freight fees, cash on delivery, and air freight protocols.
+              Clear answers regarding freight fees, transit insurance, and air freight protocols.
             </p>
           </div>
 

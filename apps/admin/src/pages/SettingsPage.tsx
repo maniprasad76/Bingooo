@@ -9,11 +9,6 @@ interface StoreSettings {
   store_phone: string;
   support_hours: string;
   currency: string;
-  cod_enabled: boolean;
-  partial_cod_enabled: boolean;
-  partial_cod_advance_amount: number;
-  max_cod_limit: number;
-  cod_deposit_percentage: number;
   shipping_fee_default: number;
   free_shipping_threshold: number;
   tax_rate_percentage: number;
@@ -29,11 +24,6 @@ const DEFAULT_SETTINGS: StoreSettings = {
   store_phone: '+91 98765 43210',
   support_hours: 'Mon - Sat: 10:00 AM - 7:00 PM IST',
   currency: 'INR',
-  cod_enabled: true,
-  partial_cod_enabled: true,
-  partial_cod_advance_amount: 199,
-  max_cod_limit: 5000,
-  cod_deposit_percentage: 15,
   shipping_fee_default: 99,
   free_shipping_threshold: 1999,
   tax_rate_percentage: 0,
@@ -179,63 +169,19 @@ export function SettingsPage() {
           </div>
         </div>
 
-        {/* Payments & COD */}
+        {/* Payments & Prepaid Policy */}
         <div className="admin-card p-6 space-y-4">
           <div className="flex items-center gap-2 pb-3 border-b border-border">
             <CreditCard size={18} className="text-brand-red" />
-            <h2 className="text-sm font-bold uppercase tracking-wider text-ink">Payments & Cash on Delivery (COD)</h2>
+            <h2 className="text-sm font-bold uppercase tracking-wider text-ink">Payments & Prepaid Policy</h2>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div className="flex items-center justify-between p-3.5 rounded-lg border border-border bg-beige/20">
-              <div>
-                <p className="text-xs font-bold text-ink">Cash on Delivery (COD)</p>
-                <p className="text-[11px] text-muted">Enable COD payment method at checkout</p>
-              </div>
-              <input
-                type="checkbox"
-                className="h-4 w-4 rounded text-brand-red focus:ring-brand-red"
-                checked={settings.cod_enabled}
-                onChange={(e) => setSettings({ ...settings, cod_enabled: e.target.checked })}
-              />
-            </div>
+          <div className="p-3.5 rounded-lg border border-border bg-paper/40 text-xs text-muted leading-relaxed">
+            Bingooo operates exclusively on a 100% secure prepaid architecture (Razorpay UPI, Cards, NetBanking). Cash on Delivery (COD) is permanently disabled across the storefront.
+          </div>
 
-            <div className="flex items-center justify-between p-3.5 rounded-lg border border-border bg-beige/20">
-              <div>
-                <p className="text-xs font-bold text-ink">Partial COD Deposit</p>
-                <p className="text-[11px] text-muted">Require nominal token advance to confirm COD</p>
-              </div>
-              <input
-                type="checkbox"
-                className="h-4 w-4 rounded text-brand-red focus:ring-brand-red"
-                checked={settings.partial_cod_enabled}
-                onChange={(e) => setSettings({ ...settings, partial_cod_enabled: e.target.checked })}
-              />
-            </div>
-
-            <div>
-              <label className="admin-label">Partial COD Advance (₹)</label>
-              <input
-                type="number"
-                min={0}
-                className="admin-input"
-                value={settings.partial_cod_advance_amount}
-                onChange={(e) => setSettings({ ...settings, partial_cod_advance_amount: Number(e.target.value) })}
-              />
-            </div>
-
-            <div>
-              <label className="admin-label">Max Allowed COD Order Value (₹)</label>
-              <input
-                type="number"
-                min={0}
-                className="admin-input"
-                value={settings.max_cod_limit}
-                onChange={(e) => setSettings({ ...settings, max_cod_limit: Number(e.target.value) })}
-              />
-            </div>
-
-            <div className="sm:col-span-2 flex items-center justify-between p-3.5 rounded-lg border border-emerald-200 bg-emerald-50/40">
+          <div className="grid grid-cols-1 gap-4">
+            <div className="flex items-center justify-between p-3.5 rounded-lg border border-emerald-200 bg-emerald-50/40">
               <div>
                 <p className="text-xs font-bold text-ink">Prepaid Discount (%)</p>
                 <p className="text-[11px] text-muted">Flat percentage discount for customers who pay online (UPI / Cards)</p>

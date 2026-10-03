@@ -273,7 +273,7 @@ async function runSecuritySuite() {
       },
       body: JSON.stringify({
         cartId,
-        paymentMethod: 'cod',
+        paymentMethod: 'prepaid',
         shippingAddress: {
           name: 'Alice Walker',
           phone: '+919999900001',

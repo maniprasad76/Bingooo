@@ -34,7 +34,7 @@
 - **Store Requirement**: Apple Review Guideline 3.1.5(a) requires apps facilitating the sale of physical goods or services consumed outside the app to use external payment processors rather than Apple In-App Purchase (IAP).
 - **Compliance Status**: Fully Compliant.
   - All items sold on Bingooo are **physical apparel** (heavyweight 240–420 GSM cotton t-shirts, hoodies, cargo pants) manufactured and shipped to the customer's physical delivery address across India.
-  - Transactions use external payment gateway (Razorpay) supporting UPI, Debit/Credit Cards, Net Banking, and Cash on Delivery (COD).
+  - Transactions use external payment gateway (Razorpay) supporting UPI, Debit/Credit Cards, and Net Banking.
   - Digital goods or digital unlockables are not sold within the app.
 
 ---

@@ -159,3 +159,6 @@ python -m graphify update .
 - **2026-09-17: Circular Dependency Elimination & Graphify Integration**
   - Decoupled `apps/backend/src/common/database/store.ts` from `db-index.service.ts` using the `registerSaveHook` subscription pattern.
   - Indexed 7,300+ symbols into persistent Graphify knowledge graph.
+- **2026-10-03: Permanent Removal of Cash on Delivery (COD)**
+  - Transitioned platform to 100% secure prepaid checkout (Razorpay UPI, Cards, NetBanking) with 5% instant discount, removing all COD and Partial COD paths from backend, admin, storefront, and shared types.
+

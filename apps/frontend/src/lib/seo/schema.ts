@@ -345,7 +345,7 @@ export function generateLocalBusinessSchema() {
     },
     hasMap: 'https://maps.google.com/?q=Srikakulam+Andhra+Pradesh',
     currenciesAccepted: 'INR',
-    paymentAccepted: 'UPI, Credit Card, Debit Card, Net Banking, Cash on Delivery',
+    paymentAccepted: 'UPI, Credit Card, Debit Card, Net Banking',
     priceRange: '₹699–₹1,999',
     openingHoursSpecification: [
       {

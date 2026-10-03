@@ -83,7 +83,7 @@ Bingooo bridges the gap between mass-market fast fashion and unaffordable bespok
   - Step 1: Customer Contact (Email & Indian Phone Number with SMS order update opt-in).
   - Step 2: Shipping Address with automated Indian 6-digit PIN code lookup (auto-fills State, City, District).
   - Step 3: Shipping Method Selection (Standard Ground 3–5 days vs. Express Air 1–2 days).
-  - Step 4: Authoritative Payment Selection (Razorpay UPI QR/Intent, Credit/Debit Cards, NetBanking, and Cash on Delivery / Partial COD).
+  - Step 4: Authoritative Payment Selection (Razorpay UPI QR/Intent, Credit/Debit Cards, NetBanking with 5% Instant Prepaid Discount).
 - **FR-CHECK-002 (Authoritative Server-Side Pricing):**
   - Absolute enforcement that client cart prices, all-inclusive pricing (₹0 tax surcharge), shipping charges, and discount subtotals are recalculated on the NestJS backend.
 - **FR-CHECK-003 (Order Confirmation & Tracking):**

@@ -12,13 +12,7 @@ export class UpdateSettingsDto {
   @IsOptional() @IsString() @MaxLength(120) support_hours?: string;
   @IsOptional() @IsIn(['INR']) currency?: string;
 
-  @IsOptional() @IsBoolean() cod_enabled?: boolean;
-  @IsOptional() @IsBoolean() partial_cod_enabled?: boolean;
   @IsOptional() @IsBoolean() gst_enabled?: boolean;
-
-  @IsOptional() @IsNumber() @Min(0) @Max(100000) partial_cod_advance_amount?: number;
-  @IsOptional() @IsNumber() @Min(0) @Max(1000000) max_cod_limit?: number;
-  @IsOptional() @IsNumber() @Min(0) @Max(100) cod_deposit_percentage?: number;
   @IsOptional() @IsNumber() @Min(0) @Max(100000) shipping_fee_default?: number;
   @IsOptional() @IsNumber() @Min(0) @Max(1000000) free_shipping_threshold?: number;
   @IsOptional() @IsNumber() @Min(0) @Max(100) tax_rate_percentage?: number;

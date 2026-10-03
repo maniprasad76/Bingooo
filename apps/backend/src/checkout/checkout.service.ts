@@ -81,50 +81,15 @@ export class CheckoutService {
 
     const discountedSubtotal = Math.max(0, subtotal - discount);
 
-    // Apply prepaid discount if applicable
-    let prepaidDiscount = 0;
-    if (dto.paymentMethod === 'prepaid') {
-      const prepaidPct = Number(db.settings.prepaid_discount_percentage) || 5;
-      prepaidDiscount = Math.round(discountedSubtotal * (prepaidPct / 100));
-    }
+    // All orders are 100% secure prepaid; apply prepaid discount
+    const prepaidPct = Number(db.settings.prepaid_discount_percentage) || 5;
+    const prepaidDiscount = Math.round(discountedSubtotal * (prepaidPct / 100));
 
     const finalSubtotal = Math.max(0, discountedSubtotal - prepaidDiscount);
     const freeShippingThreshold = db.settings.free_shipping_threshold || 999;
     const shippingFee = finalSubtotal >= freeShippingThreshold || finalSubtotal === 0 ? 0 : (db.settings.shipping_fee_default || 99);
     const tax = 0; // All prices are all-inclusive (no extra GST)
     const total = finalSubtotal + shippingFee;
-
-    // COD calculation
-    let codDeposit = 0;
-    let codRemaining = 0;
-    if (dto.paymentMethod === 'partial_cod') {
-      if (db.settings.partial_cod_enabled === false) {
-        throw new BadRequestException({
-          code: 'PARTIAL_COD_DISABLED',
-          message: 'Partial Cash on Delivery is currently disabled by store policy',
-        });
-      }
-      // Advance security deposit (default ₹79)
-      codDeposit = Number(db.settings.partial_cod_advance_amount) || 79;
-      codDeposit = Math.min(codDeposit, total);
-      codRemaining = Math.max(0, total - codDeposit);
-    } else if (dto.paymentMethod === 'cod') {
-      if (db.settings.cod_enabled === false) {
-        throw new BadRequestException({
-          code: 'COD_DISABLED',
-          message: 'Cash on Delivery is currently disabled by store policy',
-        });
-      }
-      const maxCod = Number(db.settings.max_cod_limit) || 5000;
-      if (total > maxCod) {
-        throw new BadRequestException({
-          code: 'COD_LIMIT_EXCEEDED',
-          message: `Cash on Delivery is capped at ₹${maxCod}. Please choose Partial COD (₹79 advance) or Prepaid.`,
-        });
-      }
-      codDeposit = 0;
-      codRemaining = total;
-    }
 
     return {
       isValid: true,
@@ -137,10 +102,8 @@ export class CheckoutService {
       shippingFee,
       tax,
       total,
-      paymentMethod: dto.paymentMethod,
-      codDeposit,
-      codRemaining,
-      payableNow: dto.paymentMethod === 'partial_cod' ? codDeposit : dto.paymentMethod === 'cod' ? 0 : total,
+      paymentMethod: 'prepaid' as const,
+      payableNow: total,
       shippingAddress: dto.shippingAddress,
     };
   }

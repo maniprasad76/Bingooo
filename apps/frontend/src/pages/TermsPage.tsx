@@ -230,7 +230,7 @@ export function TermsPage() {
                   All prices displayed on the storefront are quoted in Indian Rupees (INR) and are all-inclusive. What you see is what you pay, with no surprise tax surcharges at checkout.
                 </p>
                 <p>
-                  For Cash on Delivery (COD) orders, a nominal ₹79 partial advance commitment may be required to confirm courier dispatch and prevent fraudulent or prank addresses.
+                  All orders are secured through encrypted online prepaid payments (UPI, Cards, Net Banking) via Razorpay, ensuring priority dispatch, buyer protection, and eligibility for instant prepaid discounts.
                 </p>
               </div>
             </article>

@@ -257,8 +257,6 @@ export class EmailService {
       )
       .join('');
 
-    const isCod = params.paymentMethod === 'cod';
-
     const body = `
       <h1 style="margin:0 0 6px;font-size:22px;font-weight:800;color:${BRAND.charcoal};letter-spacing:-0.5px;">Order confirmed! 🎉</h1>
       <p style="margin:0 0 24px;font-size:14px;color:#6B6356;">Hi ${escapeHtml(firstName)}, thanks for your order. We're on it!</p>
@@ -294,10 +292,6 @@ export class EmailService {
           <td style="padding:10px 0 0;font-size:16px;font-weight:800;color:${BRAND.charcoal};border-top:2px solid rgba(23,23,23,0.1);">Total</td>
           <td style="padding:10px 0 0;font-size:16px;font-weight:800;color:${BRAND.charcoal};text-align:right;border-top:2px solid rgba(23,23,23,0.1);">${formatINR(params.total)}</td>
         </tr>
-        ${isCod && params.codDeposit ? `
-        <tr><td colspan="2" style="padding:8px 0 0;"><div style="background-color:rgba(230,50,28,0.06);border-radius:6px;padding:10px 14px;font-size:13px;color:${BRAND.charcoal};">
-          <strong>COD:</strong> Pay ${formatINR(params.codDeposit)} advance now + ${formatINR(params.codRemaining || 0)} on delivery.
-        </div></td></tr>` : ''}
       </table>
 
       <!-- Shipping address -->

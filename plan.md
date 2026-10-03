@@ -1,50 +1,79 @@
-# Plan: Real Customer Reviews & Native Android Release Packaging
+# BINGOOO Milestone Plan: Complete Removal of COD (Cash on Delivery)
 
-## 1. Objective
-1. **Real Reviews Only**: Completely remove all hardcoded, fake, or mock reviews and static percentages (`* 42`, hardcoded 4.8 rating, static `REVIEWS_DATA`). Implement authentic verified buyer check (user must have placed an order for the product) and an interactive slide-out review submission drawer with 1-5 stars, fit feedback, and client-compressed photo uploads.
-2. **Native Android Release Packaging**: Sync, audit, and package the Capacitor 8 Android shell, ensuring icons, splash screens, tactile haptics, and offline service worker assets are in place.
-
----
-
-## 2. Changes Breakdown
-
-### Phase A: Backend Real Reviews & Verified Buyer Enforcement (`apps/backend`)
-- **`apps/backend/src/reviews/dto/review.dto.ts`**:
-  - Add `fitFeedback?: 'runs_small' | 'true_to_size' | 'runs_large'` to `CreateReviewDto`.
-- **`apps/backend/src/reviews/reviews.service.ts`**:
-  - `checkEligibility(productId: string, userId?: string)`: Checks if the user has an existing order containing the product (matching `product_id` or variant).
-  - `createReview()`: Validates purchase history. If the user has not ordered the product, reject with HTTP 403 `PURCHASE_REQUIRED` (with an admin bypass for testing/moderation). Stores `fit_feedback`, `image_url`, and sets `verified_buyer: true`.
-  - `findByProduct()`: Calculates real average rating, real rating distribution, and real fit feedback breakdown from genuine database entries.
-- **`apps/backend/src/reviews/reviews.controller.ts`**:
-  - Add `@Get('eligibility')` endpoint: `checkEligibility(@Query('productId') productId, @Req() req)`.
-- **`apps/backend/test/run-admin-e2e.ts`**:
-  - Ensure test creates a test order or uses verified customer so review moderation tests continue to pass seamlessly.
-
-### Phase B: Frontend Real Reviews Section & Interactive Drawer (`apps/frontend`)
-- **`apps/frontend/src/pages/ProductPage.tsx`**:
-  - Remove `REVIEWS_DATA` mock array and hardcoded metrics (`4.8`, `* 42 reviews`, static 78% bars).
-  - Add query hook to load live reviews from `/api/v1/reviews/product/:id`.
-  - Add honest Zero-State UI when 0 reviews exist ("No reviews yet for this garment. Be the first verified buyer to leave a review.").
-  - Add verified buyer check and state for the review drawer.
-  - Build the slide-out **Review Submission Drawer**:
-    - Star Rating Selector (1 to 5 interactive stars with hover).
-    - Fit Feedback Selector: 3 pills (`Runs Small` | `True to Size` | `Runs Large`).
-    - Review Headline & detailed experience textarea.
-    - Client-side Photo Compression: Image upload component that uses an off-screen HTML5 `<canvas>` to compress images to max 1000px WebP/JPEG under 200KB before submission.
-    - Verified Buyer Badge indicator.
-  - Review Card Component: Displays customer name/initials, "✓ Verified Buyer" badge in emerald green, star rating, fit tag, date, and attached photos with click-to-zoom modal.
-
-### Phase C: Native Android Packaging (Capacitor 8)
-- Audit `apps/frontend/capacitor.config.ts` and `apps/frontend/android`.
-- Run `npm run android:sync` (`cap sync android`) to copy the latest production web assets (`dist/`) and plugins into `android/app/src/main/assets/public`.
-- Verify Android app build configurations, status bar colors (`#171717`), splash screens, and offline caching.
+## Goal
+Completely remove Cash on Delivery (COD) and Partial COD from the BINGOOO project, establishing a 100% secure prepaid architecture (UPI, Cards, NetBanking via Razorpay) across the backend API, shared types, admin console, frontend checkout, policy pages, and SEO metadata.
 
 ---
 
-## 3. Verification & Acceptance Criteria
-- [ ] No hardcoded fake reviews exist anywhere in `ProductPage.tsx`.
-- [ ] Verified buyers can submit real reviews with stars, fit, text, and photos.
-- [ ] Unverified users are informed they must purchase before reviewing.
-- [ ] `npm run typecheck` passes with zero errors across all workspaces.
-- [ ] Backend test suites (`npm run test:checkout` and `npm run test:security`) pass.
-- [ ] Android sync completes successfully.
+## 1. Scope & Decision Record
+
+### IN SCOPE
+1. **Frontend Checkout (`apps/frontend/src/pages/CheckoutPage.tsx`)**:
+   - Remove Partial COD (Option 2) and Full COD (Option 3) radio options, state variables, and handlers.
+   - Remove COD calculation, COD fees, advance token breakdown, and conditional COD validation alerts.
+   - Streamline checkout payment options to Prepaid UPI (PhonePe, GPay, Paytm, Any UPI) and Cards / NetBanking / Wallets via Razorpay.
+   - Retain 5% Instant Prepaid Discount across all orders.
+
+2. **Frontend Policies & Marketing (`apps/frontend`)**:
+   - `FaqPage.tsx`: Clarify that Bingooo operates 100% prepaid with instant dispatch, and refunds route directly to original payment source.
+   - `ShippingPolicyPage.tsx`: Replace COD delivery mentions with contactless secure OTP delivery.
+   - `ReturnsRefundsPage.tsx`: Clarify automated Razorpay refunds to original UPI/Card source.
+   - `TermsPage.tsx`: Remove COD advance commitment terms; emphasize encrypted prepaid checkout.
+   - `HomePage.tsx`, `ShopPage.tsx`, `ProductPage.tsx`, `SEO.tsx`, `schema.ts`: Remove "COD" references from meta descriptions and schema `paymentAccepted`.
+
+3. **Admin Settings (`apps/admin/src/pages/SettingsPage.tsx`)**:
+   - Remove COD and Partial COD toggles and input fields (`cod_enabled`, `partial_cod_enabled`, `partial_cod_advance_amount`, `max_cod_limit`, `cod_deposit_percentage`).
+   - Retain Prepaid Discount (%) configuration under "Payments & Prepaid Policy".
+
+4. **Shared Types (`packages/types`)**:
+   - `packages/types/src/order.ts`: Update `PaymentMethod` to `'prepaid'`. Remove `codDeposit` and `codRemaining` from order types.
+
+5. **Backend Data & Logic (`apps/backend`)**:
+   - `apps/backend/src/checkout/dto/checkout.dto.ts`: Lock `paymentMethod` to `@IsIn(['prepaid'])`.
+   - `apps/backend/src/checkout/checkout.service.ts`: Remove COD and Partial COD calculation logic and exceptions (`PARTIAL_COD_DISABLED`, `COD_DISABLED`, `COD_LIMIT_EXCEEDED`).
+   - `apps/backend/src/orders/orders.service.ts`: Create all orders as `pending_payment` / `prepaid` until captured by Razorpay.
+   - `apps/backend/src/payments/payments.service.ts`: Strip COD config from `getPaymentConfig()`. Ensure payable amount always equals order total.
+   - `apps/backend/src/email/email.service.ts`: Remove COD advance notice block from order confirmation email template.
+   - `apps/backend/src/admin/dto/settings.dto.ts`: Remove COD-related fields from whitelist validation.
+   - `apps/backend/src/common/database/store.ts` & `apps/backend/data/seed.json` & `store.json`: Clean up COD settings and update sample orders.
+   - `apps/backend/test/run-security-suite.ts`: Update test order creation from `'cod'` to `'prepaid'`.
+
+6. **Documentation (`prd.md`)**:
+   - Update payment selection specs to 100% prepaid.
+
+### OUT OF SCOPE
+- Changing Razorpay integration flow or webhook verification (remains raw HMAC SHA-256).
+- Modifying return inspection or standard RMA flow (returns still issue real refunds via Razorpay).
+
+---
+
+## 2. Execution Phases
+
+### Phase 2.1: Types & Backend Core
+1. Update [packages/types/src/order.ts](file:///c:/Users/manip/Desktop/bingooo/packages/types/src/order.ts)
+2. Update [apps/backend/src/checkout/dto/checkout.dto.ts](file:///c:/Users/manip/Desktop/bingooo/apps/backend/src/checkout/dto/checkout.dto.ts)
+3. Update [apps/backend/src/checkout/checkout.service.ts](file:///c:/Users/manip/Desktop/bingooo/apps/backend/src/checkout/checkout.service.ts)
+4. Update [apps/backend/src/orders/orders.service.ts](file:///c:/Users/manip/Desktop/bingooo/apps/backend/src/orders/orders.service.ts)
+5. Update [apps/backend/src/payments/payments.service.ts](file:///c:/Users/manip/Desktop/bingooo/apps/backend/src/payments/payments.service.ts)
+6. Update [apps/backend/src/admin/dto/settings.dto.ts](file:///c:/Users/manip/Desktop/bingooo/apps/backend/src/admin/dto/settings.dto.ts)
+7. Update [apps/backend/src/common/database/store.ts](file:///c:/Users/manip/Desktop/bingooo/apps/backend/src/common/database/store.ts)
+8. Update [apps/backend/src/email/email.service.ts](file:///c:/Users/manip/Desktop/bingooo/apps/backend/src/email/email.service.ts)
+9. Update [apps/backend/data/seed.json](file:///c:/Users/manip/Desktop/bingooo/apps/backend/data/seed.json) and [apps/backend/data/store.json](file:///c:/Users/manip/Desktop/bingooo/apps/backend/data/store.json)
+10. Update [apps/backend/test/run-security-suite.ts](file:///c:/Users/manip/Desktop/bingooo/apps/backend/test/run-security-suite.ts)
+
+### Phase 2.2: Admin Console
+1. Update [apps/admin/src/pages/SettingsPage.tsx](file:///c:/Users/manip/Desktop/bingooo/apps/admin/src/pages/SettingsPage.tsx)
+
+### Phase 2.3: Frontend Storefront & Policies
+1. Update [apps/frontend/src/pages/CheckoutPage.tsx](file:///c:/Users/manip/Desktop/bingooo/apps/frontend/src/pages/CheckoutPage.tsx)
+2. Update [apps/frontend/src/pages/FaqPage.tsx](file:///c:/Users/manip/Desktop/bingooo/apps/frontend/src/pages/FaqPage.tsx)
+3. Update [apps/frontend/src/pages/ShippingPolicyPage.tsx](file:///c:/Users/manip/Desktop/bingooo/apps/frontend/src/pages/ShippingPolicyPage.tsx)
+4. Update [apps/frontend/src/pages/ReturnsRefundsPage.tsx](file:///c:/Users/manip/Desktop/bingooo/apps/frontend/src/pages/ReturnsRefundsPage.tsx)
+5. Update [apps/frontend/src/pages/TermsPage.tsx](file:///c:/Users/manip/Desktop/bingooo/apps/frontend/src/pages/TermsPage.tsx)
+6. Update [apps/frontend/src/pages/HomePage.tsx](file:///c:/Users/manip/Desktop/bingooo/apps/frontend/src/pages/HomePage.tsx), [ShopPage.tsx](file:///c:/Users/manip/Desktop/bingooo/apps/frontend/src/pages/ShopPage.tsx), [ProductPage.tsx](file:///c:/Users/manip/Desktop/bingooo/apps/frontend/src/pages/ProductPage.tsx), [SEO.tsx](file:///c:/Users/manip/Desktop/bingooo/apps/frontend/src/components/common/SEO.tsx), and [schema.ts](file:///c:/Users/manip/Desktop/bingooo/apps/frontend/src/lib/seo/schema.ts)
+7. Update [prd.md](file:///c:/Users/manip/Desktop/bingooo/prd.md)
+
+### Phase 2.4: Verification & Graph
+1. Run `npm run typecheck` across all workspaces (must be 0 errors).
+2. Run backend test suites: `npm run test:security -w apps/backend`, `npm run test:checkout -w apps/backend`, `npm run test:admin -w apps/backend`.
+3. Run `python -m graphify update .` to sync codebase AST knowledge graph.

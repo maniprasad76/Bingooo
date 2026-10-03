@@ -354,7 +354,7 @@ export function ProductPage() {
         title={`${product?.title || 'Classic Oversized Tee'} (${product?.fabric_gsm || 240} GSM) — Oversized T-Shirt for Men | Bingooo®`}
         description={
           product?.description ||
-          `Buy ${product?.title || 'Classic Oversized Tee'} in ${product?.fabric_gsm || 240} GSM super-combed cotton online in India. Boxy streetwear drape, anti-sag collar, COD & Pan-India free delivery.`
+          `Buy ${product?.title || 'Classic Oversized Tee'} in ${product?.fabric_gsm || 240} GSM super-combed cotton online in India. Boxy streetwear drape, anti-sag collar, and Pan-India free delivery.`
         }
         keywords={`${product?.title || 'oversized tee'}, 240 gsm oversized t shirt, oversized t-shirts for men, heavyweight streetwear india, drop shoulder t shirt, 100 combed cotton, bingooo menswear`}
         canonical={`https://bingooo.co.in/product/${slug || 'classic-logo-tee'}`}

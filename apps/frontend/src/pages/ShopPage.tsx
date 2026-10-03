@@ -312,8 +312,8 @@ export function ShopPage() {
         }
         description={
           slug
-            ? `Buy premium ${slug.replace(/-/g, ' ')} for men in India. Crafted with 240–280 GSM heavyweight super-combed cotton, boxy drop shoulder fit, COD & Pan-India express delivery.`
-            : "Shop India's best 240–280 GSM heavyweight oversized t-shirts for men, drop-shoulder hoodies, and streetwear. 100% super-combed cotton, boxy fit, COD & Pan-India free shipping."
+            ? `Buy premium ${slug.replace(/-/g, ' ')} for men in India. Crafted with 240–280 GSM heavyweight super-combed cotton, boxy drop shoulder fit, and Pan-India express delivery.`
+            : "Shop India's best 240–280 GSM heavyweight oversized t-shirts for men, drop-shoulder hoodies, and streetwear. 100% super-combed cotton, boxy fit, and Pan-India free shipping."
         }
         keywords={
           slug

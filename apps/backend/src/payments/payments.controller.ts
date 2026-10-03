@@ -28,7 +28,7 @@ export class PaymentsController {
   constructor(private readonly paymentsService: PaymentsService) {}
 
   @Get('config')
-  @ApiOperation({ summary: 'Get public payment rules and COD configurations' })
+  @ApiOperation({ summary: 'Get public payment rules and configurations' })
   getPaymentConfig() {
     return this.paymentsService.getPaymentConfig();
   }

@@ -117,6 +117,12 @@ python -m graphify update .
 
 ## 6. Changelog & Recent Decisions
 
+- **2026-10-04: Audit Phase 3 — Platform Hygiene**
+  - CI workflow (typecheck, build, prod audit, 5 backend suites) on every push; frontend/admin `typecheck` now checks real files — it immediately caught a `codTotal` reference left by the COD removal that had broken the production frontend build.
+  - NestJS 10 → 11.2.7 (Express 5, patched multer/body-parser/lodash); production audit has no high advisories (remaining moderate js-yaml is Swagger-only, and Swagger is now off in production unless `ENABLE_SWAGGER=true`). `@capacitor/cli` aligned to 8.
+  - RBAC vocabulary unified in `common/auth/permissions.ts`; ADMIN bypass removed (explicit grants), new `orders.read` / `returns.manage`, refunds moved to `POST /returns/:id/refund` (`refunds.manage`); stored roles auto-upgraded on boot; role edits now persist and reject unknown codes.
+  - Report-only Content-Security-Policy on the Vercel frontend and admin.
+
 - **2026-09-30: Admin-to-Frontend Catalog Sync, Media Resolution & Speed Insights**
   - Resolved `useProducts` array unwrap bug in frontend hook that prevented live catalog garments from loading.
   - Added missing `/api/(.*)` rewrite in `apps/admin/vercel.json` and production API fallback in `apps/admin/src/lib/api.ts`.

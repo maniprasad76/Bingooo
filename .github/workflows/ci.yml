@@ -1,0 +1,62 @@
+name: CI
+
+# Every push and pull request must typecheck, build, and pass the backend
+# suites. Render and Vercel deploy `main` automatically, so a red run here is
+# the only thing standing between a broken commit and production.
+on:
+  push:
+    branches: ['**']
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      # Throwaway values: tests never reach real Razorpay/Supabase. The checkout
+      # suite falls back to a local test order when Razorpay rejects these keys.
+      NODE_ENV: test
+      JWT_SECRET: ci-only-jwt-secret-not-used-anywhere-else-0123456789abcdef
+      RAZORPAY_KEY_ID: rzp_test_ci_dummy
+      RAZORPAY_KEY_SECRET: ci_dummy_secret
+      RAZORPAY_WEBHOOK_SECRET: ci_dummy_webhook_secret
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install
+        run: npm ci --no-audit --no-fund
+
+      - name: Typecheck (all workspaces)
+        run: npm run typecheck
+
+      - name: Build (all workspaces)
+        run: npm run build
+        env:
+          NODE_ENV: production
+
+      - name: Production dependency audit (high and above)
+        run: npm audit --omit=dev --audit-level=high
+
+      - name: Backend — security suite
+        run: npm run test:security -w apps/backend
+
+      - name: Backend — checkout E2E
+        run: npm run test:checkout -w apps/backend
+
+      - name: Backend — admin E2E
+        run: npm run test:admin -w apps/backend
+
+      - name: Backend — backup/restore
+        run: npm run test:backup -w apps/backend
+
+      - name: Backend — durability, stock & refunds
+        run: npm run test:durability -w apps/backend

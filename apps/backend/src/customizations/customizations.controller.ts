@@ -5,6 +5,7 @@ import { CustomizationsService } from './customizations.service';
 import { AuthGuard } from '../common/guards/auth.guard';
 import { RolesGuard } from '../common/guards/roles.guard';
 import { Permissions } from '../common/decorators/permissions.decorator';
+import { hasPermission } from '../common/auth/permissions';
 
 @ApiTags('Customizations')
 @Controller('customizations')
@@ -133,10 +134,7 @@ export class CustomizationsController {
   findById(@Req() req: any, @Param('id') id: string) {
     const design = this.customizationsService.findById(id);
     const isPrivileged =
-      req.user.roles?.includes('SUPER_ADMIN') ||
-      req.user.roles?.includes('ADMIN') ||
-      req.user.permissions?.includes('*') ||
-      req.user.permissions?.includes('customizations.manage');
+      hasPermission(req.user, 'customizations.manage');
     if (design.user_id !== req.user.id && !isPrivileged) {
       throw new ForbiddenException({
         code: 'CUSTOMIZATION_ACCESS_DENIED',
@@ -155,10 +153,7 @@ export class CustomizationsController {
   @ApiOperation({ summary: 'List saved designs for the authenticated user' })
   findByUser(@Req() req: any, @Param('userId') userId: string) {
     const isPrivileged =
-      req.user.roles?.includes('SUPER_ADMIN') ||
-      req.user.roles?.includes('ADMIN') ||
-      req.user.permissions?.includes('*') ||
-      req.user.permissions?.includes('customizations.manage');
+      hasPermission(req.user, 'customizations.manage');
     const targetUserId = isPrivileged ? userId : req.user.id;
     return this.customizationsService.findByUser(targetUserId);
   }

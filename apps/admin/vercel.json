@@ -35,6 +35,10 @@
         {
           "key": "Strict-Transport-Security",
           "value": "max-age=63072000; includeSubDomains; preload"
+        },
+        {
+          "key": "Content-Security-Policy-Report-Only",
+          "value": "default-src 'self'; object-src 'none'; base-uri 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob: https:; worker-src 'self' blob:; manifest-src 'self'; script-src 'self' 'unsafe-inline' https://va.vercel-scripts.com; connect-src 'self' https://api.bingooo.co.in https://zqmrmgwxhrdscippanuv.supabase.co wss://zqmrmgwxhrdscippanuv.supabase.co https://*.vercel-insights.com; frame-src 'none'; form-action 'self'; frame-ancestors 'none'"
         }
       ]
     }

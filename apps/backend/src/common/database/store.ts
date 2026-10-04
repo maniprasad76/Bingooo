@@ -7,6 +7,7 @@ import { v4 as uuidv4 } from 'uuid';
 import * as fs from 'fs';
 import * as path from 'path';
 import { getDataDir } from '../utils/paths.util';
+import { BUILT_IN_ROLES, PERMISSION_CATALOG, ROLE_PERMISSIONS_VERSION } from '../auth/permissions';
 
 const DATA_DIR = getDataDir();
 const STORE_FILE = path.join(DATA_DIR, 'store.json');
@@ -25,32 +26,9 @@ export const db = {
   product_collections: [] as any[],
   users: [] as any[],
 
-  roles: [
-    { id: 'role-super-admin', name: 'Super Admin', code: 'SUPER_ADMIN', description: 'Full unrestricted system and database access.', is_system: true, permissions: ['*'] },
-    { id: 'role-admin', name: 'Admin', code: 'ADMIN', description: 'Comprehensive store management.', is_system: true, permissions: ['products.read','products.create','products.update','products.delete','orders.read','orders.update','customizations.review','payments.read','refunds.manage','inventory.read','inventory.update','reviews.manage','banners.manage','coupons.manage'] },
-    { id: 'role-order-manager', name: 'Order Manager', code: 'ORDER_MANAGER', description: 'Handle order verification, fulfillment and logistics.', is_system: false, permissions: ['orders.read','orders.update','customizations.review','payments.read'] },
-    { id: 'role-product-manager', name: 'Product Manager', code: 'PRODUCT_MANAGER', description: 'Manage catalog, garments, inventory and banners.', is_system: false, permissions: ['products.read','products.create','products.update','inventory.read','inventory.update','banners.manage'] },
-    { id: 'role-support', name: 'Customer Support', code: 'SUPPORT', description: 'Assist customers with orders, returns and reviews.', is_system: false, permissions: ['orders.read','reviews.manage','returns.manage'] },
-    { id: 'role-customer', name: 'Customer', code: 'CUSTOMER', description: 'End customer shopping permissions.', is_system: true, permissions: ['orders.own','profile.own','reviews.create','customizations.create'] },
-  ] as any[],
+  roles: BUILT_IN_ROLES.map((r) => ({ ...r, permissions: [...r.permissions], permissions_version: ROLE_PERMISSIONS_VERSION })) as any[],
 
-  permissions: [
-    { key: 'products.read', label: 'View Products & Catalog', group: 'Products' },
-    { key: 'products.create', label: 'Create New Garments', group: 'Products' },
-    { key: 'products.update', label: 'Update Pricing & Specs', group: 'Products' },
-    { key: 'products.delete', label: 'Archive / Delete Garments', group: 'Products' },
-    { key: 'orders.read', label: 'View Customer Orders', group: 'Orders' },
-    { key: 'orders.update', label: 'Update Fulfillment & Status', group: 'Orders' },
-    { key: 'customizations.review', label: 'Review Custom Artwork', group: 'Custom Studio' },
-    { key: 'payments.read', label: 'View Payment Ledgers', group: 'Finance' },
-    { key: 'refunds.manage', label: 'Issue & Authorize Refunds', group: 'Finance' },
-    { key: 'users.manage', label: 'Manage Staff Members', group: 'Team' },
-    { key: 'roles.manage', label: 'Modify Permissions Matrix', group: 'Team' },
-    { key: 'settings.manage', label: 'Configure Store Parameters', group: 'Settings' },
-    { key: 'analytics.read', label: 'View Dashboard & Analytics', group: 'Settings' },
-    { key: 'audit.read', label: 'View Audit Trail', group: 'Settings' },
-    { key: 'backups.manage', label: 'Create & Restore Backups', group: 'Settings' },
-  ] as any[],
+  permissions: PERMISSION_CATALOG.map((p) => ({ ...p })) as any[],
 
   inventory_movements: [] as any[],
   wishlists: [] as any[],

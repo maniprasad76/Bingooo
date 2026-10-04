@@ -11,6 +11,8 @@ import { db } from '../src/common/database/store';
 import { backupService } from '../src/common/services/backup.service';
 import { generateToken, hashPassword } from '../src/common/utils/crypto.util';
 import { getDataDir } from '../src/common/utils/paths.util';
+import { upgradeBuiltInRoles } from '../src/roles/roles.service';
+import { ROLE_PERMISSIONS_VERSION } from '../src/common/auth/permissions';
 import * as crypto from 'crypto';
 import * as fs from 'fs';
 import * as path from 'path';
@@ -647,6 +649,120 @@ async function runSecuritySuite() {
       `Got change=${changePwRes.status}, reuse=${afterChangeRes.status}`,
     );
     db.users = db.users.filter((u) => u.id !== userCId);
+
+    // ═════════════════════════════════════════════════════════════════════
+    // SUITE 5: RBAC VOCABULARY (built-in roles, no ADMIN bypass)
+    // ═════════════════════════════════════════════════════════════════════
+    console.log('\n📦 SUITE 5: Role Permissions');
+    await new Promise((r) => setTimeout(r, 10500));
+
+    const staffToken = (role: string) => {
+      const id = `sec-${role.toLowerCase()}-${Date.now()}`;
+      db.users.push({
+        id,
+        email: `${id}@example.com`,
+        password_hash: hashPassword('StaffPassword123!'),
+        full_name: role,
+        role,
+        status: 'active',
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      });
+      return { id, token: generateToken({ userId: id, email: `${id}@example.com`, role }).token };
+    };
+    const support = staffToken('SUPPORT');
+    const productManager = staffToken('PRODUCT_MANAGER');
+    const admin = staffToken('ADMIN');
+    const asUser = (t: string) => ({ 'Content-Type': 'application/json', Authorization: `Bearer ${t}` });
+
+    const supportOrders = await fetch(`${BASE_URL}/orders/admin/all`, { headers: asUser(support.token) });
+    const supportOrderUpdate = await fetch(`${BASE_URL}/orders/does-not-matter/status`, {
+      method: 'PATCH',
+      headers: asUser(support.token),
+      body: JSON.stringify({ status: 'cancelled' }),
+    });
+    assert(
+      supportOrders.status === 200 && supportOrderUpdate.status === 403,
+      'Role Permissions',
+      'Support can view all orders but cannot change or cancel them',
+      `view=${supportOrders.status}, update=${supportOrderUpdate.status}`,
+    );
+
+    const returnId = `sec-ret-${Date.now()}`;
+    db.returns.unshift({ id: returnId, order_id: 'none', order_number: 'NONE', status: 'requested', refund_amount: 10, reason: 'size_fit' });
+    const supportReturnStatus = await fetch(`${BASE_URL}/returns/${returnId}/status`, {
+      method: 'PATCH',
+      headers: asUser(support.token),
+      body: JSON.stringify({ status: 'approved' }),
+    });
+    const supportRefund = await fetch(`${BASE_URL}/returns/${returnId}/refund`, {
+      method: 'POST',
+      headers: asUser(support.token),
+      body: JSON.stringify({}),
+    });
+    const refundViaStatus = await fetch(`${BASE_URL}/returns/${returnId}/status`, {
+      method: 'PATCH',
+      headers: asUser(support.token),
+      body: JSON.stringify({ status: 'refunded' }),
+    });
+    assert(
+      supportReturnStatus.status === 200 && supportRefund.status === 403 && refundViaStatus.status === 400,
+      'Role Permissions',
+      'Support can process returns but cannot issue refunds (by either route)',
+      `status=${supportReturnStatus.status}, refund=${supportRefund.status}, refund-via-status=${refundViaStatus.status}`,
+    );
+    db.returns = db.returns.filter((r) => r.id !== returnId);
+
+    const pmCatalog = await fetch(`${BASE_URL}/products/admin/catalog`, { headers: asUser(productManager.token) });
+    const pmSettings = await fetch(`${BASE_URL}/admin/settings`, { headers: asUser(productManager.token) });
+    assert(
+      pmCatalog.status === 200 && pmSettings.status === 403,
+      'Role Permissions',
+      'Product Manager can manage the catalog but not store settings',
+      `catalog=${pmCatalog.status}, settings=${pmSettings.status}`,
+    );
+
+    const adminSettings = await fetch(`${BASE_URL}/admin/settings`, { headers: asUser(admin.token) });
+    const adminBackups = await fetch(`${BASE_URL}/admin/backups`, { headers: asUser(admin.token) });
+    assert(
+      adminSettings.status === 200 && adminBackups.status === 200,
+      'Role Permissions',
+      'ADMIN keeps full access through explicit permissions (no blanket bypass)',
+      `settings=${adminSettings.status}, backups=${adminBackups.status}`,
+    );
+
+    // Stored roles from before the vocabulary change are upgraded; edited ones are kept.
+    const supportRole = db.roles.find((r) => r.code === 'SUPPORT')!;
+    const orderManagerRole = db.roles.find((r) => r.code === 'ORDER_MANAGER')!;
+    const savedSupport = { ...supportRole, permissions: [...supportRole.permissions] };
+    const savedOrderManager = { ...orderManagerRole, permissions: [...orderManagerRole.permissions] };
+    supportRole.permissions = ['orders.read', 'returns.manage', 'reviews.manage', 'legacy.code'];
+    delete supportRole.permissions_version;
+    orderManagerRole.permissions = ['orders.read'];
+    upgradeBuiltInRoles();
+    assert(
+      !supportRole.permissions.includes('legacy.code') &&
+        supportRole.permissions_version === ROLE_PERMISSIONS_VERSION &&
+        JSON.stringify(orderManagerRole.permissions) === JSON.stringify(['orders.read']),
+      'Role Permissions',
+      'Boot upgrade rewrites outdated built-in roles and leaves admin-edited roles alone',
+    );
+    Object.assign(supportRole, savedSupport);
+    Object.assign(orderManagerRole, savedOrderManager);
+
+    const badRole = await fetch(`${BASE_URL}/roles`, {
+      method: 'POST',
+      headers: asUser(admin.token),
+      body: JSON.stringify({ name: `Sec Role ${Date.now()}`, description: 'x', permissions: ['orders.read', 'everything.ever'] }),
+    });
+    assert(
+      badRole.status === 400,
+      'Role Permissions',
+      'Roles cannot be created with unknown permission codes',
+      `Got status ${badRole.status}`,
+    );
+
+    db.users = db.users.filter((u) => ![support.id, productManager.id, admin.id].includes(u.id));
 
     // ═════════════════════════════════════════════════════════════════════
     // SUITE 3: RATE LIMITING & BRUTE FORCE DEFENSE

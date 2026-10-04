@@ -44,12 +44,9 @@ export class RolesGuard implements CanActivate {
       });
     }
 
-    // Super admin or wildcard permission bypasses permission checks
-    if (
-      user.roles?.includes('SUPER_ADMIN') ||
-      user.roles?.includes('ADMIN') ||
-      user.permissions?.includes('*')
-    ) {
+    // Only SUPER_ADMIN ('*') bypasses checks. ADMIN is granted every code
+    // explicitly (see common/auth/permissions.ts), so new codes are opt-in.
+    if (user.roles?.includes('SUPER_ADMIN') || user.permissions?.includes('*')) {
       return true;
     }
 

@@ -95,10 +95,16 @@ export function ReturnsPage() {
     setUpdating(true);
 
     try {
-      await api.patch(`/returns/${selectedReturn.id}/status`, {
-        status: newStatus,
-        notes: adminNotes,
-      });
+      // Refunds move real money through Razorpay and need the refund permission,
+      // so they use their own endpoint; other statuses are workflow updates.
+      if (newStatus === 'refunded') {
+        await api.post(`/returns/${selectedReturn.id}/refund`, { notes: adminNotes });
+      } else {
+        await api.patch(`/returns/${selectedReturn.id}/status`, {
+          status: newStatus,
+          notes: adminNotes,
+        });
+      }
       toast.success(
         'Return Status Updated',
         `Order #${selectedReturn.order_number} return marked as ${newStatus.toUpperCase()}.`

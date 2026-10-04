@@ -59,7 +59,7 @@ export async function bootstrapServer(): Promise<Express> {
   app.enableCors({
     // Credentialed CORS must never reflect arbitrary origins. `*.vercel.app` is
     // deliberately not trusted: anyone can deploy a site under that domain.
-    origin: (origin, callback) => {
+    origin: (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
       if (!origin) return callback(null, true);
 
       const isAllowed =

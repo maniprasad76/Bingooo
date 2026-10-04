@@ -10,7 +10,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
-import { ReturnsService, CreateReturnDto, UpdateReturnStatusDto } from './returns.service';
+import { ReturnsService, CreateReturnDto, UpdateReturnStatusDto, RefundReturnDto } from './returns.service';
 import { AuthGuard } from '../common/guards/auth.guard';
 import { RolesGuard } from '../common/guards/roles.guard';
 import { Permissions } from '../common/decorators/permissions.decorator';
@@ -38,7 +38,7 @@ export class ReturnsController {
 
   @Get()
   @UseGuards(AuthGuard, RolesGuard)
-  @Permissions('orders.manage')
+  @Permissions('returns.manage')
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Admin list all returns (Staff/Admin only)' })
   findAll(@Query('status') status?: string, @Query('search') search?: string) {
@@ -47,11 +47,20 @@ export class ReturnsController {
 
   @Patch(':id/status')
   @UseGuards(AuthGuard, RolesGuard)
-  @Permissions('orders.manage')
+  @Permissions('returns.manage')
   @ApiBearerAuth()
-  @ApiOperation({ summary: 'Admin update return status (Staff/Admin only)' })
-  updateStatus(@Param('id') id: string, @Body() body: UpdateReturnStatusDto, @Req() req: any) {
-    return this.returnsService.updateStatus(id, body, { email: req.user.email, ip: req.ip });
+  @ApiOperation({ summary: 'Admin update return workflow status (not refunds)' })
+  updateStatus(@Param('id') id: string, @Body() body: UpdateReturnStatusDto) {
+    return this.returnsService.updateStatus(id, body);
+  }
+
+  @Post(':id/refund')
+  @UseGuards(AuthGuard, RolesGuard)
+  @Permissions('refunds.manage')
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Refund a return through Razorpay (moves real money)' })
+  refund(@Param('id') id: string, @Body() body: RefundReturnDto, @Req() req: any) {
+    return this.returnsService.refund(id, body.notes, { email: req.user.email, ip: req.ip });
   }
 }
 

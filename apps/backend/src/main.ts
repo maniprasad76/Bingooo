@@ -77,7 +77,7 @@ async function bootstrap() {
       ];
 
   app.enableCors({
-    origin: (origin, callback) => {
+    origin: (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
       // Allow requests with no origin (e.g. mobile apps, curl, server-to-server)
       if (!origin) return callback(null, true);
 
@@ -134,14 +134,19 @@ async function bootstrap() {
   );
 
   // ── Swagger / OpenAPI ──
-  const swaggerConfig = new DocumentBuilder()
-    .setTitle('Bingooo API')
-    .setDescription('Bingooo fashion e-commerce REST API')
-    .setVersion('0.1.0')
-    .addBearerAuth()
-    .build();
-  const document = SwaggerModule.createDocument(app, swaggerConfig);
-  SwaggerModule.setup('api/docs', app, document);
+  // Public API docs map every route for an attacker, so production serves
+  // them only when explicitly enabled (ENABLE_SWAGGER=true).
+  const swaggerEnabled = !isProd || process.env.ENABLE_SWAGGER === 'true';
+  if (swaggerEnabled) {
+    const swaggerConfig = new DocumentBuilder()
+      .setTitle('Bingooo API')
+      .setDescription('Bingooo fashion e-commerce REST API')
+      .setVersion('0.1.0')
+      .addBearerAuth()
+      .build();
+    const document = SwaggerModule.createDocument(app, swaggerConfig);
+    SwaggerModule.setup('api/docs', app, document);
+  }
 
   // ── Graceful Shutdown for Cloud Run / Container Lifecycle ──
   app.enableShutdownHooks();
@@ -155,7 +160,7 @@ async function bootstrap() {
   const host = '0.0.0.0';
   await app.listen(port, host);
   console.log(`🚀 Bingooo API running on http://${host}:${port}`);
-  console.log(`📖 Swagger docs at http://${host}:${port}/api/docs`);
+  if (swaggerEnabled) console.log(`📖 Swagger docs at http://${host}:${port}/api/docs`);
 }
 
 

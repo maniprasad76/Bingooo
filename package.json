@@ -37,5 +37,10 @@
   "devDependencies": {
     "concurrently": "^9.2.4",
     "playwright": "^1.62.1"
+  },
+  "overrides": {
+    "@nestjs/common": "^11.2.7",
+    "@nestjs/core": "^11.2.7",
+    "@nestjs/platform-express": "^11.2.7"
   }
 }

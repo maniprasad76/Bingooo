@@ -52,6 +52,11 @@ To run just one of these directly: `node --require @swc-node/register apps/backe
 
 `npm run test:live` (`node test/live-smoke.mjs`) smoke-tests a **live deployment**, not localhost.
 
+CI (`.github/workflows/ci.yml`, Node 22) runs on every push and PR: `npm ci`, typecheck, build,
+`npm audit --omit=dev --audit-level=high`, then the security, checkout, admin, backup and
+durability suites with throwaway secrets. Render and Vercel deploy `main` automatically, so
+keep it green before merging.
+
 ## Architecture
 
 ### Monorepo boundaries
@@ -82,9 +87,16 @@ mirroring the SQL schema in `supabase/migrations/001_initial_schema.sql`.
 
 ### Auth & RBAC
 Bearer JWT, enforced by `AuthGuard` on protected routes. Authorization is capability-based:
-roles hold a flat `permissions: string[]` (seeded in `store.ts`), checked by `RolesGuard`
-against an `@Permissions(...)` decorator on the handler. Don't implement ad-hoc role checks
-inline — add/extend a permission instead.
+roles hold a flat `permissions: string[]`, checked by `RolesGuard` against an
+`@Permissions(...)` decorator on the handler. The vocabulary lives in
+`common/auth/permissions.ts` (`PERMISSION_CATALOG`, `BUILT_IN_ROLES`): every code there is
+enforced by some route, and roles may only grant those codes. Only `SUPER_ADMIN` (`'*'`)
+bypasses checks; `ADMIN` holds every code explicitly, so a new code must be added to the
+catalog and granted deliberately. Changing built-in role grants means bumping
+`ROLE_PERMISSIONS_VERSION` — `RolesService.onModuleInit` rewrites stored roles (production
+roles live in `app_records`) to the new defaults. Owner-or-staff checks inside handlers use
+`hasPermission(req.user, code)`; never check role names inline. A `RolesGuard` route without
+`@Permissions` is denied to everyone but `SUPER_ADMIN`.
 
 ### Payments & pricing
 Razorpay is the only payment provider. Webhook signature (`x-razorpay-signature`) is verified

@@ -18,6 +18,7 @@ import { OrdersService, CreateOrderDto } from './orders.service';
 import { AuthGuard } from '../common/guards/auth.guard';
 import { RolesGuard } from '../common/guards/roles.guard';
 import { Permissions } from '../common/decorators/permissions.decorator';
+import { hasPermission } from '../common/auth/permissions';
 
 @ApiTags('Orders')
 @Controller('orders')
@@ -49,7 +50,7 @@ export class OrdersController {
 
   @Get('admin/all')
   @UseGuards(AuthGuard, RolesGuard)
-  @Permissions('orders.manage')
+  @Permissions('orders.read')
   @ApiBearerAuth()
   @ApiOperation({ summary: 'List all orders for operations with filters (Admin/Staff only)' })
   getAdminOrders(
@@ -67,10 +68,7 @@ export class OrdersController {
     const order = this.ordersService.findByOrderNumberOrId(orderNumber);
     const callerId = req.user.id;
     const isPrivileged =
-      req.user.roles?.includes('SUPER_ADMIN') ||
-      req.user.roles?.includes('ADMIN') ||
-      req.user.permissions?.includes('*') ||
-      req.user.permissions?.includes('orders.manage');
+      hasPermission(req.user, 'orders.read');
 
     // BOLA/IDOR check: verify order belongs to authenticated caller
     if (order.user_id !== callerId && !isPrivileged) {

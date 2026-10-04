@@ -35,29 +35,105 @@
         {
           "key": "Strict-Transport-Security",
           "value": "max-age=63072000; includeSubDomains; preload"
+        },
+        {
+          "key": "Content-Security-Policy-Report-Only",
+          "value": "default-src 'self'; object-src 'none'; base-uri 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob: https:; worker-src 'self' blob:; manifest-src 'self'; script-src 'self' 'unsafe-inline' https://checkout.razorpay.com https://va.vercel-scripts.com; connect-src 'self' https://api.bingooo.co.in https://zqmrmgwxhrdscippanuv.supabase.co wss://zqmrmgwxhrdscippanuv.supabase.co https://*.razorpay.com https://*.vercel-insights.com; frame-src https://api.razorpay.com https://checkout.razorpay.com https://*.razorpay.com https://www.youtube.com https://www.youtube-nocookie.com https://www.google.com https://maps.google.com; form-action 'self' https://*.razorpay.com; frame-ancestors 'self'"
         }
       ]
     }
   ],
   "redirects": [
-    { "source": "/about-us", "destination": "/about", "permanent": true },
-    { "source": "/privacy", "destination": "/privacy-policy", "permanent": true },
-    { "source": "/terms-and-conditions", "destination": "/terms", "permanent": true },
-    { "source": "/shipping", "destination": "/shipping-policy", "permanent": true },
-    { "source": "/returns", "destination": "/returns-refunds", "permanent": true },
-    { "source": "/return-policy", "destination": "/returns-refunds", "permanent": true },
-    { "source": "/cancellation", "destination": "/cancellation-policy", "permanent": true },
-    { "source": "/fabric-specifications", "destination": "/fabric-guide", "permanent": true },
-    { "source": "/track", "destination": "/track-order", "permanent": true },
-    { "source": "/account/wishlist", "destination": "/wishlist", "permanent": true },
-    { "source": "/empty", "destination": "/", "permanent": true },
-    { "source": "/empty-state", "destination": "/", "permanent": true },
-    { "source": "/policies/size-guide", "destination": "/size-guide", "permanent": true },
-    { "source": "/policies/shipping(.*)", "destination": "/shipping-policy", "permanent": true },
-    { "source": "/policies/return(.*)", "destination": "/returns-refunds", "permanent": true },
-    { "source": "/policies/privacy(.*)", "destination": "/privacy-policy", "permanent": true },
-    { "source": "/policies/terms(.*)", "destination": "/terms", "permanent": true },
-    { "source": "/policies/cancellation(.*)", "destination": "/cancellation-policy", "permanent": true }
+    {
+      "source": "/about-us",
+      "destination": "/about",
+      "permanent": true
+    },
+    {
+      "source": "/privacy",
+      "destination": "/privacy-policy",
+      "permanent": true
+    },
+    {
+      "source": "/terms-and-conditions",
+      "destination": "/terms",
+      "permanent": true
+    },
+    {
+      "source": "/shipping",
+      "destination": "/shipping-policy",
+      "permanent": true
+    },
+    {
+      "source": "/returns",
+      "destination": "/returns-refunds",
+      "permanent": true
+    },
+    {
+      "source": "/return-policy",
+      "destination": "/returns-refunds",
+      "permanent": true
+    },
+    {
+      "source": "/cancellation",
+      "destination": "/cancellation-policy",
+      "permanent": true
+    },
+    {
+      "source": "/fabric-specifications",
+      "destination": "/fabric-guide",
+      "permanent": true
+    },
+    {
+      "source": "/track",
+      "destination": "/track-order",
+      "permanent": true
+    },
+    {
+      "source": "/account/wishlist",
+      "destination": "/wishlist",
+      "permanent": true
+    },
+    {
+      "source": "/empty",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/empty-state",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/policies/size-guide",
+      "destination": "/size-guide",
+      "permanent": true
+    },
+    {
+      "source": "/policies/shipping(.*)",
+      "destination": "/shipping-policy",
+      "permanent": true
+    },
+    {
+      "source": "/policies/return(.*)",
+      "destination": "/returns-refunds",
+      "permanent": true
+    },
+    {
+      "source": "/policies/privacy(.*)",
+      "destination": "/privacy-policy",
+      "permanent": true
+    },
+    {
+      "source": "/policies/terms(.*)",
+      "destination": "/terms",
+      "permanent": true
+    },
+    {
+      "source": "/policies/cancellation(.*)",
+      "destination": "/cancellation-policy",
+      "permanent": true
+    }
   ],
   "rewrites": [
     {

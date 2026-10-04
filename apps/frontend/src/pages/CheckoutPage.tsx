@@ -387,7 +387,7 @@ export function CheckoutPage() {
               </span>
               {isMobileSummaryOpen ? <ChevronUp size={15} /> : <ChevronDown size={15} />}
             </div>
-            <span className="text-sm font-extrabold text-accent">₹{isPrepaid ? total : codTotal}</span>
+            <span className="text-sm font-extrabold text-accent">₹{total}</span>
           </button>
 
           <AnimatePresence>

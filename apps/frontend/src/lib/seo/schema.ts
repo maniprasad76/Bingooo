@@ -5,6 +5,16 @@
 export const SITE_URL = 'https://bingooo.co.in';
 export const BRAND_NAME = 'Bingooo';
 
+/**
+ * Serialize structured data for an inline <script type="application/ld+json">.
+ * JSON.stringify leaves `<` intact, so a value containing `</script>` would
+ * close the tag and let the rest run as HTML; `<` is the same character
+ * to a JSON parser but inert to the HTML parser.
+ */
+export function toJsonLd(value: unknown): string {
+  return JSON.stringify(value).replace(/</g, '\\u003c');
+}
+
 export interface BreadcrumbItem {
   name: string;
   url: string;

@@ -39,7 +39,10 @@ export class HttpExceptionFilter implements ExceptionFilter {
         message = String(exceptionResponse);
         code = mapStatusToCode(status);
       }
-    } else if (exception instanceof Error) {
+    } else if (exception instanceof Error && process.env.NODE_ENV !== 'production') {
+      // Unexpected errors can carry file paths, upstream API responses or other
+      // internals; production clients get the generic message plus the
+      // requestId, and the full error stays in the server log below.
       message = exception.message;
     }
 

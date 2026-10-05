@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { ChevronRight } from 'lucide-react';
-import { generateBreadcrumbsSchema, type BreadcrumbItem } from '../../lib/seo/schema';
+import { generateBreadcrumbsSchema, toJsonLd, type BreadcrumbItem } from '../../lib/seo/schema';
 
 export interface BreadcrumbsProps {
   items: BreadcrumbItem[];
@@ -22,7 +22,7 @@ export function Breadcrumbs({ items, className = '', showSchema = true }: Breadc
       {schema && (
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+          dangerouslySetInnerHTML={{ __html: toJsonLd(schema) }}
         />
       )}
       <nav

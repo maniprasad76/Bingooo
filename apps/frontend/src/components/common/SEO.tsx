@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { generateBreadcrumbsSchema, type BreadcrumbItem } from '../../lib/seo/schema';
+import { generateBreadcrumbsSchema, toJsonLd, type BreadcrumbItem } from '../../lib/seo/schema';
 
 export interface SEOProps {
   title?: string;
@@ -256,7 +256,7 @@ export function SEO(props: SEOProps) {
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
-            __html: JSON.stringify(allSchemas.length === 1 ? allSchemas[0] : allSchemas),
+            __html: toJsonLd(allSchemas.length === 1 ? allSchemas[0] : allSchemas),
           }}
         />
       )}

@@ -4476,9 +4476,9 @@
     "semantic_hash": ""
   },
   "BRAIN.md": {
-    "mtime": 1791170811.570199,
-    "seen": 1791170968.5941906,
-    "ast_hash": "1a6a5daf3992de0770811d84cddac6e2",
+    "mtime": 1791216713.012698,
+    "seen": 1791216756.3796942,
+    "ast_hash": "fd86337aa1988cc2bdd89722bd95128b",
     "semantic_hash": ""
   },
   ".agents/skills/bingooo-ui-ux/SKILL.md": {
@@ -4538,31 +4538,31 @@
   "supabase/migrations/001_initial_schema.sql": {
     "mtime": 1788696131.6980247,
     "seen": 1791216445.3731403,
-    "ast_hash": "511734fbd97fdc8ec1381348db6bc7d0",
+    "ast_hash": "",
     "semantic_hash": ""
   },
   "supabase/migrations/002_rls_policies.sql": {
     "mtime": 1788696372.6242847,
     "seen": 1791216445.3731403,
-    "ast_hash": "1287794d4f8e2c809e0b9f1b837b4eba",
+    "ast_hash": "",
     "semantic_hash": ""
   },
   "supabase/migrations/003_auth_triggers_and_seed.sql": {
     "mtime": 1788697071.165675,
     "seen": 1791216445.3731403,
-    "ast_hash": "628af20998c57d4fd8febba5153356a1",
+    "ast_hash": "",
     "semantic_hash": ""
   },
   "supabase/seed.sql": {
     "mtime": 1791165146.1639695,
     "seen": 1791216445.3731403,
-    "ast_hash": "c89ad91e1c47739e027046123107ceca",
+    "ast_hash": "",
     "semantic_hash": ""
   },
   "supabase/verify_rls.sql": {
     "mtime": 1788694551.5578887,
     "seen": 1791216445.3731403,
-    "ast_hash": "0e2318a86d8336b1b95a55eaeffd2f19",
+    "ast_hash": "",
     "semantic_hash": ""
   },
   "render.yaml": {
@@ -5654,7 +5654,7 @@
   "supabase/migrations/004_app_records.sql": {
     "mtime": 1790851027.4759202,
     "seen": 1791216445.3731403,
-    "ast_hash": "e0713d16867ad2d253b8c4a67345fe24",
+    "ast_hash": "",
     "semantic_hash": ""
   },
   "CLAUDE.md": {
@@ -5696,25 +5696,25 @@
   "supabase/migrations/005_remove_cod_payment_method.sql": {
     "mtime": 1791083454.1813254,
     "seen": 1791216445.3731403,
-    "ast_hash": "bb7c9d5843bc3623f551487885f033de",
+    "ast_hash": "",
     "semantic_hash": ""
   },
   "supabase/migrations/006_remove_cod_settings.sql": {
     "mtime": 1791083666.3791835,
     "seen": 1791216445.3731403,
-    "ast_hash": "f7559f0f21f0e034931d8a529c9beadc",
+    "ast_hash": "",
     "semantic_hash": ""
   },
   "supabase/migrations/007_drop_cod_order_columns.sql": {
     "mtime": 1791083800.8888378,
     "seen": 1791216445.3731403,
-    "ast_hash": "8e052ec18e9465ac2066fe4e36155b6b",
+    "ast_hash": "",
     "semantic_hash": ""
   },
   "supabase/migrations/008_remove_seed_products.sql": {
     "mtime": 1791084328.7648044,
     "seen": 1791216445.3731403,
-    "ast_hash": "f4fbb3156612b61de032c46b1cad98c1",
+    "ast_hash": "",
     "semantic_hash": ""
   },
   "apps/frontend/src/components/studio/studioFonts.ts": {

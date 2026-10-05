@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { api } from '../lib/api';
+import { api, resolveImageUrl } from '../lib/api';
 import { useToast } from '../components/Toast';
 import {
   Search,
@@ -16,6 +16,7 @@ import {
   Sparkles,
   ExternalLink,
   ShieldCheck,
+  Shirt,
   X,
 } from 'lucide-react';
 
@@ -29,6 +30,9 @@ interface OrderItem {
   sku?: string;
   size?: string;
   color?: string;
+  image?: string;
+  image_url?: string;
+  imageUrl?: string;
   customization?: any;
 }
 
@@ -52,6 +56,7 @@ interface Order {
   carrier?: string;
   items_count?: number;
   itemCount?: number;
+  primary_image?: string;
   items?: OrderItem[];
   created_at?: string;
   createdAt?: string;
@@ -241,7 +246,7 @@ export function OrdersPage() {
           <table className="admin-table [&_th]:px-3 [&_td]:px-3">
             <thead>
               <tr>
-                <th>Order Ref</th>
+                <th>Item / Preview</th>
                 <th>Customer</th>
                 <th className="hidden 2xl:table-cell">Quantity</th>
                 <th>Total Paid</th>
@@ -283,19 +288,63 @@ export function OrdersPage() {
                   const dateVal = o.created_at || o.createdAt;
                   const addr = o.shipping_address || o.shippingAddress;
                   const custName = addr?.name || o.user?.fullName || 'Customer';
+                  const firstItem = o.items?.[0];
+                  const rawImg =
+                    o.primary_image ||
+                    firstItem?.image_url ||
+                    firstItem?.imageUrl ||
+                    firstItem?.image ||
+                    firstItem?.customization?.previewKey ||
+                    firstItem?.customization?.preview_url;
+                  const itemImg = resolveImageUrl(rawImg);
+                  const itemCount = o.items?.length || o.itemCount || 1;
+                  const hasCustom = o.items?.some((it) => !!it.customization) || !!firstItem?.customization;
+                  const itemTitle = firstItem?.title_snapshot || firstItem?.title || 'Bingooo Garment';
 
                   return (
                     <tr key={o.id} className="group">
                       <td>
                         <button
+                          type="button"
                           onClick={() => setSelectedOrder(o)}
-                          className="font-mono text-xs font-bold text-ink hover:text-brand-red flex items-center gap-1.5 text-left whitespace-nowrap transition-colors"
+                          title={`Inspect Order #${orderNum} — ${itemTitle}`}
+                          className="relative flex items-center justify-center w-14 h-14 rounded-xl bg-beige/40 border border-border/80 hover:border-brand-red shadow-2xs group/thumb overflow-hidden transition-all duration-200 focus:outline-hidden focus:ring-2 focus:ring-brand-red/30 cursor-pointer"
                         >
-                          <span className="w-1.5 h-1.5 shrink-0 rounded-full bg-brand-red" />
-                          <span>{orderNum}</span>
-                          <Eye size={12} className="text-muted opacity-0 group-hover:opacity-100 transition-opacity" />
+                          {itemImg ? (
+                            <img
+                              src={itemImg}
+                              alt={itemTitle}
+                              className="w-full h-full object-cover group-hover/thumb:scale-110 transition-transform duration-300"
+                              onError={(e) => {
+                                (e.target as HTMLElement).style.display = 'none';
+                              }}
+                            />
+                          ) : (
+                            <div className="flex flex-col items-center justify-center text-muted/60 group-hover/thumb:text-brand-red transition-colors">
+                              <Shirt size={22} />
+                            </div>
+                          )}
+
+                          {/* 3D Customizer Badge if bespoke print */}
+                          {hasCustom && (
+                            <span className="absolute top-1 right-1 px-1 py-0.5 rounded text-[7px] font-mono font-black uppercase bg-brand-red text-white shadow-xs leading-none">
+                              3D
+                            </span>
+                          )}
+
+                          {/* Multi-item badge */}
+                          {itemCount > 1 && (
+                            <span className="absolute bottom-1 right-1 px-1 py-0.5 rounded text-[8px] font-mono font-black bg-ink/80 text-white shadow-xs backdrop-blur-xs leading-none">
+                              +{itemCount - 1}
+                            </span>
+                          )}
+
+                          {/* Hover inspection overlay */}
+                          <div className="absolute inset-0 bg-ink/30 opacity-0 group-hover/thumb:opacity-100 transition-opacity flex items-center justify-center">
+                            <Eye size={15} className="text-white drop-shadow-md" />
+                          </div>
                         </button>
-                        <span className="min-[1366px]:hidden block pl-3 mt-0.5 text-[10px] text-muted font-mono whitespace-nowrap">
+                        <span className="min-[1366px]:hidden block mt-1 text-[10px] text-muted font-mono whitespace-nowrap">
                           {formatDate(dateVal)}
                         </span>
                       </td>
@@ -476,26 +525,56 @@ export function OrdersPage() {
                     color: 'Black',
                     customization: null,
                   },
-                ]) as OrderItem[]).map((it, idx) => (
-                  <div key={idx} className="py-3 first:pt-0 last:pb-0 flex items-center justify-between text-xs">
-                    <div className="space-y-0.5">
-                      <strong className="font-bold text-ink block text-xs">
-                        {it.title_snapshot || it.title || 'Heavyweight Garment'}
-                      </strong>
-                      <span className="text-muted text-[11px] font-mono">
-                        Qty: {it.quantity} • Size: {it.size || 'M'} • Color: {it.color || 'Onyx'}
+                ]) as OrderItem[]).map((it, idx) => {
+                  const itImg = resolveImageUrl(
+                    it.image_url ||
+                      it.imageUrl ||
+                      it.image ||
+                      it.customization?.previewKey ||
+                      it.customization?.preview_url
+                  );
+                  return (
+                    <div key={idx} className="py-3 first:pt-0 last:pb-0 flex items-center justify-between text-xs gap-3">
+                      <div className="flex items-center gap-3">
+                        <div className="w-12 h-12 rounded-xl bg-beige/50 border border-border/80 overflow-hidden shrink-0 flex items-center justify-center relative">
+                          {itImg ? (
+                            <img
+                              src={itImg}
+                              alt={it.title_snapshot || it.title || 'Garment'}
+                              className="w-full h-full object-cover"
+                              onError={(e) => {
+                                (e.target as HTMLElement).style.display = 'none';
+                              }}
+                            />
+                          ) : (
+                            <Shirt size={18} className="text-muted/60" />
+                          )}
+                          {it.customization && (
+                            <span className="absolute top-0.5 right-0.5 px-0.5 py-0.2 rounded text-[6px] font-mono font-black uppercase bg-brand-red text-white">
+                              3D
+                            </span>
+                          )}
+                        </div>
+                        <div className="space-y-0.5">
+                          <strong className="font-bold text-ink block text-xs">
+                            {it.title_snapshot || it.title || 'Heavyweight Garment'}
+                          </strong>
+                          <span className="text-muted text-[11px] font-mono">
+                            Qty: {it.quantity} • Size: {it.size || 'M'} • Color: {it.color || 'Onyx'}
+                          </span>
+                          {it.customization && (
+                            <span className="inline-flex items-center gap-1 text-[10px] font-mono font-bold text-brand-red bg-brand-red/10 px-2 py-0.5 rounded mt-1">
+                              <Sparkles size={11} /> 3D Bespoke Graphic Applied
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                      <span className="font-mono font-black text-ink text-xs whitespace-nowrap">
+                        {formatCurrency(it.total)}
                       </span>
-                      {it.customization && (
-                        <span className="inline-flex items-center gap-1 text-[10px] font-mono font-bold text-brand-red bg-brand-red/10 px-2 py-0.5 rounded mt-1">
-                          <Sparkles size={11} /> 3D Bespoke Graphic Applied
-                        </span>
-                      )}
                     </div>
-                    <span className="font-mono font-black text-ink text-xs">
-                      {formatCurrency(it.total)}
-                    </span>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
 

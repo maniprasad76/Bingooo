@@ -175,5 +175,7 @@ python -m graphify update .
 - **2026-10-05: Universal Free Shipping Pan-India & Admin UI Refinements**
   - Standardized store policy to 100% universal free delivery across all orders; stripped redundant shipping fee/threshold calculators from checkout, cart, shipping services, and schemas.
   - Streamlined admin navigation by deprecating the unused Banners route and elevated admin table, badges, and view craftsmanship across admin pages.
+- **2026-10-05: Admin Orders Visual Thumbnail Preview & Image Enrichment**
+  - Replaced text-heavy Order Ref column in Admin Orders table with interactive product/customizer thumbnail previews, 3D/multi-item badges, and modal item previews with backend image enrichment.
 
 

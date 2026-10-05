@@ -10,7 +10,7 @@ import { db, saveDb } from '../common/database/store';
 import { IsOptional, IsString, MaxLength } from 'class-validator';
 import { CheckoutService } from '../checkout/checkout.service';
 import { CheckoutValidationDto, CartOwner } from '../checkout/dto/checkout.dto';
-import { getOrderById, getOrderByOrderNumber } from '../common/database/db-index.service';
+import { getOrderById, getOrderByOrderNumber, getImagesByProductId } from '../common/database/db-index.service';
 import { WhatsAppService } from '../notifications/whatsapp.service';
 
 
@@ -374,8 +374,24 @@ export class OrdersService implements OnModuleInit, OnModuleDestroy {
         const customization = i.customization_id
           ? db.customizations.find((c) => c.id === i.customization_id)
           : null;
+        const variant = i.variant_id ? db.product_variants.find((v) => v.id === i.variant_id) : null;
+        const productId = i.product_id || variant?.product_id;
+        const product = productId ? db.products.find((p) => p.id === productId) : null;
+        const productImages = productId ? getImagesByProductId(productId) : [];
+        const primaryImage = productImages.find((img: any) => img.is_primary) || productImages[0];
+        const imageUrl =
+          customization?.preview_url ||
+          customization?.preview_key ||
+          (primaryImage ? (primaryImage.url || primaryImage.object_key) : null) ||
+          (product as any)?.image_url ||
+          null;
+
         return {
           ...i,
+          image: imageUrl,
+          imageUrl: imageUrl,
+          image_url: imageUrl,
+          product_title: i.title_snapshot || product?.title || 'Garment',
           customization: customization
             ? {
                 id: customization.id,
@@ -392,6 +408,7 @@ export class OrdersService implements OnModuleInit, OnModuleDestroy {
 
     return {
       ...order,
+      primary_image: items[0]?.image_url || null,
       items,
       payments,
       shipments,

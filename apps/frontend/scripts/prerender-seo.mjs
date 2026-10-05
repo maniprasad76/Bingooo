@@ -18,7 +18,7 @@ const ROUTES = [
   {
     path: 'shop',
     title: 'Buy Oversized T-Shirts for Men (240 GSM) & Streetwear Online India | Bingooo®',
-    description: 'Shop India\'s best 240–280 GSM heavyweight oversized t-shirts for men, drop-shoulder hoodies, and streetwear. 100% super-combed cotton, boxy fit, COD & Pan-India free shipping.',
+    description: 'Shop India\'s best 240–280 GSM heavyweight oversized t-shirts for men, drop-shoulder hoodies, and streetwear. 100% super-combed cotton, boxy fit, secure prepaid checkout & Pan-India free shipping.',
     canonical: 'https://bingooo.co.in/shop',
     h1: 'Shop 240 GSM Oversized T-Shirts & Luxury Streetwear for Men',
     schema: {
@@ -132,7 +132,7 @@ const ROUTES = [
   {
     path: 'product/classic-oversized-tee',
     title: 'Classic 240 GSM Heavyweight Oversized T-Shirt for Men | Bingooo® Streetwear',
-    description: 'Buy the #1 Classic Heavyweight Oversized T-Shirt in 240 GSM super-combed cotton. Drop shoulder boxy fit, anti-sag collar, pre-shrunk fabric. COD & Pan-India free delivery.',
+    description: 'Buy the #1 Classic Heavyweight Oversized T-Shirt in 240 GSM super-combed cotton. Drop shoulder boxy fit, anti-sag collar, pre-shrunk fabric. Pan-India free delivery.',
     canonical: 'https://bingooo.co.in/product/classic-oversized-tee',
     h1: 'Classic Heavyweight Oversized Tee (240 GSM)',
     schema: {
@@ -228,8 +228,8 @@ const ROUTES = [
   {
     path: 'faq',
     title: 'Frequently Asked Questions (FAQ) | 240 GSM Fabric, Shipping, Returns | Bingooo®',
-    description: 'Find answers about Bingooo 240 GSM oversized t-shirts, custom 3D Atelier printing, Pan-India shipping timelines, 7-day returns, and Cash on Delivery.',
-    keywords: 'oversized t-shirts faq, 240 gsm t-shirt meaning, custom t-shirt printing delivery, cash on delivery streetwear, bingooo help',
+    description: 'Find answers about Bingooo 240 GSM oversized t-shirts, custom 3D Atelier printing, Pan-India shipping timelines, 7-day returns, and secure prepaid payments.',
+    keywords: 'oversized t-shirts faq, 240 gsm t-shirt meaning, custom t-shirt printing delivery, prepaid payment streetwear, bingooo help',
     canonical: 'https://bingooo.co.in/faq',
     h1: 'Bingooo Help & Frequently Asked Questions',
     schema: {
@@ -249,7 +249,15 @@ const ROUTES = [
           name: 'Where can I buy the best oversized t-shirts for men in India?',
           acceptedAnswer: {
             '@type': 'Answer',
-            text: 'Bingooo (bingooo.co.in) offers India\'s premier collection of 240 GSM heavyweight oversized t-shirts for men. Featuring 100% super-combed cotton, anti-sag French rib collars, pre-shrunk fabric, and authentic streetwear silhouettes, with Cash on Delivery (COD) and express Pan-India shipping.',
+            text: 'Bingooo (bingooo.co.in) offers India\'s premier collection of 240 GSM heavyweight oversized t-shirts for men. Featuring 100% super-combed cotton, anti-sag French rib collars, pre-shrunk fabric, and authentic streetwear silhouettes, with secure prepaid checkout and express Pan-India shipping.',
+          },
+        },
+        {
+          '@type': 'Question',
+          name: 'Is Cash on Delivery (COD) available?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: 'Bingooo operates exclusively as a 100% secure prepaid store and does not offer Cash on Delivery. Pay via UPI, Cards, or Net Banking and get an instant 5% prepaid discount on every order.',
           },
         },
         {
@@ -272,8 +280,8 @@ const ROUTES = [
     },
     contentHtml: `
       <h1>Frequently Asked Questions (FAQ) — 240 GSM Oversized Tees &amp; Streetwear</h1>
-      <h2>Orders, Shipping &amp; Cash on Delivery</h2>
-      <p>We deliver Pan-India in 3–7 business days with express tracking via WhatsApp and SMS. Cash on Delivery is supported on all domestic orders.</p>
+      <h2>Orders, Shipping &amp; Payments</h2>
+      <p>We deliver Pan-India in 3–7 business days with express tracking via WhatsApp and SMS. Bingooo is a 100% secure prepaid store — we don't offer Cash on Delivery, and every prepaid order via UPI, Cards, or Net Banking gets an instant 5% discount.</p>
       <h2>What Makes 240 GSM Cotton the Best for Oversized T-Shirts?</h2>
       <p>240 GSM is luxury heavyweight combed cotton engineered for durability and structural streetwear drape, eliminating collar sagging and flimsy drape.</p>
       <h2>3D Custom Atelier Printing</h2>

@@ -232,8 +232,6 @@ export class EmailService {
       state?: string;
       pincode?: string;
     };
-    codDeposit?: number;
-    codRemaining?: number;
   }): Promise<void> {
     const { to, recipientName, orderNumber, orderId } = params;
     const orderUrl = `${BRAND.url}/orders/${orderId}`;

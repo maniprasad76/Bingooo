@@ -167,4 +167,9 @@ python -m graphify update .
   - Indexed 7,300+ symbols into persistent Graphify knowledge graph.
 - **2026-10-03: Permanent Removal of Cash on Delivery (COD)**
   - Transitioned platform to 100% secure prepaid checkout (Razorpay UPI, Cards, NetBanking) with 5% instant discount, removing all COD and Partial COD paths from backend, admin, storefront, and shared types.
+- **2026-10-05: Non-blocking Async Store Flushes, Test Catalog Fallbacks & Schema Migrations**
+  - Converted `store.ts` to async coalesced disk flushes with `StoreShutdown` hook and graceful exit handlers.
+  - Added self-contained test catalog fallbacks in `run-security-suite.ts` and `run-checkout-e2e.ts` for clean boots.
+  - Formatted SQL migrations 005–008 for COD cleanup and placeholder demo product removal.
+  - Enhanced customizer hoodie SVG styling and updated SEO copy/prerender schemas for prepaid operations.
 

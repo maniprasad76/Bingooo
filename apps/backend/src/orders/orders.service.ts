@@ -168,8 +168,6 @@ export class OrdersService implements OnModuleInit, OnModuleDestroy {
       currency: 'INR',
       shipping_address: dto.shippingAddress,
       address_snapshot_json: dto.shippingAddress,
-      cod_deposit: null,
-      cod_remaining: null,
       coupon_code: dto.couponCode || null,
       notes: dto.notes || null,
       tracking_number: null,

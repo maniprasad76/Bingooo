@@ -27,6 +27,7 @@ import { AuditModule } from './audit/audit.module';
 import { BannersModule } from './banners/banners.module';
 import { EmailModule } from './email/email.module';
 import { AppRecordsShutdown } from './common/database/app-records.service';
+import { StoreShutdown } from './common/database/store';
 
 import { AppController } from './app.controller';
 
@@ -91,6 +92,7 @@ import { AppController } from './app.controller';
   ],
   providers: [
     AppRecordsShutdown,
+    StoreShutdown,
     {
       provide: APP_GUARD,
       useClass: ThrottlerGuard,

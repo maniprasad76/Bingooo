@@ -330,7 +330,7 @@ Mobile: gallery first and sticky purchase action.
 
 Include: - image gallery - zoom - title - rating - price - sale price -
 size - size guide - color - quantity - wishlist - Add to Cart - Buy
-Now - delivery estimate - COD/partial COD - fabric - GSM - description -
+Now - delivery estimate - fabric - GSM - description -
 specifications - reviews - related products
 
 ## 23. Custom Design
@@ -361,8 +361,7 @@ Actions: - Edit - Use Design - Delete
 Show products, variants, quantity, price, remove/save actions and order
 summary.
 
-Summary: - subtotal - discount - shipping - applicable COD/handling -
-total
+Summary: - subtotal - discount - shipping - total
 
 Primary CTA: Proceed to Checkout.
 
@@ -375,8 +374,8 @@ Show saved products, availability, price, Add to Cart and remove.
 Progressive sections: 1. Contact 2. Address 3. Delivery 4. Payment 5.
 Review
 
-Payment methods can include Razorpay-supported methods, COD and partial
-COD.
+Payment methods are Razorpay-supported prepaid methods only (UPI, Cards,
+NetBanking). Bingooo does not offer Cash on Delivery.
 
 Never expose secret payment credentials in the browser.
 
@@ -609,7 +608,7 @@ metadata for sensitive operations.
 
 ## 59. Settings
 
-Sections: - Store - Commerce - Shipping - COD - Partial COD - Payments -
+Sections: - Store - Commerce - Shipping - Payments & Prepaid Policy -
 Notifications - Storage - SEO
 
 Settings must be permission protected.
@@ -794,7 +793,7 @@ sizing, print details and delivery.
 ## 72. Trust Signals
 
 Use only verified business claims, such as: - Premium Quality - Custom
-Printing - Secure Payments - 3--7 Day Delivery - COD / Partial COD -
+Printing - Secure Prepaid Payments - 3--7 Day Delivery -
 Easy Support / Returns
 
 ## 73. Mobile Rules

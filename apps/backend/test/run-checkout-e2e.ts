@@ -125,10 +125,28 @@ async function runE2ECheckoutVerification() {
     const customizationId = customData.data.id;
 
     // Dynamically retrieve active catalog variant
-    const activeVariant = db.product_variants.find((v) => v.is_active) || db.product_variants[0];
-    if (activeVariant) {
-      activeVariant.stock_quantity = Math.max(activeVariant.stock_quantity, 50);
+    let activeVariant = db.product_variants.find((v) => v.is_active) || db.product_variants[0];
+    if (!activeVariant) {
+      const testProd = {
+        id: 'chk-test-prod-1',
+        title: 'Checkout Test Product',
+        slug: 'chk-test-prod',
+        base_price: 1299,
+        is_active: true,
+      };
+      activeVariant = {
+        id: 'chk-test-var-1',
+        product_id: testProd.id,
+        sku: 'CHK-1',
+        price: 1299,
+        stock_quantity: 50,
+        reserved_quantity: 0,
+        is_active: true,
+      };
+      db.products.push(testProd as any);
+      db.product_variants.push(activeVariant as any);
     }
+    activeVariant.stock_quantity = Math.max(activeVariant.stock_quantity, 50);
     const targetVariantId = activeVariant.id;
 
     // Add item to cart

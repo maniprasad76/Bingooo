@@ -252,7 +252,28 @@ async function runSecuritySuite() {
     );
 
     // 2.3 Orders Isolation: User A adds item to cart and places an order
-    const realVariantId = db.product_variants[0].id;
+    let realVariant = db.product_variants[0];
+    if (!realVariant) {
+      const testProd = {
+        id: 'sec-test-prod-1',
+        title: 'Security Test Product',
+        slug: 'sec-test-prod',
+        base_price: 999,
+        is_active: true,
+      };
+      realVariant = {
+        id: 'sec-test-var-1',
+        product_id: testProd.id,
+        sku: 'SEC-1',
+        price: 999,
+        stock_quantity: 50,
+        reserved_quantity: 0,
+        is_active: true,
+      };
+      db.products.push(testProd as any);
+      db.product_variants.push(realVariant as any);
+    }
+    const realVariantId = realVariant.id;
     const addCartRes = await fetch(`${BASE_URL}/cart/items`, {
       method: 'POST',
       headers: {

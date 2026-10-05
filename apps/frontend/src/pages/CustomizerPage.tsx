@@ -325,10 +325,21 @@ function HoodieSVG({ color }: { color: string }) {
   const isDark = parseInt(color.replace('#', ''), 16) < 0x888888;
   const stroke = isDark ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.09)';
   const sh = isDark ? 'rgba(0,0,0,0.55)' : 'rgba(0,0,0,0.12)';
+  const detail = isDark ? 'rgba(255,255,255,0.14)' : 'rgba(0,0,0,0.12)';
+  const drawstring = isDark ? 'rgba(255,255,255,0.3)' : 'rgba(0,0,0,0.26)';
   return (
     <svg width="310" height="340" viewBox="0 0 220 250" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ filter: `drop-shadow(0 14px 32px ${sh})` }}>
-      <path d="M80 8 C75 0 62 0 58 10 C50 22 55 38 65 46 C72 30 90 28 110 28 C130 28 148 30 155 46 C165 38 170 22 162 10 C158 0 145 0 140 8 C134 4 122 2 110 2 C98 2 86 4 80 8 Z" fill={color} stroke={stroke} strokeWidth="0.8" />
-      <path d="M65 46 C58 50 42 35 20 65 L38 82 L58 68 L58 230 L162 230 L162 68 L182 82 L200 65 C178 35 162 50 155 46 C148 30 130 28 110 28 C90 28 72 30 65 46 Z" fill={color} stroke={stroke} strokeWidth="1" />
+      <path
+        d="M65 46 C58 50 42 35 20 65 L38 82 L58 68 L58 230 L162 230 L162 68 L182 82 L200 65 C178 35 162 50 155 46 C155 14 134 0 110 0 C86 0 65 14 65 46 Z"
+        fill={color}
+        stroke={stroke}
+        strokeWidth="1"
+      />
+      <path d="M84 18 C89 31 98 38 110 38 C122 38 131 31 136 18" stroke={detail} strokeWidth="1" fill="none" />
+      <path d="M100 28 C98 44 97 58 99 72" stroke={drawstring} strokeWidth="2" strokeLinecap="round" fill="none" />
+      <path d="M120 28 C122 44 123 58 121 72" stroke={drawstring} strokeWidth="2" strokeLinecap="round" fill="none" />
+      <circle cx="99" cy="74" r="2.5" fill={drawstring} />
+      <circle cx="121" cy="74" r="2.5" fill={drawstring} />
       <rect x="78" y="148" width="64" height="36" rx="4" fill={isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)'} />
       <line x1="110" y1="46" x2="110" y2="148" stroke={isDark ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.07)'} strokeWidth="1.5" strokeDasharray="3,2" />
     </svg>

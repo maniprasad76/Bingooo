@@ -103,7 +103,7 @@ The operations portal is structured into 7 core functional divisions spanning 27
 | **4. Marketing & Sales**| `/banners`, `/coupons` | Hero banner slider configuration (desktop 16:9 and mobile 4:5 preview cards), discount coupon creation (percentage vs. flat ₹ discount, usage limits, minimum cart spend). |
 | **5. Finance & Media** | `/payments`, `/returns`, `/uploads` (R2) | Razorpay transaction reconciliation ledger, reverse logistics and refund management, and Cloudflare R2 media library with instant CDN URL copying. |
 | **6. Customers & Team** | `/customers`, `/customers/:id`, `/reviews` | Customer profiles with lifetime spend (LTV), order frequency, customer notes, review moderation board with photo validation and star ratings. |
-| **7. Operations & System** | `/settings` | 8-tab system settings: Store Profile, Commerce & Pricing, Shipping Rules & Tiers, COD & Partial COD thresholds, Razorpay Credentials, Notification Webhooks, Cloudflare R2 Keys, and SEO metadata. |
+| **7. Operations & System** | `/settings` | 8-tab system settings: Store Profile, Commerce & Pricing, Shipping Rules & Tiers, Payments & Prepaid Policy, Razorpay Credentials, Notification Webhooks, Cloudflare R2 Keys, and SEO metadata. |
 
 ---
 
@@ -164,7 +164,7 @@ The operations portal is structured into 7 core functional divisions spanning 27
 ```mermaid
 stateDiagram-v2
     [*] --> Placed: Customer Checkout Completed
-    Placed --> Confirmed: Payment Verified (Razorpay/COD approved)
+    Placed --> Confirmed: Payment Verified (Razorpay)
     Placed --> Cancelled: Payment Failed / Timeout / Customer Cancelled
     Confirmed --> Processing: Sent to Warehouse / Custom Print Queue
     Processing --> Shipped: Packed & Handed to Carrier (AWB Assigned)

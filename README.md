@@ -99,7 +99,7 @@ A unified back-office suite organized into 7 functional operational divisions:
    - [BannersPage](file:///c:/Users/manip/Desktop/bingooo/apps/admin/src/pages/BannersPage.tsx): Hero sliders with 16:9 desktop and 4:5 mobile preview cards.
    - [CouponsPage](file:///c:/Users/manip/Desktop/bingooo/apps/admin/src/pages/CouponsPage.tsx) & [DiscountsPage](file:///c:/Users/manip/Desktop/bingooo/apps/admin/src/pages/DiscountsPage.tsx): Automated catalog deals and promotional coupons.
 5. **Finance & Media:**
-   - [PaymentsPage](file:///c:/Users/manip/Desktop/bingooo/apps/admin/src/pages/PaymentsPage.tsx): Razorpay financial ledger with UPI/Card/Partial COD breakdowns and refund modals.
+   - [PaymentsPage](file:///c:/Users/manip/Desktop/bingooo/apps/admin/src/pages/PaymentsPage.tsx): Razorpay financial ledger with UPI/Card breakdowns and refund modals.
    - [ReturnsPage](file:///c:/Users/manip/Desktop/bingooo/apps/admin/src/pages/ReturnsPage.tsx): Reverse logistics checkpoints and courier pickups.
    - [UploadsPage](file:///c:/Users/manip/Desktop/bingooo/apps/admin/src/pages/UploadsPage.tsx): Cloudflare R2 media library with instant CDN URL copying.
 6. **Customers & Team:**
@@ -107,7 +107,7 @@ A unified back-office suite organized into 7 functional operational divisions:
    - [StaffUsersPage](file:///c:/Users/manip/Desktop/bingooo/apps/admin/src/pages/StaffUsersPage.tsx) & [RolesPermissionsPage](file:///c:/Users/manip/Desktop/bingooo/apps/admin/src/pages/RolesPermissionsPage.tsx): Granular RBAC permissions checklist.
    - [ReviewsPage](file:///c:/Users/manip/Desktop/bingooo/apps/admin/src/pages/ReviewsPage.tsx): Review moderation board with star ratings and photo attachments.
 7. **Operations & System:**
-   - [SettingsPage](file:///c:/Users/manip/Desktop/bingooo/apps/admin/src/pages/SettingsPage.tsx): Full 8-tab configuration (Store Profile, Commerce & Pricing, Shipping Rules, COD & Partial COD, Razorpay Gateway, Notifications, Cloudflare R2, and SEO).
+   - [SettingsPage](file:///c:/Users/manip/Desktop/bingooo/apps/admin/src/pages/SettingsPage.tsx): Full 8-tab configuration (Store Profile, Commerce & Pricing, Shipping Rules, Payments & Prepaid Policy, Razorpay Gateway, Notifications, Cloudflare R2, and SEO).
    - [AnalyticsPage](file:///c:/Users/manip/Desktop/bingooo/apps/admin/src/pages/AnalyticsPage.tsx): BI analytics with custom design conversion funnels.
    - [AuditLogsPage](file:///c:/Users/manip/Desktop/bingooo/apps/admin/src/pages/AuditLogsPage.tsx) & [ProfilePage](file:///c:/Users/manip/Desktop/bingooo/apps/admin/src/pages/ProfilePage.tsx): Security event trails and admin profiles.
 

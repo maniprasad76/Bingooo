@@ -3,8 +3,10 @@
 // Mirrors the exact database schema from migration 001
 // ─────────────────────────────────────────────────────────
 
+import { Injectable, OnApplicationShutdown } from '@nestjs/common';
 import { v4 as uuidv4 } from 'uuid';
 import * as fs from 'fs';
+import { promises as fsp } from 'fs';
 import * as path from 'path';
 import { getDataDir } from '../utils/paths.util';
 import { BUILT_IN_ROLES, PERMISSION_CATALOG, ROLE_PERMISSIONS_VERSION } from '../auth/permissions';
@@ -83,39 +85,91 @@ export function registerSaveHook(hook: SaveHook): void {
 /**
  * Write via a temp file + rename so a crash mid-write can never leave a
  * truncated store.json behind (rename is atomic on the same filesystem).
+ * Uses non-blocking fs.promises I/O: the synchronous equivalent used to
+ * freeze the whole event loop — and every concurrent request on it — for
+ * the duration of the write, which got worse as the store grew.
  */
-function writeFileAtomic(file: string, contents: string) {
+async function writeFileAtomic(file: string, contents: string): Promise<void> {
   const tmp = `${file}.${process.pid}.tmp`;
-  fs.writeFileSync(tmp, contents, 'utf-8');
+  await fsp.writeFile(tmp, contents, 'utf-8');
   try {
-    fs.renameSync(tmp, file);
+    await fsp.rename(tmp, file);
   } catch (err: any) {
     // Windows can refuse to replace a file another process holds open
     // (editor, antivirus). Fall back to copy so the save is not lost.
     if (err?.code !== 'EPERM' && err?.code !== 'EBUSY') throw err;
-    fs.copyFileSync(tmp, file);
-    fs.unlinkSync(tmp);
+    await fsp.copyFile(tmp, file);
+    await fsp.unlink(tmp);
   }
 }
 
-export function saveDb() {
-  try {
-    if (!fs.existsSync(DATA_DIR)) {
-      fs.mkdirSync(DATA_DIR, { recursive: true });
-    }
-    writeFileAtomic(STORE_FILE, JSON.stringify(db, null, 2));
-  } catch (err) {
-    console.error('[Database] Failed to save store to disk:', err);
-  }
+// Disk flushes are coalesced through a single in-flight write + a "write
+// again once free" flag, rather than firing one fs write per saveDb() call.
+// Under bursty traffic (e.g. an order touching cart, inventory and payment
+// rows in succession) this collapses N nearly-identical multi-MB writes into
+// one, without ever skipping the latest state. `pendingFlush` resolves once
+// whatever is in `db` at shutdown time has actually reached disk.
+let flushing = false;
+let flushAgain = false;
+let pendingFlush: Promise<void> = Promise.resolve();
 
-  // Hooks run even if the local write failed: index rebuilds and the durable
-  // remote store must not depend on an ephemeral or read-only disk.
-  // Notified without a circular import (observer pattern).
+async function flushToDisk(): Promise<void> {
+  if (flushing) {
+    flushAgain = true;
+    return pendingFlush;
+  }
+  flushing = true;
+  pendingFlush = (async () => {
+    try {
+      const snapshot = JSON.stringify(db);
+      await fsp.mkdir(DATA_DIR, { recursive: true });
+      await writeFileAtomic(STORE_FILE, snapshot);
+    } catch (err) {
+      console.error('[Database] Failed to save store to disk:', err);
+    } finally {
+      flushing = false;
+      if (flushAgain) {
+        flushAgain = false;
+        await flushToDisk();
+      }
+    }
+  })();
+  return pendingFlush;
+}
+
+/** Resolves once every flush queued so far has reached disk (used on shutdown). */
+export function waitForPendingWrites(): Promise<void> {
+  return pendingFlush;
+}
+
+export function saveDb() {
+  // Fire-and-forget from the caller's perspective (unchanged call sites),
+  // but the actual write now happens off the main thread instead of
+  // blocking it.
+  void flushToDisk();
+
+  // Hooks run synchronously and immediately: index rebuilds are pure
+  // in-memory work that must stay instant so the next read is consistent,
+  // and the durable remote store must not depend on an ephemeral or
+  // read-only local disk. Notified without a circular import (observer
+  // pattern).
   for (const hook of saveHooks) {
     try {
       hook();
     } catch (err) {
       console.error('[Database] Save hook error:', err);
+    }
+  }
+}
+
+/** Flushes any write still in flight when Nest shuts down (SIGTERM on redeploy). */
+@Injectable()
+export class StoreShutdown implements OnApplicationShutdown {
+  async onApplicationShutdown() {
+    try {
+      await waitForPendingWrites();
+    } catch (err) {
+      console.error('[Database] Could not flush pending writes on shutdown:', (err as Error).message);
     }
   }
 }

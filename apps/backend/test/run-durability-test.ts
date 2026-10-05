@@ -102,7 +102,7 @@ async function run() {
   const storeFile = path.join(getDataDir(), 'store.json');
   const storeBackup = fs.existsSync(storeFile) ? fs.readFileSync(storeFile) : null;
 
-  const { db, saveDb } = await import('../src/common/database/store');
+  const { db, saveDb, waitForPendingWrites } = await import('../src/common/database/store');
   const records = await import('../src/common/database/app-records.service');
 
   try {
@@ -110,7 +110,8 @@ async function run() {
     console.log('📦 1. Durable record store (Supabase app_records)');
     await records.hydrateFromAppRecords();
     assert(
-      rows.has(rowKey('products', String(db.products[0]?.id))) && rows.has(rowKey('settings', '__singleton__')),
+      (db.products.length === 0 || rows.has(rowKey('products', String(db.products[0].id)))) &&
+        rows.has(rowKey('settings', '__singleton__')),
       `Empty table is seeded on first boot (${rows.size} records)`,
     );
 
@@ -320,6 +321,9 @@ async function run() {
     );
   } finally {
     server.close();
+    // Local disk flushes are async: let any in-flight one land first, or it
+    // would overwrite the restored store.json with test data.
+    await waitForPendingWrites();
     if (storeBackup) fs.writeFileSync(storeFile, storeBackup);
   }
 

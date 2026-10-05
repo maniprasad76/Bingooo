@@ -8,6 +8,7 @@ import { SmartSearchModal } from '../search/SmartSearchModal';
 import { SocialFab } from '../ui/SocialFab';
 
 import { OfflineBanner } from '../common/OfflineBanner';
+import { CommunityInvitePopup } from '../common/CommunityInvitePopup';
 import { ScrollProgressBar } from '../common/ScrollProgressBar';
 import { ScrollToTop } from '../common/ScrollToTop';
 import { RouteFallback } from '../common/RouteFallback';
@@ -23,6 +24,10 @@ export function PageLayout() {
     registerNavigator((delta) => navigate(delta));
     registerOverlayCloser(() => {
       const uiState = useUIStore.getState();
+      if (uiState.communityInviteOpen) {
+        uiState.closeCommunityInvite();
+        return true;
+      }
       if (uiState.mobileMenuOpen) {
         uiState.closeMobileMenu();
         return true;
@@ -64,6 +69,7 @@ export function PageLayout() {
       <CartDrawer />
       <SmartSearchModal />
       <SocialFab />
+      <CommunityInvitePopup />
     </div>
   );
 }

@@ -9,6 +9,9 @@ interface UIStore {
   openSearchModal: () => void;
   closeSearchModal: () => void;
   toggleSearchModal: () => void;
+  communityInviteOpen: boolean;
+  openCommunityInvite: () => void;
+  closeCommunityInvite: () => void;
 }
 
 export const useUIStore = create<UIStore>((set) => ({
@@ -20,5 +23,8 @@ export const useUIStore = create<UIStore>((set) => ({
   openSearchModal: () => set({ searchModalOpen: true, mobileMenuOpen: false }),
   closeSearchModal: () => set({ searchModalOpen: false }),
   toggleSearchModal: () => set((state) => ({ searchModalOpen: !state.searchModalOpen })),
+  communityInviteOpen: false,
+  openCommunityInvite: () => set({ communityInviteOpen: true }),
+  closeCommunityInvite: () => set({ communityInviteOpen: false }),
 }));
 

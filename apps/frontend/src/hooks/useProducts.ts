@@ -1,9 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
 import { api } from '../lib/api/client';
-import {
-  FALLBACK_PRODUCTS,
-  FALLBACK_FILTERS,
-} from '../data/fallbackProducts';
 
 
 export interface ProductQueryParams {
@@ -20,134 +16,24 @@ export interface ProductQueryParams {
   limit?: number;
 }
 
-const CATEGORY_ALIASES: Record<string, string[]> = {
-  't-shirts': ['oversized-tees', 't-shirts', 't-shirt', 'tees', 'tshirts', 'oversized-t-shirts'],
-  'oversized-tees': ['oversized-tees', 't-shirts', 't-shirt', 'tees', 'tshirts', 'oversized-t-shirts'],
-  'oversized-t-shirts': ['oversized-tees', 't-shirts', 't-shirt', 'tees', 'tshirts', 'oversized-t-shirts'],
-  'hoodies': ['hoodies', 'fleece', 'sweatshirts', 'hoodie'],
-  'jeans': ['cargos', 'jeans', 'denim', 'pants', 'trousers'],
-  'cargos': ['cargos', 'jeans', 'denim', 'pants', 'trousers'],
-  'pants': ['cargos', 'jeans', 'denim', 'pants', 'trousers'],
-  'shirts': ['shirts', 'casual-shirts', 'textured-shirt', 'camp-collar', 'oxford'],
-  'graphic-drops': ['graphic-drops', 'graphics', 'anime'],
-};
-
-function filterFallbackProducts(params: ProductQueryParams) {
-  let list = [...FALLBACK_PRODUCTS];
-
-  if (params.categorySlug) {
-    const rawSlug = params.categorySlug.toLowerCase();
-    const allowed = CATEGORY_ALIASES[rawSlug] || [rawSlug];
-    list = list.filter(
-      (p) =>
-        allowed.includes(p.category?.slug?.toLowerCase() || '') ||
-        p.tags?.some((t) => allowed.includes(t.toLowerCase())) ||
-        p.category?.slug?.toLowerCase() === rawSlug ||
-        p.tags?.includes(rawSlug)
-    );
-  }
-
-  if (params.search) {
-    const q = params.search.toLowerCase().trim();
-    list = list.filter(
-      (p) =>
-        p.title.toLowerCase().includes(q) ||
-        p.description.toLowerCase().includes(q) ||
-        p.slug.toLowerCase().includes(q) ||
-        p.category?.name?.toLowerCase().includes(q) ||
-        p.category?.slug?.toLowerCase().includes(q) ||
-        (p.fit_silhouette && p.fit_silhouette.toLowerCase().includes(q)) ||
-        (p.fabric_gsm && `${p.fabric_gsm}`.includes(q)) ||
-        p.tags?.some((t) => t.toLowerCase().includes(q))
-    );
-  }
-
-
-  if (params.customizable !== undefined) {
-    list = list.filter((p) => p.customizationEnabled === params.customizable);
-  }
-
-  if (params.minPrice !== undefined) {
-    list = list.filter((p) => p.basePrice >= params.minPrice!);
-  }
-
-  if (params.maxPrice !== undefined) {
-    list = list.filter((p) => p.basePrice <= params.maxPrice!);
-  }
-
-  if (params.sort === 'price-asc') {
-    list.sort((a, b) => a.basePrice - b.basePrice);
-  } else if (params.sort === 'price-desc') {
-    list.sort((a, b) => b.basePrice - a.basePrice);
-  } else if (params.sort === 'rating') {
-    list.sort((a, b) => b.rating - a.rating);
-  }
-
-  const page = params.page || 1;
-  const limit = params.limit || 12;
-  const start = (page - 1) * limit;
-  const paged = list.slice(start, start + limit);
-
-  return {
-    data: paged,
-    meta: {
-      total: list.length,
-      page,
-      limit,
-      totalPages: Math.ceil(list.length / limit) || 1,
-    },
-  };
-}
-
 export function useProducts(params: ProductQueryParams = {}) {
   return useQuery({
     queryKey: ['products', params],
+    // Only real catalog data: an empty store shows as empty and an API failure
+    // surfaces as an error (React Query retries it) — never placeholder
+    // products that could be added to the cart but don't exist server-side.
     queryFn: async () => {
-      try {
-        const res = await api.get<any>('/products', params);
-        const items = Array.isArray(res) ? res : Array.isArray(res?.data) ? res.data : null;
-
-        if (items !== null) {
-          // If live items exist, always return live items
-          if (items.length > 0) {
-            return {
-              data: items,
-              meta: res?.meta || {
-                total: items.length,
-                page: params.page || 1,
-                limit: params.limit || items.length,
-                totalPages: Math.ceil(items.length / (params.limit || 12)) || 1,
-              },
-            };
-          }
-
-          // If filters/search were applied and matched 0 items, respect the empty filter
-          const hasFilters = Boolean(
-            params.categorySlug ||
-            params.collectionSlug ||
-            params.search ||
-            params.minPrice !== undefined ||
-            params.maxPrice !== undefined ||
-            params.sizes ||
-            params.colors
-          );
-
-          if (hasFilters) {
-            return {
-              data: [],
-              meta: res?.meta || {
-                total: 0,
-                page: 1,
-                limit: params.limit || 12,
-                totalPages: 0,
-              },
-            };
-          }
-        }
-      } catch (err) {
-        return filterFallbackProducts(params);
-      }
-      return filterFallbackProducts(params);
+      const res = await api.get<any>('/products', params);
+      const items: any[] = Array.isArray(res) ? res : Array.isArray(res?.data) ? res.data : [];
+      return {
+        data: items,
+        meta: res?.meta || {
+          total: items.length,
+          page: params.page || 1,
+          limit: params.limit || 12,
+          totalPages: Math.ceil(items.length / (params.limit || 12)),
+        },
+      };
     },
   });
 }
@@ -158,15 +44,12 @@ export function useProduct(slug?: string) {
     queryFn: async () => {
       try {
         const res = await api.get<any>(`/products/${slug}`);
-        if (res && (res.id || res.slug)) {
-          return res;
-        }
+        return res && (res.id || res.slug) ? res : null;
       } catch (err: any) {
-        const fallback = FALLBACK_PRODUCTS.find((p) => p.slug === slug || p.id === slug);
-        return fallback || null;
+        // A missing product renders the page's "not found" state; other failures are real errors.
+        if (err?.status === 404) return null;
+        throw err;
       }
-      const fallback = FALLBACK_PRODUCTS.find((p) => p.slug === slug || p.id === slug);
-      return fallback || null;
     },
     enabled: !!slug,
   });
@@ -205,11 +88,7 @@ export function useProductFilters(categorySlug?: string) {
   return useQuery({
     queryKey: ['product-filters', categorySlug],
     queryFn: async () => {
-      try {
-        const res = await api.get<any>('/products/filters', { categorySlug });
-        if (res) return res;
-      } catch {}
-      return FALLBACK_FILTERS;
+      return api.get<any>('/products/filters', { categorySlug });
     },
   });
 }

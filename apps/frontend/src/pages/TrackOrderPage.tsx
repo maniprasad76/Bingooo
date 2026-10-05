@@ -30,138 +30,26 @@ interface TrackingResult {
   timeline: Array<{ stage: string; desc: string; date: string; time: string; completed: boolean }>;
 }
 
-const DEMO_TRACKING_DATA: Record<string, TrackingResult> = {
-  'BG-2026-9182': {
-    orderNumber: 'BG-2026-9182',
-    orderDate: 'Sep 06, 2026',
-    estimatedDelivery: 'Sep 10, 2026 by 7:00 PM',
-    status: 'dispatched',
-    statusLabel: 'In Transit — On Schedule',
-    courier: 'Blue Dart Air Express',
-    awbNumber: 'BLUEDART-883920194',
-    destination: 'Visakhapatnam, Andhra Pradesh',
-    items: [
-      {
-        title: 'Classic Heavyweight Oversized Tee',
-        size: 'L',
-        color: 'Charcoal Black',
-        qty: 1,
-        price: 699,
-        image: '/custom/tshirt-step-1.png',
-      },
-      {
-        title: 'Custom Atelier Graphic Tee',
-        size: 'L',
-        color: 'Vintage Cream',
-        qty: 1,
-        price: 899,
-        image: '/custom/tshirt-step-1.png',
-      },
-    ],
-    timeline: [
-      {
-        stage: 'Order Placed & Confirmed',
-        desc: 'Payment verified via Razorpay. Order queued at Srikakulam Atelier.',
-        date: 'Sep 06, 2026',
-        time: '11:24 AM',
-        completed: true,
-      },
-      {
-        stage: 'Crafted & Quality Checked',
-        desc: 'Custom DTF curing completed. 100% fabric wash-fastness inspected.',
-        date: 'Sep 07, 2026',
-        time: '03:40 PM',
-        completed: true,
-      },
-      {
-        stage: 'Handed to Blue Dart Courier',
-        desc: 'Dispatched from Srikakulam Central Hub. Air manifest generated.',
-        date: 'Sep 08, 2026',
-        time: '06:15 PM',
-        completed: true,
-      },
-      {
-        stage: 'Out for Delivery',
-        desc: 'Shipment arrived at destination facility. Assigned to courier executive.',
-        date: 'Sep 10, 2026',
-        time: 'Expected 09:00 AM',
-        completed: false,
-      },
-      {
-        stage: 'Delivered',
-        desc: 'Package handed to recipient with signature confirmation.',
-        date: 'Sep 10, 2026',
-        time: 'By 07:00 PM',
-        completed: false,
-      },
-    ],
-  },
-  'BG-2026-4431': {
-    orderNumber: 'BG-2026-4431',
-    orderDate: 'Sep 08, 2026',
-    estimatedDelivery: 'Sep 12, 2026 by 5:00 PM',
-    status: 'printing',
-    statusLabel: 'Atelier Production — Curing DTF Print',
-    courier: 'Delhivery Surface Express',
-    awbNumber: 'DELHIVERY-774910248',
-    destination: 'Hyderabad, Telangana',
-    items: [
-      {
-        title: 'Cyber Tokyo Anime Graphic Hoodie',
-        size: 'XL',
-        color: 'Onyx Black',
-        qty: 1,
-        price: 1299,
-        image: '/custom/tshirt-step-3-black.png',
-      },
-    ],
-    timeline: [
-      {
-        stage: 'Order Placed & Confirmed',
-        desc: 'Order verified and sent to garment cutting line.',
-        date: 'Sep 08, 2026',
-        time: '02:10 PM',
-        completed: true,
-      },
-      {
-        stage: 'DTF Printing & Curing',
-        desc: 'Applying 1440 DPI Japanese pigment ink onto 360 GSM French terry.',
-        date: 'Sep 09, 2026',
-        time: '10:00 AM',
-        completed: true,
-      },
-      {
-        stage: 'Dispatched from Atelier',
-        desc: 'Packaging in eco-friendly water-sealed box with Bingooo sticker pack.',
-        date: 'Sep 09, 2026',
-        time: 'Expected 06:00 PM',
-        completed: false,
-      },
-      {
-        stage: 'Out for Delivery',
-        desc: 'Courier delivery agent will attempt door drop.',
-        date: 'Sep 12, 2026',
-        time: 'By 02:00 PM',
-        completed: false,
-      },
-      {
-        stage: 'Delivered',
-        desc: 'Package successfully received.',
-        date: 'Sep 12, 2026',
-        time: 'By 05:00 PM',
-        completed: false,
-      },
-    ],
-  },
-};
+const formatDate = (iso?: string) =>
+  iso ? new Date(iso).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : '—';
+const formatTime = (iso?: string) =>
+  iso ? new Date(iso).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' }) : '';
+
+function toStage(status: string): TrackingResult['status'] {
+  if (status === 'delivered') return 'delivered';
+  if (status === 'out_for_delivery') return 'out_for_delivery';
+  if (status === 'shipped') return 'dispatched';
+  if (status === 'processing' || status === 'packed') return 'printing';
+  return 'confirmed';
+}
 
 export function TrackOrderPage() {
   const [searchParams] = useSearchParams();
-  const initialAwb = searchParams.get('awb') || searchParams.get('orderNumber') || searchParams.get('q') || 'BG-2026-9182';
+  const initialAwb = searchParams.get('awb') || searchParams.get('orderNumber') || searchParams.get('q') || '';
   const [orderQuery, setOrderQuery] = useState(initialAwb);
   const [contactQuery, setContactQuery] = useState('');
-  const [searched, setSearched] = useState(true);
-  const [result, setResult] = useState<TrackingResult | null>(DEMO_TRACKING_DATA['BG-2026-9182']);
+  const [searched, setSearched] = useState(false);
+  const [result, setResult] = useState<TrackingResult | null>(null);
   const [isSearching, setIsSearching] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -173,6 +61,8 @@ export function TrackOrderPage() {
     }
   }, [searchParams]);
 
+  // Shows only what the order actually records: real status, real timestamps,
+  // real courier/AWB once assigned. Unknown numbers get a clear "not found".
   const handleTrack = async (e?: React.FormEvent, customId?: string) => {
     if (e) e.preventDefault();
     const query = (customId || orderQuery).trim().toUpperCase();
@@ -183,133 +73,38 @@ export function TrackOrderPage() {
 
     setError(null);
     setIsSearching(true);
-
     try {
-      // 1. Try real shipping tracking endpoint from backend
-      const liveData = await api.get<any>(`/shipping/track/${encodeURIComponent(query)}`);
-      if (liveData && liveData.trackingNumber) {
-        setResult({
-          orderNumber: liveData.orderNumber || query,
-          orderDate: liveData.events?.[0]?.timestamp
-            ? new Date(liveData.events[0].timestamp).toLocaleDateString('en-IN', {
-                day: 'numeric',
-                month: 'short',
-                year: 'numeric',
-              })
-            : 'Recent Order',
-          estimatedDelivery: liveData.estimatedDelivery
-            ? new Date(liveData.estimatedDelivery).toLocaleDateString('en-IN', {
-                day: 'numeric',
-                month: 'short',
-                year: 'numeric',
-              }) + ' by 7:00 PM'
-            : 'Within 3-4 Business Days',
-          status: liveData.status === 'delivered' ? 'delivered' : 'dispatched',
-          statusLabel:
-            liveData.status === 'delivered'
-              ? 'Delivered'
-              : liveData.status === 'shipped'
-              ? 'Dispatched from Atelier — In Transit'
-              : 'In Transit — On Schedule',
-          courier: liveData.carrier || 'Blue Dart Air Express',
-          awbNumber: liveData.trackingNumber,
-          destination: 'Customer Delivery Address',
-          items: [
-            {
-              title: 'Bingooo Heavyweight Apparel Item',
-              size: 'Standard',
-              color: 'Charcoal Black',
-              qty: 1,
-              price: 899,
-              image: '/custom/tshirt-step-1.png',
-            },
-          ],
-          timeline:
-            liveData.events && liveData.events.length > 0
-              ? liveData.events.map((ev: any, idx: number) => ({
-                  stage: ev.status || 'Transit Milestone',
-                  desc: `${ev.details || ''} ${ev.location ? `(${ev.location})` : ''}`.trim(),
-                  date: new Date(ev.timestamp).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' }),
-                  time: new Date(ev.timestamp).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' }),
-                  completed: idx <= liveData.events.length - 1,
-                }))
-              : DEMO_TRACKING_DATA['BG-2026-9182'].timeline,
-        });
-        setIsSearching(false);
-        setSearched(true);
-        return;
-      }
-    } catch {
-      // Fallback to local demo data
-    }
-
-    setTimeout(() => {
+      const live = await api.get<any>(`/shipping/track/${encodeURIComponent(query)}`);
+      const delivered = live.status === 'delivered';
+      setResult({
+        orderNumber: live.orderNumber || query,
+        orderDate: formatDate(live.placedAt),
+        estimatedDelivery: delivered ? `Delivered on ${formatDate(live.updatedAt)}` : 'Usually 3–7 business days after dispatch',
+        status: toStage(live.status),
+        statusLabel: live.statusLabel || live.status,
+        courier: live.carrier || 'Assigned at dispatch',
+        awbNumber: live.trackingNumber || 'Pending',
+        destination: 'Your delivery address',
+        items: [],
+        timeline: (live.events || []).map((ev: any) => ({
+          stage: ev.status,
+          desc: '',
+          date: formatDate(ev.timestamp),
+          time: formatTime(ev.timestamp),
+          completed: true,
+        })),
+      });
+    } catch (err: any) {
+      setResult(null);
+      setError(
+        err?.status === 404
+          ? "We couldn't find an order with that number. Please check it and try again, or message us on WhatsApp."
+          : 'Tracking is temporarily unavailable. Please try again in a moment.',
+      );
+    } finally {
       setIsSearching(false);
       setSearched(true);
-      if (DEMO_TRACKING_DATA[query]) {
-        setResult(DEMO_TRACKING_DATA[query]);
-      } else {
-        // Generate dynamic mock for any valid-looking order ID
-        const cleanId = query.startsWith('BG-') ? query : `BG-${query}`;
-        setResult({
-          orderNumber: cleanId,
-          orderDate: 'Sep 07, 2026',
-          estimatedDelivery: 'Within 3-4 Business Days',
-          status: 'dispatched',
-          statusLabel: 'Dispatched from Atelier — In Transit',
-          courier: 'Blue Dart Air Express',
-          awbNumber: `BD-${Math.floor(100000000 + Math.random() * 900000000)}`,
-          destination: 'Customer Delivery Address',
-          items: [
-            {
-              title: 'Bingooo Atelier Heavyweight Apparel',
-              size: 'Standard',
-              color: 'Custom Blend',
-              qty: 1,
-              price: 899,
-              image: '/custom/tshirt-step-1.png',
-            },
-          ],
-          timeline: [
-            {
-              stage: 'Order Confirmed',
-              desc: 'Payment received. Order acknowledged by Bingooo atelier.',
-              date: 'Sep 07, 2026',
-              time: '01:15 PM',
-              completed: true,
-            },
-            {
-              stage: 'Manufactured & Packed',
-              desc: 'Custom print inspected and double-boxed for transit.',
-              date: 'Sep 08, 2026',
-              time: '04:45 PM',
-              completed: true,
-            },
-            {
-              stage: 'Courier Handover',
-              desc: 'Package picked up by air courier hub.',
-              date: 'Sep 09, 2026',
-              time: '11:00 AM',
-              completed: true,
-            },
-            {
-              stage: 'Out for Delivery',
-              desc: 'Arriving at local delivery branch.',
-              date: 'Upcoming',
-              time: 'Pending dispatch',
-              completed: false,
-            },
-            {
-              stage: 'Delivered',
-              desc: 'Delivered to your doorstep.',
-              date: 'Upcoming',
-              time: 'Pending arrival',
-              completed: false,
-            },
-          ],
-        });
-      }
-    }, 300);
+    }
   };
 
   return (
@@ -366,7 +161,7 @@ export function TrackOrderPage() {
                     type="text"
                     value={orderQuery}
                     onChange={(e) => setOrderQuery(e.target.value)}
-                    placeholder="e.g. BG-2026-9182"
+                    placeholder="e.g. BGO-20261005-1234"
                     className="w-full pl-10 pr-4 py-3 bg-[#FAF8F5] border border-[#DDD3C5] rounded-xl text-sm font-bold text-[#171717] placeholder:text-[#6F6A63]/50 focus:outline-none focus:border-[#E6321C] focus:bg-white transition-all uppercase tracking-wide font-mono"
                   />
                 </div>
@@ -392,30 +187,13 @@ export function TrackOrderPage() {
             )}
 
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-2">
-              <div className="flex items-center gap-2 text-xs text-[#6F6A63]">
-                <span className="font-mono text-[11px]">Quick samples:</span>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setOrderQuery('BG-2026-9182');
-                    handleTrack(undefined, 'BG-2026-9182');
-                  }}
-                  className="font-mono text-[11px] font-bold text-[#E6321C] underline hover:text-[#B91F12]"
-                >
-                  BG-2026-9182
-                </button>
-                <span>•</span>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setOrderQuery('BG-2026-4431');
-                    handleTrack(undefined, 'BG-2026-4431');
-                  }}
-                  className="font-mono text-[11px] font-bold text-[#E6321C] underline hover:text-[#B91F12]"
-                >
-                  BG-2026-4431
-                </button>
-              </div>
+              <p className="m-0 text-[11px] text-[#6F6A63]">
+                Your order number is in your confirmation email and under{' '}
+                <Link to="/account/orders" className="font-bold text-[#171717] underline hover:text-[#E6321C]">
+                  My Orders
+                </Link>
+                .
+              </p>
 
               <button
                 type="submit"
@@ -539,9 +317,11 @@ export function TrackOrderPage() {
                               {step.date} • {step.time}
                             </span>
                           </div>
-                          <p className="mt-1 text-xs text-[#6F6A63] leading-relaxed">
-                            {step.desc}
-                          </p>
+                          {step.desc && (
+                            <p className="mt-1 text-xs text-[#6F6A63] leading-relaxed">
+                              {step.desc}
+                            </p>
+                          )}
                         </div>
                       </div>
                     );
@@ -549,7 +329,8 @@ export function TrackOrderPage() {
                 </div>
               </div>
 
-              {/* Items in this Order */}
+              {/* Items in this Order (public tracking returns none, so this only shows when provided) */}
+              {result.items.length > 0 && (
               <div className="p-6 sm:p-8 rounded-2xl bg-white border border-[#DDD3C5] shadow-xs space-y-4">
                 <h3 className="text-sm font-bold uppercase tracking-wider font-heading text-[#171717]">
                   Garments in Package ({result.items.length})
@@ -582,6 +363,7 @@ export function TrackOrderPage() {
                   ))}
                 </div>
               </div>
+              )}
             </motion.div>
           )}
         </AnimatePresence>

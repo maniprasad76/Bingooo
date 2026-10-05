@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ShoppingBag, Search, Heart, Shirt, Package, Sparkles, ArrowRight, Compass } from 'lucide-react';
+import { useProducts } from '../../hooks/useProducts';
 
 export interface EmptyStateProps {
   icon?: 'bag' | 'search' | 'heart' | 'shirt' | 'package' | 'compass';
@@ -24,32 +25,6 @@ const ICONS = {
   compass: Compass,
 };
 
-const SUGGESTIONS = [
-  {
-    id: 's-1',
-    title: 'Oversized Heavyweight Tee',
-    category: 'T-Shirts',
-    price: 999,
-    tag: '240 GSM',
-    slug: 'oversized-heavyweight-tee',
-  },
-  {
-    id: 's-2',
-    title: 'Streetwear Boxy Hoodie',
-    category: 'Hoodies',
-    price: 1899,
-    tag: '320 GSM Fleece',
-    slug: 'streetwear-boxy-hoodie',
-  },
-  {
-    id: 's-3',
-    title: 'Acid Wash Denim Pant',
-    category: 'Jeans',
-    price: 1799,
-    tag: 'Custom Cut',
-    slug: 'acid-wash-denim-pant',
-  },
-];
 
 export function EmptyState({
   icon = 'shirt',
@@ -64,6 +39,16 @@ export function EmptyState({
   className = '',
 }: EmptyStateProps) {
   const IconComponent = ICONS[icon] || Shirt;
+  // Real catalog only; the shelf is hidden while the store has no products.
+  const { data: picksData } = useProducts({ limit: 3 });
+  const suggestions = (picksData?.data ?? []).slice(0, 3).map((p: any) => ({
+    id: String(p.id),
+    title: p.title || p.name,
+    category: p.category?.name || 'Bingooo',
+    tag: p.fabric || (p.gsm ? `${p.gsm} GSM` : 'Heavyweight'),
+    price: Number(p.base_price ?? p.basePrice ?? 0),
+    slug: p.slug || p.id,
+  }));
 
   return (
     <div className={`w-full max-w-4xl mx-auto px-4 py-12 sm:py-16 text-center ${className}`}>
@@ -121,7 +106,7 @@ export function EmptyState({
       </div>
 
       {/* Quick Suggestions Shelf */}
-      {showSuggestions && (
+      {showSuggestions && suggestions.length > 0 && (
         <div className="mt-14 pt-10 border-t border-[#DDD3C5]/60 text-left">
           <div className="flex items-center justify-between mb-5">
             <div>
@@ -142,7 +127,7 @@ export function EmptyState({
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            {SUGGESTIONS.map((item) => (
+            {suggestions.map((item) => (
               <Link
                 key={item.id}
                 to={`/product/${item.slug}`}

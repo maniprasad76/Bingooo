@@ -14,47 +14,22 @@ import {
 import { SEO } from '../components/common/SEO';
 import { WhatsAppIcon, getWhatsAppUrl } from '../components/ui/SocialIcons';
 import { triggerHaptic } from '../lib/native/capacitorBridge';
+import { useProducts } from '../hooks/useProducts';
+import { resolveImageUrl } from '../lib/utils';
 
-const FEATURED_SUGGESTIONS = [
-  {
-    id: 'sug-1',
-    name: 'Classic Boxy Oversized Tee',
-    price: '₹999',
-    spec: '240 GSM Combed Cotton',
-    image: '/real-fit-1.jpg',
-    link: '/shop',
-    badge: 'BESTSELLER',
-  },
-  {
-    id: 'sug-2',
-    name: 'Heavyweight Fleece Hoodie',
-    price: '₹1,499',
-    spec: '320 GSM French Terry',
-    image: '/real-fit-2.jpg',
-    link: '/shop',
-    badge: 'WINTER DROP',
-  },
-  {
-    id: 'sug-3',
-    name: 'Vintage Acid Wash Tee',
-    price: '₹1,199',
-    spec: '260 GSM Structured Cut',
-    image: '/real-fit-3.jpg',
-    link: '/shop',
-    badge: 'ARCHIVE',
-  },
-  {
-    id: 'sug-4',
-    name: 'Bespoke Custom Print Tee',
-    price: '₹1,299',
-    spec: '3D Studio Heat-Cured DTF',
-    image: '/real-fit-4.jpg',
-    link: '/customize',
-    badge: 'CUSTOMIZER',
-  },
-];
 
 export function NotFoundPage() {
+  // Picks come from the live catalog; the shelf is hidden while the store has no products.
+  const { data: picksData } = useProducts({ limit: 4 });
+  const suggestions = (picksData?.data ?? []).slice(0, 4).map((p: any) => ({
+    id: String(p.id),
+    name: p.title || p.name,
+    price: `₹${Number(p.base_price ?? p.basePrice ?? 0).toLocaleString('en-IN')}`,
+    spec: p.fabric || p.category?.name || '',
+    image: resolveImageUrl(p.images?.[0]?.url || p.image_url || ''),
+    link: `/product/${p.slug || p.id}`,
+    badge: p.bestseller ? 'BESTSELLER' : p.badge_text || p.category?.name || 'NEW',
+  }));
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -226,6 +201,8 @@ export function NotFoundPage() {
       ======================================================= */}
       <section className="py-20 lg:py-28 bg-[#F7EEDB] border-b border-[#DDD3C5]">
         <div className="container-bingooo">
+          {suggestions.length > 0 && (
+          <>
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-3 mb-10 pb-4 border-b border-[#DDD3C5]">
             <div>
               <div className="text-[10px] font-mono font-bold uppercase tracking-[0.2em] text-[#E6321C] mb-1">
@@ -245,7 +222,7 @@ export function NotFoundPage() {
           </div>
 
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-            {FEATURED_SUGGESTIONS.map((item) => (
+            {suggestions.map((item) => (
               <article key={item.id} className="group flex flex-col bg-white border border-[#DDD3C5] rounded-[2px] overflow-hidden shadow-xs hover:border-[#171717] transition-all">
                 <div className="relative aspect-[3/4] overflow-hidden bg-[#EDE0CC]">
                   <Link to={item.link} className="block h-full w-full">
@@ -287,6 +264,8 @@ export function NotFoundPage() {
               </article>
             ))}
           </div>
+          </>
+          )}
 
           {/* Direct Concierge Strip */}
           <div className="mt-14 p-6 sm:p-8 border border-[#DDD3C5] bg-[#EDE0CC] rounded-[2px] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">

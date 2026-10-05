@@ -136,12 +136,12 @@ export function OrderDetailPage() {
                 Courier Shipment Dispatched
               </span>
               <p className="text-sm font-bold text-ink">
-                Partner: <span className="font-extrabold">{order.carrier || 'Blue Dart Air Express'}</span> • AWB: <span className="font-mono font-black">{order.tracking_number || 'BLUEDART-88219412'}</span>
+                Partner: <span className="font-extrabold">{order.carrier || 'To be confirmed'}</span> • AWB: <span className="font-mono font-black">{order.tracking_number || 'Pending'}</span>
               </p>
             </div>
           </div>
           <Link
-            to={`/track-order?awb=${order.tracking_number || 'BG-2026-9182'}`}
+            to={`/track-order?awb=${encodeURIComponent(order.tracking_number || order.order_number)}`}
             className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-ink hover:bg-brand-red text-white text-xs font-bold uppercase tracking-wider transition-colors shadow-sm shrink-0"
           >
             <span>Track Live Shipment →</span>

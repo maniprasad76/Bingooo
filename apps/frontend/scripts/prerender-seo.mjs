@@ -27,29 +27,23 @@ const ROUTES = [
       name: 'Bingooo 240 GSM Heavyweight Streetwear Collection',
       description: 'Curated 240–280 GSM heavyweight cotton oversized t-shirts for men, drop-shoulder hoodies, and bespoke apparel.',
       url: 'https://bingooo.co.in/shop',
-      numberOfItems: 4,
+      numberOfItems: 3,
       itemListElement: [
         {
           '@type': 'ListItem',
           position: 1,
-          name: 'Classic Heavyweight Oversized Tee (240 GSM)',
-          url: 'https://bingooo.co.in/product/classic-oversized-tee',
+          name: 'Oversized T-Shirts',
+          url: 'https://bingooo.co.in/category/t-shirts',
         },
         {
           '@type': 'ListItem',
           position: 2,
-          name: 'Midnight Graphic Drop Oversized Tee (240 GSM)',
-          url: 'https://bingooo.co.in/product/graphic-print-tee-midnight',
+          name: 'Hoodies',
+          url: 'https://bingooo.co.in/category/hoodies',
         },
         {
           '@type': 'ListItem',
           position: 3,
-          name: 'Essential Heavyweight Pullover Hoodie (380 GSM Fleece)',
-          url: 'https://bingooo.co.in/product/essential-pullover-hoodie',
-        },
-        {
-          '@type': 'ListItem',
-          position: 4,
           name: 'Custom 240 GSM Oversized T-Shirt (3D Atelier)',
           url: 'https://bingooo.co.in/customize',
         },
@@ -82,7 +76,7 @@ const ROUTES = [
     contentHtml: `
       <h1>240 GSM Heavyweight Oversized T-Shirts for Men</h1>
       <p>Upgrade your streetwear wardrobe with Bingooo's signature 240 GSM combed cotton oversized tees. Engineered to resist wrinkling, drape squarely off the shoulders, and maintain structure wash after wash with anti-sag French rib collars.</p>
-      <a href="/product/classic-oversized-tee">View Classic 240 GSM Oversized Tee — ₹1,299</a>
+      <a href="/category/t-shirts">Shop all oversized T-shirts</a>
     `,
   },
   {
@@ -101,7 +95,7 @@ const ROUTES = [
     contentHtml: `
       <h1>380 GSM Luxury Heavyweight Fleece Hoodies for Men</h1>
       <p>Ultra-dense 380 GSM fleece pullover hoodies designed for unmatched warmth, drop-shoulder silhouette retention, and premium Indian streetwear luxury.</p>
-      <a href="/product/essential-pullover-hoodie">View Essential 380 GSM Pullover Hoodie — ₹2,499</a>
+      <a href="/category/hoodies">Shop all hoodies</a>
     `,
   },
   {
@@ -127,52 +121,6 @@ const ROUTES = [
       <h1>Custom Oversized T-Shirt Printing India &amp; 3D Atelier</h1>
       <p>Print your custom graphics, brand artwork, or typography on 240 GSM heavyweight blanks in our real-time 3D Atelier studio. Premium direct-to-film (DTF) vibrant finish with zero cracking and wash resistance.</p>
       <a href="/customize">Launch 3D Atelier Customizer Studio</a>
-    `,
-  },
-  {
-    path: 'product/classic-oversized-tee',
-    title: 'Classic 240 GSM Heavyweight Oversized T-Shirt for Men | Bingooo® Streetwear',
-    description: 'Buy the #1 Classic Heavyweight Oversized T-Shirt in 240 GSM super-combed cotton. Drop shoulder boxy fit, anti-sag collar, pre-shrunk fabric. Pan-India free delivery.',
-    canonical: 'https://bingooo.co.in/product/classic-oversized-tee',
-    h1: 'Classic Heavyweight Oversized Tee (240 GSM)',
-    schema: {
-      '@context': 'https://schema.org',
-      '@type': 'Product',
-      name: 'Classic Heavyweight Oversized Tee (240 GSM)',
-      description: 'Boxy streetwear cut in 240 GSM super-combed cotton. Anti-pilling rib collar and drop shoulder drape.',
-      image: ['https://bingooo.co.in/custom/tshirt-step-1.png'],
-      sku: 'BG-CLASSIC-OVERSIZED-TEE',
-      mpn: 'BG-CLASSIC-OVERSIZED-TEE',
-      brand: { '@type': 'Brand', name: 'Bingooo', alternateName: 'Bingooo Streetwear' },
-      material: '240 GSM 100% Super-Combed Cotton',
-      offers: {
-        '@type': 'Offer',
-        url: 'https://bingooo.co.in/product/classic-oversized-tee',
-        priceCurrency: 'INR',
-        price: '1299',
-        priceValidUntil: '2027-12-31',
-        itemCondition: 'https://schema.org/NewCondition',
-        availability: 'https://schema.org/InStock',
-        seller: { '@type': 'Organization', name: 'Bingooo' },
-        hasMerchantReturnPolicy: {
-          '@type': 'MerchantReturnPolicy',
-          applicableCountry: 'IN',
-          returnPolicyCategory: 'https://schema.org/MerchantReturnFiniteReturnWindow',
-          merchantReturnDays: 7,
-        },
-      },
-      aggregateRating: {
-        '@type': 'AggregateRating',
-        ratingValue: '4.9',
-        reviewCount: '124',
-        bestRating: '5',
-      },
-    },
-    contentHtml: `
-      <h1>Classic Heavyweight Oversized Tee (240 GSM)</h1>
-      <p>₹1,299 • 240 GSM 100% Super-Combed Cotton • Free Pan-India Delivery on every order.</p>
-      <p>Engineered with a dense weave that drops squarely off the shoulders and holds a boxy silhouette throughout the day.</p>
-      <a href="/product/classic-oversized-tee">Order Now</a>
     `,
   },
   {

@@ -13,9 +13,11 @@ import {
   Scissors,
   Layers,
   MapPin,
+  AlertCircle,
 } from 'lucide-react';
 import { SEO } from '../components/common/SEO';
 import { BrandPageLoader } from '../components/ui/BrandPageLoader';
+import { ProductPlaceholder } from '../components/ui/ProductPlaceholder';
 import { api } from '../lib/api/client';
 import { useToast } from '../components/ui/Toast';
 import { getWhatsAppUrl, WhatsAppIcon } from '../components/ui/SocialIcons';
@@ -51,54 +53,8 @@ export function OrderSuccessPage() {
     }
   }, [order, orderNumberParam]);
 
-  // Fallback demo order if navigated directly for review
-  const displayOrder = order || {
-    id: 'ord_demo_2026',
-    order_number: orderNumberParam || 'BNG-984210',
-    created_at: new Date().toISOString(),
-    status: 'paid',
-    payment_status: 'captured',
-    payment_method: 'Razorpay UPI (Google Pay)',
-    subtotal: 2298,
-    discount_amount: 300,
-    total: 1998,
-    currency: 'INR',
-    customer_notes: 'Priority atelier cut and double protective packaging requested.',
-    address_snapshot_json: {
-      name: 'Aditya Sen',
-      line1: 'Flat 402, Oakwood Residences',
-      line2: 'Koramangala 4th Block',
-      city: 'Bengaluru',
-      state: 'Karnataka',
-      postalCode: '560034',
-      country: 'India',
-      phone: '+91 98450 12345',
-    },
-    items: [
-      {
-        id: 'item-1',
-        product_title: 'Heavyweight Boxy Tee (240 GSM)',
-        variant_title: 'Obsidian Black / L',
-        quantity: 1,
-        unit_price: 1299,
-        total_price: 1299,
-        image_url: 'https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=500&auto=format&fit=crop',
-        customization: {
-          design_title: 'Bespoke Distressed Studio Typo',
-          technique: 'High-Density Direct-to-Film (DTF)',
-        },
-      },
-      {
-        id: 'item-2',
-        product_title: 'Oversized Minimalist Sweatshirt',
-        variant_title: 'Raw Bone / L',
-        quantity: 1,
-        unit_price: 999,
-        total_price: 999,
-        image_url: 'https://images.unsplash.com/photo-1556905055-8f358a7a47b2?w=500&auto=format&fit=crop',
-      },
-    ],
-  };
+  const displayOrder: any = order ?? {};
+  const isPaymentFailure = location.pathname.startsWith('/payment/failure');
 
   const address = displayOrder.address_snapshot_json || {};
 
@@ -121,6 +77,11 @@ export function OrderSuccessPage() {
 
   if (isLoading) {
     return <BrandPageLoader message="Retrieving order manifest from atelier..." fullScreen />;
+  }
+
+  // Never show placeholder order details: without a real order, say so plainly.
+  if (!order) {
+    return <OrderUnavailable paymentFailed={isPaymentFailure} orderNumber={orderNumberParam} />;
   }
 
   const orderDate = new Date(displayOrder.created_at || Date.now()).toLocaleDateString('en-IN', {
@@ -363,14 +324,17 @@ export function OrderSuccessPage() {
               <div className="divide-y divide-[#DDD3C5]/60">
                 {displayOrder.items?.map((item: any) => (
                   <div key={item.id} className="py-5 first:pt-4 last:pb-0 flex items-start gap-4 sm:gap-5">
-                    <img
-                      src={
-                        item.image_url ||
-                        'https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=300&auto=format&fit=crop'
-                      }
-                      alt={item.product_title}
-                      className="w-18 h-22 sm:w-20 sm:h-26 object-cover rounded-[2px] border border-[#DDD3C5] bg-[#EDE0CC]/40 shrink-0 grayscale hover:grayscale-0 transition-all duration-300"
-                    />
+                    {item.image_url ? (
+                      <img
+                        src={item.image_url}
+                        alt={item.product_title}
+                        className="w-18 h-22 sm:w-20 sm:h-26 object-cover rounded-[2px] border border-[#DDD3C5] bg-[#EDE0CC]/40 shrink-0 grayscale hover:grayscale-0 transition-all duration-300"
+                      />
+                    ) : (
+                      <div className="w-18 h-22 sm:w-20 sm:h-26 shrink-0 overflow-hidden rounded-[2px] border border-[#DDD3C5]">
+                        <ProductPlaceholder name={item.product_title || item.title_snapshot} />
+                      </div>
+                    )}
 
                     <div className="flex-1 min-w-0">
                       <div className="flex items-start justify-between gap-3">
@@ -625,6 +589,49 @@ export function OrderSuccessPage() {
               </a>
             </div>
           </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function OrderUnavailable({ paymentFailed, orderNumber }: { paymentFailed: boolean; orderNumber?: string }) {
+  const helpMessage = paymentFailed
+    ? 'Hi Bingooo, my payment did not go through. Can you help me complete my order?'
+    : `Hi Bingooo, I need help finding my order${orderNumber ? ` #${orderNumber}` : ''}.`;
+
+  return (
+    <div className="min-h-[70vh] bg-[#F7EEDB] px-4 py-16 sm:py-24 font-sans text-[#171717]">
+      <SEO title={paymentFailed ? 'Payment Not Completed' : 'Order Details'} noindex />
+      <div className="mx-auto max-w-[520px] rounded-2xl border border-[#DDD3C5] bg-white p-7 sm:p-9 text-center shadow-xs">
+        <div className="mx-auto mb-5 grid h-12 w-12 place-items-center rounded-full border border-[#DDD3C5] bg-[#EDE0CC]">
+          {paymentFailed ? <AlertCircle size={22} className="text-[#E6321C]" /> : <Package size={22} />}
+        </div>
+        <h1 className="m-0 text-xl sm:text-2xl font-extrabold uppercase tracking-tight">
+          {paymentFailed ? 'Payment not completed' : 'We couldn’t load your order'}
+        </h1>
+        <p className="mx-auto mt-3 mb-0 max-w-[400px] text-[13px] leading-relaxed text-[#6F6A63]">
+          {paymentFailed
+            ? 'Your payment didn’t go through, so no order was placed and you haven’t been charged. Your bag is still saved — you can try again.'
+            : `${orderNumber ? `Order #${orderNumber} is safe. ` : ''}Sign in to see your full order details and status under My Orders.`}
+        </p>
+        <div className="mt-7 flex flex-col sm:flex-row items-stretch justify-center gap-2.5">
+          <Link
+            to={paymentFailed ? '/cart' : '/account/orders'}
+            className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#E6321C] px-5 py-3 text-[12px] font-bold uppercase tracking-wider text-white no-underline hover:bg-[#B91F12] transition-colors"
+          >
+            {paymentFailed ? 'Return to bag' : 'View my orders'}
+            <ArrowRight size={14} />
+          </Link>
+          <a
+            href={getWhatsAppUrl(helpMessage)}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center justify-center gap-2 rounded-xl border border-[#171717] px-5 py-3 text-[12px] font-bold uppercase tracking-wider text-[#171717] no-underline hover:bg-[#171717] hover:text-white transition-colors"
+          >
+            <WhatsAppIcon className="w-4 h-4" />
+            Get help
+          </a>
         </div>
       </div>
     </div>

@@ -10,6 +10,7 @@ import {
   type GarmentMeshPackage
 } from './garmentMeshBuilder';
 import { triggerHaptic } from '../../lib/native/capacitorBridge';
+import { loadCanvasFont } from './studioFonts';
 
 export interface Garment3DViewerProps {
   garmentId: string;
@@ -324,10 +325,21 @@ export function Garment3DViewer({
     }
   }, [lightingPreset]);
 
-  // Update dynamic decal texture whenever customization parameters change
+  // Update dynamic decal texture whenever customization parameters change.
+  // Canvas text doesn't repaint when a web font finishes downloading, so draw
+  // again once the selected font is ready.
   useEffect(() => {
     updateDecalTexture();
-  }, [updateDecalTexture]);
+    if ((designMode === 'upload' && uploadedImage) || !fontFamily) return;
+    let cancelled = false;
+    const font = `${isItalic ? 'italic ' : ''}${isBold ? 'bold ' : 'normal '}48px ${fontFamily}`;
+    loadCanvasFont(font).then(() => {
+      if (!cancelled) updateDecalTexture();
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [updateDecalTexture, designMode, uploadedImage, fontFamily, isBold, isItalic]);
 
   // Snap orientation on viewSide change from parent
   const snapToSide = (side: 'FRONT' | 'BACK') => {

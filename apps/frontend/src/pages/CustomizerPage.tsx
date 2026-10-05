@@ -14,6 +14,7 @@ import { SEO } from '../components/common/SEO';
 import { WhatsAppIcon } from '../components/ui/SocialIcons';
 import { api } from '../lib/api/client';
 import { Garment3DViewer } from '../components/studio/Garment3DViewer';
+import { FONT_CATEGORIES, FONT_OPTIONS, ensureStudioFonts, loadCanvasFont } from '../components/studio/studioFonts';
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 interface ColorOption {
@@ -235,43 +236,6 @@ const GARMENTS: GarmentType[] = [
   },
 ];
 
-// ─── Font Options ────────────────────────────────────────────────────────────
-interface FontOption {
-  id: string;
-  name: string;
-  label: string;
-  family: string;
-  category: 'street' | 'luxury' | 'creative';
-  preview: string;
-}
-
-const FONT_CATEGORIES = [
-  { id: 'all', label: 'All' },
-  { id: 'street', label: 'Street' },
-  { id: 'luxury', label: 'Luxury' },
-  { id: 'creative', label: 'Creative' },
-];
-
-const FONT_OPTIONS: FontOption[] = [
-  { id: 'manrope', name: 'Manrope', label: 'Clean Modern', family: "'Manrope', sans-serif", category: 'street', preview: 'BINGOOO' },
-  { id: 'outfit', name: 'Outfit', label: 'High-End Street', family: "'Outfit', sans-serif", category: 'street', preview: 'STREET' },
-  { id: 'anton', name: 'Anton', label: 'Ultra Heavy', family: "'Anton', sans-serif", category: 'street', preview: 'HEAVY' },
-  { id: 'bebas', name: 'Bebas Neue', label: 'Bold Headline', family: "'Bebas Neue', sans-serif", category: 'street', preview: 'HEADLINE' },
-  { id: 'space', name: 'Space Grotesk', label: 'Brutalist Tech', family: "'Space Grotesk', sans-serif", category: 'street', preview: 'BRUTAL' },
-  { id: 'russo', name: 'Russo One', label: 'Impact Block', family: "'Russo One', sans-serif", category: 'street', preview: 'IMPACT' },
-  { id: 'bungee', name: 'Bungee', label: 'Cyber Arcade', family: "'Bungee', cursive", category: 'street', preview: 'ARCADE' },
-  { id: 'playfair', name: 'Playfair', label: 'Vogue Editorial', family: "'Playfair Display', serif", category: 'luxury', preview: 'Atelier' },
-  { id: 'cinzel', name: 'Cinzel', label: 'Royal Roman', family: "'Cinzel', serif", category: 'luxury', preview: 'IMPERIAL' },
-  { id: 'prata', name: 'Prata', label: 'Haute Couture', family: "'Prata', serif", category: 'luxury', preview: 'Elegance' },
-  { id: 'cormorant', name: 'Cormorant', label: 'Archival Serif', family: "'Cormorant Garamond', serif", category: 'luxury', preview: 'Archival' },
-  { id: 'syne', name: 'Syne', label: 'Avant-Garde', family: "'Syne', sans-serif", category: 'luxury', preview: 'AVANT' },
-  { id: 'marker', name: 'Permanent Marker', label: 'Graffiti Tag', family: "'Permanent Marker', cursive", category: 'creative', preview: 'GRAFFITI' },
-  { id: 'caveat', name: 'Caveat', label: 'Artisan Script', family: "'Caveat', cursive", category: 'creative', preview: 'Handwritten' },
-  { id: 'righteous', name: 'Righteous', label: 'Retro 80s', family: "'Righteous', cursive", category: 'creative', preview: 'SYNTHWAVE' },
-  { id: 'mono', name: 'IBM Plex Mono', label: 'Technical Spec', family: "'IBM Plex Mono', monospace", category: 'creative', preview: '240_GSM' },
-  { id: 'majormono', name: 'Major Mono', label: 'Glitch Mono', family: "'Major Mono Display', monospace", category: 'creative', preview: '001//BIO' },
-];
-
 const TEXT_COLORS = [
   { name: 'Auto', hex: '' },
   { name: 'White', hex: '#FFFFFF' },
@@ -376,6 +340,11 @@ export function CustomizerPage() {
   const availableColors = (selectedGarment.colors && selectedGarment.colors.length > 0)
     ? selectedGarment.colors.filter(c => c.isActive !== false)
     : COLORS;
+
+  // Studio display fonts load only on this page, not site-wide
+  useEffect(() => {
+    ensureStudioFonts();
+  }, []);
 
   // Auto-adjust selected size if current size is not in active sizes
   useEffect(() => {
@@ -700,7 +669,7 @@ export function CustomizerPage() {
     window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`, '_blank');
   };
 
-  const handleDownloadMockup = () => {
+  const handleDownloadMockup = async () => {
     triggerHaptic('medium');
     const canvas = document.createElement('canvas');
     canvas.width = 800;
@@ -731,7 +700,9 @@ export function CustomizerPage() {
     // Artwork representation
     if (customText) {
       ctx.fillStyle = textColor || selectedColor.textContrast;
-      ctx.font = `bold 60px ${activeFont.name}, sans-serif`;
+      const artworkFont = `bold 60px ${activeFont.family}`;
+      await loadCanvasFont(artworkFont);
+      ctx.font = artworkFont;
       ctx.fillText(customText, 400, 420);
     }
 
@@ -998,26 +969,31 @@ export function CustomizerPage() {
 
           {/* Font selection */}
           <div>
-            <div className="flex items-center justify-between mb-2">
+            <div className="flex items-baseline justify-between gap-2 mb-2">
               <label className="text-[10px] font-bold uppercase tracking-[0.14em] text-[#6f6a63]">Curated Typography</label>
-              <div className="flex gap-1">
-                {FONT_CATEGORIES.map(cat => (
-                  <button
-                    key={cat.id}
-                    type="button"
-                    onClick={() => setSelectedFontCategory(cat.id)}
-                    className={`text-[9px] px-2 py-0.5 rounded-md font-bold uppercase ${selectedFontCategory === cat.id ? 'bg-[#171717] text-white' : 'text-[#6f6a63] hover:bg-[#ede0cc]'}`}
-                  >
-                    {cat.label}
-                  </button>
-                ))}
-              </div>
+              <span className="font-mono text-[9px] uppercase tracking-wider text-[#6f6a63]">{filteredFonts.length} styles</span>
             </div>
-            <div className="grid grid-cols-2 gap-1.5 max-h-[160px] overflow-y-auto pr-1">
+            <div className="flex flex-wrap gap-1 mb-2" role="tablist" aria-label="Font style">
+              {FONT_CATEGORIES.map(cat => (
+                <button
+                  key={cat.id}
+                  type="button"
+                  role="tab"
+                  aria-selected={selectedFontCategory === cat.id}
+                  onClick={() => setSelectedFontCategory(cat.id)}
+                  className={`shrink-0 whitespace-nowrap text-[9px] px-2.5 py-1 rounded-md font-bold uppercase tracking-wider transition-colors ${selectedFontCategory === cat.id ? 'bg-[#171717] text-white' : 'bg-white border border-[#ddd3c5] text-[#6f6a63] hover:bg-[#ede0cc]'}`}
+                >
+                  {cat.label}
+                </button>
+              ))}
+            </div>
+            <div className="grid grid-cols-2 gap-1.5 max-h-[232px] overflow-y-auto overscroll-contain pr-1">
               {filteredFonts.map(font => (
                 <button
                   key={font.id}
                   type="button"
+                  title={font.name}
+                  aria-pressed={selectedFont === font.id}
                   onClick={() => {
                     triggerHaptic('light');
                     setSelectedFont(font.id);
@@ -1026,7 +1002,7 @@ export function CustomizerPage() {
                   className={`p-2 rounded-xl border text-left flex flex-col justify-between transition-all cursor-pointer ${selectedFont === font.id ? 'border-[#171717] bg-[#171717] text-white' : 'border-[#ddd3c5] bg-white text-[#171717] hover:border-[#aaa]'}`}
                 >
                   <span className="text-[8px] font-mono uppercase tracking-wider opacity-70">{font.label}</span>
-                  <span className="text-sm font-bold truncate mt-1" style={{ fontFamily: font.family }}>{customText || font.preview}</span>
+                  <span className="text-sm font-bold truncate mt-1 leading-[1.6]" style={{ fontFamily: font.family }}>{customText || font.preview}</span>
                 </button>
               ))}
             </div>

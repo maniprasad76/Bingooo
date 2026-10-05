@@ -158,7 +158,7 @@ Interaction elevation: cards lift via shadow + border darkens (`border-ink/25`) 
 |---|---|---|---|
 | **Everything (UI + display)** | **Manrope** (Google Fonts) | 400, 500, 600, 700, 800 | Headings, body, buttons, prices, nav. Single-family system. |
 | **Mono / spec text** | **IBM Plex Mono** | 400, 500 | GSM specs ("220 GSM"), swatch counters ("+2"), technical labels |
-| Studio fonts (Customizer only) | Anton, Bebas Neue, Bungee, Caveat, Cinzel, Cormorant Garamond, Major Mono Display, Permanent Marker, Playfair Display, Prata, Righteous, Russo One, Space Grotesk, Syne | — | User-selectable fonts for custom garment designs — **not part of core UI** |
+| Studio fonts (Customizer only) | 48 curated Google display fonts in five groups (Street, Luxury, Creative, Script, Gothic), defined in `apps/frontend/src/components/studio/studioFonts.ts` and loaded only on the customizer | — | User-selectable fonts for custom garment designs — **not part of core UI** |
 
 > **Manrope is the identity.** Geometric-humanist grotesque: clean, slightly rounded terminals, excellent heavy weights. AI "typography feel" = heavy Manrope-style uppercase grotesque.
 

@@ -68,7 +68,7 @@ Bingooo adheres to a warm, editorial streetwear aesthetic designed to wow custom
 ### Typography
 - **Primary Font Family:** `Manrope` (Google Fonts) — modern geometric sans-serif delivering editorial confidence across all headlines, body copy, and tabular data.
 - **Spec & Technical:** `IBM Plex Mono` — fabric weight (GSM specs), technical counters, and product spec badges.
-- **Custom Studio Fonts:** Anton, Bebas Neue, Bungee, Caveat, Cinzel, Cormorant Garamond, Major Mono Display, Permanent Marker, Playfair Display, Prata, Righteous, Russo One, Space Grotesk, Syne (user-selectable in the live apparel customizer).
+- **Custom Studio Fonts:** 48 curated display fonts across Street, Luxury, Creative, Script and Gothic styles (user-selectable in the live apparel customizer; catalog in `apps/frontend/src/components/studio/studioFonts.ts`).
 
 ---
 

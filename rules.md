@@ -50,7 +50,7 @@
 ### 3.2 Typography Standards
 - **Rule 7 (Primary Typography):** All headings, navigation links, and body text must use **`Manrope`** (Google Fonts). Browser default fonts (`Arial`, `Times New Roman`, `system-ui`) are prohibited.
 - **Rule 8 (Technical & Spec Typography):** All fabric weight indicators (GSM specs), SKUs, prices, table headers, and stock counters must use **`IBM Plex Mono`** or monospace styling.
-- **Rule 9 (Customizer Display Fonts):** The live studio customizer supports only the 14 curated display fonts (Anton, Bebas Neue, Bungee, Caveat, Cinzel, Cormorant Garamond, Major Mono Display, Permanent Marker, Playfair Display, Prata, Righteous, Russo One, Space Grotesk, Syne). Do not inject unapproved random web fonts.
+- **Rule 9 (Customizer Display Fonts):** The live studio customizer offers only the curated display fonts defined in `apps/frontend/src/components/studio/studioFonts.ts` (`FONT_OPTIONS`, grouped Street / Luxury / Creative / Script / Gothic, all from Google Fonts). Add a font there — never inline in a page — and keep existing `id`s stable because saved designs and share links store them. Studio fonts load only on the customizer via `ensureStudioFonts()`, never from the global stylesheet.
 
 ### 3.3 Iconography & Visual Assets
 - **Rule 10 (Strict Lucide React Vector Icons):** Use exclusively **`lucide-react`** SVG icons.

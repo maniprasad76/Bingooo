@@ -13,17 +13,17 @@ import { backupService } from '../common/services/backup.service';
 export class BackupController {
   @Get()
   @ApiOperation({ summary: 'List all database backups' })
-  listBackups() {
+  async listBackups() {
     return {
       success: true,
-      data: backupService.listBackups(),
+      data: await backupService.listAllBackups(),
     };
   }
 
   @Post()
   @ApiOperation({ summary: 'Create a new database backup snapshot' })
-  createBackup(@Body() body?: { label?: string }) {
-    const backup = backupService.createBackup(body?.label);
+  async createBackup(@Body() body?: { label?: string }) {
+    const backup = await backupService.createBackupDurable(body?.label);
     return {
       success: true,
       message: 'Backup created successfully',
@@ -33,8 +33,8 @@ export class BackupController {
 
   @Post(':id/restore')
   @ApiOperation({ summary: 'Restore database from backup' })
-  restoreBackup(@Param('id') id: string) {
-    const result = backupService.restoreBackup(id);
+  async restoreBackup(@Param('id') id: string) {
+    const result = await backupService.restoreBackupDurable(id);
     return {
       success: true,
       message: 'Database restored successfully',

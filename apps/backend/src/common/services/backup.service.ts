@@ -5,15 +5,28 @@
 
 import * as fs from 'fs';
 import * as path from 'path';
+import { Injectable, OnApplicationBootstrap, OnApplicationShutdown } from '@nestjs/common';
 import { db, saveDb } from '../database/store';
 import { rebuildIndexes } from '../database/db-index.service';
 import { getDataDir, getUploadsDir } from '../utils/paths.util';
+import {
+  BACKUP_BUCKET,
+  deleteObjects,
+  downloadObject,
+  ensurePrivateBucket,
+  isRemoteStorageEnabled,
+  listObjects,
+  uploadObject,
+} from './remote-storage';
 
 const DATA_DIR = getDataDir();
 const BACKUP_DIR = path.join(DATA_DIR, 'backups');
 const STORE_FILE = path.join(DATA_DIR, 'store.json');
 const UPLOADS_DIR = getUploadsDir();
 const MAX_BACKUPS = 10;
+const MAX_REMOTE_BACKUPS = 20;
+const REMOTE_BACKUP_SIZE_LIMIT = 50 * 1024 * 1024;
+const AUTO_BACKUP_INTERVAL_MS = 24 * 60 * 60 * 1000;
 
 // Ensure backup directory exists
 if (!fs.existsSync(BACKUP_DIR)) {
@@ -31,6 +44,8 @@ export interface BackupInfo {
     users: number;
     reviews: number;
   };
+  /** Where the snapshot survives: 'remote' (Supabase Storage) outlives deploys, 'local' does not. */
+  location?: 'local' | 'remote' | 'local+remote';
 }
 
 class BackupServiceImpl {
@@ -122,7 +137,10 @@ class BackupServiceImpl {
   }
 
   /** Restore the database from a specific backup */
-  restoreBackup(backupId: string): { success: boolean; restoredAt: string; recordCounts: any } {
+  restoreBackup(
+    backupId: string,
+    options: { skipPreRestore?: boolean } = {},
+  ): { success: boolean; restoredAt: string; recordCounts: any } {
     const files = fs.readdirSync(BACKUP_DIR).filter((f) => f.includes(backupId));
     if (files.length === 0) {
       throw new Error(`Backup "${backupId}" not found`);
@@ -137,7 +155,7 @@ class BackupServiceImpl {
     }
 
     // Create a pre-restore backup first (safety net)
-    this.createBackup('pre-restore');
+    if (!options.skipPreRestore) this.createBackup('pre-restore');
 
     // Restore: overwrite current db with backup data
     const storeKeys = Object.keys(parsed.store);
@@ -163,6 +181,81 @@ class BackupServiceImpl {
       restoredAt: new Date().toISOString(),
       recordCounts,
     };
+  }
+
+  // ── Durable (off-box) backups ─────────────────────────────────────
+  // The local backup directory sits on the API host's disk, which Render
+  // wipes on every deploy/restart. With DATA_STORE=supabase each snapshot is
+  // also copied to a private Supabase Storage bucket so it can be restored
+  // after the container that took it is gone.
+
+  /** Create a backup and, when remote storage is configured, upload it before returning. */
+  async createBackupDurable(label?: string): Promise<BackupInfo> {
+    const info = this.createBackup(label);
+    if (!isRemoteStorageEnabled()) return { ...info, location: 'local' };
+
+    const body = fs.readFileSync(path.join(BACKUP_DIR, info.filename), 'utf-8');
+    await ensurePrivateBucket(BACKUP_BUCKET, REMOTE_BACKUP_SIZE_LIMIT);
+    await uploadObject(BACKUP_BUCKET, info.filename, body, 'application/json');
+    await this.pruneRemoteBackups();
+    return { ...info, location: 'local+remote' };
+  }
+
+  /** Local and remote backups merged, newest first. */
+  async listAllBackups(): Promise<BackupInfo[]> {
+    const local = this.listBackups().map((b) => ({ ...b, location: 'local' as const }));
+    if (!isRemoteStorageEnabled()) return local;
+
+    const byFilename = new Map<string, BackupInfo>(local.map((b) => [b.filename, b]));
+    for (const obj of await this.listRemoteBackups()) {
+      const existing = byFilename.get(obj.name);
+      if (existing) {
+        existing.location = 'local+remote';
+      } else {
+        byFilename.set(obj.name, {
+          id: obj.name.replace(/\.json$/, ''),
+          filename: obj.name,
+          createdAt: obj.createdAt,
+          sizeBytes: obj.sizeBytes,
+          recordCounts: { products: 0, orders: 0, users: 0, reviews: 0 },
+          location: 'remote',
+        });
+      }
+    }
+    return [...byFilename.values()].sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+  }
+
+  /** Restore from a local backup, fetching it from remote storage first if this container never had it. */
+  async restoreBackupDurable(backupId: string) {
+    const localMatch = fs.readdirSync(BACKUP_DIR).some((f) => f.includes(backupId));
+    if (!localMatch && isRemoteStorageEnabled()) {
+      // Only names returned by the listing are fetched, never the raw id.
+      const remote = (await this.listRemoteBackups()).find((o) => o.name.replace(/\.json$/, '') === backupId);
+      if (remote) {
+        const body = await downloadObject(BACKUP_BUCKET, remote.name);
+        fs.writeFileSync(path.join(BACKUP_DIR, path.basename(remote.name)), body);
+      }
+    }
+    // The safety-net snapshot must survive a redeploy too, so take it durably.
+    await this.createBackupDurable('pre-restore');
+    return this.restoreBackup(backupId, { skipPreRestore: true });
+  }
+
+  /** Newest remote backup's timestamp, or null when there is none. */
+  async latestRemoteBackupAt(): Promise<Date | null> {
+    const [newest] = await this.listRemoteBackups();
+    return newest?.createdAt ? new Date(newest.createdAt) : null;
+  }
+
+  private async listRemoteBackups() {
+    await ensurePrivateBucket(BACKUP_BUCKET, REMOTE_BACKUP_SIZE_LIMIT);
+    const objects = await listObjects(BACKUP_BUCKET, '', 100);
+    return objects.filter((o) => o.name.startsWith('backup-') && o.name.endsWith('.json'));
+  }
+
+  private async pruneRemoteBackups() {
+    const objects = await this.listRemoteBackups();
+    await deleteObjects(BACKUP_BUCKET, objects.slice(MAX_REMOTE_BACKUPS).map((o) => o.name));
   }
 
   /** Get upload files manifest for backup metadata */
@@ -201,3 +294,45 @@ class BackupServiceImpl {
 
 // Singleton instance
 export const backupService = new BackupServiceImpl();
+
+/**
+ * Takes an off-box backup at most once a day. Checked hourly rather than on a
+ * fixed 24h timer because free-tier hosts sleep and restart often; the check
+ * compares against the newest stored backup, so restarts don't multiply them.
+ */
+@Injectable()
+export class BackupScheduler implements OnApplicationBootstrap, OnApplicationShutdown {
+  private timer: NodeJS.Timeout | null = null;
+  private firstRun: NodeJS.Timeout | null = null;
+  private running = false;
+
+  onApplicationBootstrap() {
+    if (!isRemoteStorageEnabled()) return;
+    // Give boot-time hydration from Supabase time to finish before the first snapshot.
+    this.firstRun = setTimeout(() => this.tick(), 5 * 60 * 1000);
+    this.timer = setInterval(() => this.tick(), 60 * 60 * 1000);
+    this.firstRun.unref?.();
+    this.timer.unref?.();
+  }
+
+  onApplicationShutdown() {
+    if (this.firstRun) clearTimeout(this.firstRun);
+    if (this.timer) clearInterval(this.timer);
+  }
+
+  private async tick() {
+    if (this.running) return;
+    this.running = true;
+    try {
+      const latest = await backupService.latestRemoteBackupAt();
+      if (!latest || Date.now() - latest.getTime() >= AUTO_BACKUP_INTERVAL_MS) {
+        const info = await backupService.createBackupDurable('auto-daily');
+        console.log(`[Backup] Daily backup stored off-box: ${info.filename}`);
+      }
+    } catch (err) {
+      console.error('[Backup] Automatic backup failed:', (err as Error).message);
+    } finally {
+      this.running = false;
+    }
+  }
+}

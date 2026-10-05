@@ -1,9 +1,22 @@
-import { Injectable, BadRequestException, NotFoundException } from '@nestjs/common';
+import { Injectable, BadRequestException, NotFoundException, ServiceUnavailableException } from '@nestjs/common';
 import { v4 as uuidv4 } from 'uuid';
 import * as fs from 'fs';
 import * as path from 'path';
 import { db, saveDb } from '../common/database/store';
 import { getUploadsDir } from '../common/utils/paths.util';
+import {
+  PUBLIC_MEDIA_BUCKET,
+  isRemoteStorageEnabled,
+  publicObjectUrl,
+  uploadObject,
+} from '../common/services/remote-storage';
+
+const MAX_UPLOAD_BYTES = 10 * 1024 * 1024;
+const IMAGE_EXTENSIONS: Record<string, string> = {
+  'image/jpeg': '.jpg',
+  'image/png': '.png',
+  'image/webp': '.webp',
+};
 
 
 @Injectable()
@@ -42,55 +55,8 @@ export class MediaService {
     if (!file) {
       throw new BadRequestException({ code: 'NO_FILE_PROVIDED', message: 'No file was uploaded' });
     }
-
-    const maxMb = 10;
-    if (file.size > maxMb * 1024 * 1024) {
-      throw new BadRequestException({
-        code: 'FILE_TOO_LARGE',
-        message: `File exceeds maximum allowed size of ${maxMb}MB`,
-      });
-    }
-
-    const allowedTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/svg+xml', 'image/gif'];
-    if (!allowedTypes.includes(file.mimetype)) {
-      throw new BadRequestException({
-        code: 'INVALID_FILE_TYPE',
-        message: 'Only JPG, PNG, WEBP, SVG, and GIF files are supported',
-      });
-    }
-
-    const originalName = customName || file.originalname || 'uploaded-image.png';
-    const ext = path.extname(originalName) || (file.mimetype === 'image/png' ? '.png' : '.jpg');
-    const sanitizedBase = path.basename(originalName, ext).replace(/[^a-zA-Z0-9_-]/g, '_');
-    const filename = `${Date.now()}-${uuidv4().slice(0, 8)}-${sanitizedBase}${ext}`;
-    const destinationPath = path.join(this.uploadDir, filename);
-
-    fs.writeFileSync(destinationPath, file.buffer);
-
-    const baseUrl = this.getBaseUrl();
-    const publicUrl = `${baseUrl}/api/v1/media/file/${filename}`;
-
-    const { db } = require('../common/database/store');
-    const asset = {
-      id: `asset-${Date.now()}-${uuidv4().slice(0, 6)}`,
-      name: originalName,
-      category: category || 'products',
-      url: publicUrl,
-      sizeBytes: file.size,
-      dimensions: '1600x2000',
-      uploaded_at: new Date().toISOString(),
-    };
-
-    if (!db.media_assets) {
-      db.media_assets = [];
-    }
-    db.media_assets.unshift(asset);
-
-    return {
-      success: true,
-      url: publicUrl,
-      asset,
-    };
+    const originalName = customName || file.originalname || 'uploaded-image';
+    return this.storeImage(file.buffer, file.mimetype, originalName, category || 'products', '1600x2000');
   }
 
   /** Save file uploaded via Base64 dataURL (e.g. from customizer canvas) */
@@ -104,33 +70,65 @@ export class MediaService {
       throw new BadRequestException({ code: 'MALFORMED_DATA_URL', message: 'Malformed data URL' });
     }
 
-    const mimetype = matches[1];
     const buffer = Buffer.from(matches[2], 'base64');
-    const ext = mimetype === 'image/png' ? '.png' : mimetype === 'image/webp' ? '.webp' : '.jpg';
-    const originalName = customName || `artwork-${Date.now()}${ext}`;
-    const filename = `${Date.now()}-${uuidv4().slice(0, 8)}-${path.basename(originalName, ext).replace(/[^a-zA-Z0-9_-]/g, '_')}${ext}`;
-    const destinationPath = path.join(this.uploadDir, filename);
+    const originalName = customName || `artwork-${Date.now()}`;
+    return this.storeImage(buffer, matches[1], originalName, category || 'designs', '1200x1200');
+  }
 
-    fs.writeFileSync(destinationPath, buffer);
+  /**
+   * Validate and persist an image. With DATA_STORE=supabase it goes to the
+   * public Supabase Storage bucket, because the API host's disk is wiped on
+   * every deploy; otherwise to the local uploads directory.
+   */
+  private async storeImage(buffer: Buffer, mimetype: string, originalName: string, category: string, dimensions: string) {
+    if (buffer.length > MAX_UPLOAD_BYTES) {
+      throw new BadRequestException({
+        code: 'FILE_TOO_LARGE',
+        message: `File exceeds maximum allowed size of ${MAX_UPLOAD_BYTES / 1024 / 1024}MB`,
+      });
+    }
+    // Extension comes from the validated type, never the client's file name,
+    // so an "image" can't be stored as .html/.svg and served as markup.
+    const ext = IMAGE_EXTENSIONS[mimetype];
+    if (!ext) {
+      throw new BadRequestException({
+        code: 'INVALID_FILE_TYPE',
+        message: 'Only JPG, PNG and WEBP images are supported',
+      });
+    }
 
-    const baseUrl = this.getBaseUrl();
-    const publicUrl = `${baseUrl}/api/v1/media/file/${filename}`;
+    const sanitizedBase = path.basename(originalName, path.extname(originalName)).replace(/[^a-zA-Z0-9_-]/g, '_').slice(0, 60) || 'image';
+    const filename = `${Date.now()}-${uuidv4().slice(0, 8)}-${sanitizedBase}${ext}`;
 
-    const { db } = require('../common/database/store');
+    let publicUrl: string;
+    if (isRemoteStorageEnabled()) {
+      const key = `uploads/${filename}`;
+      try {
+        await uploadObject(PUBLIC_MEDIA_BUCKET, key, buffer, mimetype);
+      } catch (err) {
+        console.error('[Media] Remote upload failed:', (err as Error).message);
+        throw new ServiceUnavailableException({ code: 'UPLOAD_FAILED', message: 'Image storage is unavailable. Please try again.' });
+      }
+      publicUrl = publicObjectUrl(PUBLIC_MEDIA_BUCKET, key);
+    } else {
+      fs.writeFileSync(path.join(this.uploadDir, filename), buffer);
+      publicUrl = `${this.getBaseUrl()}/api/v1/media/file/${filename}`;
+    }
+
     const asset = {
       id: `asset-${Date.now()}-${uuidv4().slice(0, 6)}`,
       name: originalName,
-      category: category || 'designs',
+      category,
       url: publicUrl,
       sizeBytes: buffer.length,
-      dimensions: '1200x1200',
+      dimensions,
       uploaded_at: new Date().toISOString(),
     };
-
     if (!db.media_assets) {
       db.media_assets = [];
     }
     db.media_assets.unshift(asset);
+    saveDb();
 
     return {
       success: true,
@@ -146,9 +144,8 @@ export class MediaService {
       throw new BadRequestException({ code: 'FILE_TOO_LARGE', message: `File exceeds maximum allowed size of ${maxMb}MB` });
     }
 
-    const allowedTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/svg+xml'];
-    if (!allowedTypes.includes(fileType)) {
-      throw new BadRequestException({ code: 'INVALID_FILE_TYPE', message: 'Only JPG, PNG, WEBP, and SVG files are supported' });
+    if (!IMAGE_EXTENSIONS[fileType]) {
+      throw new BadRequestException({ code: 'INVALID_FILE_TYPE', message: 'Only JPG, PNG and WEBP images are supported' });
     }
 
     const baseUrl = this.getBaseUrl();

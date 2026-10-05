@@ -7,6 +7,7 @@ import { AppModule } from '../src/app.module';
 import { HttpExceptionFilter } from '../src/common/filters/http-exception.filter';
 import { ResponseInterceptor } from '../src/common/interceptors/response.interceptor';
 import { RequestIdInterceptor } from '../src/common/interceptors/request-id.interceptor';
+import { db } from '../src/common/database/store';
 
 interface TestResult {
   section: string;
@@ -54,11 +55,20 @@ async function runUploadVerification() {
   const BASE_URL = `http://127.0.0.1:${TEST_PORT}/api/v1`;
 
   try {
-    // Admin login to get JWT
+    // No admin account is seeded, so sign one up and promote it in the store.
+    const adminEmail = `upload_admin_${Date.now()}@bingooo.in`;
+    const adminPassword = 'UploadAdmin123!';
+    await fetch(`${BASE_URL}/auth/signup`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: adminEmail, password: adminPassword, fullName: 'Upload Admin' }),
+    });
+    const adminUser = db.users.find((u) => u.email === adminEmail);
+    if (adminUser) adminUser.role = 'SUPER_ADMIN';
     const loginRes = await fetch(`${BASE_URL}/auth/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email: 'admin@bingooo.in', password: 'Admin@123456' }),
+      body: JSON.stringify({ email: adminEmail, password: adminPassword }),
     });
     const loginJson = await loginRes.json();
     const adminToken = loginJson.data?.token;
@@ -73,8 +83,10 @@ async function runUploadVerification() {
     formData.append('category', 'products');
     formData.append('name', 'test-heavyweight-tee.png');
 
+    const authHeader = { Authorization: `Bearer ${adminToken}` };
     const uploadRes = await fetch(`${BASE_URL}/media/upload`, {
       method: 'POST',
+      headers: authHeader,
       body: formData,
     });
     const uploadJson = await uploadRes.json();
@@ -102,7 +114,7 @@ async function runUploadVerification() {
     };
     const b64Res = await fetch(`${BASE_URL}/media/upload`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', ...authHeader },
       body: JSON.stringify(base64Payload),
     });
     const b64Json = await b64Res.json();
@@ -111,7 +123,7 @@ async function runUploadVerification() {
 
     // 4. Media Library Listing
     console.log('\n📦 4. Media Assets Library Listing');
-    const listRes = await fetch(`${BASE_URL}/media/assets?category=products`);
+    const listRes = await fetch(`${BASE_URL}/media/assets?category=products`, { headers: authHeader });
     const listJson = await listRes.json();
     const assetsList = listJson.data || [];
     assert(assetsList.some((a: any) => a.id === uploadedAsset?.id), 'Library', 'Uploaded asset appears in media assets list');
@@ -154,12 +166,12 @@ async function runUploadVerification() {
     console.log('\n📦 7. Delete Media Asset');
     const deleteRes = await fetch(`${BASE_URL}/media/assets/${uploadedAsset?.id}/delete`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', ...authHeader },
     });
     const deleteJson = await deleteRes.json();
     assert(deleteRes.status === 200, 'Delete', 'POST /media/assets/:id/delete returns HTTP 200');
 
-    const verifyListRes = await fetch(`${BASE_URL}/media/assets`);
+    const verifyListRes = await fetch(`${BASE_URL}/media/assets`, { headers: authHeader });
     const verifyListJson = await verifyListRes.json();
     assert(!verifyListJson.data.some((a: any) => a.id === uploadedAsset?.id), 'Delete', 'Asset no longer present in media library');
 

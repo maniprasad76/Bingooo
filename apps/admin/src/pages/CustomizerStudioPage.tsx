@@ -450,37 +450,11 @@ export function CustomizerStudioPage() {
     setUploadingColorId(colorId);
 
     try {
-      let finalUrl = '';
-      try {
-        const formData = new FormData();
-        formData.append('file', file);
-        formData.append('category', 'garments');
-        formData.append('name', `${activeGarment.id}-${colorId}-${side}`);
-
-        const token = localStorage.getItem('bingooo_auth_token');
-        const res = await fetch('/api/v1/media/upload', {
-          method: 'POST',
-          headers: token ? { Authorization: `Bearer ${token}` } : {},
-          body: formData,
-        });
-
-        if (res.ok) {
-          const json = await res.json();
-          finalUrl = json?.data?.url || json?.url || '';
-        }
-      } catch {
-        // Fallback
-      }
-
-      if (!finalUrl) {
-        finalUrl = await new Promise<string>((resolve) => {
-          const reader = new FileReader();
-          reader.onload = (ev) => resolve((ev.target?.result as string) || '');
-          reader.readAsDataURL(file);
-        });
-      }
-
-      if (!finalUrl) throw new Error('Could not read image file.');
+      // Goes through the API (not a relative URL, which on the deployed admin
+      // hits the admin's own domain). No base64 fallback: embedding the image
+      // in the studio config bloats the database and hides the failure.
+      const { url: finalUrl } = await api.upload(file, 'garments');
+      if (!finalUrl) throw new Error('Upload did not return an image URL.');
 
       updateActiveGarment((prev) => ({
         ...prev,

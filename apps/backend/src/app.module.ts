@@ -28,6 +28,7 @@ import { BannersModule } from './banners/banners.module';
 import { EmailModule } from './email/email.module';
 import { AppRecordsShutdown } from './common/database/app-records.service';
 import { StoreShutdown } from './common/database/store';
+import { BackupScheduler } from './common/services/backup.service';
 
 import { AppController } from './app.controller';
 
@@ -93,6 +94,7 @@ import { AppController } from './app.controller';
   providers: [
     AppRecordsShutdown,
     StoreShutdown,
+    BackupScheduler,
     {
       provide: APP_GUARD,
       useClass: ThrottlerGuard,

@@ -295,8 +295,6 @@
     "store_email": "care@bingooo.in",
     "store_phone": "+91 98765 43210",
     "support_hours": "Mon - Sat: 10:00 AM - 7:00 PM IST",
-    "shipping_fee_default": 99,
-    "free_shipping_threshold": 999,
     "tax_rate_percentage": 5,
     "max_upload_size_mb": 15,
     "currency": "INR",

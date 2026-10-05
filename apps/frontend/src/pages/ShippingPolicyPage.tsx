@@ -74,7 +74,7 @@ const FAQS = [
   {
     question: 'How much does shipping cost across India?',
     answer:
-      'All domestic orders with a cart value of ₹999 or more receive 100% complimentary express shipping. For orders below ₹999, a nominal flat freight charge of ₹79 is applied at checkout to cover express air logistics.',
+      'Shipping is free on every domestic order — no minimum cart value and no shipping charges added at checkout.',
   },
   {
     question: 'How do I track my active shipment in real time?',
@@ -160,7 +160,7 @@ export function ShippingPolicyPage() {
     <main className="bg-[#F7EEDB] text-[#171717] font-sans antialiased selection:bg-[#E6321C] selection:text-white">
       <SEO
         title="Shipping & Delivery Policy — BINGOOO Atelier"
-        description="Review Bingooo's pan-India delivery timelines, courier tracking details, dispatch schedules, and free shipping on orders above ₹999."
+        description="Review Bingooo's pan-India delivery timelines, courier tracking details, dispatch schedules, and free shipping on every order."
         canonical="https://bingooo.co.in/shipping-policy"
       />
 
@@ -201,7 +201,7 @@ export function ShippingPolicyPage() {
           </h1>
 
           <p className="max-w-[480px] m-0 mb-8 text-[#6F6A63] text-[13px] leading-[1.8]">
-            From our flagship Srikakulam atelier to doorsteps across 19,000+ Indian postal pin codes. Fast, tamper-proof courier transit powered by Blue Dart, Delhivery, and DTDC — with complimentary express air shipping on all orders above ₹999.
+            From our flagship Srikakulam atelier to doorsteps across 19,000+ Indian postal pin codes. Fast, tamper-proof courier transit powered by Blue Dart, Delhivery, and DTDC — with free shipping on every order.
           </p>
 
           {/* Action CTAs */}
@@ -235,7 +235,7 @@ export function ShippingPolicyPage() {
             </div>
             <div className="flex flex-col border-l border-[#DDD3C5] pl-3">
               <span className="font-mono text-[10px] font-bold uppercase text-[#171717]">FREE SHIPPING</span>
-              <span className="text-[12px] font-bold text-[#238636]">Orders ₹999+</span>
+              <span className="text-[12px] font-bold text-[#238636]">All Orders</span>
             </div>
             <div className="flex flex-col border-l border-[#DDD3C5] pl-3">
               <span className="font-mono text-[10px] font-bold uppercase text-[#E6321C]">COVERAGE</span>
@@ -298,10 +298,10 @@ export function ShippingPolicyPage() {
               </div>
               <div>
                 <div className="text-[clamp(32px,3.8vw,52px)] font-extrabold tracking-[-0.06em] leading-none text-[#238636]">
-                  ₹999+
+                  ₹0
                 </div>
                 <p className="mt-2 text-[11px] font-semibold uppercase tracking-wider text-[#6F6A63]">
-                  Complimentary Express Shipping on Orders
+                  Shipping Charges on Every Order
                 </p>
               </div>
             </div>

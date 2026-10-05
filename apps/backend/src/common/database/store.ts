@@ -58,8 +58,6 @@ export const db = {
     store_email: 'care@bingooo.in',
     store_phone: '+91 98765 43210',
     support_hours: 'Mon - Sat: 10:00 AM - 7:00 PM IST',
-    shipping_fee_default: 99,
-    free_shipping_threshold: 999,
     gst_enabled: false,
     tax_rate_percentage: 0,
     max_upload_size_mb: 15,

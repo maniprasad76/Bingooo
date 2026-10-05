@@ -189,10 +189,12 @@ export function OrderDetailPage() {
                 <span className="font-semibold">-₹{order.discount}</span>
               </div>
             )}
-            <div className="flex justify-between text-muted">
-              <span>Shipping Fee</span>
-              <span className="font-semibold text-ink">₹{order.shipping_fee}</span>
-            </div>
+            {Number(order.shipping_fee) > 0 && (
+              <div className="flex justify-between text-muted">
+                <span>Shipping Fee</span>
+                <span className="font-semibold text-ink">₹{order.shipping_fee}</span>
+              </div>
+            )}
             {order.tax > 0 ? (
               <div className="flex justify-between text-muted">
                 <span>Taxes</span>

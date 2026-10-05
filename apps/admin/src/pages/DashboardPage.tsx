@@ -227,7 +227,7 @@ export function DashboardPage() {
 
             <Link
               to="/orders"
-              className="text-[11px] font-mono font-bold text-brand-red hover:underline flex items-center gap-1 uppercase tracking-wider"
+              className="text-[11px] font-mono font-bold text-brand-red hover:underline flex items-center gap-1 uppercase tracking-wider whitespace-nowrap shrink-0"
             >
               All Orders <ChevronRight size={13} />
             </Link>
@@ -255,8 +255,8 @@ export function DashboardPage() {
                   data.recentOrders.map((o) => (
                     <tr key={o.id} className="group">
                       <td>
-                        <div className="flex items-center gap-2">
-                          <span className="w-2 h-2 rounded-full bg-brand-red/60" />
+                        <div className="flex items-center gap-2 whitespace-nowrap">
+                          <span className="w-2 h-2 shrink-0 rounded-full bg-brand-red/60" />
                           <span className="font-mono text-xs font-bold text-ink group-hover:text-brand-red transition-colors">
                             {o.orderNumber}
                           </span>
@@ -311,7 +311,7 @@ export function DashboardPage() {
 
             <Link
               to="/inventory"
-              className="text-[11px] font-mono font-bold text-brand-red hover:underline flex items-center gap-1 uppercase tracking-wider"
+              className="text-[11px] font-mono font-bold text-brand-red hover:underline flex items-center gap-1 uppercase tracking-wider whitespace-nowrap shrink-0"
             >
               Inventory <ChevronRight size={13} />
             </Link>

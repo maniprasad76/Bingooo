@@ -3,49 +3,6 @@ import { db } from '../common/database/store';
 
 @Injectable()
 export class ShippingService {
-  /** Available delivery tiers */
-  getMethods() {
-    const threshold = db.settings.free_shipping_threshold || 999;
-    const defaultFee = db.settings.shipping_fee_default || 99;
-
-    return [
-      {
-        id: 'standard',
-        name: 'Standard Surface Logistics',
-        estimatedDays: '3-5 business days',
-        carrier: 'BlueDart / Delhivery Surface',
-        rate: defaultFee,
-        freeAbove: threshold,
-        description: `Delivered via premium surface network. Free on orders above ₹${threshold}.`,
-      },
-      {
-        id: 'express',
-        name: 'Express Air Priority',
-        estimatedDays: '1-2 business days',
-        carrier: 'BlueDart Apex Air',
-        rate: 199,
-        freeAbove: null,
-        description: 'Next-flight priority courier dispatch with guaranteed fast delivery.',
-      },
-    ];
-  }
-
-  /** Calculate shipping fee for cart or checkout */
-  calculate(subtotal: number, methodId = 'standard') {
-    const threshold = db.settings.free_shipping_threshold || 999;
-    const defaultFee = db.settings.shipping_fee_default || 99;
-
-    if (methodId === 'express') {
-      return { fee: 199, isFree: false, threshold };
-    }
-
-    if (subtotal >= threshold || subtotal === 0) {
-      return { fee: 0, isFree: true, threshold };
-    }
-
-    return { fee: defaultFee, isFree: false, threshold };
-  }
-
   /** Track parcel by AWB / Tracking number */
   track(trackingNumber: string) {
     // Check if an order in db has this tracking number

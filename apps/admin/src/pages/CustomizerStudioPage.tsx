@@ -730,7 +730,7 @@ export function CustomizerStudioPage() {
               </p>
             </div>
 
-            <div className="flex p-1 bg-gray-100 rounded-2xl gap-1">
+            <div className="flex p-1 bg-gray-100 rounded-2xl gap-1 max-w-full overflow-x-auto">
               {[
                 { id: 'pricing' as const, label: 'Pricing & Details', icon: DollarSign },
                 { id: 'colors' as const, label: `Colorways (${activeGarment.colors?.length || 0})`, icon: Palette },
@@ -744,7 +744,7 @@ export function CustomizerStudioPage() {
                     key={tab.id}
                     type="button"
                     onClick={() => setActiveTab(tab.id)}
-                    className={`px-3 py-2 text-xs font-bold rounded-xl transition-all flex items-center gap-1.5 cursor-pointer ${
+                    className={`px-3 py-2 text-xs font-bold rounded-xl transition-all flex shrink-0 items-center gap-1.5 whitespace-nowrap cursor-pointer ${
                       isCurrent ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-900'
                     }`}
                   >

@@ -535,15 +535,15 @@ export function ProductEditorPage() {
           STICKY TOP ACTION BAR
       ───────────────────────────────────────────────────────── */}
       <div className="sticky top-0 z-30 flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-paper/95 backdrop-blur-md py-3 border-b border-border">
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 min-w-0 flex-1">
           <Link
             to="/products"
-            className="w-8 h-8 rounded-lg border border-border flex items-center justify-center text-muted hover:text-ink hover:bg-beige transition-colors"
+            className="w-8 h-8 shrink-0 rounded-lg border border-border flex items-center justify-center text-muted hover:text-ink hover:bg-beige transition-colors"
             title="Back to products"
           >
             <ArrowLeft size={16} />
           </Link>
-          <div>
+          <div className="min-w-0">
             <div className="flex items-center gap-2">
               <span className="text-[10px] font-mono uppercase tracking-widest text-muted">
                 Studio / {isEditing ? 'Edit' : 'Create'}
@@ -577,11 +577,11 @@ export function ProductEditorPage() {
         </div>
 
         {/* Action Buttons */}
-        <div className="flex items-center gap-2.5">
+        <div className="flex flex-wrap items-center gap-2.5 sm:shrink-0">
           <select
             value={status}
             onChange={(e) => setStatus(e.target.value as any)}
-            className="admin-select text-xs py-1.5 font-semibold"
+            className="admin-select w-auto text-xs py-1.5 font-semibold"
           >
             <option value="active">Active (Visible)</option>
             <option value="draft">Draft (Hidden)</option>
@@ -1405,14 +1405,21 @@ export function ProductEditorPage() {
               <div className="bg-[#F7EEDB] border border-[#DDD3C5] overflow-hidden rounded-lg max-w-sm mx-auto shadow-2xs">
                 {/* Image */}
                 <div className="relative aspect-[4/5] bg-[#EDE0CC] overflow-hidden">
-                  <img
-                    src={validImages[0]}
-                    alt={title || 'Product'}
-                    className="w-full h-full object-cover"
-                    onError={(e) => {
-                      (e.target as HTMLElement).style.display = 'none';
-                    }}
-                  />
+                  {validImages[0] ? (
+                    <img
+                      src={validImages[0]}
+                      alt={title || 'Product'}
+                      className="w-full h-full object-cover"
+                      onError={(e) => {
+                        (e.target as HTMLElement).style.display = 'none';
+                      }}
+                    />
+                  ) : (
+                    <div className="w-full h-full flex flex-col items-center justify-center gap-1.5 text-[#6F6A63]/70">
+                      <ImageIcon size={28} />
+                      <span className="text-[9px] font-mono font-bold uppercase tracking-widest">No image yet</span>
+                    </div>
+                  )}
 
                   {/* Badges */}
                   <div className="absolute top-2.5 left-2.5 flex flex-col gap-1 z-10 select-none">
@@ -1512,11 +1519,18 @@ export function ProductEditorPage() {
 
                   {/* Main Preview Image */}
                   <div className="relative aspect-[4/5] flex-1 bg-[#EDE0CC] rounded-lg overflow-hidden border border-[#DDD3C5]">
-                    <img
-                      src={validImages[previewActiveImage] || validImages[0]}
-                      alt="Main"
-                      className="w-full h-full object-cover"
-                    />
+                    {validImages[previewActiveImage] || validImages[0] ? (
+                      <img
+                        src={validImages[previewActiveImage] || validImages[0]}
+                        alt="Main"
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex flex-col items-center justify-center gap-1.5 text-[#6F6A63]/70">
+                        <ImageIcon size={28} />
+                        <span className="text-[9px] font-mono font-bold uppercase tracking-widest">No image yet</span>
+                      </div>
+                    )}
                     {/* Badge */}
                     <div className="absolute top-2 left-2 flex flex-col gap-1 select-none">
                       {isBestseller && (

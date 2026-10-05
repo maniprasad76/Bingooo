@@ -9,7 +9,6 @@ import { ProductsPage } from '../pages/ProductsPage';
 import { ProductEditorPage } from '../pages/ProductEditorPage';
 import { CustomersPage } from '../pages/CustomersPage';
 import { CouponsPage } from '../pages/CouponsPage';
-import { BannersPage } from '../pages/BannersPage';
 import { SettingsPage } from '../pages/SettingsPage';
 import { CustomizerStudioPage } from '../pages/CustomizerStudioPage';
 
@@ -52,7 +51,6 @@ export const router = createBrowserRouter([
       { path: 'reviews', element: <ReviewsPage /> },
       { path: 'returns', element: <ReturnsPage /> },
       { path: 'coupons', element: <CouponsPage /> },
-      { path: 'banners', element: <BannersPage /> },
       { path: 'settings', element: <SettingsPage /> },
       { path: '*', element: <Navigate to="/dashboard" replace /> },
     ],

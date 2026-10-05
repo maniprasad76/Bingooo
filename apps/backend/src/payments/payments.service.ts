@@ -98,8 +98,6 @@ export class PaymentsService {
   getPaymentConfig() {
     return {
       razorpay_enabled: true,
-      free_shipping_threshold: Number(db.settings.free_shipping_threshold) || 999,
-      shipping_fee_default: Number(db.settings.shipping_fee_default) || 99,
       prepaid_discount_percentage: Number(db.settings.prepaid_discount_percentage) || 5,
       currency: db.settings.currency || 'INR',
       key_id: (process.env.RAZORPAY_KEY_ID || '').trim(),

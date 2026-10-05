@@ -9,7 +9,6 @@ import {
   Package,
   Users,
   Ticket,
-  Image,
   Settings,
   LogOut,
   Menu,
@@ -66,7 +65,6 @@ const NAV_GROUPS: NavGroup[] = [
     label: 'Storefront & Config',
     items: [
       { to: '/coupons', icon: Ticket, label: 'Coupons' },
-      { to: '/banners', icon: Image, label: 'Banners & Hero' },
       { to: '/settings', icon: Settings, label: 'Settings' },
     ],
   },

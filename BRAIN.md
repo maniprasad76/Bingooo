@@ -172,4 +172,8 @@ python -m graphify update .
   - Added self-contained test catalog fallbacks in `run-security-suite.ts` and `run-checkout-e2e.ts` for clean boots.
   - Formatted SQL migrations 005–008 for COD cleanup and placeholder demo product removal.
   - Enhanced customizer hoodie SVG styling and updated SEO copy/prerender schemas for prepaid operations.
+- **2026-10-05: Universal Free Shipping Pan-India & Admin UI Refinements**
+  - Standardized store policy to 100% universal free delivery across all orders; stripped redundant shipping fee/threshold calculators from checkout, cart, shipping services, and schemas.
+  - Streamlined admin navigation by deprecating the unused Banners route and elevated admin table, badges, and view craftsmanship across admin pages.
+
 

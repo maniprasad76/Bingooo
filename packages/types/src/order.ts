@@ -34,7 +34,6 @@ export interface Order {
   paymentStatus: PaymentStatus;
   subtotal: number;
   discount: number;
-  shippingFee: number;
   tax: number;
   total: number;
   currency: string;
@@ -119,7 +118,6 @@ export interface CheckoutValidateInput {
 export interface CheckoutSummary {
   subtotal: number;
   discount: number;
-  shippingFee: number;
   tax: number;
   total: number;
   currency: string;

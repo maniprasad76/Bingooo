@@ -420,7 +420,7 @@ export function WishlistPage() {
                 FREE
               </div>
               <div className="mt-[5px] text-[#6f6a63] text-[9px] font-semibold uppercase tracking-[0.12em]">
-                Delivery Above ₹999
+                Delivery On All Orders
               </div>
             </div>
 

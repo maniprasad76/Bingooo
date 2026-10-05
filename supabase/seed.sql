@@ -39,7 +39,5 @@ INSERT INTO collections (name, slug, description, is_active) VALUES
 
 -- ── Settings ───────────────────────────────────────────────────
 INSERT INTO settings (key, value_json) VALUES
-  ('shipping_fee_default', '99'::jsonb),
-  ('free_shipping_threshold', '999'::jsonb),
   ('max_upload_size_mb', '15'::jsonb),
   ('currency', '"INR"'::jsonb);

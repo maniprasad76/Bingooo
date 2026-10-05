@@ -105,12 +105,12 @@ export function ProductsPage() {
       {/* Editorial Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <div className="flex items-center gap-2">
-            <span className="text-[10px] font-mono font-bold uppercase tracking-[0.2em] text-brand-red">
+          <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5">
+            <span className="text-[10px] font-mono font-bold uppercase tracking-[0.2em] text-brand-red whitespace-nowrap">
               CATALOG ATELIER
             </span>
             <span className="text-muted/40 font-mono">•</span>
-            <span className="text-[10px] font-mono font-bold uppercase tracking-widest text-muted">
+            <span className="text-[10px] font-mono font-bold uppercase tracking-widest text-muted whitespace-nowrap">
               {stats.total} TOTAL • {stats.active} LIVE • {stats.customizable} 3D BESPOKE
             </span>
           </div>
@@ -141,13 +141,13 @@ export function ProductsPage() {
       {/* Filter & Search Bar */}
       <div className="flex flex-col sm:flex-row items-center justify-between gap-3 bg-white p-3.5 rounded-2xl border border-border/80 shadow-card">
         <div className="relative w-full sm:w-96">
-          <Search size={15} className="absolute left-3.5 top-3 text-muted" />
+          <Search size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted" />
           <input
             type="text"
             placeholder="Search by title, slug, fabric, category…"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="admin-input pl-9.5 py-2 text-xs"
+            className="admin-input pl-10 py-2 text-xs"
           />
         </div>
 
@@ -177,7 +177,7 @@ export function ProductsPage() {
       {/* Products Table */}
       <div className="admin-table-container">
         <div className="overflow-x-auto">
-          <table className="admin-table">
+          <table className="admin-table [&_th]:px-3 [&_td]:px-3">
             <thead>
               <tr>
                 <th>Garment & Spec</th>
@@ -243,7 +243,7 @@ export function ProductsPage() {
                               </span>
                             )}
                             {p.customization_enabled && (
-                              <span className="absolute bottom-1 right-1 px-1 py-0.5 rounded text-[8px] font-mono font-black uppercase bg-brand-red text-white shadow-xs">
+                              <span className="absolute top-1 right-1 px-1 py-0.5 rounded text-[8px] font-mono font-black uppercase bg-brand-red text-white shadow-xs">
                                 3D
                               </span>
                             )}
@@ -257,7 +257,7 @@ export function ProductsPage() {
                                 {p.title}
                               </Link>
                             </div>
-                            <div className="flex items-center gap-2 mt-0.5">
+                            <div className="flex items-center gap-2 mt-0.5 whitespace-nowrap">
                               <span className="text-[10px] text-muted font-mono tracking-tight">
                                 /{p.slug}
                               </span>
@@ -272,7 +272,7 @@ export function ProductsPage() {
 
                       {/* Category */}
                       <td>
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold uppercase tracking-wider bg-beige/70 text-ink border border-border/60">
+                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold uppercase tracking-wider bg-beige/70 text-ink border border-border/60 whitespace-nowrap">
                           {p.category?.name || 'Curated'}
                         </span>
                       </td>
@@ -293,7 +293,7 @@ export function ProductsPage() {
 
                       {/* Fabric / Specs */}
                       <td>
-                        <div className="text-[11px] space-y-0.5">
+                        <div className="text-[11px] space-y-0.5 whitespace-nowrap">
                           <span className="font-semibold text-ink block">
                             {p.gsm ? `${p.gsm} GSM Cotton` : 'Heavyweight Cotton'}
                           </span>

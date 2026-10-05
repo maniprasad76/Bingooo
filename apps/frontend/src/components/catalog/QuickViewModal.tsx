@@ -154,7 +154,7 @@ export function QuickViewModal({ product, isOpen, onClose }: QuickViewModalProps
                       : '240 GSM LOOPKNIT COTTON'}
                   </span>
                   <span className="flex items-center gap-1">
-                    <Truck size={14} className="text-brand-red" /> FREE SHIPPING &gt; ₹999
+                    <Truck size={14} className="text-brand-red" /> FREE SHIPPING ON ALL ORDERS
                   </span>
                 </div>
               </div>

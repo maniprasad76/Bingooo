@@ -85,11 +85,8 @@ export class CheckoutService {
     const prepaidPct = Number(db.settings.prepaid_discount_percentage) || 5;
     const prepaidDiscount = Math.round(discountedSubtotal * (prepaidPct / 100));
 
-    const finalSubtotal = Math.max(0, discountedSubtotal - prepaidDiscount);
-    const freeShippingThreshold = db.settings.free_shipping_threshold || 999;
-    const shippingFee = finalSubtotal >= freeShippingThreshold || finalSubtotal === 0 ? 0 : (db.settings.shipping_fee_default || 99);
     const tax = 0; // All prices are all-inclusive (no extra GST)
-    const total = finalSubtotal + shippingFee;
+    const total = Math.max(0, discountedSubtotal - prepaidDiscount);
 
     return {
       isValid: true,
@@ -99,7 +96,6 @@ export class CheckoutService {
       discount,
       prepaidDiscount,
       coupon: couponInfo,
-      shippingFee,
       tax,
       total,
       paymentMethod: 'prepaid' as const,

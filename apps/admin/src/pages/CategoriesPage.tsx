@@ -179,12 +179,12 @@ export function CategoriesPage() {
       {/* Editorial Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <div className="flex items-center gap-2">
-            <span className="text-[10px] font-mono font-bold uppercase tracking-[0.2em] text-brand-red">
+          <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5">
+            <span className="text-[10px] font-mono font-bold uppercase tracking-[0.2em] text-brand-red whitespace-nowrap">
               TAXONOMY STUDIO
             </span>
             <span className="text-muted/40 font-mono">•</span>
-            <span className="text-[10px] font-mono font-bold uppercase tracking-widest text-muted">
+            <span className="text-[10px] font-mono font-bold uppercase tracking-widest text-muted whitespace-nowrap">
               {categories.length} CATEGORIES • {collections.length} COLLECTIONS
             </span>
           </div>
@@ -248,7 +248,7 @@ export function CategoriesPage() {
             placeholder={`Search ${activeTab}...`}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="admin-input pl-9.5 py-2 text-xs"
+            className="admin-input pl-10 py-2 text-xs"
           />
         </div>
       </div>

@@ -1,5 +1,5 @@
 import { Link, useNavigate } from 'react-router-dom';
-import { Minus, Plus, X, Sparkles } from 'lucide-react';
+import { Minus, Plus, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Drawer } from '../ui/Drawer';
 import { useCartStore } from '../../store/cart';
@@ -19,12 +19,8 @@ export function CartDrawer() {
     navigate('/checkout');
   };
 
-  const freeShippingThreshold = cart?.freeShippingThreshold || 999;
   const subtotal = cart?.subtotal || 0;
-  const progressToFree = Math.min(100, (subtotal / freeShippingThreshold) * 100);
-  const remainingForFree = Math.max(0, freeShippingThreshold - subtotal);
-  const shippingFee = subtotal >= freeShippingThreshold || subtotal === 0 ? 0 : (cart?.shippingFee || 79);
-  const total = Math.max(0, subtotal + shippingFee);
+  const total = Math.max(0, subtotal);
   const items = cart?.items || [];
 
   return (
@@ -58,37 +54,6 @@ export function CartDrawer() {
           >
             <X size={18} />
           </button>
-        </div>
-
-        {/* ================= FREE SHIPPING BAR ================= */}
-        <div className="border-b border-[#DDD3C5] bg-white/40 px-6 py-3 shrink-0">
-          <div className="flex items-center justify-between text-[11px] font-bold text-[#171717] mb-1.5">
-            <span>
-              {subtotal >= freeShippingThreshold ? (
-                <span className="text-[#238636] inline-flex items-center gap-1.5">
-                  <Sparkles className="w-3.5 h-3.5 text-[#238636]" />
-                  <span>FREE shipping unlocked!</span>
-                </span>
-              ) : (
-                <span>
-                  Add <strong className="text-[#E6321C] font-mono">₹{remainingForFree.toLocaleString('en-IN')}</strong> for FREE delivery
-                </span>
-              )}
-            </span>
-            <span className="font-mono text-[10px] text-[#6F6A63]">
-              ₹{subtotal.toLocaleString('en-IN')} / ₹{freeShippingThreshold}
-            </span>
-          </div>
-          <div className="h-1.5 w-full overflow-hidden rounded-full bg-[#EDE0CC]">
-            <motion.div
-              initial={false}
-              animate={{ width: `${progressToFree}%` }}
-              transition={{ type: 'spring', stiffness: 220, damping: 26 }}
-              className={`h-full rounded-full ${
-                subtotal >= freeShippingThreshold ? 'bg-[#238636]' : 'bg-[#E6321C]'
-              }`}
-            />
-          </div>
         </div>
 
         {/* ================= ITEM LIST ================= */}
@@ -296,12 +261,6 @@ export function CartDrawer() {
               <div className="flex justify-between">
                 <span>Subtotal</span>
                 <span className="font-mono font-bold text-[#171717]">₹{subtotal.toLocaleString('en-IN')}</span>
-              </div>
-              <div className="flex justify-between">
-                <span>Shipping</span>
-                <span className={`font-mono font-bold ${shippingFee === 0 ? 'text-[#238636]' : 'text-[#171717]'}`}>
-                  {shippingFee === 0 ? 'FREE' : `₹${shippingFee}`}
-                </span>
               </div>
               <div className="flex justify-between items-baseline pt-2 border-t border-[#DDD3C5] text-base font-extrabold text-[#171717]">
                 <span className="uppercase tracking-tight">Total</span>

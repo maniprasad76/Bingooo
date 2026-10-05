@@ -494,7 +494,7 @@ export function HomePage() {
                 Free Delivery
               </p>
               <p className="m-0 text-[#6f6a63] text-[9px]">
-                On orders above ₹999
+                On every order
               </p>
             </div>
           </div>

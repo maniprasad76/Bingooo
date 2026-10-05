@@ -9,8 +9,6 @@ interface StoreSettings {
   store_phone: string;
   support_hours: string;
   currency: string;
-  shipping_fee_default: number;
-  free_shipping_threshold: number;
   tax_rate_percentage: number;
   max_upload_size_mb: number;
   return_window_days: number;
@@ -24,8 +22,6 @@ const DEFAULT_SETTINGS: StoreSettings = {
   store_phone: '+91 98765 43210',
   support_hours: 'Mon - Sat: 10:00 AM - 7:00 PM IST',
   currency: 'INR',
-  shipping_fee_default: 99,
-  free_shipping_threshold: 1999,
   tax_rate_percentage: 0,
   max_upload_size_mb: 25,
   return_window_days: 7,
@@ -87,7 +83,7 @@ export function SettingsPage() {
           <Settings size={22} className="text-brand-red" /> Store Settings
         </h1>
         <p className="text-xs text-muted mt-0.5">
-          Configure operations, payment rules, shipping fees, and store policies.
+          Configure operations, payment rules, and store policies.
         </p>
       </div>
 
@@ -207,28 +203,6 @@ export function SettingsPage() {
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-              <label className="admin-label">Standard Delivery Fee (₹)</label>
-              <input
-                type="number"
-                min={0}
-                className="admin-input"
-                value={settings.shipping_fee_default}
-                onChange={(e) => setSettings({ ...settings, shipping_fee_default: Number(e.target.value) })}
-              />
-            </div>
-
-            <div>
-              <label className="admin-label">Free Shipping Threshold (₹)</label>
-              <input
-                type="number"
-                min={0}
-                className="admin-input"
-                value={settings.free_shipping_threshold}
-                onChange={(e) => setSettings({ ...settings, free_shipping_threshold: Number(e.target.value) })}
-              />
-            </div>
-
             <div>
               <label className="admin-label">Return Window (Days)</label>
               <input

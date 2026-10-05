@@ -162,7 +162,6 @@ export class OrdersService implements OnModuleInit, OnModuleDestroy {
       subtotal: calculation.subtotal,
       discount: calculation.discount,
       prepaid_discount: calculation.prepaidDiscount || 0,
-      shipping_fee: calculation.shippingFee,
       tax: calculation.tax,
       total: calculation.total,
       currency: 'INR',

@@ -78,8 +78,6 @@ export function CheckoutPage() {
     queryFn: () =>
       api.get<{
         prepaid_discount_percentage: number;
-        free_shipping_threshold: number;
-        shipping_fee_default: number;
       }>('/payments/config'),
     staleTime: 30000,
   });
@@ -146,9 +144,7 @@ export function CheckoutPage() {
   const subtotal = cart?.subtotal || 0;
   const isPrepaid = true;
   const prepaidDiscount = Math.round(subtotal * (prepaidDiscountPct / 100));
-  const afterDiscount = Math.max(0, subtotal - prepaidDiscount);
-  const shippingFee = afterDiscount >= 999 || afterDiscount === 0 ? 0 : 99;
-  const total = afterDiscount + shippingFee;
+  const total = Math.max(0, subtotal - prepaidDiscount);
 
   const hasCustomItems = cart?.items?.some((i: any) => Boolean(i.customization || i.customizationId));
 
@@ -441,12 +437,6 @@ export function CheckoutPage() {
                         <span>−₹{prepaidDiscount}</span>
                       </div>
                     )}
-                    <div className="flex justify-between text-muted">
-                      <span>Shipping Fee</span>
-                      <span className="font-medium text-ink">
-                        {shippingFee === 0 ? 'FREE' : `₹${shippingFee}`}
-                      </span>
-                    </div>
                     <div className="flex justify-between text-muted">
                       <span>Taxes</span>
                       <span className="font-medium text-emerald-700">Inclusive</span>
@@ -805,12 +795,6 @@ export function CheckoutPage() {
                   </div>
                 )}
 
-                <div className="flex justify-between text-muted">
-                  <span>Shipping Fee</span>
-                  <span className="font-medium text-ink">
-                    {shippingFee === 0 ? 'FREE' : `₹${shippingFee}`}
-                  </span>
-                </div>
                 <div className="flex justify-between text-muted">
                   <span>Taxes</span>
                   <span className="font-medium text-emerald-700">Inclusive</span>

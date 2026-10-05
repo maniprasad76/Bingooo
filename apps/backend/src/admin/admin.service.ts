@@ -141,13 +141,18 @@ export class AdminService {
 
   /** Get system settings */
   getSettings() {
-    return db.settings;
+    const { shipping_fee_default, free_shipping_threshold, ...settings } = db.settings;
+    return settings;
   }
 
   /** Update system settings */
   updateSettings(data: UpdateSettingsDto) {
-    Object.assign(db.settings, data);
+    const { shipping_fee_default, free_shipping_threshold, ...accepted } = data;
+    Object.assign(db.settings, accepted);
+    // Stored settings from before shipping became free may still hold these.
+    delete db.settings.shipping_fee_default;
+    delete db.settings.free_shipping_threshold;
     saveDb();
-    return db.settings;
+    return this.getSettings();
   }
 }

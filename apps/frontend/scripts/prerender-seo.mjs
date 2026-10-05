@@ -170,7 +170,7 @@ const ROUTES = [
     },
     contentHtml: `
       <h1>Classic Heavyweight Oversized Tee (240 GSM)</h1>
-      <p>₹1,299 • 240 GSM 100% Super-Combed Cotton • Free Pan-India Delivery on orders over ₹999.</p>
+      <p>₹1,299 • 240 GSM 100% Super-Combed Cotton • Free Pan-India Delivery on every order.</p>
       <p>Engineered with a dense weave that drops squarely off the shoulders and holds a boxy silhouette throughout the day.</p>
       <a href="/product/classic-oversized-tee">Order Now</a>
     `,

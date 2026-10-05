@@ -89,6 +89,7 @@ export class AuthService {
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
     });
+    saveDb();
 
     const tokenData = generateToken({
       userId: newUser.id,

@@ -13,11 +13,15 @@ export class UpdateSettingsDto {
   @IsOptional() @IsIn(['INR']) currency?: string;
 
   @IsOptional() @IsBoolean() gst_enabled?: boolean;
-  @IsOptional() @IsNumber() @Min(0) @Max(100000) shipping_fee_default?: number;
-  @IsOptional() @IsNumber() @Min(0) @Max(1000000) free_shipping_threshold?: number;
   @IsOptional() @IsNumber() @Min(0) @Max(100) tax_rate_percentage?: number;
   @IsOptional() @IsNumber() @Min(1) @Max(100) max_upload_size_mb?: number;
   @IsOptional() @IsNumber() @Min(0) @Max(365) return_window_days?: number;
   @IsOptional() @IsNumber() @Min(0) @Max(90) dtg_print_lead_days?: number;
   @IsOptional() @IsNumber() @Min(0) @Max(100) prepaid_discount_percentage?: number;
+
+  // Shipping is always free. Admin builds deployed before that change still
+  // send these two keys back; accept them so saving settings doesn't 400, and
+  // AdminService.updateSettings drops them.
+  @IsOptional() @IsNumber() shipping_fee_default?: number;
+  @IsOptional() @IsNumber() free_shipping_threshold?: number;
 }

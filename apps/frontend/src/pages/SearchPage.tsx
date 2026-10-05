@@ -214,7 +214,7 @@ export function SearchPage() {
                 FREE
               </div>
               <div className="mt-[5px] text-[#6f6a63] text-[9px] font-semibold uppercase tracking-[0.12em]">
-                Shipping Above ₹999
+                Shipping On All Orders
               </div>
             </div>
           </div>
@@ -372,7 +372,7 @@ export function SearchPage() {
               <Truck size={24} className="text-[#171717] shrink-0 stroke-[1.5]" />
               <div>
                 <div className="text-[9px] font-extrabold uppercase text-[#171717]">Fast Shipping</div>
-                <div className="text-[9px] text-[#6f6a63]">Free delivery above ₹999</div>
+                <div className="text-[9px] text-[#6f6a63]">Free delivery on all orders</div>
               </div>
             </div>
 

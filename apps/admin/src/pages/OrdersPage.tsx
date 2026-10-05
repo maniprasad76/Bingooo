@@ -43,7 +43,6 @@ interface Order {
   discount?: number;
   discount_amount?: number;
   tax_amount?: number;
-  shipping_fee?: number;
   status: string;
   payment_status?: string;
   paymentStatus?: string;
@@ -176,12 +175,12 @@ export function OrdersPage() {
       {/* Editorial Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <div className="flex items-center gap-2">
-            <span className="text-[10px] font-mono font-bold uppercase tracking-[0.2em] text-brand-red">
+          <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5">
+            <span className="text-[10px] font-mono font-bold uppercase tracking-[0.2em] text-brand-red whitespace-nowrap">
               FULFILLMENT OPS
             </span>
             <span className="text-muted/40 font-mono">•</span>
-            <span className="text-[10px] font-mono font-bold uppercase tracking-widest text-muted">
+            <span className="text-[10px] font-mono font-bold uppercase tracking-widest text-muted whitespace-nowrap">
               {orders.length} ORDERS TOTAL
             </span>
           </div>
@@ -230,7 +229,7 @@ export function OrdersPage() {
               placeholder="Search Order #, Name, Phone..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="admin-input pl-9.5 w-full sm:w-[280px] py-1.5 text-xs"
+              className="admin-input pl-10 w-full sm:w-[280px] py-1.5 text-xs"
             />
           </div>
         </form>
@@ -239,17 +238,17 @@ export function OrdersPage() {
       {/* Orders Table */}
       <div className="admin-table-container">
         <div className="overflow-x-auto">
-          <table className="admin-table">
+          <table className="admin-table [&_th]:px-3 [&_td]:px-3">
             <thead>
               <tr>
                 <th>Order Ref</th>
                 <th>Customer</th>
-                <th>Quantity</th>
+                <th className="hidden 2xl:table-cell">Quantity</th>
                 <th>Total Paid</th>
                 <th>Payment</th>
                 <th>Fulfillment</th>
                 <th>Logistics / AWB</th>
-                <th>Placed Date</th>
+                <th className="hidden min-[1366px]:table-cell">Placed Date</th>
                 <th className="text-right">Actions</th>
               </tr>
             </thead>
@@ -290,12 +289,15 @@ export function OrdersPage() {
                       <td>
                         <button
                           onClick={() => setSelectedOrder(o)}
-                          className="font-mono text-xs font-bold text-ink hover:text-brand-red flex items-center gap-1.5 text-left transition-colors"
+                          className="font-mono text-xs font-bold text-ink hover:text-brand-red flex items-center gap-1.5 text-left whitespace-nowrap transition-colors"
                         >
-                          <span className="w-1.5 h-1.5 rounded-full bg-brand-red" />
+                          <span className="w-1.5 h-1.5 shrink-0 rounded-full bg-brand-red" />
                           <span>{orderNum}</span>
                           <Eye size={12} className="text-muted opacity-0 group-hover:opacity-100 transition-opacity" />
                         </button>
+                        <span className="min-[1366px]:hidden block pl-3 mt-0.5 text-[10px] text-muted font-mono whitespace-nowrap">
+                          {formatDate(dateVal)}
+                        </span>
                       </td>
 
                       <td>
@@ -307,7 +309,7 @@ export function OrdersPage() {
                         </div>
                       </td>
 
-                      <td>
+                      <td className="hidden 2xl:table-cell">
                         <span className="font-mono text-xs font-bold text-ink">
                           {o.items?.length || o.itemCount || 1} pcs
                         </span>
@@ -345,14 +347,14 @@ export function OrdersPage() {
                             <span className="text-[9px] text-muted block uppercase font-bold tracking-wider">
                               {o.carrier || 'Courier'}
                             </span>
-                            <span className="font-bold text-ink tracking-tight">{o.tracking_number}</span>
+                            <span className="font-bold text-ink tracking-tight whitespace-nowrap">{o.tracking_number}</span>
                           </div>
                         ) : (
                           <span className="text-[10px] text-muted italic">Awaiting AWB</span>
                         )}
                       </td>
 
-                      <td className="text-[11px] text-muted whitespace-nowrap font-mono">
+                      <td className="hidden min-[1366px]:table-cell text-[11px] text-muted whitespace-nowrap font-mono">
                         {formatDate(dateVal)}
                       </td>
 
@@ -362,7 +364,7 @@ export function OrdersPage() {
                             value={o.status}
                             onChange={(e) => handleStatusChange(o, e.target.value)}
                             disabled={updating === o.id}
-                            className="admin-select text-xs py-1 px-2.5 w-[130px] rounded-lg"
+                            className="admin-select text-xs py-1 px-2.5 w-[142px] rounded-lg"
                           >
                             {STATUSES.filter((s) => s !== 'all').map((s) => (
                               <option key={s} value={s}>

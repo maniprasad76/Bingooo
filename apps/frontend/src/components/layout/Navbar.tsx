@@ -102,7 +102,7 @@ export function Navbar() {
     >
       {/* ─── Top Bar ─── */}
       <div className="min-h-[28px] bg-[#171717] text-white flex items-center justify-between px-4 sm:px-8 text-[9px] font-semibold tracking-[0.08em] uppercase select-none">
-        <div>FREE DELIVERY ON ORDERS ABOVE ₹999</div>
+        <div>FREE DELIVERY ON ALL ORDERS</div>
 
         <div className="hidden sm:flex items-center gap-[22px]">
           <a

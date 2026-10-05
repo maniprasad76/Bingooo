@@ -45,10 +45,8 @@ export function CartPage() {
 
   const items = cart?.items || [];
   const subtotal = cart?.subtotal || 0;
-  const freeThreshold = cart?.freeShippingThreshold || 999;
   const discount = appliedCoupon ? appliedCoupon.discount : 0;
-  const shippingFee = subtotal >= freeThreshold || subtotal === 0 ? 0 : (cart?.shippingFee || 79);
-  const total = Math.max(0, subtotal - discount + shippingFee);
+  const total = Math.max(0, subtotal - discount);
 
   const handleQtyChange = (id: string, currentQty: number, delta: number) => {
     triggerHaptic('light');
@@ -432,13 +430,6 @@ export function CartPage() {
                     </span>
                   </div>
 
-                  <div className="flex justify-between items-center py-2.5">
-                    <span className="text-[#4F4A44]">Shipping</span>
-                    <span className={`font-bold font-mono ${shippingFee === 0 ? 'text-[#238636]' : ''}`}>
-                      {shippingFee === 0 ? 'FREE' : `₹${shippingFee.toLocaleString('en-IN')}`}
-                    </span>
-                  </div>
-
                   {discount > 0 && (
                     <div className="flex justify-between items-center py-2.5 text-[#238636]">
                       <span>Discount ({appliedCoupon?.code})</span>
@@ -531,7 +522,7 @@ export function CartPage() {
                         FREE DELIVERY
                       </div>
                       <div className="text-[9px] text-[#6F6A63]">
-                        On orders above ₹999
+                        On every order
                       </div>
                     </div>
                   </div>

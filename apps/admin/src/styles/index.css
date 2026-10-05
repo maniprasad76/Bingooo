@@ -128,7 +128,7 @@
 
   /* Luxury Tactile Buttons */
   .btn-primary {
-    @apply inline-flex items-center justify-center gap-2 rounded-xl bg-brand-red px-4 py-2.5 text-xs font-bold uppercase tracking-wider text-white shadow-sm transition-all duration-150 disabled:pointer-events-none disabled:opacity-50;
+    @apply inline-flex items-center justify-center whitespace-nowrap gap-2 rounded-xl bg-brand-red px-4 py-2.5 text-xs font-bold uppercase tracking-wider text-white shadow-sm transition-all duration-150 disabled:pointer-events-none disabled:opacity-50;
   }
   .btn-primary:hover {
     @apply bg-brand-red-deep -translate-y-0.5;
@@ -139,7 +139,7 @@
   }
 
   .btn-secondary {
-    @apply inline-flex items-center justify-center gap-2 rounded-xl border border-ink bg-ink px-4 py-2.5 text-xs font-bold uppercase tracking-wider text-white shadow-sm transition-all duration-150 disabled:pointer-events-none disabled:opacity-50;
+    @apply inline-flex items-center justify-center whitespace-nowrap gap-2 rounded-xl border border-ink bg-ink px-4 py-2.5 text-xs font-bold uppercase tracking-wider text-white shadow-sm transition-all duration-150 disabled:pointer-events-none disabled:opacity-50;
   }
   .btn-secondary:hover {
     @apply bg-ink/90 -translate-y-0.5;
@@ -149,7 +149,7 @@
   }
 
   .btn-outline {
-    @apply inline-flex items-center justify-center gap-2 rounded-xl border border-border bg-white px-4 py-2.5 text-xs font-bold uppercase tracking-wider text-ink shadow-sm transition-all duration-150 disabled:pointer-events-none disabled:opacity-50;
+    @apply inline-flex items-center justify-center whitespace-nowrap gap-2 rounded-xl border border-border bg-white px-4 py-2.5 text-xs font-bold uppercase tracking-wider text-ink shadow-sm transition-all duration-150 disabled:pointer-events-none disabled:opacity-50;
   }
   .btn-outline:hover {
     @apply border-ink bg-beige/30;
@@ -159,11 +159,11 @@
   }
 
   .btn-ghost {
-    @apply inline-flex items-center justify-center gap-1.5 rounded-xl px-3 py-2 text-xs font-bold text-muted transition-colors hover:bg-black/5 hover:text-ink active:scale-[0.98];
+    @apply inline-flex items-center justify-center whitespace-nowrap gap-1.5 rounded-xl px-3 py-2 text-xs font-bold text-muted transition-colors hover:bg-black/5 hover:text-ink active:scale-[0.98];
   }
 
   .btn-danger {
-    @apply inline-flex items-center justify-center gap-2 rounded-xl bg-danger px-4 py-2.5 text-xs font-bold uppercase tracking-wider text-white shadow-sm transition-all duration-150 disabled:pointer-events-none disabled:opacity-50;
+    @apply inline-flex items-center justify-center whitespace-nowrap gap-2 rounded-xl bg-danger px-4 py-2.5 text-xs font-bold uppercase tracking-wider text-white shadow-sm transition-all duration-150 disabled:pointer-events-none disabled:opacity-50;
   }
   .btn-danger:hover {
     @apply bg-danger/90 -translate-y-0.5;
@@ -174,7 +174,7 @@
 
   /* Refined Monospace Pill Badges */
   .badge {
-    @apply inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[10px] font-mono font-bold uppercase tracking-wider border;
+    @apply inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[10px] font-mono font-bold uppercase tracking-wider border whitespace-nowrap;
   }
   .badge-success {
     @apply bg-emerald-50 text-emerald-700 border-emerald-200/80;
@@ -213,7 +213,7 @@
   }
 
   .admin-table th {
-    @apply px-4 py-3.5 text-[10px] font-mono font-bold uppercase tracking-widest text-muted/90;
+    @apply px-4 py-3.5 text-[10px] font-mono font-bold uppercase tracking-widest text-muted/90 whitespace-nowrap;
   }
 
   .admin-table td {

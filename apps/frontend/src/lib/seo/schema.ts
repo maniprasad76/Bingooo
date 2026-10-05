@@ -170,7 +170,7 @@ export function generateProductSchema(product: {
         '@type': 'OfferShippingDetails',
         shippingRate: {
           '@type': 'MonetaryAmount',
-          value: lowPrice >= 999 ? '0' : '79',
+          value: '0',
           currency: 'INR',
         },
         shippingDestination: {

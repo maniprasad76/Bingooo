@@ -61,7 +61,6 @@ export function OrderSuccessPage() {
     payment_method: 'Razorpay UPI (Google Pay)',
     subtotal: 2298,
     discount_amount: 300,
-    shipping_amount: 0,
     total: 1998,
     currency: 'INR',
     customer_notes: 'Priority atelier cut and double protective packaging requested.',

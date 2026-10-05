@@ -127,12 +127,12 @@ export function ReturnsPage() {
       {/* Editorial Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <div className="flex items-center gap-2">
-            <span className="text-[10px] font-mono font-bold uppercase tracking-[0.2em] text-brand-red">
+          <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5">
+            <span className="text-[10px] font-mono font-bold uppercase tracking-[0.2em] text-brand-red whitespace-nowrap">
               POST-PURCHASE OPS
             </span>
             <span className="text-muted/40 font-mono">•</span>
-            <span className="text-[10px] font-mono font-bold uppercase tracking-widest text-muted">
+            <span className="text-[10px] font-mono font-bold uppercase tracking-widest text-muted whitespace-nowrap">
               {returns.length} REVERSE LOGISTICS TICKETS
             </span>
           </div>
@@ -234,7 +234,7 @@ export function ReturnsPage() {
               placeholder="Search by Order # or Customer..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="admin-input pl-9.5 w-full sm:w-[260px] py-1.5 text-xs"
+              className="admin-input pl-10 w-full sm:w-[260px] py-1.5 text-xs"
             />
           </div>
         </form>

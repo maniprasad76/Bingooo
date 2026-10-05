@@ -80,7 +80,7 @@ export const router = createBrowserRouter([
 
       // Shopping Bag & Checkout
       { path: 'cart', element: <CartPage /> },
-      { path: 'checkout', element: <CheckoutPage /> },
+      { path: 'checkout', element: <RequireAuth><CheckoutPage /></RequireAuth> },
       { path: 'order-success', element: <OrderSuccessPage /> },
       { path: 'order-success/:orderNumber', element: <OrderSuccessPage /> },
       { path: 'payment/success', element: <OrderSuccessPage /> },

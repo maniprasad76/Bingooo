@@ -3,12 +3,74 @@ import {
   CanActivate,
   ExecutionContext,
   UnauthorizedException,
+  ServiceUnavailableException,
 } from '@nestjs/common';
 import { Request } from 'express';
+import { createHash } from 'crypto';
 import { verifyToken, isTokenRevoked } from '../utils/crypto.util';
 import { db, saveDb } from '../database/store';
 
-const SUPABASE_FETCH_TIMEOUT_MS = 3000;
+const SUPABASE_FETCH_TIMEOUT_MS = 8000;
+
+// Supabase sessions are verified with a network call to Supabase. Without a
+// cache, every request in a flow (e.g. checkout's create-order then
+// create-payment) depends on that call, and one slow response logged the
+// customer out mid-checkout. Confirmed sessions are reused briefly, never past
+// the token's own expiry; revocation and account status are still checked on
+// every request.
+const SESSION_CACHE_TTL_MS = 5 * 60 * 1000;
+const SESSION_CACHE_MAX = 5000;
+const verifiedSessions = new Map<string, { authData: any; expiresAt: number }>();
+
+function tokenExpiryMs(token: string): number {
+  try {
+    const payload = JSON.parse(Buffer.from(token.split('.')[1], 'base64url').toString('utf8'));
+    return typeof payload.exp === 'number' ? payload.exp * 1000 : 0;
+  } catch {
+    return 0;
+  }
+}
+
+/**
+ * Returns the Supabase user for a token, null when Supabase says the token is
+ * invalid, and throws 503 when Supabase can't be reached — a network problem
+ * must not be reported to the customer as "your session expired".
+ */
+async function resolveSupabaseUser(token: string, supabaseUrl: string, supabaseKey: string): Promise<any | null> {
+  const cacheKey = createHash('sha256').update(token).digest('hex');
+  const cached = verifiedSessions.get(cacheKey);
+  if (cached && cached.expiresAt > Date.now()) return cached.authData;
+  if (cached) verifiedSessions.delete(cacheKey);
+
+  let response: globalThis.Response;
+  try {
+    response = await fetch(`${supabaseUrl}/auth/v1/user`, {
+      headers: { Authorization: `Bearer ${token}`, apikey: supabaseKey },
+      signal: AbortSignal.timeout(SUPABASE_FETCH_TIMEOUT_MS),
+    });
+  } catch (err) {
+    console.error('[Auth] Supabase session check failed:', (err as Error).message);
+    throw new ServiceUnavailableException({
+      code: 'AUTH_PROVIDER_UNAVAILABLE',
+      message: "We couldn't verify your sign-in just now. Please try again in a moment.",
+    });
+  }
+  if (!response.ok) return null;
+
+  const authData = (await response.json()) as any;
+  if (!authData?.id) return null;
+
+  const exp = tokenExpiryMs(token);
+  const expiresAt = Math.min(Date.now() + SESSION_CACHE_TTL_MS, exp || Date.now() + SESSION_CACHE_TTL_MS);
+  if (expiresAt > Date.now()) {
+    if (verifiedSessions.size >= SESSION_CACHE_MAX) {
+      const oldest = verifiedSessions.keys().next().value;
+      if (oldest) verifiedSessions.delete(oldest);
+    }
+    verifiedSessions.set(cacheKey, { authData, expiresAt });
+  }
+  return authData;
+}
 
 /** Super-admin emails come only from the ADMIN_EMAILS env var (comma-separated). */
 function getAdminEmails(): string[] {
@@ -118,84 +180,68 @@ export class AuthGuard implements CanActivate {
       process.env.VITE_SUPABASE_PUBLISHABLE_KEY;
 
     if (supabaseUrl && supabaseKey) {
-      try {
-        const response = await fetch(`${supabaseUrl}/auth/v1/user`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            apikey: supabaseKey,
-          },
-          signal: AbortSignal.timeout(SUPABASE_FETCH_TIMEOUT_MS),
-        });
+      const authData = await resolveSupabaseUser(token, supabaseUrl, supabaseKey);
+      if (authData) {
+        const userEmail = (authData.email || '').toLowerCase().trim();
+        // An email only proves identity once Supabase has confirmed it.
+        // Without this, anyone could register an admin's (or customer's)
+        // address and inherit that account or super-admin rights.
+        const emailConfirmed = Boolean(authData.email_confirmed_at);
+        const isAuthorizedSuperAdmin =
+          emailConfirmed && Boolean(userEmail) && getAdminEmails().includes(userEmail);
 
-        if (response.ok) {
-          const authData = (await response.json()) as any;
-          if (authData && authData.id) {
-            const userEmail = (authData.email || '').toLowerCase().trim();
-            // An email only proves identity once Supabase has confirmed it.
-            // Without this, anyone could register an admin's (or customer's)
-            // address and inherit that account or super-admin rights.
-            const emailConfirmed = Boolean(authData.email_confirmed_at);
-            const isAuthorizedSuperAdmin =
-              emailConfirmed && Boolean(userEmail) && getAdminEmails().includes(userEmail);
-
-            let user = db.users.find((u) => u.id === authData.id);
-            if (!user && userEmail) {
-              const emailMatch = db.users.find((u) => u.email?.toLowerCase() === userEmail);
-              if (emailMatch && !emailConfirmed) {
-                throw new UnauthorizedException({
-                  code: 'EMAIL_NOT_CONFIRMED',
-                  message: 'Please confirm your email address before signing in.',
-                });
-              }
-              user = emailMatch;
-            }
-            if (user && !isActiveUser(user)) rejectInactive();
-
-            if (!user && authData.email) {
-              user = {
-                id: authData.id,
-                email: authData.email,
-                full_name:
-                  authData.user_metadata?.full_name ||
-                  authData.user_metadata?.name ||
-                  authData.email.split('@')[0],
-                phone: authData.user_metadata?.phone || authData.phone || '',
-                role: isAuthorizedSuperAdmin ? 'SUPER_ADMIN' : 'CUSTOMER',
-                status: 'ACTIVE',
-                password_hash: '',
-                created_at: new Date().toISOString(),
-                updated_at: new Date().toISOString(),
-              };
-              db.users.push(user);
-              saveDb();
-            } else if (user && isAuthorizedSuperAdmin && user.role !== 'SUPER_ADMIN') {
-              user.role = 'SUPER_ADMIN';
-              user.updated_at = new Date().toISOString();
-              saveDb();
-            }
-
-            const roleCode = user?.role || (isAuthorizedSuperAdmin ? 'SUPER_ADMIN' : 'CUSTOMER');
-            const roleObj = db.roles.find(
-              (r) => r.code === roleCode || r.name.toUpperCase() === roleCode.toUpperCase(),
-            );
-
-            (request as any).user = {
-              id: authData.id,
-              email: authData.email,
-              roles: [roleCode.toUpperCase()],
-              permissions:
-                roleCode === 'SUPER_ADMIN'
-                  ? ['*']
-                  : roleObj?.permissions || ['orders.own', 'profile.own'],
-              token,
-            };
-            return true;
+        let user = db.users.find((u) => u.id === authData.id);
+        if (!user && userEmail) {
+          const emailMatch = db.users.find((u) => u.email?.toLowerCase() === userEmail);
+          if (emailMatch && !emailConfirmed) {
+            throw new UnauthorizedException({
+              code: 'EMAIL_NOT_CONFIRMED',
+              message: 'Please confirm your email address before signing in.',
+            });
           }
-
+          user = emailMatch;
         }
-      } catch (err) {
-        if (err instanceof UnauthorizedException) throw err;
-        // Network/timeout errors fall through to the generic unauthorized response
+        if (user && !isActiveUser(user)) rejectInactive();
+
+        if (!user && authData.email) {
+          user = {
+            id: authData.id,
+            email: authData.email,
+            full_name:
+              authData.user_metadata?.full_name ||
+              authData.user_metadata?.name ||
+              authData.email.split('@')[0],
+            phone: authData.user_metadata?.phone || authData.phone || '',
+            role: isAuthorizedSuperAdmin ? 'SUPER_ADMIN' : 'CUSTOMER',
+            status: 'ACTIVE',
+            password_hash: '',
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
+          };
+          db.users.push(user);
+          saveDb();
+        } else if (user && isAuthorizedSuperAdmin && user.role !== 'SUPER_ADMIN') {
+          user.role = 'SUPER_ADMIN';
+          user.updated_at = new Date().toISOString();
+          saveDb();
+        }
+
+        const roleCode = user?.role || (isAuthorizedSuperAdmin ? 'SUPER_ADMIN' : 'CUSTOMER');
+        const roleObj = db.roles.find(
+          (r) => r.code === roleCode || r.name.toUpperCase() === roleCode.toUpperCase(),
+        );
+
+        (request as any).user = {
+          id: authData.id,
+          email: authData.email,
+          roles: [roleCode.toUpperCase()],
+          permissions:
+            roleCode === 'SUPER_ADMIN'
+              ? ['*']
+              : roleObj?.permissions || ['orders.own', 'profile.own'],
+          token,
+        };
+        return true;
       }
     }
 

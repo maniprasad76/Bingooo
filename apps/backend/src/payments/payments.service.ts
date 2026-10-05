@@ -4,6 +4,8 @@ import {
   BadRequestException,
   UnauthorizedException,
   InternalServerErrorException,
+  ServiceUnavailableException,
+  OnApplicationBootstrap,
 } from '@nestjs/common';
 import { v4 as uuidv4 } from 'uuid';
 import * as crypto from 'crypto';
@@ -89,11 +91,42 @@ export class VerifyPaymentDto {
 }
 
 @Injectable()
-export class PaymentsService {
+export class PaymentsService implements OnApplicationBootstrap {
   constructor(
     private readonly ordersService: OrdersService,
     private readonly whatsAppService: WhatsAppService,
   ) {}
+
+  /**
+   * Checks the Razorpay credentials once at startup so a wrong or mismatched
+   * key/secret shows up in the deploy logs, instead of only as failed
+   * checkouts. Read-only call; never blocks boot.
+   */
+  onApplicationBootstrap() {
+    if (process.env.NODE_ENV === 'test') return;
+    const keyId = (process.env.RAZORPAY_KEY_ID || '').trim();
+    if (!keyId || !(process.env.RAZORPAY_KEY_SECRET || '').trim()) {
+      console.error('[Payments] RAZORPAY_KEY_ID / RAZORPAY_KEY_SECRET are not set — checkout cannot take payments.');
+      return;
+    }
+    const mode = keyId.startsWith('rzp_live_') ? 'LIVE' : 'TEST';
+    this.getRazorpayClient()
+      .orders.all({ count: 1 })
+      .then(() => {
+        console.log(`[Payments] Razorpay credentials verified (${mode} mode, key ${keyId.slice(0, 13)}…).`);
+        if (mode === 'TEST' && process.env.NODE_ENV === 'production') {
+          console.warn('[Payments] Production is using Razorpay TEST keys: real customer payments are not possible.');
+        }
+      })
+      .catch((err: any) => {
+        const status = err?.statusCode || err?.status || err?.error?.statusCode;
+        console.error(
+          `[Payments] Razorpay REJECTED the configured credentials (HTTP ${status ?? '?'}, key ${keyId.slice(0, 13)}…): ` +
+            `${err?.error?.description || err?.message || 'unknown error'}. ` +
+            'Make sure RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET are a matching pair from the same Razorpay account and mode.',
+        );
+      });
+  }
 
   getPaymentConfig() {
     return {
@@ -173,7 +206,7 @@ export class PaymentsService {
           currency: existingPayment.currency,
           razorpayOrderId: existingPayment.provider_order_id,
           orderNumber: order.order_number,
-          keyId: process.env.RAZORPAY_KEY_ID,
+          keyId: this.getRazorpayCredentials().keyId,
         };
       }
 
@@ -221,17 +254,20 @@ export class PaymentsService {
           receipt,
         };
       } else {
+        // A Razorpay failure is the store's problem, not the customer's: never
+        // answer 401 here (the storefront would read it as "you're logged
+        // out"), and keep provider details in the server log.
         const statusCode = err?.statusCode || err?.status || err?.error?.statusCode;
         const desc = err?.error?.description || err?.message || 'Razorpay order creation failed';
-        if (statusCode === 401 || (err?.error?.code === 'BAD_REQUEST_ERROR' && desc.toLowerCase().includes('auth'))) {
-          throw new UnauthorizedException({
-            code: 'RAZORPAY_AUTH_FAILED',
-            message: desc,
-          });
-        }
-        throw new InternalServerErrorException({
-          code: 'RAZORPAY_API_ERROR',
-          message: desc,
+        const credentialProblem =
+          statusCode === 401 || (err?.error?.code === 'BAD_REQUEST_ERROR' && desc.toLowerCase().includes('auth'));
+        console.error(
+          `[Payments] Razorpay order creation failed for ${order?.order_number ?? dto.orderId} (HTTP ${statusCode ?? '?'}): ${desc}` +
+            (credentialProblem ? ' — Razorpay rejected RAZORPAY_KEY_ID/RAZORPAY_KEY_SECRET.' : ''),
+        );
+        throw new ServiceUnavailableException({
+          code: credentialProblem ? 'PAYMENT_PROVIDER_MISCONFIGURED' : 'PAYMENT_PROVIDER_UNAVAILABLE',
+          message: 'Online payments are temporarily unavailable. Your order is saved — please try again in a few minutes or message us on WhatsApp.',
         });
       }
     }
@@ -258,7 +294,7 @@ export class PaymentsService {
       currency: rzpOrder.currency,
       razorpayOrderId: rzpOrder.id,
       orderNumber: order.order_number,
-      keyId: process.env.RAZORPAY_KEY_ID,
+      keyId: this.getRazorpayCredentials().keyId,
     };
   }
 

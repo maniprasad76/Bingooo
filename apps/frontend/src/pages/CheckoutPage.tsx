@@ -179,7 +179,7 @@ export function CheckoutPage() {
         }
       }
 
-      const razorpayKey = rzpOrder.keyId || import.meta.env.VITE_RAZORPAY_KEY_ID;
+      const razorpayKey = String(rzpOrder.keyId || import.meta.env.VITE_RAZORPAY_KEY_ID || '').trim();
       if (!razorpayKey) {
         throw new Error('Razorpay Key ID is not configured. Please set VITE_RAZORPAY_KEY_ID in your environment.');
       }

@@ -62,19 +62,6 @@ const FOOTER_SECTIONS: FooterSection[] = [
     ],
   },
   {
-    id: 'collections',
-    title: 'Collections',
-    mobileHref: '/shop',
-    hasDot: true,
-    links: [
-      { label: 'Animes Collection', href: '/shop?collection=anime' },
-      { label: 'TFI Collection', href: '/shop?collection=tfi' },
-      { label: 'Marvel Collection', href: '/shop?collection=marvel' },
-      { label: 'Personal Collection', href: '/customize?collection=personal' },
-      { label: 'Cartoon Collection', href: '/shop?collection=cartoon' },
-    ],
-  },
-  {
     id: 'help',
     title: 'Help',
     mobileHref: '/faq',
@@ -149,7 +136,7 @@ export function Footer() {
         </div>
 
         {/* ─── Footer Navigation: Direct Links on Mobile, Multi-column on Desktop ─── */}
-        <div className="grid grid-cols-1 md:grid-cols-4 lg:grid-cols-[1.5fr_0.9fr_1.1fr_0.9fr_0.9fr_0.9fr] gap-0 md:gap-[30px] lg:gap-[35px]">
+        <div className="grid grid-cols-1 md:grid-cols-4 lg:grid-cols-[1.5fr_0.9fr_0.9fr_0.9fr_0.9fr] gap-0 md:gap-[30px] lg:gap-[35px]">
           {/* Brand */}
           <div className="col-span-1 md:col-span-4 lg:col-span-1 flex flex-col items-center md:items-start text-center md:text-left mb-6 md:mb-0 pb-6 md:pb-0 border-b border-white/10 md:border-b-0">
             <Link

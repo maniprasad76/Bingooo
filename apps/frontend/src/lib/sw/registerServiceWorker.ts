@@ -1,9 +1,34 @@
 // ─────────────────────────────────────────────────────────
-// Safe Service Worker Registration Helper
+// Safe Service Worker Registration Helper & Stale-Chunk Recovery
 // ─────────────────────────────────────────────────────────
 
 export function registerServiceWorker(): void {
-  if (typeof window === 'undefined' || !('serviceWorker' in navigator)) {
+  if (typeof window === 'undefined') {
+    return;
+  }
+
+  // Self-healing recovery for stale chunk / module script load failure
+  window.addEventListener('error', (e) => {
+    const msg = e.message || '';
+    if (
+      msg.includes('Failed to fetch dynamically imported module') ||
+      msg.includes('Importing a module script failed') ||
+      msg.includes('error loading dynamically imported module')
+    ) {
+      const reloadKey = 'bingooo_chunk_reload_global';
+      if (!sessionStorage.getItem(reloadKey)) {
+        sessionStorage.setItem(reloadKey, '1');
+        if ('caches' in window) {
+          caches.keys().then((keys) => {
+            keys.forEach((k) => caches.delete(k));
+          });
+        }
+        window.location.reload();
+      }
+    }
+  });
+
+  if (!('serviceWorker' in navigator)) {
     return;
   }
 

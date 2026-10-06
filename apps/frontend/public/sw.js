@@ -3,9 +3,8 @@
 // Cache-First for static assets, Network-First for API data
 // ─────────────────────────────────────────────────────────
 
-// v2: earlier versions cached authenticated API responses; bumping the name
-// makes the activate handler purge those caches from existing installs.
-const CACHE_NAME = 'bingooo-cache-v2';
+// v3: purge stale v1 and v2 pre-cached HTML fallback shells and enforce clean chunk loading
+const CACHE_NAME = 'bingooo-cache-v3';
 
 // Only public, user-independent catalog endpoints may be cached. Anything
 // tied to a session (profile, cart, orders, addresses, ...) must never be
@@ -43,7 +42,7 @@ self.addEventListener('install', (event) => {
   );
 });
 
-// Activate: clean up outdated caches
+// Activate: clean up outdated caches immediately
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys().then((keys) => {
@@ -131,12 +130,22 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // 3. Navigation requests (HTML document): Network-first, fallback to cached index.html
+  // 3. Navigation requests (HTML document): Network-first with cache fallback
   if (request.mode === 'navigate') {
     event.respondWith(
-      fetch(request).catch(() => {
-        return caches.match('/index.html') || caches.match('/');
-      })
+      fetch(request)
+        .then((networkResponse) => {
+          if (networkResponse.ok) {
+            const clone = networkResponse.clone();
+            caches.open(CACHE_NAME).then((cache) => {
+              cache.put(request, clone);
+            });
+          }
+          return networkResponse;
+        })
+        .catch(() => {
+          return caches.match('/index.html') || caches.match('/');
+        })
     );
     return;
   }

@@ -302,7 +302,7 @@ for (const r of ROUTES) {
     html = html.replace('</head>', `${schemaScript}</head>`);
   }
 
-  // Inject route-specific fallback content inside #root
+  // Inject route-specific fallback content inside <noscript> for crawlers without flashing to users
   if (r.contentHtml) {
     const routeFallback = `
       <div style="max-width: 1000px; margin: 0 auto; padding: 32px 20px; font-family: sans-serif; color: #171717;">
@@ -310,18 +310,10 @@ for (const r of ROUTES) {
         <p style="margin-top: 24px;"><a href="/" style="color: #e6321c; font-weight: 700;">← Return to Bingooo Home</a></p>
       </div>
     `;
-    const rootStartTag = '<div id="root">';
-    const bodyEndTag = '</body>';
-    const startIndex = html.indexOf(rootStartTag);
-    const bodyEndIndex = html.indexOf(bodyEndTag, startIndex);
-    if (startIndex !== -1 && bodyEndIndex !== -1) {
-      const lastDivClose = html.lastIndexOf('</div>', bodyEndIndex);
-      if (lastDivClose > startIndex) {
-        html =
-          html.substring(0, startIndex) +
-          `<div id="root">${routeFallback}</div>\n  ` +
-          html.substring(lastDivClose + 6);
-      }
+    if (html.includes('<noscript>')) {
+      html = html.replace(/<noscript>[\s\S]*?<\/noscript>/, `<noscript>${routeFallback}</noscript>`);
+    } else {
+      html = html.replace('</body>', `  <noscript>${routeFallback}</noscript>\n</body>`);
     }
   }
 

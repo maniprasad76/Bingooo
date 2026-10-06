@@ -178,8 +178,29 @@
     <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
   </head>
   <body>
-    <!-- ── Pre-rendered Crawler Fallback: Instantly visible to Googlebot/Bingbot/Spiders before JS executes ── -->
+    <!-- ── Brand Preloader: Displayed instantly with zero latency while JS bundle initializes ── -->
     <div id="root">
+      <div id="bingooo-initial-loader" style="position:fixed;inset:0;background:#111111;color:#f7eedb;display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:'Manrope',system-ui,-apple-system,sans-serif;z-index:99999;user-select:none;">
+        <div style="display:flex;align-items:baseline;font-size:32px;font-weight:900;letter-spacing:-0.05em;color:#f7eedb;line-height:1;">
+          BINGOOO<span style="color:#e6321c;display:inline-block;margin-left:2px;">.</span>
+        </div>
+        <div style="margin-top:8px;font-size:11px;letter-spacing:0.25em;text-transform:uppercase;color:#888888;font-weight:600;">
+          Wear What Defines You
+        </div>
+        <div style="margin-top:28px;width:120px;height:2px;background:rgba(255,255,255,0.08);border-radius:999px;overflow:hidden;position:relative;">
+          <div style="position:absolute;top:0;left:0;height:100%;width:40%;background:#e6321c;border-radius:999px;animation:bingooo-pulse 1.2s ease-in-out infinite alternate;"></div>
+        </div>
+        <style>
+          @keyframes bingooo-pulse {
+            0% { transform: translateX(0); width: 25%; }
+            100% { transform: translateX(200%); width: 45%; }
+          }
+        </style>
+      </div>
+    </div>
+
+    <!-- ── Search Engine & Non-JS Fallback: Parsed by crawlers without flashing to JS users ── -->
+    <noscript>
       <header style="padding: 16px 24px; border-bottom: 1px solid #e5e5e5; background: #f7eedb; font-family: sans-serif;">
         <div style="max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center;">
           <a href="/" style="font-size: 24px; font-weight: 800; color: #171717; text-decoration: none; letter-spacing: -0.05em;">BINGOOO</a>
@@ -297,7 +318,7 @@
           © 2026 Bingooo Men's Wear. All rights reserved. Made for Indian Streetwear Culture.
         </div>
       </footer>
-    </div>
+    </noscript>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

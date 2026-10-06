@@ -177,5 +177,7 @@ python -m graphify update .
   - Streamlined admin navigation by deprecating the unused Banners route and elevated admin table, badges, and view craftsmanship across admin pages.
 - **2026-10-05: Admin Orders Visual Thumbnail Preview & Image Enrichment**
   - Replaced text-heavy Order Ref column in Admin Orders table with interactive product/customizer thumbnail previews, 3D/multi-item badges, and modal item previews with backend image enrichment.
+- **2026-10-06: Fix Unstyled Crawler Fallback & Stale Cache Lock**
+  - Encapsulated crawler fallback in <noscript>, integrated brand-aligned BINGOOO. splash preloader in #root, updated prerender-seo script, bumped SW cache to v3, and added global stale-chunk error recovery.
 
 

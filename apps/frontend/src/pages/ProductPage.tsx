@@ -8,6 +8,7 @@ import { useRecentlyViewed } from '../hooks/useRecentlyViewed';
 import { useToast } from '../components/ui/Toast';
 import { SEO } from '../components/common/SEO';
 import { generateProductSchema } from '../lib/seo/schema';
+import { SITE_URL, categoryUrl, productImages, productSeoDescription, productSeoTitle, productUrl } from '../lib/seo/catalog-seo.mjs';
 import { triggerHaptic } from '../lib/native/capacitorBridge';
 import { ProductDetailSkeleton } from '../components/ui/Skeleton';
 import { StickyMobileActionBar } from '../components/product/StickyMobileActionBar';
@@ -351,20 +352,19 @@ export function ProductPage() {
   return (
     <main className="bg-[#f7eedb] text-[#171717] font-sans antialiased pb-[72px] sm:pb-0">
       <SEO
-        title={`${product?.title || 'Classic Oversized Tee'} (${product?.fabric_gsm || 240} GSM) — Oversized T-Shirt for Men | Bingooo®`}
-        description={
-          product?.description ||
-          `Buy ${product?.title || 'Classic Oversized Tee'} in ${product?.fabric_gsm || 240} GSM super-combed cotton online in India. Boxy streetwear drape, anti-sag collar, and Pan-India free delivery.`
-        }
-        keywords={`${product?.title || 'oversized tee'}, 240 gsm oversized t shirt, oversized t-shirts for men, heavyweight streetwear india, drop shoulder t shirt, 100 combed cotton, bingooo menswear`}
-        canonical={`https://bingooo.co.in/product/${slug || 'classic-logo-tee'}`}
+        // Same title, description and schema the build-time prerender emits (catalog-seo.mjs).
+        title={productSeoTitle(product as any)}
+        description={productSeoDescription(product as any)}
+        keywords={[product?.title, product?.category?.name, ...(Array.isArray(product?.tags) ? product.tags : []), 'bingooo'].filter(Boolean).join(', ')}
+        canonical={productUrl((product as any).slug || slug || '')}
         ogType="product"
+        ogImage={productImages(product as any)[0]}
         productPrice={price}
         schema={[generateProductSchema(product as any)]}
         breadcrumbs={[
-          { name: 'Home', url: 'https://bingooo.co.in/' },
-          { name: product?.category?.name || 'Shop', url: `https://bingooo.co.in/category/${product?.category?.slug || 'shop'}` },
-          { name: product?.title || 'Product', url: `https://bingooo.co.in/product/${slug}` },
+          { name: 'Home', url: `${SITE_URL}/` },
+          ...(product?.category?.slug ? [{ name: product.category.name, url: categoryUrl(product.category.slug) }] : [{ name: 'Shop', url: `${SITE_URL}/shop` }]),
+          { name: product?.title || 'Product', url: productUrl((product as any).slug || slug || '') },
         ]}
       />
 

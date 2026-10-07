@@ -640,7 +640,7 @@ export function CustomizerPage() {
 
   // ── Social Media Sharing ────────────────────────────────────────────────────
   const generateShareUrl = () => {
-    const base = 'https://bingooo.co.in/customize';
+    const base = 'https://www.bingooo.co.in/customize';
     const params = new URLSearchParams({
       garment: selectedGarment.id,
       color: selectedColor.name,
@@ -1290,7 +1290,7 @@ export function CustomizerPage() {
         title="Custom Oversized T-Shirt Printing India | 3D Streetwear Studio | Bingooo®"
         description="Design & print custom 240 GSM oversized t-shirts online in India. High-definition DTF printing, real-time 3D preview, zero minimum order, express delivery across India."
         keywords="custom oversized t shirt printing india, 3d custom t-shirt designer, print your own t shirt online india, dtf printing custom t shirt, custom heavyweight hoodie india, bespoke streetwear studio"
-        canonical="https://bingooo.co.in/customize"
+        canonical="https://www.bingooo.co.in/customize"
       />
 
       {/* ── TOP ACTION & STATUS BAR ────────────────────────────────────────── */}

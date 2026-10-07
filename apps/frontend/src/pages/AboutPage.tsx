@@ -8,7 +8,7 @@ export function AboutPage() {
       <SEO
         title="About Us — Heavyweight Menswear Atelier Srikakulam | Bingooo®"
         description="Discover Bingooo's journey from 7 Roads Junction, Srikakulam. Engineering 240–280 GSM heavyweight cotton streetwear that rejects fast fashion."
-        canonical="https://bingooo.co.in/about"
+        canonical="https://www.bingooo.co.in/about"
       />
 
       {/* =======================================================

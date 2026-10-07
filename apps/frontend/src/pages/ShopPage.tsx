@@ -3,7 +3,8 @@ import { Link, useSearchParams, useParams } from 'react-router-dom';
 import { Heart, Check, Star, SlidersHorizontal, ArrowUpDown } from 'lucide-react';
 import { SEO } from '../components/common/SEO';
 import { generateItemListSchema } from '../lib/seo/schema';
-import { useProducts } from '../hooks/useProducts';
+import { useProducts, useCategories } from '../hooks/useProducts';
+import { SITE_URL, categorySeoDescription, categorySeoTitle, categoryUrl } from '../lib/seo/catalog-seo.mjs';
 import { useCart } from '../hooks/useCart';
 import { useWishlist } from '../hooks/useWishlist';
 import { triggerHaptic } from '../lib/native/capacitorBridge';
@@ -66,6 +67,9 @@ const FILTER_COLORS = [
 
 export function ShopPage() {
   const { slug } = useParams<{ slug?: string }>();
+  const { data: categoriesData } = useCategories();
+  const seoCategory = slug ? (categoriesData || []).find((c: any) => c.slug === slug) : undefined;
+  const categoryLabel = seoCategory?.name || (slug ? slug.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase()) : '');
   const [searchParams, setSearchParams] = useSearchParams();
 
   const { addItem } = useCart();
@@ -305,29 +309,22 @@ export function ShopPage() {
   return (
     <main className="bg-[#f7eedb] text-[#171717] font-sans antialiased min-h-screen">
       <SEO
-        title={
-          slug
-            ? `${slug.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase())} (240 GSM) — Oversized Streetwear for Men | Bingooo®`
-            : 'Buy Oversized T-Shirts for Men (240 GSM) & Streetwear Online India | Bingooo®'
-        }
+        // Category copy comes from the shared catalog helpers so it matches the prerendered page.
+        title={slug ? categorySeoTitle(seoCategory || { name: categoryLabel }) : 'Shop Oversized T-Shirts, Hoodies & Streetwear Online in India | Bingooo®'}
         description={
           slug
-            ? `Buy premium ${slug.replace(/-/g, ' ')} for men in India. Crafted with 240–280 GSM heavyweight super-combed cotton, boxy drop shoulder fit, and Pan-India express delivery.`
-            : "Shop India's best 240–280 GSM heavyweight oversized t-shirts for men, drop-shoulder hoodies, and streetwear. 100% super-combed cotton, boxy fit, and Pan-India free shipping."
+            ? categorySeoDescription(seoCategory || { name: categoryLabel }, filteredProducts.length)
+            : 'Shop Bingooo streetwear: heavyweight oversized t-shirts, hoodies and more in premium cotton. Secure prepaid checkout, free delivery across India and 7-day easy exchange.'
         }
-        keywords={
-          slug
-            ? `${slug.replace(/-/g, ' ')}, oversized t-shirts for men, 240 gsm oversized t shirt, heavyweight streetwear india, drop shoulder t shirt, bingooo menswear`
-            : 'oversized t-shirts for men, 240 gsm oversized t shirt, heavyweight t shirt india, drop shoulder t shirt, luxury streetwear india, streetwear brand india, boxy fit t shirt men, 100 combed cotton oversized tee, bingooo menswear'
-        }
-        canonical={slug ? `https://bingooo.co.in/category/${slug}` : 'https://bingooo.co.in/shop'}
+        keywords={slug ? `${categoryLabel.toLowerCase()}, ${categoryLabel.toLowerCase()} online india, bingooo` : 'oversized t-shirts for men, heavyweight t shirt india, streetwear brand india, bingooo'}
+        canonical={slug ? categoryUrl(slug) : `${SITE_URL}/shop`}
         breadcrumbs={[
-          { name: 'Home', url: 'https://bingooo.co.in/' },
-          { name: slug ? slug.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase()) : 'Shop', url: slug ? `https://bingooo.co.in/category/${slug}` : 'https://bingooo.co.in/shop' },
+          { name: 'Home', url: `${SITE_URL}/` },
+          { name: slug ? categoryLabel : 'Shop', url: slug ? categoryUrl(slug) : `${SITE_URL}/shop` },
         ]}
         schema={filteredProducts.length > 0 ? generateItemListSchema(
           filteredProducts.slice(0, 10).map((p) => ({ name: p.name, slug: p.slug, price: p.price, image: p.image })),
-          slug ? `${slug.replace(/-/g, ' ')} Collection — Bingooo` : 'Bingooo Streetwear Collection',
+          slug ? `${categoryLabel} — Bingooo` : 'Bingooo Streetwear Collection',
         ) : undefined}
       />
 

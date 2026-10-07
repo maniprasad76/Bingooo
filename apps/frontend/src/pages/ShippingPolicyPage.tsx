@@ -161,7 +161,7 @@ export function ShippingPolicyPage() {
       <SEO
         title="Shipping & Delivery Policy — BINGOOO Atelier"
         description="Review Bingooo's pan-India delivery timelines, courier tracking details, dispatch schedules, and free shipping on every order."
-        canonical="https://bingooo.co.in/shipping-policy"
+        canonical="https://www.bingooo.co.in/shipping-policy"
       />
 
       {/* =======================================================

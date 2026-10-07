@@ -2,8 +2,9 @@
 // Schema.org Structured Data Generators for Bingooo
 // ─────────────────────────────────────────────────────────
 
-export const SITE_URL = 'https://bingooo.co.in';
-export const BRAND_NAME = 'Bingooo';
+import { SITE_URL, BRAND_NAME, productSchema } from './catalog-seo.mjs';
+
+export { SITE_URL, BRAND_NAME };
 
 /**
  * Serialize structured data for an inline <script type="application/ld+json">.
@@ -115,123 +116,10 @@ export function generateWebSiteSchema() {
 }
 
 /**
- * Product Schema for ecommerce rich snippets
+ * Product schema — see catalog-seo.mjs (shared with the build-time prerender).
  */
-export function generateProductSchema(product: {
-  title: string;
-  slug: string;
-  description?: string | null;
-  basePrice: number;
-  compareAtPrice?: number | null;
-  images?: Array<{ url: string; alt_text?: string }>;
-  rating?: number;
-  reviews_count?: number;
-  category?: { name: string; slug: string };
-  variants?: Array<{ sku: string; size: string; color: string; inStock: boolean; price?: number }>;
-  fabric_gsm?: number;
-}) {
-  const images = (product.images || []).map((img) =>
-    img.url.startsWith('http') ? img.url : `${SITE_URL}${img.url}`
-  );
-  if (images.length === 0) {
-    images.push(`${SITE_URL}/brand-logo.png`);
-  }
-
-  const inStock = product.variants && product.variants.length > 0
-    ? product.variants.some((v) => v.inStock !== false)
-    : true;
-
-  const lowPrice = product.basePrice;
-
-  return {
-    '@context': 'https://schema.org',
-    '@type': 'Product',
-    '@id': `${SITE_URL}/product/${product.slug}/#product`,
-    name: product.title,
-    description:
-      product.description ||
-      `Buy ${product.title} online at Bingooo. Premium heavyweight 240 GSM combed cotton menswear tailored for effortless streetwear expression.`,
-    keywords: `${product.title}, 240 gsm oversized t shirt, heavyweight t shirt india, drop shoulder t-shirt, mens streetwear india, 100 combed cotton`,
-    image: images,
-    category: product.category?.name || "Men's Oversized T-Shirts & Streetwear",
-    brand: {
-      '@type': 'Brand',
-      name: BRAND_NAME,
-      alternateName: 'Bingooo Streetwear',
-    },
-    sku: `BG-${product.slug.toUpperCase()}`,
-    mpn: `BG-${product.slug.toUpperCase()}`,
-    material: `${product.fabric_gsm || 240} GSM 100% Combed Cotton`,
-    offers: {
-      '@type': 'Offer',
-      url: `${SITE_URL}/product/${product.slug}`,
-      priceCurrency: 'INR',
-      price: lowPrice,
-      priceValidUntil: '2027-12-31',
-      itemCondition: 'https://schema.org/NewCondition',
-      availability: inStock
-        ? 'https://schema.org/InStock'
-        : 'https://schema.org/OutOfStock',
-      seller: {
-        '@type': 'Organization',
-        name: BRAND_NAME,
-      },
-      shippingDetails: {
-        '@type': 'OfferShippingDetails',
-        shippingRate: {
-          '@type': 'MonetaryAmount',
-          value: '0',
-          currency: 'INR',
-        },
-        shippingDestination: {
-          '@type': 'DefinedRegion',
-          addressCountry: 'IN',
-        },
-        deliveryTime: {
-          '@type': 'ShippingDeliveryTime',
-          handlingTime: {
-            '@type': 'QuantitativeValue',
-            minValue: 1,
-            maxValue: 2,
-            unitCode: 'd',
-          },
-          transitTime: {
-            '@type': 'QuantitativeValue',
-            minValue: 2,
-            maxValue: 5,
-            unitCode: 'd',
-          },
-        },
-      },
-      hasMerchantReturnPolicy: {
-        '@type': 'MerchantReturnPolicy',
-        applicableCountry: 'IN',
-        returnPolicyCategory: 'https://schema.org/MerchantReturnFiniteReturnWindow',
-        merchantReturnDays: 7,
-        returnMethod: 'https://schema.org/ReturnByMail',
-        returnFees: 'https://schema.org/FreeReturn',
-      },
-    },
-    ...(product.rating && product.reviews_count
-      ? {
-          aggregateRating: {
-            '@type': 'AggregateRating',
-            ratingValue: product.rating,
-            reviewCount: product.reviews_count,
-            bestRating: '5',
-            worstRating: '1',
-          },
-        }
-      : {
-          aggregateRating: {
-            '@type': 'AggregateRating',
-            ratingValue: '4.9',
-            reviewCount: '124',
-            bestRating: '5',
-            worstRating: '1',
-          },
-        }),
-  };
+export function generateProductSchema(product: Record<string, any>) {
+  return productSchema(product);
 }
 
 /**

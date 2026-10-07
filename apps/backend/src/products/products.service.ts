@@ -1,6 +1,7 @@
 import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
 import { v4 as uuidv4 } from 'uuid';
 import { db, saveDb } from '../common/database/store';
+import { requestStorefrontRebuild } from '../common/services/storefront-rebuild';
 import { ProductQueryDto, CreateProductDto, UpdateProductDto, CreateVariantDto } from './dto/product.dto';
 import {
   getProductById,
@@ -253,6 +254,7 @@ export class ProductsService {
     }
 
     saveDb();
+    requestStorefrontRebuild();
     return this.enrichProduct(product);
   }
 
@@ -352,6 +354,7 @@ export class ProductsService {
     }
 
     saveDb();
+    requestStorefrontRebuild();
     return this.enrichProduct(updated);
   }
 
@@ -369,6 +372,7 @@ export class ProductsService {
     };
     db.product_images.push(image);
     saveDb();
+    requestStorefrontRebuild();
     return image;
   }
 
@@ -388,6 +392,7 @@ export class ProductsService {
       db.reviews = db.reviews.filter((r) => r.product_id !== id);
     }
     saveDb();
+    requestStorefrontRebuild();
   }
 
   /** Add variant to product */
@@ -414,6 +419,7 @@ export class ProductsService {
 
     db.product_variants.push(variant);
     saveDb();
+    requestStorefrontRebuild();
     return variant;
   }
 

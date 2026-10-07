@@ -1,84 +1,75 @@
-# Bingooo Menswear - Robots.txt
-# https://bingooo.co.in
-# Last updated: 2026-09-21
+# Bingooo — https://www.bingooo.co.in
+#
+# Search engines and AI assistants are welcome to read the public storefront
+# (products, categories, guides and policies). Account, cart, checkout and
+# order pages are private and never useful in search results.
 
-# ── Googlebot: Full crawl access ──
-User-agent: Googlebot
-Allow: /
-Disallow: /admin/
-Disallow: /account/
-Disallow: /cart
-Disallow: /checkout
-Disallow: /order-success
-Disallow: /login
-Disallow: /signup
-Disallow: /api/
-Disallow: /*.json$
-
-# ── Bingbot: Full crawl access ──
-User-agent: Bingbot
-Allow: /
-Disallow: /admin/
-Disallow: /account/
-Disallow: /cart
-Disallow: /checkout
-Disallow: /order-success
-Disallow: /login
-Disallow: /signup
-Disallow: /api/
-Disallow: /*.json$
-
-# ── DuckDuckBot ──
-User-agent: DuckDuckBot
-Allow: /
-Disallow: /admin/
-Disallow: /account/
-Disallow: /cart
-Disallow: /checkout
-Disallow: /api/
-
-# ── SEO crawlers: Crawl-delay to save server bandwidth ──
-User-agent: AhrefsBot
-Crawl-delay: 10
-Disallow: /admin/
-Disallow: /account/
-Disallow: /api/
-Disallow: /*?*
-
-User-agent: SemrushBot
-Crawl-delay: 10
-Disallow: /admin/
-Disallow: /account/
-Disallow: /api/
-Disallow: /*?*
-
-User-agent: MJ12bot
-Crawl-delay: 30
-Disallow: /
-
-User-agent: DotBot
-Crawl-delay: 30
-Disallow: /
-
-# ── All other crawlers: Restrict private + parameterised URLs ──
 User-agent: *
 Allow: /
-Disallow: /admin/
-Disallow: /account/
+Disallow: /admin
+Disallow: /account
 Disallow: /cart
 Disallow: /checkout
 Disallow: /order-success
+Disallow: /payment/
 Disallow: /orders/
-Disallow: /saved-designs
+Disallow: /login
+Disallow: /signin
+Disallow: /signup
+Disallow: /register
+Disallow: /auth/
+Disallow: /forgot-password
+Disallow: /reset-password
+Disallow: /api/
+Disallow: /search
+Disallow: /wishlist
 Disallow: /recently-viewed
+# Filter, sort and tracking parameters create duplicate URLs
+Disallow: /*?*sort=
+Disallow: /*?*filter=
+Disallow: /*?*utm_
+
+# AI search and assistant crawlers: same access as above (named so the intent is explicit)
+User-agent: OAI-SearchBot
+User-agent: ChatGPT-User
+User-agent: GPTBot
+User-agent: ClaudeBot
+User-agent: Claude-SearchBot
+User-agent: Claude-User
+User-agent: PerplexityBot
+User-agent: Perplexity-User
+User-agent: Google-Extended
+User-agent: Applebot
+User-agent: Applebot-Extended
+User-agent: Bingbot
+User-agent: DuckAssistBot
+User-agent: meta-externalagent
+Allow: /
+Disallow: /admin
+Disallow: /account
+Disallow: /cart
+Disallow: /checkout
+Disallow: /order-success
+Disallow: /payment/
+Disallow: /orders/
 Disallow: /login
 Disallow: /signup
-Disallow: /reset-password
-Disallow: /forgot-password
+Disallow: /auth/
 Disallow: /api/
-# Block parameterised URLs to save crawl budget (filter/sort combos are not unique content)
-Disallow: /*?*
-Disallow: /*.json$
+Disallow: /search
+Disallow: /wishlist
+Disallow: /recently-viewed
 
-# ── Sitemap ──
-Sitemap: https://bingooo.co.in/sitemap.xml
+# Aggressive SEO-tool crawlers: slow down
+User-agent: AhrefsBot
+User-agent: SemrushBot
+Crawl-delay: 10
+Disallow: /admin
+Disallow: /account
+Disallow: /api/
+
+User-agent: MJ12bot
+User-agent: DotBot
+Disallow: /
+
+Sitemap: https://www.bingooo.co.in/sitemap.xml

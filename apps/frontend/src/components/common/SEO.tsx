@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { generateBreadcrumbsSchema, toJsonLd, type BreadcrumbItem } from '../../lib/seo/schema';
+import { SITE_URL } from '../../lib/seo/catalog-seo.mjs';
 
 export interface SEOProps {
   title?: string;
@@ -23,7 +24,7 @@ const DEFAULT_DESCRIPTION =
 const DEFAULT_KEYWORDS =
   "oversized t-shirts for men, 240 gsm oversized t shirt, heavyweight t shirt india, drop shoulder t shirt, luxury streetwear india, custom oversized t shirt printing india, streetwear brand india, boxy fit t shirt men, 100 combed cotton oversized tee, bingooo menswear";
 const DEFAULT_IMAGE = '/brand-logo.png';
-const BASE_URL = 'https://bingooo.co.in';
+const BASE_URL = SITE_URL;
 
 /**
  * Ensures title length is optimized for search engines (up to 68 characters, preserving keywords)

@@ -112,7 +112,7 @@ export function TrackOrderPage() {
       <SEO
         title="Track Order Status"
         description="Track your Bingooo garment shipment in real-time. Enter your order number to view dispatch status, courier AWB tracking, and estimated delivery."
-        canonical="https://bingooo.co.in/track-order"
+        canonical="https://www.bingooo.co.in/track-order"
       />
 
       <div className="max-w-[1000px] mx-auto px-4 sm:px-8 space-y-10">

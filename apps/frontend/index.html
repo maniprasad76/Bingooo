@@ -24,10 +24,10 @@
     <meta property="og:title" content="Bingooo® — Oversized T-Shirts for Men (240 GSM) &amp; Luxury Streetwear India" />
     <meta property="og:description" content="Shop India's #1 240–280 GSM heavyweight oversized t-shirts for men &amp; streetwear. 100% super-combed cotton, drop-shoulder fit, 3D custom printing atelier. Express Pan-India delivery." />
     <meta property="og:type" content="website" />
-    <meta property="og:image" content="https://bingooo.co.in/brand-logo.png" />
+    <meta property="og:image" content="https://www.bingooo.co.in/brand-logo.png" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
-    <meta property="og:url" content="https://bingooo.co.in" />
+    <meta property="og:url" content="https://www.bingooo.co.in" />
     <meta property="og:site_name" content="Bingooo Men's Wear" />
     <meta property="og:locale" content="en_IN" />
 
@@ -35,7 +35,7 @@
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="Bingooo® — Oversized T-Shirts for Men (240 GSM) &amp; Luxury Streetwear India" />
     <meta name="twitter:description" content="Shop India's #1 240–280 GSM heavyweight oversized t-shirts for men &amp; streetwear. 100% super-combed cotton, drop-shoulder fit, 3D custom printing atelier. Express Pan-India delivery." />
-    <meta name="twitter:image" content="https://bingooo.co.in/brand-logo.png" />
+    <meta name="twitter:image" content="https://www.bingooo.co.in/brand-logo.png" />
 
     <!-- ── PWA ── -->
     <meta name="theme-color" content="#111111" />
@@ -58,7 +58,7 @@
 
     <!-- ── Fonts with display=swap to eliminate FOIT (render-blocking) ── -->
     <link
-      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&display=swap"
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Manrope:wght@400;500;600;700;800&display=swap"
       rel="stylesheet"
     />
 
@@ -71,33 +71,34 @@
       "@graph": [
         {
           "@type": "WebSite",
-          "@id": "https://bingooo.co.in/#website",
-          "url": "https://bingooo.co.in",
+          "@id": "https://www.bingooo.co.in/#website",
+          "url": "https://www.bingooo.co.in",
           "name": "Bingooo",
           "alternateName": ["Bingooo Menswear", "Bingooo Streetwear", "Bingooo Clothing India"],
           "potentialAction": {
             "@type": "SearchAction",
             "target": {
               "@type": "EntryPoint",
-              "urlTemplate": "https://bingooo.co.in/shop?q={search_term_string}"
+              "urlTemplate": "https://www.bingooo.co.in/search?q={search_term_string}"
             },
             "query-input": "required name=search_term_string"
           }
         },
         {
           "@type": ["ClothingStore", "LocalBusiness"],
-          "@id": "https://bingooo.co.in/#localbusiness",
+          "@id": "https://www.bingooo.co.in/#localbusiness",
           "name": "Bingooo",
           "alternateName": ["Bingooo Men's Wear", "Bingooo Atelier Srikakulam"],
-          "url": "https://bingooo.co.in",
-          "logo": "https://bingooo.co.in/brand-logo.png",
-          "image": "https://bingooo.co.in/brand-logo.png",
+          "url": "https://www.bingooo.co.in",
+          "logo": "https://www.bingooo.co.in/brand-logo.png",
+          "image": "https://www.bingooo.co.in/brand-logo.png",
           "description": "India's premier heavyweight menswear brand. 240–280 GSM oversized t-shirts, drop-shoulder hoodies, and bespoke custom apparel engineered in our 3D Atelier.",
           "telephone": "+91-7981787317",
           "email": "bingooo.sklm@gmail.com",
           "priceRange": "₹699–₹1,999",
           "currenciesAccepted": "INR",
           "paymentAccepted": "UPI, Credit Card, Debit Card, Net Banking",
+          "openingHours": "Mo-Su 09:00-21:00",
           "knowsAbout": [
             "240 GSM Cotton Fabric",
             "Oversized T-Shirts for Men",
@@ -128,7 +129,7 @@
         },
         {
           "@type": "FAQPage",
-          "@id": "https://bingooo.co.in/#faq",
+          "@id": "https://www.bingooo.co.in/#faq",
           "mainEntity": [
             {
               "@type": "Question",
@@ -174,8 +175,6 @@
         if (fv) fv.href = '/brand-logo.svg?t=' + Date.now();
       } catch (e) {}
     </script>
-    <!-- ── Razorpay Checkout Script ── -->
-    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
   </head>
   <body>
     <!-- ── Brand Preloader: Displayed instantly with zero latency while JS bundle initializes ── -->

@@ -1,6 +1,7 @@
 import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
 import { v4 as uuidv4 } from 'uuid';
 import { db, saveDb } from '../common/database/store';
+import { requestStorefrontRebuild } from '../common/services/storefront-rebuild';
 
 @Injectable()
 export class CategoriesService {
@@ -32,6 +33,7 @@ export class CategoriesService {
     };
     db.categories.push(cat);
     saveDb();
+    requestStorefrontRebuild();
     return cat;
   }
 
@@ -40,6 +42,7 @@ export class CategoriesService {
     if (idx === -1) throw new NotFoundException({ code: 'CATEGORY_NOT_FOUND', message: 'Category not found' });
     db.categories[idx] = { ...db.categories[idx], ...data, updated_at: new Date().toISOString() };
     saveDb();
+    requestStorefrontRebuild();
     return db.categories[idx];
   }
 
@@ -48,6 +51,7 @@ export class CategoriesService {
     if (idx === -1) throw new NotFoundException({ code: 'CATEGORY_NOT_FOUND', message: 'Category not found' });
     db.categories.splice(idx, 1);
     saveDb();
+    requestStorefrontRebuild();
   }
 }
 

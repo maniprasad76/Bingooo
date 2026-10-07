@@ -93,7 +93,7 @@ export function ContactPage() {
       <SEO
         title="Contact Us | Bingooo® Flagship Atelier Srikakulam, Andhra Pradesh"
         description="Get in touch with Bingooo. Visit our flagship store at 7 Roads Junction, Srikakulam, AP, or contact our support concierge via WhatsApp at +91 7981787317."
-        canonical="https://bingooo.co.in/contact"
+        canonical="https://www.bingooo.co.in/contact"
       />
 
       {/* =======================================================

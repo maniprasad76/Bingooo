@@ -140,7 +140,7 @@ export function SizeGuidePage() {
       <SEO
         title="Size & Fit Measurement Guide — BINGOOO Atelier"
         description="Find your perfect fit. Precision measurements in inches and centimeters for Bingooo 240 GSM oversized tees, boxy streetwear silhouettes, and fleece hoodies."
-        canonical="https://bingooo.co.in/size-guide"
+        canonical="https://www.bingooo.co.in/size-guide"
       />
 
       {/* =======================================================

@@ -8,7 +8,7 @@ export function TermsPage() {
       <SEO
         title="Terms of Service — BINGOOO"
         description="Review the terms and conditions governing apparel purchases, custom printing atelier guidelines, and website usage at Bingooo."
-        canonical="https://bingooo.co.in/terms"
+        canonical="https://www.bingooo.co.in/terms"
         ogImage="/terms-hero.jpg"
       />
 

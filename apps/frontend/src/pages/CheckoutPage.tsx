@@ -226,7 +226,10 @@ export function CheckoutPage() {
                 description: `Order #${order.order_number} successfully placed.`,
                 variant: 'success',
               });
-              navigate('/payment/success', { state: { order } });
+              navigate(`/order-success/${encodeURIComponent(order.order_number)}`, {
+                replace: true,
+                state: { order, paid: true },
+              });
             } catch (verifyErr: any) {
               toast({
                 title: 'Payment verification failed',

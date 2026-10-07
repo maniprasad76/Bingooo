@@ -1,19 +1,20 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useLocation, useParams, Link } from 'react-router-dom';
+import { motion, useReducedMotion } from 'framer-motion';
 import {
   Check,
   Copy,
-  Printer,
   Package,
+  PackageCheck,
   Truck,
+  Home,
   ArrowRight,
-  ShieldCheck,
-  Sparkles,
-  CheckCircle2,
-  Scissors,
-  Layers,
   MapPin,
   AlertCircle,
+  Clock,
+  Sparkles,
+  ShoppingBag,
+  Printer,
 } from 'lucide-react';
 import { SEO } from '../components/common/SEO';
 import { BrandPageLoader } from '../components/ui/BrandPageLoader';
@@ -23,575 +24,490 @@ import { useToast } from '../components/ui/Toast';
 import { getWhatsAppUrl, WhatsAppIcon } from '../components/ui/SocialIcons';
 import { triggerHaptic } from '../lib/native/capacitorBridge';
 
+const PAID_STATUSES = ['captured', 'paid'];
+// The WhatsApp confirmation is sent a moment after payment; re-check briefly so
+// the page can say it has arrived.
+const REFRESH_DELAYS_MS = [2500, 6000];
+
+const formatINR = (value: unknown) =>
+  `₹${Number(value || 0).toLocaleString('en-IN', { maximumFractionDigits: 2 })}`;
+
 export function OrderSuccessPage() {
   const location = useLocation();
   const params = useParams<{ orderNumber?: string }>();
   const { toast } = useToast();
+  const reduceMotion = useReducedMotion();
 
-  const stateOrder = (location.state as any)?.order;
-  const orderNumberParam = params.orderNumber;
+  const navState = (location.state as any) || {};
+  const stateOrder = navState.order;
+  const orderNumber: string | undefined = params.orderNumber || stateOrder?.order_number;
+  const isPaymentFailure = location.pathname.startsWith('/payment/failure');
+  // Checkout only navigates here after the server verified the payment.
+  const verifiedAtCheckout = Boolean(navState.paid) || location.pathname.startsWith('/payment/success');
 
   const [order, setOrder] = useState<any>(stateOrder || null);
-  const [isLoading, setIsLoading] = useState<boolean>(!stateOrder && !!orderNumberParam);
-  const [copied, setCopied] = useState<boolean>(false);
+  const [hasFreshOrder, setHasFreshOrder] = useState(false);
+  const [isLoading, setIsLoading] = useState<boolean>(!stateOrder && !!orderNumber && !isPaymentFailure);
+  const [copied, setCopied] = useState(false);
+  const refreshCount = useRef(0);
 
-  // If order was not passed via state, fetch it by orderNumberParam
+  // Load the latest copy of the order (the checkout snapshot predates payment).
   useEffect(() => {
-    if (!order && orderNumberParam) {
-      setIsLoading(true);
+    if (!orderNumber || isPaymentFailure) return;
+    let cancelled = false;
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    const load = () =>
       api
-        .get<any>(`/orders/${orderNumberParam}`)
+        .get<any>(`/orders/${encodeURIComponent(orderNumber)}`)
         .then((data) => {
+          if (cancelled) return;
           setOrder(data);
+          setHasFreshOrder(true);
+          const paid = PAID_STATUSES.includes(String(data?.payment_status));
+          if (paid && data?.whatsapp_confirmation?.status === 'sending' && refreshCount.current < REFRESH_DELAYS_MS.length) {
+            timer = setTimeout(load, REFRESH_DELAYS_MS[refreshCount.current++]);
+          }
         })
-        .catch((err) => {
-          console.error('Failed to load order:', err);
-        })
-        .finally(() => {
-          setIsLoading(false);
-        });
-    }
-  }, [order, orderNumberParam]);
-
-  const displayOrder: any = order ?? {};
-  const isPaymentFailure = location.pathname.startsWith('/payment/failure');
-
-  const address = displayOrder.address_snapshot_json || {};
-
-  const handleCopyOrderNumber = () => {
-    triggerHaptic('light');
-    navigator.clipboard.writeText(displayOrder.order_number);
-    setCopied(true);
-    toast({
-      title: 'Order Reference Copied',
-      message: `#${displayOrder.order_number} copied to your clipboard.`,
-      type: 'success',
-    });
-    setTimeout(() => setCopied(false), 2500);
-  };
-
-  const handlePrintReceipt = () => {
-    triggerHaptic('light');
-    window.print();
-  };
+        .catch((err) => console.error('Failed to load order:', err))
+        .finally(() => !cancelled && setIsLoading(false));
+    load();
+    return () => {
+      cancelled = true;
+      clearTimeout(timer);
+    };
+  }, [orderNumber, isPaymentFailure]);
 
   if (isLoading) {
-    return <BrandPageLoader message="Retrieving order manifest from atelier..." fullScreen />;
+    return <BrandPageLoader message="Loading your order..." fullScreen />;
   }
 
   // Never show placeholder order details: without a real order, say so plainly.
-  if (!order) {
-    return <OrderUnavailable paymentFailed={isPaymentFailure} orderNumber={orderNumberParam} />;
+  if (!order || isPaymentFailure) {
+    return <OrderUnavailable paymentFailed={isPaymentFailure} orderNumber={orderNumber} />;
   }
 
-  const orderDate = new Date(displayOrder.created_at || Date.now()).toLocaleDateString('en-IN', {
-    day: 'numeric',
-    month: 'short',
-    year: 'numeric',
-  });
+  const isPaid = PAID_STATUSES.includes(String(order.payment_status)) || (!hasFreshOrder && verifiedAtCheckout);
+  const address = order.address_snapshot_json || order.shipping_address || {};
+  const firstName = String(address.name || '').trim().split(/\s+/)[0];
+  const phoneDigits = String(address.phone || '').replace(/\D/g, '');
+  const maskedPhone = phoneDigits.length >= 4 ? `•••• ${phoneDigits.slice(-4)}` : '';
+  const whatsappStatus: string | undefined = order.whatsapp_confirmation?.status;
+  const items: any[] = order.items || [];
+  const itemCount = items.reduce((sum, item) => sum + Number(item.quantity || 1), 0);
+  const discount = Number(order.discount || 0) + Number(order.prepaid_discount || 0);
+  const placedAt = order.created_at ? new Date(order.created_at) : new Date();
+  const placedDate = placedAt.toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' });
+  const placedTime = placedAt.toLocaleTimeString('en-IN', { hour: 'numeric', minute: '2-digit' });
+  const trackHref = `/track-order?orderNumber=${encodeURIComponent(order.order_number)}`;
+
+  const handleCopy = async () => {
+    triggerHaptic('light');
+    try {
+      await navigator.clipboard.writeText(order.order_number);
+      setCopied(true);
+      toast({ title: 'Order number copied', variant: 'success' });
+      setTimeout(() => setCopied(false), 2200);
+    } catch {
+      toast({ title: 'Could not copy', description: order.order_number, variant: 'info' });
+    }
+  };
+
+  const fadeUp = (delay: number) =>
+    reduceMotion
+      ? {}
+      : {
+          initial: { opacity: 0, y: 16 },
+          animate: { opacity: 1, y: 0 },
+          transition: { duration: 0.5, delay, ease: [0.16, 1, 0.3, 1] as [number, number, number, number] },
+        };
 
   return (
-    <div className="min-h-screen bg-[#F7EEDB] text-[#171717] font-sans antialiased selection:bg-[#E6321C] selection:text-white py-8 sm:py-12 md:py-16">
+    <div className="relative min-h-screen overflow-hidden bg-[#F7EEDB] font-sans text-[#171717] antialiased">
       <SEO
-        title={`Order Confirmed #${displayOrder.order_number}`}
-        description="Your bespoke Bingooo menswear order is confirmed. Workshop cutting and tailoring initiated in our Srikakulam atelier."
-        noindex={true}
+        title={isPaid ? `Order confirmed · ${order.order_number}` : `Order ${order.order_number}`}
+        description="Thank you for shopping with Bingooo."
+        noindex
       />
 
-      <div className="container-bingooo max-w-[1240px] space-y-8 sm:space-y-12">
-        {/* =========================================================
-            1. TOP ATELIER STATUS BAR
-        ========================================================= */}
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-6 border-b border-[#DDD3C5]">
-          <div>
-            <div className="flex items-center gap-2">
-              <span className="inline-block w-2 h-2 rounded-full bg-[#238636] animate-pulse" />
-              <span className="text-[10px] font-bold uppercase tracking-[0.22em] text-[#171717] font-mono">
-                SRIKAKULAM ATELIER • DISPATCH PROTOCOL ACTIVE
-              </span>
-            </div>
-            <p className="text-[11px] text-[#6F6A63] font-mono mt-0.5">
-              CONFIRMATION TRANSMITTED • {orderDate}
-            </p>
-          </div>
+      {/* Soft glow behind the hero */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute left-1/2 top-0 h-[520px] w-[900px] max-w-[160vw] -translate-x-1/2 rounded-full bg-[radial-gradient(closest-side,#EDE0CC,transparent)] print:hidden"
+      />
 
-          <div className="flex items-center gap-2.5 sm:gap-3 w-full sm:w-auto">
+      <div className="relative mx-auto max-w-[1120px] px-4 pb-20 pt-10 sm:px-6 sm:pt-16">
+        {/* ── Hero ─────────────────────────────────────────────── */}
+        <section className="flex flex-col items-center text-center">
+          {isPaid ? <ConfirmedBadge reduceMotion={Boolean(reduceMotion)} /> : <PendingBadge />}
+
+          <motion.p
+            {...fadeUp(0.35)}
+            className="mt-7 mb-0 font-mono text-[11px] font-semibold uppercase tracking-[0.22em] text-[#E6321C]"
+          >
+            {isPaid ? 'Order confirmed' : 'Awaiting payment'}
+          </motion.p>
+
+          <motion.h1
+            {...fadeUp(0.45)}
+            className="m-0 mt-3 text-[clamp(36px,7vw,68px)] font-extrabold leading-[0.95] tracking-[-0.045em]"
+          >
+            {isPaid ? (
+              <>
+                Thank you{firstName ? ',' : ''}
+                {firstName && (
+                  <>
+                    <br className="sm:hidden" /> <span className="text-[#E6321C]">{firstName}.</span>
+                  </>
+                )}
+                {!firstName && '.'}
+              </>
+            ) : (
+              'Almost there.'
+            )}
+          </motion.h1>
+
+          <motion.p
+            {...fadeUp(0.55)}
+            className="mx-auto mb-0 mt-5 max-w-[540px] text-[15px] leading-relaxed text-[#6F6A63] sm:text-base"
+          >
+            {isPaid
+              ? 'Your payment was received and your order is confirmed. We’re getting your pieces ready.'
+              : 'We haven’t received the payment for this order yet. If money has left your account, it will be confirmed here automatically within a few minutes.'}
+          </motion.p>
+
+          <motion.div {...fadeUp(0.65)} className="mt-7 flex flex-wrap items-center justify-center gap-2.5">
             <button
-              onClick={handlePrintReceipt}
-              className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 border border-[#DDD3C5] bg-[#FFFFFF] px-4 py-2.5 text-[10px] font-extrabold uppercase tracking-[0.14em] text-[#171717] hover:border-[#171717] hover:bg-[#EDE0CC]/40 transition-all rounded-[2px]"
+              type="button"
+              onClick={handleCopy}
+              className="group inline-flex items-center gap-2.5 rounded-full border border-[#DDD3C5] bg-white px-4 py-2 shadow-[0_1px_2px_rgba(23,23,23,0.04)] transition-colors hover:border-[#171717]"
+              aria-label={`Copy order number ${order.order_number}`}
             >
-              <Printer size={13} />
-              <span>Print Receipt</span>
+              <span className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#6F6A63]">Order</span>
+              <span className="font-mono text-sm font-semibold tracking-wide text-[#171717]">{order.order_number}</span>
+              {copied ? (
+                <Check size={14} className="text-[#E6321C]" />
+              ) : (
+                <Copy size={14} className="text-[#6F6A63] transition-colors group-hover:text-[#171717]" />
+              )}
             </button>
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-[#EDE0CC] px-3.5 py-2 font-mono text-[11px] text-[#6F6A63]">
+              <Clock size={12} />
+              {placedDate} · {placedTime}
+            </span>
+          </motion.div>
+
+          {isPaid && maskedPhone && (whatsappStatus === 'sent' || whatsappStatus === 'sending') && (
+            <motion.div
+              {...fadeUp(0.75)}
+              className="mt-4 inline-flex items-center gap-2 rounded-full border border-[#DDD3C5] bg-white/70 px-3.5 py-1.5 text-[12px] text-[#171717] backdrop-blur-sm"
+              aria-live="polite"
+            >
+              <WhatsAppIcon className="h-3.5 w-3.5 text-[#25D366]" />
+              {whatsappStatus === 'sent' ? (
+                <span>
+                  Confirmation sent to your WhatsApp <span className="font-mono text-[#6F6A63]">{maskedPhone}</span>
+                </span>
+              ) : (
+                <span className="text-[#6F6A63]">Sending your confirmation on WhatsApp…</span>
+              )}
+            </motion.div>
+          )}
+
+          <motion.div {...fadeUp(0.8)} className="mt-8 flex w-full flex-col items-stretch justify-center gap-2.5 sm:w-auto sm:flex-row print:hidden">
+            <Link
+              to={trackHref}
+              className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#E6321C] px-6 py-3.5 text-[12px] font-bold uppercase tracking-[0.14em] text-white no-underline shadow-[0_10px_30px_-12px_rgba(230,50,28,0.7)] transition-colors hover:bg-[#C42814]"
+            >
+              <Truck size={15} />
+              Track order
+            </Link>
             <Link
               to="/shop"
-              className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 bg-[#171717] text-white px-5 py-2.5 text-[10px] font-extrabold uppercase tracking-[0.14em] hover:bg-[#E6321C] transition-colors rounded-[2px]"
+              className="inline-flex items-center justify-center gap-2 rounded-xl border border-[#171717] px-6 py-3.5 text-[12px] font-bold uppercase tracking-[0.14em] text-[#171717] no-underline transition-colors hover:bg-[#171717] hover:text-white"
             >
-              <span>Explore Drops</span>
-              <ArrowRight size={13} />
+              Continue shopping
+              <ArrowRight size={15} />
             </Link>
-          </div>
-        </div>
-
-        {/* =========================================================
-            2. HERO CONFIRMATION STATEMENT
-        ========================================================= */}
-        <section className="relative border border-[#DDD3C5] bg-[#FFFFFF] p-6 sm:p-10 md:p-12 rounded-[2px] overflow-hidden shadow-2xs">
-          {/* Architectural Background Stamp */}
-          <div className="absolute right-4 -bottom-6 select-none pointer-events-none opacity-[0.03] text-[120px] sm:text-[180px] font-extrabold font-mono tracking-tighter text-[#171717]">
-            BINGOOO
-          </div>
-
-          <div className="relative z-10 max-w-[850px]">
-            <div className="eyebrow text-[#E6321C] mb-3 flex items-center gap-2">
-              <Sparkles size={13} />
-              <span>OFFICIAL ORDER CONFIRMATION • ATELIER DROP 2026</span>
-            </div>
-
-            <h1 className="text-[clamp(34px,6vw,68px)] font-extrabold leading-[0.92] tracking-[-0.065em] uppercase text-[#171717] m-0">
-              NOT JUST CLOTHES.
-              <br />
-              <span className="text-[#E6321C]">YOUR PIECE IS RESERVED.</span>
-            </h1>
-
-            <p className="mt-4 text-xs sm:text-sm md:text-base text-[#6F6A63] leading-relaxed max-w-[700px]">
-              Thank you for trusting the Bingooo atelier. Your garment cut has been assigned to our
-              master tailors in Srikakulam. Fabric batches of 240–280 GSM combed cotton have been locked,
-              bio-washed, and prepped for direct dispatch.
-            </p>
-
-            {/* Order Reference Badge & Quick Copy */}
-            <div className="mt-8 pt-6 border-t border-[#DDD3C5]/80 flex flex-wrap items-center justify-between gap-4">
-              <div className="flex flex-wrap items-center gap-3 sm:gap-4">
-                <div className="border border-[#DDD3C5] bg-[#F7EEDB] px-4 py-2 rounded-[2px] flex items-center gap-2.5">
-                  <span className="text-[10px] font-extrabold uppercase tracking-[0.16em] text-[#6F6A63] font-mono">
-                    ORDER NO:
-                  </span>
-                  <span className="font-mono text-sm sm:text-base font-extrabold text-[#171717] tracking-wider">
-                    #{displayOrder.order_number}
-                  </span>
-                  <button
-                    onClick={handleCopyOrderNumber}
-                    className="ml-1 p-1 hover:text-[#E6321C] transition-colors"
-                    title="Copy Order ID"
-                    aria-label="Copy Order Number"
-                  >
-                    {copied ? <Check size={14} className="text-[#238636]" /> : <Copy size={14} />}
-                  </button>
-                </div>
-
-                <div className="flex items-center gap-2 px-3 py-2 rounded-[2px] bg-[#238636]/10 text-[#238636] border border-[#238636]/20 text-[10px] font-extrabold uppercase tracking-wider font-mono">
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#238636]" />
-                  <span>PAYMENT SECURED • READY FOR CUTTING</span>
-                </div>
-              </div>
-
-              <div className="text-[11px] font-mono text-[#6F6A63]">
-                ESTIMATED AIR DISPATCH: <strong className="text-[#171717]">WITHIN 36 HOURS</strong>
-              </div>
-            </div>
-          </div>
+          </motion.div>
         </section>
 
-        {/* =========================================================
-            3. WORKSHOP PRODUCTION MILESTONE TRACKER
-        ========================================================= */}
-        <section className="border border-[#DDD3C5] bg-[#FFFFFF] p-6 sm:p-8 rounded-[2px]">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-5 border-b border-[#DDD3C5]">
-            <div>
-              <span className="eyebrow text-[#E6321C]">ATELIER PRODUCTION PROTOCOL</span>
-              <h2 className="text-base sm:text-xl font-extrabold uppercase tracking-tight text-[#171717] mt-0.5">
-                Workshop Fulfillment Milestones
+        {/* ── Details ──────────────────────────────────────────── */}
+        <div className="mt-14 grid grid-cols-1 items-start gap-5 sm:mt-16 lg:grid-cols-12 lg:gap-6">
+          {/* Receipt */}
+          <motion.section
+            {...fadeUp(0.9)}
+            className="relative rounded-3xl border border-[#DDD3C5] bg-white lg:col-span-7"
+            aria-labelledby="order-summary-heading"
+          >
+            <div className="flex items-center justify-between gap-3 px-5 pb-4 pt-5 sm:px-7 sm:pt-6">
+              <h2 id="order-summary-heading" className="m-0 text-base font-extrabold tracking-tight sm:text-lg">
+                Your order
               </h2>
-            </div>
-            <div className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#6F6A63] font-mono">
-              STAGE 02 / 04 ACTIVE
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-6">
-            {/* Step 1 */}
-            <div className="border border-[#238636]/30 bg-[#238636]/5 p-4 rounded-[2px] relative flex flex-col justify-between">
-              <div>
-                <div className="flex items-center justify-between text-[#238636] mb-3">
-                  <span className="font-mono text-[10px] font-extrabold tracking-widest uppercase">
-                    01 • SECURED
-                  </span>
-                  <CheckCircle2 size={16} />
-                </div>
-                <h3 className="font-bold text-xs uppercase tracking-wider text-[#171717]">
-                  Order Locked & Verified
-                </h3>
-                <p className="text-[11px] text-[#6F6A63] mt-1 leading-relaxed">
-                  Payment confirmed. Fabric lot assigned and reserved in studio.
-                </p>
-              </div>
-              <span className="text-[9px] font-mono font-bold text-[#238636] uppercase tracking-wider mt-4 inline-flex items-center gap-1">
-                <Check size={12} strokeWidth={2.5} />
-                <span>Completed Just Now</span>
+              <span className="font-mono text-[11px] uppercase tracking-wider text-[#6F6A63]">
+                {itemCount} {itemCount === 1 ? 'piece' : 'pieces'}
               </span>
             </div>
 
-            {/* Step 2 (Current) */}
-            <div className="border-2 border-[#E6321C] bg-[#FDF0EE] p-4 rounded-[2px] relative flex flex-col justify-between shadow-xs">
-              <div className="absolute -top-2.5 right-3 bg-[#E6321C] text-white text-[8px] font-extrabold uppercase tracking-[0.2em] px-2 py-0.5 rounded-[1px]">
-                IN PROGRESS
-              </div>
-              <div>
-                <div className="flex items-center justify-between text-[#E6321C] mb-3">
-                  <span className="font-mono text-[10px] font-extrabold tracking-widest uppercase">
-                    02 • ATELIER
-                  </span>
-                  <Scissors size={16} />
-                </div>
-                <h3 className="font-bold text-xs uppercase tracking-wider text-[#171717]">
-                  Pattern Cutting & Tailoring
-                </h3>
-                <p className="text-[11px] text-[#6F6A63] mt-1 leading-relaxed">
-                  Manual fabric cutting, precision shoulder seam stitching & bio-wash.
-                </p>
-              </div>
-              <span className="text-[9px] font-mono font-bold text-[#E6321C] uppercase tracking-wider mt-4 flex items-center gap-1.5">
-                <span className="w-1.5 h-1.5 rounded-full bg-[#E6321C] animate-ping" />
-                Active Workshop Queue
-              </span>
-            </div>
-
-            {/* Step 3 */}
-            <div className="border border-[#DDD3C5] bg-[#EDE0CC]/20 p-4 rounded-[2px] relative flex flex-col justify-between">
-              <div>
-                <div className="flex items-center justify-between text-[#6F6A63] mb-3">
-                  <span className="font-mono text-[10px] font-extrabold tracking-widest uppercase">
-                    03 • PRINT & QA
-                  </span>
-                  <Layers size={16} />
-                </div>
-                <h3 className="font-bold text-xs uppercase tracking-wider text-[#171717]">
-                  Custom Print & Audit
-                </h3>
-                <p className="text-[11px] text-[#6F6A63] mt-1 leading-relaxed">
-                  High-density DTF graphics cured at 165°C and 100% garment inspection.
-                </p>
-              </div>
-              <span className="text-[9px] font-mono font-bold text-[#6F6A63] uppercase tracking-wider mt-4">
-                Within 24 Hours
-              </span>
-            </div>
-
-            {/* Step 4 */}
-            <div className="border border-[#DDD3C5] bg-[#EDE0CC]/20 p-4 rounded-[2px] relative flex flex-col justify-between">
-              <div>
-                <div className="flex items-center justify-between text-[#6F6A63] mb-3">
-                  <span className="font-mono text-[10px] font-extrabold tracking-widest uppercase">
-                    04 • DISPATCH
-                  </span>
-                  <Truck size={16} />
-                </div>
-                <h3 className="font-bold text-xs uppercase tracking-wider text-[#171717]">
-                  Air Express Dispatch
-                </h3>
-                <p className="text-[11px] text-[#6F6A63] mt-1 leading-relaxed">
-                  Boxed in bespoke matte packaging and handed to BlueDart / Delhivery.
-                </p>
-              </div>
-              <span className="text-[9px] font-mono font-bold text-[#6F6A63] uppercase tracking-wider mt-4">
-                2–4 Days Transit
-              </span>
-            </div>
-          </div>
-        </section>
-
-        {/* =========================================================
-            4. SPLIT CONTENT: GARMENTS MANIFEST & ORDER SUMMARY
-        ========================================================= */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-          {/* ─────────────────────────────────────────────────────────
-              LEFT: ITEM MANIFEST (7 COLS)
-          ───────────────────────────────────────────────────────── */}
-          <div className="lg:col-span-7 space-y-6">
-            <div className="border border-[#DDD3C5] bg-[#FFFFFF] p-6 sm:p-8 rounded-[2px]">
-              <div className="flex items-center justify-between pb-4 border-b border-[#DDD3C5]">
-                <h2 className="text-sm sm:text-base font-extrabold uppercase tracking-wide text-[#171717]">
-                  Garments Manifest ({displayOrder.items?.length || 0} Piece
-                  {(displayOrder.items?.length || 0) === 1 ? '' : 's'})
-                </h2>
-                <span className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#6F6A63] font-mono">
-                  HEAVYWEIGHT ATELIER RUN
-                </span>
-              </div>
-
-              {/* Items List */}
-              <div className="divide-y divide-[#DDD3C5]/60">
-                {displayOrder.items?.map((item: any) => (
-                  <div key={item.id} className="py-5 first:pt-4 last:pb-0 flex items-start gap-4 sm:gap-5">
-                    {item.image_url ? (
-                      <img
-                        src={item.image_url}
-                        alt={item.product_title}
-                        className="w-18 h-22 sm:w-20 sm:h-26 object-cover rounded-[2px] border border-[#DDD3C5] bg-[#EDE0CC]/40 shrink-0 grayscale hover:grayscale-0 transition-all duration-300"
-                      />
-                    ) : (
-                      <div className="w-18 h-22 sm:w-20 sm:h-26 shrink-0 overflow-hidden rounded-[2px] border border-[#DDD3C5]">
-                        <ProductPlaceholder name={item.product_title || item.title_snapshot} />
-                      </div>
-                    )}
-
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-start justify-between gap-3">
-                        <div>
-                          <h4 className="font-extrabold text-sm sm:text-base text-[#171717] tracking-tight leading-snug">
-                            {item.product_title}
-                          </h4>
-                          <p className="text-[11px] font-semibold text-[#6F6A63] uppercase tracking-wider mt-0.5">
-                            {item.variant_title || 'Signature Fit'}
-                          </p>
-                        </div>
-                        <span className="font-mono text-sm sm:text-base font-extrabold text-[#171717]">
-                          ₹{(item.total_price || item.unit_price).toLocaleString('en-IN')}
-                        </span>
-                      </div>
-
-                      {/* Custom Print Badge */}
-                      {item.customization && (
-                        <div className="mt-2.5 rounded-[2px] bg-[#FDF0EE] p-2.5 border border-[#E6321C]/25">
-                          <span className="text-[9px] font-extrabold text-[#E6321C] uppercase tracking-widest block font-mono">
-                            BESPOKE ATELIER PRINT:
-                          </span>
-                          <p className="text-[#171717] text-xs font-bold mt-0.5">
-                            {item.customization.design_title}
-                          </p>
-                          <span className="text-[10px] text-[#6F6A63] font-medium block mt-0.5">
-                            Method: {item.customization.technique}
-                          </span>
-                        </div>
+            <ul className="m-0 list-none divide-y divide-[#EDE0CC] px-5 sm:px-7">
+              {items.map((item) => {
+                const title = item.product_title || item.title_snapshot || 'Item';
+                const variant = item.variant_snapshot_json || {};
+                const meta = [variant.size && `Size ${variant.size}`, variant.color].filter(Boolean).join(' · ');
+                const lineTotal = item.total ?? Number(item.unit_price || 0) * Number(item.quantity || 1);
+                return (
+                  <li key={item.id} className="flex items-center gap-4 py-4">
+                    <div className="h-[84px] w-[68px] shrink-0 overflow-hidden rounded-xl border border-[#EDE0CC] bg-[#F7EEDB]">
+                      {item.image_url ? (
+                        <img src={item.image_url} alt={title} className="h-full w-full object-cover" loading="lazy" />
+                      ) : (
+                        <ProductPlaceholder name={title} />
                       )}
-
-                      <div className="mt-3 flex items-center justify-between text-xs border-t border-[#DDD3C5]/40 pt-2 text-[#6F6A63]">
-                        <span className="font-mono text-[11px]">QTY: {item.quantity}</span>
-                        <span className="text-[#238636] font-mono text-[10px] font-bold uppercase tracking-wider inline-flex items-center gap-1">
-                          <Check size={11} strokeWidth={2.5} />
-                          <span>100% Bio-Washed Combed Cotton</span>
-                        </span>
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <p className="m-0 truncate text-[14px] font-bold leading-snug sm:text-[15px]">{title}</p>
+                      {meta && <p className="m-0 mt-0.5 text-[12px] text-[#6F6A63]">{meta}</p>}
+                      <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
+                        <span className="font-mono text-[11px] text-[#6F6A63]">Qty {item.quantity || 1}</span>
+                        {item.customization && (
+                          <span className="inline-flex items-center gap-1 rounded-full bg-[#E6321C]/10 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-[#E6321C]">
+                            <Sparkles size={10} />
+                            Custom design
+                          </span>
+                        )}
                       </div>
                     </div>
-                  </div>
-                ))}
-              </div>
+                    <span className="shrink-0 font-mono text-[14px] font-semibold">{formatINR(lineTotal)}</span>
+                  </li>
+                );
+              })}
+            </ul>
+
+            {/* Ticket-style perforation */}
+            <div className="relative my-1 h-6" aria-hidden>
+              <span className="absolute -left-3 top-0 h-6 w-6 rounded-full border border-[#DDD3C5] bg-[#F7EEDB] [clip-path:inset(0_0_0_50%)]" />
+              <span className="absolute -right-3 top-0 h-6 w-6 rounded-full border border-[#DDD3C5] bg-[#F7EEDB] [clip-path:inset(0_50%_0_0)]" />
+              <span className="absolute inset-x-6 top-1/2 border-t-2 border-dashed border-[#EDE0CC]" />
             </div>
 
-            {/* Atelier Craft Guarantee Strip */}
-            <div className="border border-[#DDD3C5] bg-[#EDE0CC]/30 p-5 rounded-[2px] grid grid-cols-1 sm:grid-cols-3 gap-4 text-center sm:text-left">
-              <div>
-                <span className="text-[9px] font-mono font-extrabold uppercase tracking-widest text-[#E6321C] block">
-                  FABRIC STANDARD
-                </span>
-                <p className="text-xs font-bold text-[#171717] mt-0.5">240 GSM Combed Cotton</p>
-                <p className="text-[10px] text-[#6F6A63]">Pre-shrunk, heavyweight drape.</p>
-              </div>
-              <div>
-                <span className="text-[9px] font-mono font-extrabold uppercase tracking-widest text-[#E6321C] block">
-                  COLLAR DENSITY
-                </span>
-                <p className="text-xs font-bold text-[#171717] mt-0.5">Thick Ribbed Collar</p>
-                <p className="text-[10px] text-[#6F6A63]">Maintains shape after 40+ washes.</p>
-              </div>
-              <div>
-                <span className="text-[9px] font-mono font-extrabold uppercase tracking-widest text-[#E6321C] block">
-                  PRINT LIFE
-                </span>
-                <p className="text-xs font-bold text-[#171717] mt-0.5">Crack-Resistant Curing</p>
-                <p className="text-[10px] text-[#6F6A63]">Industrial heat-pressed pigments.</p>
-              </div>
-            </div>
-
-            {/* WhatsApp Atelier Concierge Card */}
-            <div className="border border-[#DDD3C5] bg-[#FFFFFF] p-6 rounded-[2px] flex flex-col sm:flex-row sm:items-center justify-between gap-5 shadow-2xs">
-              <div>
-                <span className="eyebrow text-[#E6321C] flex items-center gap-1.5">
-                  <WhatsAppIcon className="w-3.5 h-3.5 text-[#25D366]" />
-                  <span>DIRECT ATELIER CONCIERGE</span>
-                </span>
-                <h3 className="font-extrabold text-sm sm:text-base text-[#171717] uppercase tracking-tight mt-1">
-                  Need an urgent address change or sizing amendment?
-                </h3>
-                <p className="text-xs text-[#6F6A63] mt-1 leading-relaxed">
-                  Connect directly with our atelier cutting desk. Pre-filled with your order reference.
-                </p>
-              </div>
-
-              <a
-                href={getWhatsAppUrl(
-                  `Hi Bingooo Atelier, I have an urgent inquiry regarding my order #${displayOrder.order_number}.`,
-                )}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center justify-center gap-2 bg-[#171717] text-white px-5 py-3 text-[10px] font-extrabold uppercase tracking-[0.14em] hover:bg-[#25D366] hover:text-white transition-all rounded-[2px] shrink-0"
-              >
-                <WhatsAppIcon className="w-4 h-4 text-[#25D366] group-hover:text-white" />
-                <span>WhatsApp Concierge</span>
-              </a>
-            </div>
-          </div>
-
-          {/* ─────────────────────────────────────────────────────────
-              RIGHT: FINANCIAL SUMMARY & DELIVERY LEDGER (5 COLS)
-          ───────────────────────────────────────────────────────── */}
-          <div className="lg:col-span-5 space-y-6">
-            {/* Payment Summary */}
-            <div className="border border-[#DDD3C5] bg-[#FFFFFF] p-6 sm:p-8 rounded-[2px] shadow-2xs space-y-4">
-              <div className="flex items-center justify-between pb-3 border-b border-[#DDD3C5]">
-                <h3 className="text-sm font-extrabold uppercase tracking-wide text-[#171717]">
-                  Financial Breakdown
-                </h3>
-                <span className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#238636] font-mono">
-                  OFFICIAL RECEIPT
-                </span>
-              </div>
-
-              <div className="space-y-2.5 text-xs text-[#6F6A63]">
-                <div className="flex justify-between items-center">
-                  <span>Garments Subtotal</span>
-                  <span className="font-mono font-semibold text-[#171717]">
-                    ₹{(displayOrder.subtotal || displayOrder.total).toLocaleString('en-IN')}
+            <dl className="m-0 space-y-2.5 px-5 pb-6 pt-2 text-[13px] sm:px-7">
+              <SummaryRow label="Subtotal" value={formatINR(order.subtotal ?? order.total)} />
+              {discount > 0 && <SummaryRow label="Discount" value={`−${formatINR(discount)}`} accent />}
+              <SummaryRow label="Delivery" value="Free" accent />
+              <SummaryRow label="Taxes" value="Included" />
+              <div className="flex items-end justify-between border-t border-[#EDE0CC] pt-4">
+                <dt className="text-[13px] font-bold">
+                  {isPaid ? 'Total paid' : 'Total'}
+                  <span className="mt-0.5 block text-[11px] font-normal text-[#6F6A63]">
+                    {isPaid ? 'Paid online · Razorpay' : 'Payment pending'}
                   </span>
-                </div>
-
-                {displayOrder.discount_amount ? (
-                  <div className="flex justify-between items-center text-[#238636]">
-                    <span>Atelier Promo Privilege</span>
-                    <span className="font-mono font-bold">
-                      -₹{Number(displayOrder.discount_amount).toLocaleString('en-IN')}
-                    </span>
-                  </div>
-                ) : null}
-
-                <div className="flex justify-between items-center">
-                  <span>Pan-India Air Logistics</span>
-                  <span className="font-mono font-bold text-[#238636] uppercase">FREE</span>
-                </div>
-
-                <div className="flex justify-between items-center">
-                  <span>Taxes</span>
-                  <span className="font-mono text-[#238636] font-semibold">Inclusive</span>
-                </div>
-
-                <div className="border-t border-[#DDD3C5] pt-4 mt-2 flex justify-between items-baseline">
-                  <div>
-                    <span className="text-xs font-extrabold uppercase tracking-wider text-[#171717] block">
-                      Total Amount Settled
-                    </span>
-                    <span className="text-[10px] text-[#6F6A63] font-mono">
-                      via {displayOrder.payment_method || 'Prepaid Secure Gateway'}
-                    </span>
-                  </div>
-                  <span className="font-mono text-2xl sm:text-3xl font-extrabold text-[#E6321C] tracking-tight">
-                    ₹{Number(displayOrder.total).toLocaleString('en-IN')}
-                  </span>
-                </div>
+                </dt>
+                <dd className="m-0 font-mono text-[26px] font-semibold tracking-tight text-[#171717] sm:text-[30px]">
+                  {formatINR(order.total)}
+                </dd>
               </div>
+            </dl>
+          </motion.section>
 
-              <div className="rounded-[2px] bg-[#F7EEDB] p-3 text-[10px] text-[#6F6A63] flex items-center gap-2 border border-[#DDD3C5]/80">
-                <ShieldCheck size={16} className="text-[#238636] shrink-0" />
-                <span>Verified 256-bit encrypted transaction with audit log record.</span>
-              </div>
-            </div>
+          <div className="space-y-5 lg:col-span-5">
+            {/* What happens next */}
+            <motion.section {...fadeUp(1)} className="rounded-3xl border border-[#DDD3C5] bg-white p-5 sm:p-7" aria-labelledby="next-heading">
+              <h2 id="next-heading" className="m-0 text-base font-extrabold tracking-tight sm:text-lg">
+                What happens next
+              </h2>
+              <ProgressTimeline status={String(order.status || '')} paid={isPaid} placedTime={placedTime} />
+            </motion.section>
 
-            {/* Delivery Destination */}
-            <div className="border border-[#DDD3C5] bg-[#FFFFFF] p-6 sm:p-8 rounded-[2px] shadow-2xs space-y-3">
-              <div className="flex items-center justify-between pb-3 border-b border-[#DDD3C5]">
-                <h3 className="text-sm font-extrabold uppercase tracking-wide text-[#171717] flex items-center gap-1.5">
-                  <MapPin size={15} className="text-[#E6321C]" />
-                  <span>Delivery Destination</span>
-                </h3>
-                <span className="text-[10px] font-bold uppercase tracking-[0.14em] text-[#171717] font-mono">
-                  BLUEDART AIR
-                </span>
-              </div>
-
-              <div className="text-xs text-[#171717] leading-relaxed space-y-1">
-                <strong className="block text-sm font-extrabold text-[#171717]">
-                  {address.name || 'Valued Patron'}
-                </strong>
-                <p className="text-[#6F6A63]">
-                  {address.line1}
-                  {address.line2 ? `, ${address.line2}` : ''}
-                  <br />
-                  {address.city}, {address.state} — {address.postalCode}
-                  <br />
-                  {address.country || 'India'}
-                </p>
-                {address.phone && (
-                  <p className="text-[#6F6A63] pt-1">
-                    Phone:{' '}
-                    <span className="font-mono font-bold text-[#171717]">{address.phone}</span>
+            {/* Delivery address */}
+            {(address.line1 || address.city) && (
+              <motion.section {...fadeUp(1.1)} className="rounded-3xl border border-[#DDD3C5] bg-white p-5 sm:p-7" aria-labelledby="address-heading">
+                <h2 id="address-heading" className="m-0 flex items-center gap-2 text-base font-extrabold tracking-tight sm:text-lg">
+                  <MapPin size={17} className="text-[#E6321C]" />
+                  Delivering to
+                </h2>
+                <div className="mt-3 text-[13px] leading-relaxed text-[#6F6A63]">
+                  {address.name && <p className="m-0 text-[14px] font-bold text-[#171717]">{address.name}</p>}
+                  <p className="m-0">
+                    {[address.line1, address.line2].filter(Boolean).join(', ')}
+                    <br />
+                    {[address.city, address.state].filter(Boolean).join(', ')}
+                    {address.postalCode ? ` ${address.postalCode}` : ''}
                   </p>
-                )}
-              </div>
-            </div>
-
-            {/* WhatsApp Order Confirmation & Updates Card */}
-            <div className="border border-[#25D366]/40 bg-[#25D366]/5 p-5 rounded-[2px] space-y-3">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <WhatsAppIcon className="w-4 h-4 text-[#25D366]" />
-                  <span className="text-xs font-extrabold uppercase tracking-wider text-[#171717]">
-                    WhatsApp Confirmation
-                  </span>
+                  {address.phone && <p className="m-0 mt-1 font-mono text-[12px]">{address.phone}</p>}
                 </div>
-                <span className="text-[9px] font-mono font-bold text-[#25D366] bg-[#25D366]/15 px-2 py-0.5 rounded-full uppercase">
-                  INSTANT
-                </span>
-              </div>
-              <p className="text-[11px] text-[#6F6A63] leading-relaxed">
-                Receive live parcel tracking milestones, atelier dispatch alerts, and digital receipt directly on WhatsApp.
+              </motion.section>
+            )}
+
+            {/* Help */}
+            <motion.section {...fadeUp(1.2)} className="rounded-3xl bg-[#171717] p-5 text-white sm:p-7 print:hidden">
+              <h2 className="m-0 text-base font-extrabold tracking-tight text-white sm:text-lg">Need to change something?</h2>
+              <p className="m-0 mt-1.5 text-[13px] leading-relaxed text-white/65">
+                Size swap, address fix or a question — message us on WhatsApp with your order number and we’ll sort it out.
               </p>
-              <a
-                href={getWhatsAppUrl(
-                  `*BINGOOO.* 🔴 — *Order Confirmed*\n\nOrder #${displayOrder.order_number || displayOrder.id}\nTotal Settled: ₹${Number(displayOrder.total).toLocaleString('en-IN')}\nPayment: ${displayOrder.payment_method || 'Prepaid'}\nDelivery: ${address.city || 'India'} (${address.postalCode || ''})\nAir Dispatch: Within 36 Hours via BlueDart Air\n\nTrack Live: ${typeof window !== 'undefined' ? window.location.origin : 'https://bingooo-frontend.vercel.app'}/track-order/${displayOrder.order_number}`
-                )}
-                target="_blank"
-                rel="noopener noreferrer"
-                onClick={() => triggerHaptic('light')}
-                className="w-full inline-flex items-center justify-center gap-2 bg-[#25D366] text-white py-3 px-4 text-xs font-extrabold uppercase tracking-[0.14em] hover:bg-[#20ba57] transition-all rounded-[2px] shadow-xs cursor-pointer"
-              >
-                <WhatsAppIcon className="w-4 h-4 text-white" />
-                <span>Send Receipt To My WhatsApp</span>
-              </a>
-            </div>
-
-            {/* Action Buttons */}
-            <div className="space-y-3 pt-1">
-              <Link
-                to="/shop"
-                className="w-full inline-flex items-center justify-center gap-2 bg-[#171717] text-white py-3.5 px-6 text-xs font-extrabold uppercase tracking-[0.16em] hover:bg-[#E6321C] transition-all rounded-[2px] shadow-2xs"
-              >
-                <span>Continue Shopping Menswear</span>
-                <ArrowRight size={14} />
-              </Link>
-
-              <Link
-                to="/account/orders"
-                className="w-full inline-flex items-center justify-center gap-2 border border-[#DDD3C5] bg-[#FFFFFF] text-[#171717] py-3.5 px-6 text-xs font-extrabold uppercase tracking-[0.16em] hover:border-[#171717] hover:bg-[#EDE0CC]/40 transition-all rounded-[2px]"
-              >
-                <Package size={14} />
-                <span>View Order In Your Account</span>
-              </Link>
-
-              <a
-                href={getWhatsAppUrl(`Hi Bingooo, I just placed order #${displayOrder.order_number || displayOrder.id || 'recent'} and have a question.`)}
-                target="_blank"
-                rel="noopener noreferrer"
-                onClick={() => triggerHaptic('light')}
-                className="w-full inline-flex items-center justify-center gap-2 border border-[#DDD3C5] bg-white text-[#6F6A63] py-2.5 px-4 text-[11px] font-bold uppercase tracking-wider hover:border-[#171717] hover:text-[#171717] transition-all rounded-[2px]"
-              >
-                <WhatsAppIcon className="w-3.5 h-3.5 text-[#25D366]" />
-                <span>Concierge Support on WhatsApp</span>
-              </a>
-            </div>
+              <div className="mt-4 flex flex-wrap gap-2">
+                <a
+                  href={getWhatsAppUrl(`Hi Bingooo, I have a question about my order ${order.order_number}.`)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={() => triggerHaptic('light')}
+                  className="inline-flex items-center gap-2 rounded-xl bg-white px-4 py-2.5 text-[12px] font-bold uppercase tracking-wider text-[#171717] no-underline transition-colors hover:bg-[#EDE0CC]"
+                >
+                  <WhatsAppIcon className="h-4 w-4" />
+                  Chat with us
+                </a>
+                <Link
+                  to="/account/orders"
+                  className="inline-flex items-center gap-2 rounded-xl border border-white/20 px-4 py-2.5 text-[12px] font-bold uppercase tracking-wider text-white no-underline transition-colors hover:bg-white/10"
+                >
+                  <ShoppingBag size={14} />
+                  My orders
+                </Link>
+                <button
+                  type="button"
+                  onClick={() => window.print()}
+                  className="inline-flex items-center gap-2 rounded-xl border border-white/20 px-4 py-2.5 text-[12px] font-bold uppercase tracking-wider text-white transition-colors hover:bg-white/10"
+                >
+                  <Printer size={14} />
+                  Receipt
+                </button>
+              </div>
+            </motion.section>
           </div>
         </div>
       </div>
     </div>
+  );
+}
+
+function SummaryRow({ label, value, accent }: { label: string; value: string; accent?: boolean }) {
+  return (
+    <div className="flex items-center justify-between">
+      <dt className="text-[#6F6A63]">{label}</dt>
+      <dd className={`m-0 font-mono ${accent ? 'font-semibold text-[#E6321C]' : 'text-[#171717]'}`}>{value}</dd>
+    </div>
+  );
+}
+
+const CONFETTI = Array.from({ length: 20 }, (_, i) => {
+  const angle = (i / 20) * Math.PI * 2 + (i % 2 ? 0.18 : 0);
+  const distance = 74 + (i % 4) * 22;
+  return {
+    x: Math.cos(angle) * distance,
+    y: Math.sin(angle) * distance * 0.8,
+    color: ['#E6321C', '#171717', '#C9B79C', '#E6321C'][i % 4],
+    round: i % 3 === 0,
+    size: 5 + (i % 3) * 2,
+    rotate: (i * 67) % 360,
+  };
+});
+
+function ConfirmedBadge({ reduceMotion }: { reduceMotion: boolean }) {
+  return (
+    <div className="relative grid place-items-center">
+      {!reduceMotion && (
+        <>
+          <motion.span
+            aria-hidden
+            className="absolute h-24 w-24 rounded-full border-2 border-[#E6321C] print:hidden"
+            initial={{ scale: 0.8, opacity: 0.6 }}
+            animate={{ scale: 1.9, opacity: 0 }}
+            transition={{ duration: 1.4, delay: 0.3, ease: 'easeOut' }}
+          />
+          {CONFETTI.map((piece, i) => (
+            <motion.span
+              key={i}
+              aria-hidden
+              className={`absolute print:hidden ${piece.round ? 'rounded-full' : 'rounded-[1px]'}`}
+              style={{ width: piece.size, height: piece.round ? piece.size : piece.size * 1.8, backgroundColor: piece.color }}
+              initial={{ x: 0, y: 0, opacity: 0, scale: 0.4, rotate: 0 }}
+              animate={{ x: piece.x, y: piece.y, opacity: [0, 1, 1, 0], scale: 1, rotate: piece.rotate }}
+              transition={{ duration: 1.3, delay: 0.3 + (i % 5) * 0.03, ease: [0.16, 1, 0.3, 1] }}
+            />
+          ))}
+        </>
+      )}
+      <motion.div
+        className="relative grid h-24 w-24 place-items-center rounded-full bg-[#E6321C] text-white shadow-[0_18px_50px_-14px_rgba(230,50,28,0.75)]"
+        initial={reduceMotion ? false : { scale: 0.5, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        transition={{ type: 'spring', stiffness: 260, damping: 17 }}
+      >
+        <motion.span
+          className="grid place-items-center"
+          initial={reduceMotion ? false : { scale: 0, rotate: -30 }}
+          animate={{ scale: 1, rotate: 0 }}
+          transition={{ type: 'spring', stiffness: 320, damping: 14, delay: 0.18 }}
+        >
+          <Check size={44} strokeWidth={3} />
+        </motion.span>
+      </motion.div>
+    </div>
+  );
+}
+
+function PendingBadge() {
+  return (
+    <div className="grid h-24 w-24 place-items-center rounded-full border border-[#DDD3C5] bg-white text-[#171717]">
+      <Clock size={38} strokeWidth={2.2} />
+    </div>
+  );
+}
+
+const STEPS = [
+  { key: 'confirmed', title: 'Order confirmed', body: 'Payment received. Your order is in our queue.', Icon: Check },
+  { key: 'packed', title: 'Packed with care', body: 'Every piece is checked and packed by hand.', Icon: Package },
+  { key: 'shipped', title: 'On its way', body: 'You’ll get your tracking number the moment it ships.', Icon: Truck },
+  { key: 'delivered', title: 'Delivered', body: 'Free delivery to your door, anywhere in India.', Icon: Home },
+];
+
+function progressIndex(status: string, paid: boolean): number {
+  const s = status.toLowerCase();
+  if (s === 'delivered') return 3;
+  if (s === 'shipped' || s === 'out_for_delivery' || s === 'in_transit') return 2;
+  if (s === 'packed' || s === 'ready_to_ship') return 1;
+  return paid ? 0 : -1;
+}
+
+function ProgressTimeline({ status, paid, placedTime }: { status: string; paid: boolean; placedTime: string }) {
+  const done = progressIndex(status, paid);
+  return (
+    <ol className="m-0 mt-5 list-none p-0">
+      {STEPS.map((step, i) => {
+        const isDone = i <= done;
+        const isNext = i === done + 1;
+        const Icon = isDone ? Check : step.Icon;
+        return (
+          <li key={step.key} className="relative flex gap-4 pb-5 last:pb-0">
+            {i < STEPS.length - 1 && (
+              <span
+                aria-hidden
+                className={`absolute left-[15px] top-8 h-[calc(100%-32px)] w-[2px] rounded-full ${i < done ? 'bg-[#E6321C]' : 'bg-[#EDE0CC]'}`}
+              />
+            )}
+            <span
+              className={`relative grid h-8 w-8 shrink-0 place-items-center rounded-full ${
+                isDone
+                  ? 'bg-[#E6321C] text-white'
+                  : isNext
+                    ? 'border-2 border-[#171717] bg-white text-[#171717]'
+                    : 'border border-[#DDD3C5] bg-[#F7EEDB] text-[#6F6A63]'
+              }`}
+            >
+              <Icon size={15} strokeWidth={isDone ? 3 : 2} />
+            </span>
+            <div className="min-w-0 pt-1">
+              <p className={`m-0 flex flex-wrap items-center gap-2 text-[14px] font-bold ${isDone || isNext ? 'text-[#171717]' : 'text-[#6F6A63]'}`}>
+                {step.title}
+                {i === 0 && isDone && <span className="font-mono text-[10px] font-normal text-[#6F6A63]">{placedTime}</span>}
+                {isNext && (
+                  <span className="rounded-full bg-[#171717] px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider text-white">Up next</span>
+                )}
+              </p>
+              <p className="m-0 mt-0.5 text-[12.5px] leading-relaxed text-[#6F6A63]">{step.body}</p>
+            </div>
+          </li>
+        );
+      })}
+    </ol>
   );
 }
 
@@ -605,7 +521,7 @@ function OrderUnavailable({ paymentFailed, orderNumber }: { paymentFailed: boole
       <SEO title={paymentFailed ? 'Payment Not Completed' : 'Order Details'} noindex />
       <div className="mx-auto max-w-[520px] rounded-2xl border border-[#DDD3C5] bg-white p-7 sm:p-9 text-center shadow-xs">
         <div className="mx-auto mb-5 grid h-12 w-12 place-items-center rounded-full border border-[#DDD3C5] bg-[#EDE0CC]">
-          {paymentFailed ? <AlertCircle size={22} className="text-[#E6321C]" /> : <Package size={22} />}
+          {paymentFailed ? <AlertCircle size={22} className="text-[#E6321C]" /> : <PackageCheck size={22} />}
         </div>
         <h1 className="m-0 text-xl sm:text-2xl font-extrabold uppercase tracking-tight">
           {paymentFailed ? 'Payment not completed' : 'We couldn’t load your order'}

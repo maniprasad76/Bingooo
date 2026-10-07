@@ -88,6 +88,17 @@ function slugify(text: string): string {
     .replace(/^-+|-+$/g, '');
 }
 
+/**
+ * Variant SKU: product slug + size + full colour name, e.g. BROWN-SHIRT-M-CHARCOAL-BLACK.
+ * SKUs must be unique across the catalog (the API rejects duplicates).
+ */
+function buildSku(productSlug: string, size: string, color: string): string {
+  return `${productSlug}-${size}-${slugify(color)}`.toUpperCase();
+}
+
+/** SKUs generated before the product had a name used this placeholder prefix. */
+const PLACEHOLDER_SKU = /^PROD-/i;
+
 export function ProductEditorPage() {
   const { id } = useParams<{ id: string }>();
   const isEditing = Boolean(id);
@@ -306,12 +317,11 @@ export function ProductEditorPage() {
 
     selectedColors.forEach((c) => {
       selectedSizes.forEach((s) => {
-        const colorCode = c.name.slice(0, 3).toUpperCase().replace(/\s+/g, '');
-        const sku = `${productSlug}-${s}-${colorCode}`.toUpperCase();
+        const sku = buildSku(productSlug, s, c.name);
         const existing = variants.find((v) => v.size === s && v.color === c.name);
         newVariants.push({
           id: existing?.id,
-          sku: existing?.sku || sku,
+          sku: existing?.sku && !PLACEHOLDER_SKU.test(existing.sku) ? existing.sku : sku,
           size: s,
           color: c.name,
           colorHex: c.hex,
@@ -448,6 +458,19 @@ export function ProductEditorPage() {
       return;
     }
 
+    // Variants created before the product had a name carry a placeholder prefix;
+    // give them real SKUs from the slug, then make sure none repeat.
+    const finalVariants = variants.map((v) => ({
+      ...v,
+      sku: !v.sku?.trim() || PLACEHOLDER_SKU.test(v.sku) ? buildSku(slug.trim(), v.size, v.color) : v.sku.trim().toUpperCase(),
+    }));
+    const repeated = finalVariants.find((v, i) => finalVariants.findIndex((x) => x.sku === v.sku) !== i);
+    if (repeated) {
+      setNotification({ type: 'error', message: `SKU "${repeated.sku}" is used by more than one variant. Each variant needs its own SKU.` });
+      toast.error('Duplicate SKU', `"${repeated.sku}" appears more than once.`);
+      return;
+    }
+
     setSaving(true);
     setNotification(null);
 
@@ -471,11 +494,12 @@ export function ProductEditorPage() {
       designDetails,
       careInstructions,
       tags,
-      seoTitle: seoTitle || `${title.toUpperCase()} — BINGOOO`,
+      // Left empty, the storefront builds "<Title> — <Category> | Bingooo®" itself.
+      seoTitle: seoTitle.trim() || undefined,
       seoDescription: seoDescription || description || undefined,
       images: filteredImages,
       imageUrl: filteredImages[0]?.url,
-      variants: variants.map((v) => ({
+      variants: finalVariants.map((v) => ({
         id: v.id,
         sku: v.sku,
         size: v.size,

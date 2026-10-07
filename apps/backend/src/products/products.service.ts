@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
+import { Injectable, NotFoundException, ConflictException, BadRequestException } from '@nestjs/common';
 import { v4 as uuidv4 } from 'uuid';
 import { db, saveDb } from '../common/database/store';
 import { requestStorefrontRebuild } from '../common/services/storefront-rebuild';
@@ -170,10 +170,40 @@ export class ProductsService {
     return this.enrichProduct(product);
   }
 
+  /** SKU a variant is stored under: the one sent, or one derived from the slug. */
+  private variantSku(slug: string, v: { sku?: string; size?: string; color?: string }): string {
+    return (v.sku?.trim() || `${slug}-${v.size || 'STD'}-${v.color || 'DEF'}`).toUpperCase().replace(/\s+/g, '-');
+  }
+
+  /**
+   * SKUs identify stock and feed items, so they must be unique across the whole
+   * catalog. Checked before anything is written so a rejected save changes nothing.
+   */
+  private assertUniqueSkus(skus: string[], productId?: string) {
+    const seen = new Set<string>();
+    for (const sku of skus) {
+      if (seen.has(sku)) {
+        throw new BadRequestException({ code: 'DUPLICATE_SKU', message: `SKU "${sku}" is used by more than one variant of this product.` });
+      }
+      seen.add(sku);
+      const clash = db.product_variants.find((x: any) => x.product_id !== productId && String(x.sku || '').toUpperCase() === sku);
+      if (clash) {
+        const owner = db.products.find((p) => p.id === clash.product_id);
+        throw new ConflictException({
+          code: 'SKU_TAKEN',
+          message: `SKU "${sku}" is already used by "${owner?.title || 'another product'}". Give this variant a different SKU.`,
+        });
+      }
+    }
+  }
+
   /** Create product (admin) */
   create(dto: CreateProductDto) {
     if (db.products.some((p) => p.slug === dto.slug)) {
       throw new ConflictException({ code: 'SLUG_TAKEN', message: `Slug "${dto.slug}" already exists` });
+    }
+    if (dto.variants?.length) {
+      this.assertUniqueSkus(dto.variants.map((v) => this.variantSku(dto.slug, v)));
     }
 
     const product = {
@@ -239,7 +269,7 @@ export class ProductsService {
         db.product_variants.push({
           id: v.id || uuidv4(),
           product_id: product.id,
-          sku: v.sku || `${product.slug}-${v.size || 'STD'}-${v.color || 'DEF'}`.toUpperCase().replace(/\s+/g, '-'),
+          sku: this.variantSku(product.slug, v),
           size: v.size || null,
           color: v.color || null,
           color_hex: v.colorHex || null,
@@ -267,6 +297,10 @@ export class ProductsService {
       if (db.products.some((p) => p.slug === dto.slug)) {
         throw new ConflictException({ code: 'SLUG_TAKEN', message: `Slug "${dto.slug}" already exists` });
       }
+    }
+    if (dto.variants?.length) {
+      const slug = dto.slug ?? db.products[idx].slug;
+      this.assertUniqueSkus(dto.variants.map((v) => this.variantSku(slug, v)), id);
     }
 
     const updated = {
@@ -334,20 +368,25 @@ export class ProductsService {
 
     // Update variants if provided
     if (dto.variants !== undefined) {
+      // Keep stock held for unpaid orders: rebuilding variants must not reset reservations.
+      const previous = new Map(
+        db.product_variants.filter((v: any) => v.product_id === id).map((v: any) => [v.id, v]),
+      );
       db.product_variants = db.product_variants.filter((v: any) => v.product_id !== id);
       dto.variants.forEach((v) => {
+        const before: any = v.id ? previous.get(v.id) : undefined;
         db.product_variants.push({
           id: v.id || uuidv4(),
           product_id: id,
-          sku: v.sku || `${updated.slug}-${v.size || 'STD'}-${v.color || 'DEF'}`.toUpperCase().replace(/\s+/g, '-'),
+          sku: this.variantSku(updated.slug, v),
           size: v.size || null,
           color: v.color || null,
           color_hex: v.colorHex || null,
           price: v.price !== undefined ? v.price : updated.base_price,
           stock_quantity: v.stockQuantity !== undefined ? v.stockQuantity : 10,
-          reserved_quantity: 0,
-          is_active: true,
-          created_at: new Date().toISOString(),
+          reserved_quantity: Number(before?.reserved_quantity || 0),
+          is_active: before?.is_active ?? true,
+          created_at: before?.created_at || new Date().toISOString(),
           updated_at: new Date().toISOString(),
         });
       });
@@ -398,14 +437,12 @@ export class ProductsService {
   /** Add variant to product */
   addVariant(productId: string, dto: CreateVariantDto) {
     this.findById(productId);
-    if (db.product_variants.some((v) => v.sku === dto.sku)) {
-      throw new ConflictException({ code: 'SKU_TAKEN', message: `SKU "${dto.sku}" already exists` });
-    }
+    this.assertUniqueSkus([this.variantSku('', dto)]);
 
     const variant = {
       id: uuidv4(),
       product_id: productId,
-      sku: dto.sku,
+      sku: this.variantSku('', dto),
       size: dto.size || null,
       color: dto.color || null,
       color_hex: dto.colorHex || null,

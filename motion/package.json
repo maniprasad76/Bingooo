@@ -1,0 +1,20 @@
+{
+  "name": "bingooo-motion",
+  "private": true,
+  "version": "0.1.0",
+  "scripts": {
+    "studio": "remotion studio src/index.ts",
+    "render": "remotion render src/index.ts Ad out/bingooo-ad.mp4 --codec=h264 --crf=16"
+  },
+  "dependencies": {
+    "@fontsource/ibm-plex-mono": "^5.3.0",
+    "@fontsource/manrope": "^5.3.0",
+    "@remotion/cli": "^4.0.534",
+    "@remotion/media": "^4.0.534",
+    "@types/react": "^19.3.0",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0",
+    "remotion": "^4.0.534",
+    "typescript": "^7.0.2"
+  }
+}

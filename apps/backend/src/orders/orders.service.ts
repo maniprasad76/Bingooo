@@ -11,7 +11,6 @@ import { IsOptional, IsString, MaxLength } from 'class-validator';
 import { CheckoutService } from '../checkout/checkout.service';
 import { CheckoutValidationDto, CartOwner } from '../checkout/dto/checkout.dto';
 import { getOrderById, getOrderByOrderNumber, getImagesByProductId } from '../common/database/db-index.service';
-import { WhatsAppService } from '../notifications/whatsapp.service';
 
 
 export class CreateOrderDto extends CheckoutValidationDto {
@@ -35,10 +34,7 @@ export interface AuditActor {
 export class OrdersService implements OnModuleInit, OnModuleDestroy {
   private expiryTimer: NodeJS.Timeout | null = null;
 
-  constructor(
-    private readonly checkoutService: CheckoutService,
-    private readonly whatsAppService: WhatsAppService,
-  ) {}
+  constructor(private readonly checkoutService: CheckoutService) {}
 
   onModuleInit() {
     this.expiryTimer = setInterval(() => this.expireUnpaidOrders(), EXPIRY_SWEEP_INTERVAL_MS);
@@ -243,14 +239,8 @@ export class OrdersService implements OnModuleInit, OnModuleDestroy {
     db.cart_items = db.cart_items.filter((i) => i.cart_id !== dto.cartId);
 
     saveDb();
-    const enriched = this.enrichOrder(order);
-
-    // Send automated WhatsApp order confirmation to customer (async non-blocking)
-    this.whatsAppService
-      .sendOrderConfirmation(enriched, dto.shippingAddress?.phone)
-      .catch(() => {});
-
-    return enriched;
+    // The WhatsApp confirmation goes out once payment is captured (PaymentsService).
+    return this.enrichOrder(order);
   }
 
   findByUser(userId: string) {
@@ -321,14 +311,7 @@ export class OrdersService implements OnModuleInit, OnModuleDestroy {
     });
 
     saveDb();
-    const enriched = this.enrichOrder(order);
-
-    // Send WhatsApp notification on key status updates (confirmed, processing, shipped, delivered)
-    if (['confirmed', 'processing', 'shipped', 'delivered'].includes(status.toLowerCase())) {
-      this.whatsAppService.sendOrderConfirmation(enriched).catch(() => {});
-    }
-
-    return enriched;
+    return this.enrichOrder(order);
   }
 
   deleteOrder(orderId: string, actor: AuditActor = {}) {

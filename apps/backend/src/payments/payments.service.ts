@@ -14,6 +14,7 @@ import { IsString, IsOptional, IsNumber, IsObject, IsPositive, MaxLength } from 
 import { db, saveDb } from '../common/database/store';
 import { OrdersService } from '../orders/orders.service';
 import { WhatsAppService } from '../notifications/whatsapp.service';
+import { EmailService } from '../email/email.service';
 
 export class CreateOrderDto {
   @IsOptional()
@@ -95,6 +96,7 @@ export class PaymentsService implements OnApplicationBootstrap {
   constructor(
     private readonly ordersService: OrdersService,
     private readonly whatsAppService: WhatsAppService,
+    private readonly emailService: EmailService,
   ) {}
 
   /**
@@ -401,7 +403,43 @@ export class PaymentsService implements OnApplicationBootstrap {
       order.status = 'processing';
     }
     order.updated_at = now;
-    this.whatsAppService.sendOrderConfirmation(this.ordersService.enrichOrder(order)).catch(() => {});
+    // Tell the customer on WhatsApp and by email; each at most once per order, never blocks capture.
+    const enriched = this.ordersService.enrichOrder(order);
+    this.whatsAppService.sendOrderConfirmation(enriched).catch(() => {});
+    this.sendConfirmationEmail(order, enriched).catch(() => {});
+  }
+
+  private async sendConfirmationEmail(order: any, enriched: any) {
+    if (order.payment_status !== 'captured') return;
+    if (['sent', 'sending'].includes(order.email_confirmation?.status)) return;
+    const user = order.user_id ? db.users.find((u) => u.id === order.user_id) : null;
+    const to = String(user?.email || order.email || '').trim();
+    if (!to) return;
+
+    order.email_confirmation = { status: 'sending', at: new Date().toISOString() };
+    const address = order.address_snapshot_json || {};
+    const result = await this.emailService.sendOrderConfirmationEmail({
+      to,
+      recipientName: address.name || user?.full_name || '',
+      orderNumber: order.order_number,
+      orderId: order.id,
+      items: (enriched.items || []).map((item: any) => ({
+        title: item.product_title || item.title_snapshot || 'Item',
+        sku: item.sku || '',
+        quantity: Number(item.quantity || 1),
+        price: Number(item.unit_price || 0),
+      })),
+      subtotal: Number(order.subtotal || 0),
+      discount: Number(order.discount || 0) + Number(order.prepaid_discount || 0),
+      tax: 0, // prices are tax-inclusive
+      total: Number(order.total || 0),
+      paymentMethod: 'Razorpay',
+      shippingAddress: address,
+    });
+    order.email_confirmation = result.ok
+      ? { status: 'sent', id: result.id, at: new Date().toISOString() }
+      : { status: 'failed', error: String(result.error || '').slice(0, 300), at: new Date().toISOString() };
+    saveDb();
   }
 
   /** Webhook listener for async Razorpay events */

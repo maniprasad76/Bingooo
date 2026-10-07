@@ -38,6 +38,9 @@ async function sendViaResend(payload: {
   html: string;
   replyTo?: string;
 }): Promise<{ ok: boolean; id?: string; error?: string }> {
+  // Test suites create throwaway accounts; never email them, even with a real key in .env.
+  if (process.env.NODE_ENV === 'test') return { ok: false, error: 'EMAIL_DISABLED_IN_TEST' };
+
   const apiKey = process.env.RESEND_API_KEY;
   if (!apiKey) {
     // Graceful degradation — log to console in local dev
@@ -152,7 +155,8 @@ function emailShell(title: string, previewText: string, body: string): string {
 @Injectable()
 export class EmailService {
   private readonly logger = new Logger(EmailService.name);
-  private readonly fromAddress = `BINGOOO. <noreply@bingooo.co.in>`;
+  // The sending domain must be verified in Resend (resend.com/domains).
+  private readonly fromAddress = process.env.EMAIL_FROM || 'BINGOOO. <noreply@bingooo.co.in>';
 
   // ── 1. Password Reset Email ─────────────────────────────────────
   async sendPasswordResetEmail(
@@ -225,15 +229,16 @@ export class EmailService {
     total: number;
     paymentMethod: string;
     shippingAddress: {
-      full_name?: string;
-      address_line1?: string;
+      name?: string;
+      line1?: string;
+      line2?: string;
       city?: string;
       state?: string;
-      pincode?: string;
+      postalCode?: string;
     };
-  }): Promise<void> {
-    const { to, recipientName, orderNumber, orderId } = params;
-    const orderUrl = `${BRAND.url}/orders/${orderId}`;
+  }): Promise<{ ok: boolean; id?: string; error?: string }> {
+    const { to, recipientName, orderNumber } = params;
+    const orderUrl = `${BRAND.url}/account/orders/${encodeURIComponent(orderNumber)}`;
     const firstName = recipientName?.split(' ')[0] || 'there';
 
     const formatINR = (amount: number) =>
@@ -255,17 +260,17 @@ export class EmailService {
       .join('');
 
     const body = `
-      <h1 style="margin:0 0 6px;font-size:22px;font-weight:800;color:${BRAND.charcoal};letter-spacing:-0.5px;">Order confirmed! 🎉</h1>
-      <p style="margin:0 0 24px;font-size:14px;color:#6B6356;">Hi ${escapeHtml(firstName)}, thanks for your order. We're on it!</p>
+      <h1 style="margin:0 0 6px;font-size:22px;font-weight:800;color:${BRAND.charcoal};letter-spacing:-0.5px;">Order confirmed</h1>
+      <p style="margin:0 0 24px;font-size:14px;color:#6B6356;">Hi ${escapeHtml(firstName)}, thank you for shopping with us. We've received your payment and your order is confirmed.</p>
 
       <!-- Order number badge -->
       <div style="background-color:rgba(23,23,23,0.04);border-radius:8px;padding:16px 20px;margin-bottom:28px;display:flex;justify-content:space-between;align-items:center;">
         <div>
           <p style="margin:0 0 2px;font-size:11px;font-weight:600;color:#9E9285;letter-spacing:1px;text-transform:uppercase;">Order Number</p>
-          <p style="margin:0;font-size:18px;font-weight:800;color:${BRAND.charcoal};">${orderNumber}</p>
+          <p style="margin:0;font-size:18px;font-weight:800;color:${BRAND.charcoal};">${escapeHtml(orderNumber)}</p>
         </div>
         <a href="${orderUrl}" style="display:inline-block;background-color:${BRAND.charcoal};color:${BRAND.cream};text-decoration:none;font-weight:600;font-size:13px;padding:10px 20px;border-radius:6px;">
-          Track Order
+          View Order
         </a>
       </div>
 
@@ -294,9 +299,9 @@ export class EmailService {
       <div style="background-color:rgba(23,23,23,0.04);border-radius:8px;padding:16px 20px;">
         <p style="margin:0 0 8px;font-size:11px;font-weight:600;color:#9E9285;letter-spacing:1px;text-transform:uppercase;">Shipping To</p>
         <p style="margin:0;font-size:14px;line-height:1.6;color:${BRAND.charcoal};">
-          ${escapeHtml(params.shippingAddress.full_name || recipientName)}<br/>
-          ${escapeHtml(params.shippingAddress.address_line1)}<br/>
-          ${escapeHtml(params.shippingAddress.city)}, ${escapeHtml(params.shippingAddress.state)} ${escapeHtml(params.shippingAddress.pincode)}
+          ${escapeHtml(params.shippingAddress.name || recipientName)}<br/>
+          ${escapeHtml([params.shippingAddress.line1, params.shippingAddress.line2].filter(Boolean).join(', '))}<br/>
+          ${escapeHtml(params.shippingAddress.city)}, ${escapeHtml(params.shippingAddress.state)} ${escapeHtml(params.shippingAddress.postalCode)}
         </p>
       </div>
     `;
@@ -314,10 +319,11 @@ export class EmailService {
     });
 
     if (result.ok) {
-      this.logger.log(`[Email] Order confirmation sent to ${to} for ${orderNumber} (id: ${result.id})`);
+      this.logger.log(`[Email] Order confirmation sent for ${orderNumber} (id: ${result.id})`);
     } else {
-      this.logger.warn(`[Email] Failed to send order confirmation to ${to}: ${result.error}`);
+      this.logger.warn(`[Email] Failed to send order confirmation for ${orderNumber}: ${result.error}`);
     }
+    return result;
   }
 
   // ── 3. Order Status Update Email ────────────────────────────────

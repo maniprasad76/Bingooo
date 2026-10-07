@@ -65,11 +65,15 @@ const jsonLd = (value) => JSON.stringify(value).replace(/</g, '\\u003c');
 
 const inr = (amount) => `₹${Number(amount || 0).toLocaleString('en-IN', { maximumFractionDigits: 2 })}`;
 
+/**
+ * VITE_API_URL holds the API origin (the app appends /api/v1 itself, see
+ * src/lib/api/client.ts); accept it with or without the /api/v1 suffix.
+ */
 function resolveApiBase() {
-  const candidates = [process.env.SEO_API_URL, process.env.VITE_API_URL, 'https://api.bingooo.co.in/api/v1'];
+  const candidates = [process.env.SEO_API_URL, process.env.VITE_API_URL, 'https://api.bingooo.co.in'];
   for (const raw of candidates) {
-    const value = String(raw || '').trim().replace(/\/+$/, '');
-    if (/^https?:\/\//.test(value)) return value;
+    const origin = String(raw || '').trim().replace(/\/+$/, '').replace(/\/api\/v1$/, '');
+    if (/^https?:\/\//.test(origin)) return `${origin}/api/v1`;
   }
   return 'https://api.bingooo.co.in/api/v1';
 }
@@ -116,7 +120,8 @@ async function loadCatalog() {
     console.log(`[SEO prerender] Catalog from ${api}: ${categories.length} categories, ${products.length} products`);
     return { categories, products, ok: true };
   } catch (err) {
-    console.warn(`[SEO prerender] Catalog unavailable (${err?.message || err}); building static pages only.`);
+    // Loud on purpose: the site still deploys, but products get no crawlable pages until the next build.
+    console.warn(`[SEO prerender] WARNING: catalog unavailable from ${api} (${err?.message || err}); product and category pages, sitemap entries and the Merchant feed were NOT generated.`);
     return { categories: [], products: [], ok: false };
   }
 }

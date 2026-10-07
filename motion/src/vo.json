@@ -1,30 +1,189 @@
-[
- {
-  "text": "Your style. Your story.",
-  "dur": 1.778
- },
- {
-  "text": "Meet Bingooo custom T-shirt design.",
-  "dur": 2.780666666666667
- },
- {
-  "text": "Pick your tee, your colour, your fit.",
-  "dur": 1.906
- },
- {
-  "text": "Add your art, your words, your logo, and watch it come alive in our live design studio.",
-  "dur": 5.81
- },
- {
-  "text": "Every print is crisp and sharp, on heavyweight premium cotton that is built to last.",
-  "dur": 5.468666666666667
- },
- {
-  "text": "Made just for you, and delivered to your door.",
-  "dur": 2.9086666666666665
- },
- {
-  "text": "Bingooo. Wear what defines you. Design yours today.",
-  "dur": 3.5273333333333334
- }
-]
+{
+ "segs": [
+  {
+   "start": 6,
+   "dur": 3.8120000000000003,
+   "parts": [
+    {
+     "text": "Your style.",
+     "off": 0,
+     "dur": 1.0453333333333332
+    },
+    {
+     "text": "Your story.",
+     "off": 36,
+     "dur": 1.1093333333333333
+    },
+    {
+     "text": "Your Bingooo.",
+     "off": 73,
+     "dur": 1.2373333333333334
+    }
+   ]
+  },
+  {
+   "start": 134,
+   "dur": 7.097333333333333,
+   "parts": [
+    {
+     "text": "Meet Bingooo Custom T-Shirts.",
+     "off": 0,
+     "dur": 2.24
+    },
+    {
+     "text": "Made for the ideas, words, artwork,",
+     "off": 71,
+     "dur": 2.624
+    },
+    {
+     "text": "and moments that make you, you.",
+     "off": 154,
+     "dur": 1.8133333333333332
+    }
+   ]
+  },
+  {
+   "start": 360,
+   "dur": 5.232,
+   "parts": [
+    {
+     "text": "Choose your tee.",
+     "off": 0,
+     "dur": 1.3226666666666667
+    },
+    {
+     "text": "Your colour.",
+     "off": 44,
+     "dur": 0.9813333333333333
+    },
+    {
+     "text": "Your fit.",
+     "off": 78,
+     "dur": 0.9173333333333333
+    },
+    {
+     "text": "Then make it yours.",
+     "off": 109,
+     "dur": 1.4506666666666668
+    }
+   ]
+  },
+  {
+   "start": 531,
+   "dur": 8.718666666666667,
+   "parts": [
+    {
+     "text": "Add your artwork, your words, your logo,",
+     "off": 0,
+     "dur": 2.56
+    },
+    {
+     "text": "or an idea that exists only in your head,",
+     "off": 81,
+     "dur": 2.752
+    },
+    {
+     "text": "and bring it to life in our live design studio.",
+     "off": 168,
+     "dur": 2.986666666666667
+    }
+   ]
+  },
+  {
+   "start": 806,
+   "dur": 8.804,
+   "parts": [
+    {
+     "text": "Every design is printed with crisp, precise detail",
+     "off": 0,
+     "dur": 3.456
+    },
+    {
+     "text": "on premium heavyweight cotton,",
+     "off": 108,
+     "dur": 2.112
+    },
+    {
+     "text": "made to feel good, look sharp, and stay with you.",
+     "off": 175,
+     "dur": 2.816
+    }
+   ]
+  },
+  {
+   "start": 1083,
+   "dur": 2.5933333333333333,
+   "parts": [
+    {
+     "text": "Because this isn't just another T-shirt.",
+     "off": 0,
+     "dur": 2.453333333333333
+    }
+   ]
+  },
+  {
+   "start": 1175,
+   "dur": 6.649333333333333,
+   "parts": [
+    {
+     "text": "It's something you created.",
+     "off": 0,
+     "dur": 1.5786666666666667
+    },
+    {
+     "text": "Something that represents you.",
+     "off": 52,
+     "dur": 1.792
+    },
+    {
+     "text": "Something nobody else has to wear the same way.",
+     "off": 110,
+     "dur": 2.8586666666666667
+    }
+   ]
+  },
+  {
+   "start": 1388,
+   "dur": 4.452,
+   "parts": [
+    {
+     "text": "Designed by you.",
+     "off": 0,
+     "dur": 1.2373333333333334
+    },
+    {
+     "text": "Made by Bingooo.",
+     "off": 41,
+     "dur": 1.408
+    },
+    {
+     "text": "Delivered to your door.",
+     "off": 88,
+     "dur": 1.3866666666666667
+    }
+   ]
+  },
+  {
+   "start": 1535,
+   "dur": 4.516,
+   "parts": [
+    {
+     "text": "Bingooo.",
+     "off": 0,
+     "dur": 1.0026666666666666
+    },
+    {
+     "text": "Wear what defines you.",
+     "off": 34,
+     "dur": 1.5786666666666667
+    },
+    {
+     "text": "Design yours today.",
+     "off": 86,
+     "dur": 1.5146666666666666
+    }
+   ]
+  }
+ ],
+ "total": 1706
+}

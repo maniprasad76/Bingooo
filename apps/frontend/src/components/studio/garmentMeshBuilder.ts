@@ -199,8 +199,24 @@ export function buildGarmentMesh(
   group.add(hemMesh);
 
   // 5. Decal Projection Planes (Front & Back)
-  // Transparent planes aligned directly in front of and behind the garment chest
-  const decalFrontGeo = new THREE.PlaneGeometry(1.35, 1.45);
+  // The torso bulges forward by up to FRONT_CURVE (and back by BACK_CURVE) at
+  // its centre line, so a flat plane at the box face would sit inside the
+  // fabric and the print would never show. Bend each plane to follow the
+  // drape, just above the surface, so the artwork reads as printed on.
+  const FRONT_CURVE = 0.08;
+  const BACK_CURVE = 0.06;
+  const PRINT_LIFT = 0.012;
+  const followDrape = (geo: THREE.PlaneGeometry, curve: number) => {
+    const p = geo.attributes.position;
+    for (let i = 0; i < p.count; i++) {
+      p.setZ(i, Math.cos(p.getX(i) * 1.1) * curve + PRINT_LIFT);
+    }
+    p.needsUpdate = true;
+    geo.computeVertexNormals();
+  };
+
+  const decalFrontGeo = new THREE.PlaneGeometry(1.35, 1.45, 24, 1);
+  followDrape(decalFrontGeo, FRONT_CURVE);
   geometries.push(decalFrontGeo);
   const decalFrontMat = new THREE.MeshBasicMaterial({
     transparent: true,
@@ -209,10 +225,11 @@ export function buildGarmentMesh(
     depthWrite: false,
   });
   const decalMeshFront = new THREE.Mesh(decalFrontGeo, decalFrontMat);
-  decalMeshFront.position.set(0, isHoodie ? 0.32 : 0.18, bodyDepth / 2 + 0.045);
+  decalMeshFront.position.set(0, isHoodie ? 0.32 : 0.18, bodyDepth / 2);
   group.add(decalMeshFront);
 
-  const decalBackGeo = new THREE.PlaneGeometry(1.35, 1.45);
+  const decalBackGeo = new THREE.PlaneGeometry(1.35, 1.45, 24, 1);
+  followDrape(decalBackGeo, BACK_CURVE);
   geometries.push(decalBackGeo);
   const decalBackMat = new THREE.MeshBasicMaterial({
     transparent: true,
@@ -222,7 +239,7 @@ export function buildGarmentMesh(
   });
   const decalMeshBack = new THREE.Mesh(decalBackGeo, decalBackMat);
   decalMeshBack.rotation.y = Math.PI;
-  decalMeshBack.position.set(0, 0.18, -(bodyDepth / 2 + 0.045));
+  decalMeshBack.position.set(0, 0.18, -bodyDepth / 2);
   group.add(decalMeshBack);
 
   return {

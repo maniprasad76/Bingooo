@@ -195,8 +195,8 @@ async function run() {
     console.log('\n📦 2. Stock integrity & coupons');
     const { OrdersService } = await import('../src/orders/orders.service');
     const { CouponsService } = await import('../src/coupons/coupons.service');
-    const whatsApp: any = { sendOrderConfirmation: async () => undefined };
-    const orders = new OrdersService({} as any);
+    const whatsApp: any = { sendOrderConfirmation: async () => undefined, sendShippingUpdate: async () => undefined };
+    const orders = new OrdersService({} as any, whatsApp, { sendOrderStatusUpdateEmail: async () => ({ ok: true }) } as any);
 
     const variant = { id: `dur-var-${stamp}`, product_id: 'p', sku: 'DUR', stock_quantity: 5, reserved_quantity: 0 };
     db.product_variants.push(variant);

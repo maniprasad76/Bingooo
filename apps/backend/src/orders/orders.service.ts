@@ -9,6 +9,8 @@ import { v4 as uuidv4 } from 'uuid';
 import { db, saveDb } from '../common/database/store';
 import { IsOptional, IsString, MaxLength } from 'class-validator';
 import { CheckoutService } from '../checkout/checkout.service';
+import { WhatsAppService } from '../notifications/whatsapp.service';
+import { EmailService } from '../email/email.service';
 import { CheckoutValidationDto, CartOwner } from '../checkout/dto/checkout.dto';
 import { getOrderById, getOrderByOrderNumber, getImagesByProductId } from '../common/database/db-index.service';
 
@@ -34,7 +36,11 @@ export interface AuditActor {
 export class OrdersService implements OnModuleInit, OnModuleDestroy {
   private expiryTimer: NodeJS.Timeout | null = null;
 
-  constructor(private readonly checkoutService: CheckoutService) {}
+  constructor(
+    private readonly checkoutService: CheckoutService,
+    private readonly whatsAppService: WhatsAppService,
+    private readonly emailService: EmailService,
+  ) {}
 
   onModuleInit() {
     this.expiryTimer = setInterval(() => this.expireUnpaidOrders(), EXPIRY_SWEEP_INTERVAL_MS);
@@ -305,13 +311,46 @@ export class OrdersService implements OnModuleInit, OnModuleDestroy {
       action: 'order.status_update',
       resource: 'orders',
       resource_id: order.order_number,
-      details: `Status updated to ${status}.${trackingNumber ? ` Carrier: ${carrier || 'BlueDart'} AWB: ${trackingNumber}` : ''}`,
+      details: `Status updated to ${status}.${trackingNumber ? ` Carrier: ${carrier || order.carrier || 'not set'} AWB: ${trackingNumber}` : ''}`,
       ip_address: actor.ip || null,
       created_at: new Date().toISOString(),
     });
 
     saveDb();
+    if (order.status === 'shipped' && order.tracking_number) {
+      this.notifyShipped(order).catch(() => {});
+    }
     return this.enrichOrder(order);
+  }
+
+  /**
+   * "Your order has shipped" on WhatsApp and by email, once per tracking number
+   * (a corrected AWB is sent again). Never blocks or fails the status update.
+   */
+  private async notifyShipped(order: any) {
+    this.whatsAppService.sendShippingUpdate(order).catch(() => {});
+
+    const tracking = String(order.tracking_number).trim();
+    const previous = order.email_shipping;
+    if (previous?.tracking_number === tracking && ['sent', 'sending'].includes(previous.status)) return;
+    const user = order.user_id ? db.users.find((u) => u.id === order.user_id) : null;
+    const to = String(user?.email || order.email || '').trim();
+    if (!to) return;
+
+    order.email_shipping = { status: 'sending', tracking_number: tracking, at: new Date().toISOString() };
+    const result = await this.emailService.sendOrderStatusUpdateEmail({
+      to,
+      recipientName: order.address_snapshot_json?.name || user?.full_name || '',
+      orderNumber: order.order_number,
+      orderId: order.id,
+      newStatus: 'shipped',
+      trackingNumber: tracking,
+      carrier: order.carrier || undefined,
+    });
+    order.email_shipping = result.ok
+      ? { status: 'sent', tracking_number: tracking, id: result.id, at: new Date().toISOString() }
+      : { status: 'failed', tracking_number: tracking, error: String(result.error || '').slice(0, 300), at: new Date().toISOString() };
+    saveDb();
   }
 
   deleteOrder(orderId: string, actor: AuditActor = {}) {

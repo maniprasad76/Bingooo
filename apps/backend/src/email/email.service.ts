@@ -336,44 +336,40 @@ export class EmailService {
     trackingNumber?: string;
     carrier?: string;
     estimatedDelivery?: string;
-  }): Promise<void> {
-    const { to, recipientName, orderNumber, orderId, newStatus } = params;
+  }): Promise<{ ok: boolean; id?: string; error?: string }> {
+    const { to, recipientName, newStatus } = params;
+    const orderNumber = escapeHtml(params.orderNumber);
     const firstName = recipientName?.split(' ')[0] || 'there';
-    const orderUrl = `${BRAND.url}/orders/${orderId}`;
+    const orderUrl = `${BRAND.url}/account/orders/${encodeURIComponent(params.orderNumber)}`;
+    const trackUrl = `${BRAND.url}/track-order?orderNumber=${encodeURIComponent(params.orderNumber)}`;
 
-    const statusConfig: Record<string, { emoji: string; title: string; message: string; color: string }> = {
+    const statusConfig: Record<string, { title: string; message: string; color: string }> = {
       confirmed: {
-        emoji: '✅',
         title: 'Order Confirmed',
         message: `Your order <strong>${orderNumber}</strong> has been confirmed and is being prepared by our craft team.`,
         color: '#2E9E58',
       },
       processing: {
-        emoji: '🧵',
         title: 'Your Garment Is Being Crafted',
         message: `Great news! Your order <strong>${orderNumber}</strong> is now in production. Our artisans are working on your garment.`,
         color: '#D97706',
       },
       shipped: {
-        emoji: '📦',
         title: 'Your Order Is On Its Way!',
         message: `Your order <strong>${orderNumber}</strong> has been shipped and is on its way to you.`,
         color: BRAND.red,
       },
       out_for_delivery: {
-        emoji: '🛵',
         title: 'Out for Delivery Today!',
         message: `Your order <strong>${orderNumber}</strong> is out for delivery today. Make sure someone is available to receive it!`,
         color: BRAND.red,
       },
       delivered: {
-        emoji: '🎉',
         title: 'Order Delivered!',
         message: `Your order <strong>${orderNumber}</strong> has been delivered. We hope you love it!`,
         color: '#2E9E58',
       },
       cancelled: {
-        emoji: '❌',
         title: 'Order Cancelled',
         message: `Your order <strong>${orderNumber}</strong> has been cancelled. If you have any questions, please reach out to us.`,
         color: '#6B6356',
@@ -381,7 +377,6 @@ export class EmailService {
     };
 
     const config = statusConfig[newStatus] || {
-      emoji: '📋',
       title: `Order Update: ${escapeHtml(newStatus)}`,
       message: `Your order <strong>${orderNumber}</strong> status has been updated to <strong>${escapeHtml(newStatus)}</strong>.`,
       color: BRAND.charcoal,
@@ -399,7 +394,6 @@ export class EmailService {
 
     const body = `
       <div style="text-align:center;margin-bottom:28px;">
-        <div style="font-size:44px;margin-bottom:12px;">${config.emoji}</div>
         <h1 style="margin:0 0 8px;font-size:22px;font-weight:800;color:${BRAND.charcoal};">${config.title}</h1>
         <p style="margin:0;font-size:14px;color:#6B6356;">Hi ${escapeHtml(firstName)},</p>
       </div>
@@ -411,8 +405,8 @@ export class EmailService {
       <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-top:28px;">
         <tr>
           <td align="center">
-            <a href="${orderUrl}" style="display:inline-block;background-color:${BRAND.charcoal};color:${BRAND.cream};text-decoration:none;font-weight:700;font-size:14px;padding:13px 32px;border-radius:8px;letter-spacing:0.3px;">
-              View Order Details
+            <a href="${params.trackingNumber ? trackUrl : orderUrl}" style="display:inline-block;background-color:${BRAND.charcoal};color:${BRAND.cream};text-decoration:none;font-weight:700;font-size:14px;padding:13px 32px;border-radius:8px;letter-spacing:0.3px;">
+              ${params.trackingNumber ? 'Track Your Order' : 'View Order Details'}
             </a>
           </td>
         </tr>
@@ -422,15 +416,16 @@ export class EmailService {
     const result = await sendViaResend({
       from: this.fromAddress,
       to,
-      subject: `${config.emoji} ${config.title} — ${orderNumber}`,
+      subject: `${config.title} — ${params.orderNumber}`,
       html: emailShell(`${config.title} — BINGOOO.`, config.message.replace(/<[^>]*>/g, ''), body),
       replyTo: BRAND.supportEmail,
     });
 
     if (result.ok) {
-      this.logger.log(`[Email] Status update (${newStatus}) sent to ${to} for ${orderNumber}`);
+      this.logger.log(`[Email] Status update (${newStatus}) sent for ${params.orderNumber}`);
     } else {
-      this.logger.warn(`[Email] Failed to send status update to ${to}: ${result.error}`);
+      this.logger.warn(`[Email] Failed to send status update for ${params.orderNumber}: ${result.error}`);
     }
+    return result;
   }
 }

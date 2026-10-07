@@ -132,7 +132,8 @@ export function OrdersPage() {
       // Prompt for carrier and tracking AWB
       setShippingOrder(order);
       setCarrier(order.carrier || 'Blue Dart');
-      setTrackingNumber(order.tracking_number || `BD-${Math.floor(100000000 + Math.random() * 900000000)}`);
+      // Staff must enter the courier's real AWB: it is sent to the customer.
+      setTrackingNumber(order.tracking_number || '');
       return;
     }
     updateStatusDirect(order.id, newStatus);
@@ -158,6 +159,10 @@ export function OrdersPage() {
   const handleConfirmShipping = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!shippingOrder) return;
+    if (trackingNumber.trim().length < 5) {
+      toast.error('Tracking number needed', 'Enter the AWB / tracking number from the courier receipt.');
+      return;
+    }
     setShippingSaving(true);
     try {
       await api.patch(`/orders/${shippingOrder.id}/status`, {
@@ -490,7 +495,7 @@ export function OrdersPage() {
                   </div>
                   <div>
                     <span className="font-bold text-ink">
-                      Dispatched via {selectedOrder.carrier || 'Blue Dart Air Express'}
+                      Dispatched via {selectedOrder.carrier || 'courier'}
                     </span>
                     <span className="text-[11px] text-muted block font-mono">
                       AWB Manifest: {selectedOrder.tracking_number}
@@ -687,12 +692,12 @@ export function OrdersPage() {
                   type="text"
                   value={trackingNumber}
                   onChange={(e) => setTrackingNumber(e.target.value)}
-                  placeholder="e.g. BD-892104928"
+                  placeholder="From the courier receipt"
                   className="admin-input w-full font-mono text-xs uppercase tracking-wider font-bold"
                   required
                 />
                 <span className="text-[10px] text-muted mt-1 block">
-                  Customer will receive automated dispatch notification with live tracking.
+                  The customer gets this tracking number on WhatsApp and by email.
                 </span>
               </div>
 

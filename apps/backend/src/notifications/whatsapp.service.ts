@@ -12,16 +12,26 @@ export interface WhatsAppSendResult {
 
 const SEND_TIMEOUT_MS = 10_000;
 
+/** One kind of customer message: its template, variables and plain-text fallback. */
+interface MessageSpec {
+  event: 'order.confirmed' | 'order.shipped';
+  label: string;
+  templateEnv: 'WHATSAPP_ORDER_TEMPLATE' | 'WHATSAPP_SHIPPED_TEMPLATE';
+  params: Record<string, string>;
+  text: string;
+}
+
 /**
- * Sends the "your order is confirmed" WhatsApp message once an order's
- * payment is captured.
+ * Customer WhatsApp messages for orders:
+ * - "order confirmed", once an order's payment is captured;
+ * - "order shipped", when staff mark it shipped with a tracking number.
  *
  * Delivery options, in order of preference:
  * 1. Meta WhatsApp Cloud API (WHATSAPP_API_TOKEN + WHATSAPP_PHONE_NUMBER_ID).
  *    WhatsApp only delivers business-initiated messages that use an approved
- *    template, so set WHATSAPP_ORDER_TEMPLATE to that template's name. The
- *    template body takes four variables: {{1}} customer name, {{2}} order
- *    number, {{3}} amount paid, {{4}} tracking link.
+ *    template with NAMED variables:
+ *    - WHATSAPP_ORDER_TEMPLATE: {{customer_name}}, {{order_number}}, {{amount}}, {{tracking_url}}
+ *    - WHATSAPP_SHIPPED_TEMPLATE: {{customer_name}}, {{order_number}}, {{carrier}}, {{tracking_number}}, {{tracking_url}}
  * 2. A provider webhook (WHATSAPP_WEBHOOK_URL), e.g. AiSensy, Interakt, WATI or
  *    a Zapier/Make hook. Signed with WHATSAPP_WEBHOOK_SECRET when it is set.
  *
@@ -33,15 +43,21 @@ export class WhatsAppService implements OnApplicationBootstrap {
   private readonly logger = new Logger(WhatsAppService.name);
 
   onApplicationBootstrap() {
-    const cloud = Boolean(process.env.WHATSAPP_API_TOKEN && process.env.WHATSAPP_PHONE_NUMBER_ID);
-    if (cloud && !process.env.WHATSAPP_ORDER_TEMPLATE) {
-      this.logger.warn(
-        'WhatsApp Cloud API is configured without WHATSAPP_ORDER_TEMPLATE. Plain-text messages only reach customers who messaged the store in the last 24 hours; set an approved template name.',
-      );
+    const cloud = this.cloudConfigured();
+    for (const env of ['WHATSAPP_ORDER_TEMPLATE', 'WHATSAPP_SHIPPED_TEMPLATE']) {
+      if (cloud && !process.env[env]) {
+        this.logger.warn(
+          `WhatsApp Cloud API is configured without ${env}. Plain-text messages only reach customers who messaged the store in the last 24 hours; set an approved template name.`,
+        );
+      }
     }
     if (!cloud && !process.env.WHATSAPP_WEBHOOK_URL) {
-      this.logger.log('WhatsApp order confirmations are off (no Cloud API or webhook configured).');
+      this.logger.log('WhatsApp order messages are off (no Cloud API or webhook configured).');
     }
+  }
+
+  private cloudConfigured(): boolean {
+    return Boolean(process.env.WHATSAPP_API_TOKEN && process.env.WHATSAPP_PHONE_NUMBER_ID);
   }
 
   /** Returns WhatsApp's digits-only international format (91XXXXXXXXXX), or null if unusable. */
@@ -91,6 +107,20 @@ export class WhatsAppService implements OnApplicationBootstrap {
     ].join('\n');
   }
 
+  formatShippedMessage(order: any): string {
+    const orderNumber = order.order_number || order.id;
+    return [
+      '*BINGOOO.* — Your order is on its way',
+      '',
+      `Hi ${this.customerName(order)}, good news! Your order *${orderNumber}* has shipped${order.carrier ? ` with *${order.carrier}*` : ''}.`,
+      '',
+      `*Tracking number:* ${order.tracking_number}`,
+      `Track it here: ${this.trackingUrl(orderNumber)}`,
+      '',
+      'Questions? Just reply to this message.',
+    ].join('\n');
+  }
+
   /**
    * Sends the confirmation for a paid order, at most once per order. Safe to
    * call from every capture path (client verify and Razorpay webhook).
@@ -103,33 +133,89 @@ export class WhatsAppService implements OnApplicationBootstrap {
       return { success: true, mode: 'skipped', error: 'already sent' };
     }
 
+    const enriched = { ...order, ...stored, items: order.items };
     const orderNumber = stored.order_number || stored.id;
-    const user = stored.user_id ? db.users.find((u) => u.id === stored.user_id) : null;
-    const phone = this.normalizePhoneNumber(stored.address_snapshot_json?.phone || user?.phone);
+    return this.deliver(stored, 'whatsapp_confirmation', {
+      event: 'order.confirmed',
+      label: 'confirmation',
+      templateEnv: 'WHATSAPP_ORDER_TEMPLATE',
+      params: {
+        customer_name: this.customerName(stored),
+        order_number: String(orderNumber),
+        amount: `₹${this.amountPaid(stored)}`,
+        tracking_url: this.trackingUrl(orderNumber),
+      },
+      text: this.formatOrderConfirmationMessage(enriched),
+    });
+  }
 
-    const cloud = Boolean(process.env.WHATSAPP_API_TOKEN && process.env.WHATSAPP_PHONE_NUMBER_ID);
+  /**
+   * Tells the customer their order shipped. Sent once per tracking number, so
+   * correcting a mistyped AWB sends the corrected one.
+   */
+  async sendShippingUpdate(order: any): Promise<WhatsAppSendResult> {
+    const stored = db.orders.find((o) => o.id === order?.id);
+    if (!stored) return { success: false, mode: 'skipped', error: 'order not found' };
+    const tracking = String(stored.tracking_number || '').trim();
+    if (stored.status !== 'shipped' || !tracking) return { success: false, mode: 'skipped', error: 'not shipped' };
+    const previous = stored.whatsapp_shipping;
+    if (previous?.tracking_number === tracking && ['sent', 'sending'].includes(previous.status)) {
+      return { success: true, mode: 'skipped', error: 'already sent' };
+    }
+
+    const orderNumber = stored.order_number || stored.id;
+    return this.deliver(
+      stored,
+      'whatsapp_shipping',
+      {
+        event: 'order.shipped',
+        label: 'shipping update',
+        templateEnv: 'WHATSAPP_SHIPPED_TEMPLATE',
+        params: {
+          customer_name: this.customerName(stored),
+          order_number: String(orderNumber),
+          carrier: String(stored.carrier || 'our courier partner'),
+          tracking_number: tracking,
+          tracking_url: this.trackingUrl(orderNumber),
+        },
+        text: this.formatShippedMessage(stored),
+      },
+      { tracking_number: tracking },
+    );
+  }
+
+  /** Shared send path: phone lookup, claim, Cloud API or webhook, record and staff alert. */
+  private async deliver(
+    stored: any,
+    recordKey: 'whatsapp_confirmation' | 'whatsapp_shipping',
+    spec: MessageSpec,
+    extra: Record<string, unknown> = {},
+  ): Promise<WhatsAppSendResult> {
+    const orderNumber = stored.order_number || stored.id;
+    const cloud = this.cloudConfigured();
     const webhookUrl = process.env.WHATSAPP_WEBHOOK_URL;
     if (!cloud && !webhookUrl) {
-      // Lets the thank-you page know not to wait for a message (persisted by the caller's save).
-      stored.whatsapp_confirmation = { status: 'off', at: new Date().toISOString() };
+      // Lets the storefront know not to wait for a message (persisted by the caller's save).
+      stored[recordKey] = { status: 'off', ...extra, at: new Date().toISOString() };
       return { success: false, mode: 'not_configured' };
     }
 
+    const user = stored.user_id ? db.users.find((u) => u.id === stored.user_id) : null;
+    const phone = this.normalizePhoneNumber(stored.address_snapshot_json?.phone || user?.phone);
     if (!phone) {
-      this.record(stored, { status: 'failed', error: 'no valid phone number' });
-      this.notifyStaff(orderNumber, false, 'no valid phone number on the order');
+      this.record(stored, recordKey, { status: 'failed', error: 'no valid phone number', ...extra });
+      this.notifyStaff(orderNumber, spec.label, false, 'no valid phone number on the order');
       return { success: false, mode: 'skipped', error: 'no valid phone number' };
     }
 
-    // Claim the send before any await so a concurrent capture can't send twice.
-    stored.whatsapp_confirmation = { status: 'sending', at: new Date().toISOString() };
+    // Claim the send before any await so a concurrent trigger can't send twice.
+    stored[recordKey] = { status: 'sending', ...extra, at: new Date().toISOString() };
 
-    const enriched = { ...order, ...stored, items: order.items };
     let result: WhatsAppSendResult;
     try {
-      result = cloud ? await this.sendViaCloudApi(enriched, phone) : await this.sendViaWebhook(enriched, phone, webhookUrl!);
+      result = cloud ? await this.sendViaCloudApi(spec, phone) : await this.sendViaWebhook(spec, phone, webhookUrl!);
       if (!result.success && cloud && webhookUrl) {
-        result = await this.sendViaWebhook(enriched, phone, webhookUrl);
+        result = await this.sendViaWebhook(spec, phone, webhookUrl);
       }
     } catch (err: any) {
       result = { success: false, mode: cloud ? 'cloud_api' : 'webhook', recipient: phone, error: err?.message || String(err) };
@@ -137,21 +223,20 @@ export class WhatsAppService implements OnApplicationBootstrap {
 
     const masked = `…${phone.slice(-4)}`;
     if (result.success) {
-      this.logger.log(`Order ${orderNumber}: WhatsApp confirmation sent to ${masked} via ${result.mode}`);
-      this.record(stored, { status: 'sent', mode: result.mode, message_id: result.messageId });
+      this.logger.log(`Order ${orderNumber}: WhatsApp ${spec.label} sent to ${masked} via ${result.mode}`);
+      this.record(stored, recordKey, { status: 'sent', mode: result.mode, message_id: result.messageId, ...extra });
     } else {
-      this.logger.warn(`Order ${orderNumber}: WhatsApp confirmation to ${masked} failed via ${result.mode}: ${result.error}`);
-      this.record(stored, { status: 'failed', mode: result.mode, error: result.error?.slice(0, 300) });
+      this.logger.warn(`Order ${orderNumber}: WhatsApp ${spec.label} to ${masked} failed via ${result.mode}: ${result.error}`);
+      this.record(stored, recordKey, { status: 'failed', mode: result.mode, error: result.error?.slice(0, 300), ...extra });
     }
-    this.notifyStaff(orderNumber, result.success, result.error);
+    this.notifyStaff(orderNumber, spec.label, result.success, result.error);
     return result;
   }
 
-  private async sendViaCloudApi(order: any, phone: string): Promise<WhatsAppSendResult> {
+  private async sendViaCloudApi(spec: MessageSpec, phone: string): Promise<WhatsAppSendResult> {
     const version = process.env.WHATSAPP_GRAPH_VERSION || 'v23.0';
     const url = `https://graph.facebook.com/${version}/${process.env.WHATSAPP_PHONE_NUMBER_ID}/messages`;
-    const template = process.env.WHATSAPP_ORDER_TEMPLATE?.trim();
-    const orderNumber = order.order_number || order.id;
+    const template = process.env[spec.templateEnv]?.trim();
 
     const payload = template
       ? {
@@ -164,12 +249,7 @@ export class WhatsAppService implements OnApplicationBootstrap {
             components: [
               {
                 type: 'body',
-                parameters: [
-                  { type: 'text', parameter_name: 'customer_name', text: this.customerName(order) },
-                  { type: 'text', parameter_name: 'order_number', text: String(orderNumber) },
-                  { type: 'text', parameter_name: 'amount', text: `₹${this.amountPaid(order)}` },
-                  { type: 'text', parameter_name: 'tracking_url', text: this.trackingUrl(orderNumber) },
-                ],
+                parameters: Object.entries(spec.params).map(([name, text]) => ({ type: 'text', parameter_name: name, text })),
               },
             ],
           },
@@ -178,7 +258,7 @@ export class WhatsAppService implements OnApplicationBootstrap {
           messaging_product: 'whatsapp',
           to: phone,
           type: 'text',
-          text: { body: this.formatOrderConfirmationMessage(order), preview_url: false },
+          text: { body: spec.text, preview_url: false },
         };
 
     const res = await fetch(url, {
@@ -194,16 +274,17 @@ export class WhatsAppService implements OnApplicationBootstrap {
     return { success: true, mode: 'cloud_api', recipient: phone, messageId: data?.messages?.[0]?.id };
   }
 
-  private async sendViaWebhook(order: any, phone: string, webhookUrl: string): Promise<WhatsAppSendResult> {
-    const orderNumber = order.order_number || order.id;
+  private async sendViaWebhook(spec: MessageSpec, phone: string, webhookUrl: string): Promise<WhatsAppSendResult> {
+    const p = spec.params;
     const body = JSON.stringify({
-      event: 'order.confirmed',
+      event: spec.event,
       to: `+${phone}`,
-      customerName: this.customerName(order),
-      orderNumber,
-      amount: Number(order.total || 0),
-      trackingUrl: this.trackingUrl(orderNumber),
-      message: this.formatOrderConfirmationMessage(order),
+      customerName: p.customer_name,
+      orderNumber: p.order_number,
+      ...(p.amount ? { amount: p.amount } : {}),
+      ...(p.carrier ? { carrier: p.carrier, trackingNumber: p.tracking_number } : {}),
+      trackingUrl: p.tracking_url,
+      message: spec.text,
     });
     const headers: Record<string, string> = { 'Content-Type': 'application/json' };
     const secret = process.env.WHATSAPP_WEBHOOK_SECRET;
@@ -216,19 +297,19 @@ export class WhatsAppService implements OnApplicationBootstrap {
     return { success: true, mode: 'webhook', recipient: phone };
   }
 
-  private record(order: any, entry: Record<string, unknown>) {
-    order.whatsapp_confirmation = { ...entry, at: new Date().toISOString() };
+  private record(order: any, key: string, entry: Record<string, unknown>) {
+    order[key] = { ...entry, at: new Date().toISOString() };
     saveDb();
   }
 
-  private notifyStaff(orderNumber: string, sent: boolean, error?: string) {
+  private notifyStaff(orderNumber: string, label: string, sent: boolean, error?: string) {
     db.notifications.unshift({
       id: `notif-wa-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
       category: 'order',
       severity: sent ? 'info' : 'warning',
-      title: sent ? `WhatsApp confirmation sent (#${orderNumber})` : `WhatsApp confirmation not sent (#${orderNumber})`,
+      title: sent ? `WhatsApp ${label} sent (#${orderNumber})` : `WhatsApp ${label} not sent (#${orderNumber})`,
       description: sent
-        ? 'The customer was told on WhatsApp that their order is confirmed.'
+        ? `The customer received the ${label} on WhatsApp.`
         : `Message the customer manually. Reason: ${error || 'unknown error'}`.slice(0, 300),
       link_href: '/orders',
       link_text: 'View Order →',

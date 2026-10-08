@@ -8,7 +8,7 @@
 //   - a real HTML page per product, category and key static page
 //     (title, description, canonical, Open Graph, JSON-LD and readable content)
 //   - app.html: the neutral shell served for every other route (see vercel.json)
-//   - sitemap.xml, llms.txt and feeds/google-merchant.xml built from the catalog
+//   - sitemap.xml, llms.txt, feeds/google-merchant.xml and feeds/products.json built from the catalog
 //
 // If the API can't be reached the build still succeeds with the static pages
 // only. Products added later appear once the site is rebuilt; the backend can
@@ -628,4 +628,39 @@ fs.writeFileSync(path.join(DIST_DIR, 'feeds', 'google-merchant.xml'), [
   '',
 ].join('\n'), 'utf-8');
 
-console.log(`[SEO prerender] ${pageCount} pages, ${sitemapEntries.length} sitemap URLs, ${feedItems.length} feed items, llms.txt written.`);
+// ── feeds/products.json (JSON Feed 1.1, https://jsonfeed.org) ─────────────
+
+const jsonFeed = {
+  version: 'https://jsonfeed.org/version/1.1',
+  title: 'Bingooo — products',
+  home_page_url: SITE_URL,
+  feed_url: `${SITE_URL}/feeds/products.json`,
+  description: 'Bingooo streetwear catalog: heavyweight oversized t-shirts, hoodies and more.',
+  language: 'en-IN',
+  items: products.map((product) => {
+    const { price, compareAtPrice, inStock } = productPricing(product);
+    const images = productImages(product);
+    return {
+      id: productUrl(product.slug),
+      url: productUrl(product.slug),
+      title: stripHtml(product.title),
+      summary: productSeoDescription(product),
+      content_text: stripHtml(product.description) || productSeoDescription(product),
+      ...(images[0] ? { image: images[0] } : {}),
+      date_published: product.created_at || undefined,
+      date_modified: product.updated_at || undefined,
+      tags: [product.category?.name, ...(Array.isArray(product.tags) ? product.tags : [])].filter(Boolean),
+      _bingooo: {
+        price,
+        ...(compareAtPrice ? { compare_at_price: compareAtPrice } : {}),
+        currency: 'INR',
+        in_stock: inStock,
+        category: product.category?.slug || null,
+      },
+    };
+  }),
+};
+fs.writeFileSync(path.join(DIST_DIR, 'feeds', 'products.json'), `${JSON.stringify(jsonFeed, null, 2)}
+`, 'utf-8');
+
+console.log(`[SEO prerender] ${pageCount} pages, ${sitemapEntries.length} sitemap URLs, ${feedItems.length} feed items, ${jsonFeed.items.length} JSON feed items, llms.txt written.`);

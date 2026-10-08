@@ -17,22 +17,22 @@ interface ButtonProps extends Omit<HTMLMotionProps<'button'>, 'children'> {
 
 const variantStyles: Record<ButtonVariant, string> = {
   primary:
-    'bg-[#E6321C] text-white hover:bg-[#B91F12] active:bg-[#B91F12]/95 shadow-[0_4px_14px_rgba(230,50,28,0.28)] hover:shadow-[0_6px_20px_rgba(230,50,28,0.38)] active:translate-y-[1px]',
+    'bg-[#E6321C] text-white hover:bg-[#ff3b20] border-2 border-[#171717] shadow-[3px_3px_0px_#171717] hover:shadow-[4px_4px_0px_#171717] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none uppercase tracking-wider',
   secondary:
-    'bg-white text-[#171717] border border-[#DDD3C5] hover:border-[#171717] hover:bg-[#FAF8F5] active:bg-[#EDE0CC]/40 shadow-2xs',
+    'bg-white text-[#171717] border-2 border-[#171717] hover:bg-[#F7EEDB] shadow-[3px_3px_0px_#171717] hover:shadow-[4px_4px_0px_#171717] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none uppercase tracking-wider',
   outline:
-    'border-2 border-[#171717] text-[#171717] bg-transparent hover:bg-[#171717] hover:text-white active:bg-[#171717]/90',
+    'border-2 border-[#171717] text-[#171717] bg-transparent hover:bg-[#171717] hover:text-white shadow-[2px_2px_0px_#171717] hover:shadow-[3px_3px_0px_#171717] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none uppercase tracking-wider',
   ghost:
-    'text-[#171717] hover:text-[#E6321C] hover:bg-black/5 active:bg-black/10',
+    'text-[#171717] hover:text-[#E6321C] hover:bg-black/5 uppercase tracking-wider',
   danger:
-    'bg-[#C62828] text-white hover:bg-[#B71C1C] active:bg-[#B71C1C]/90 shadow-2xs',
+    'bg-[#C62828] text-white border-2 border-[#171717] shadow-[3px_3px_0px_#171717] hover:bg-[#B71C1C] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none uppercase tracking-wider',
 };
 
 const sizeStyles: Record<ButtonSize, string> = {
-  sm: 'h-8 px-3 text-[11px] font-bold gap-1.5 rounded-md',
-  md: 'h-10 px-4 text-xs font-bold gap-2 rounded-[8px]',
-  lg: 'h-11 px-5 text-[13px] font-bold gap-2 rounded-[10px]',
-  xl: 'h-12 sm:h-[52px] px-6 text-sm font-bold gap-2.5 rounded-[10px] tracking-wider',
+  sm: 'h-8 px-3 text-[11px] font-extrabold gap-1.5 rounded-[2px]',
+  md: 'h-10 px-4 text-xs font-extrabold gap-2 rounded-[2px]',
+  lg: 'h-11 px-5 text-[13px] font-extrabold gap-2 rounded-[2px]',
+  xl: 'h-12 sm:h-[52px] px-6 text-sm font-extrabold gap-2.5 rounded-[2px] tracking-wider',
 };
 
 const Button = forwardRef<HTMLButtonElement, ButtonProps>(

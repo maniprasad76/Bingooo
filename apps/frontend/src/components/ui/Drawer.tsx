@@ -80,9 +80,9 @@ export function Drawer({
           {/* Drawer panel */}
           <motion.div
             className={cn(
-              'fixed top-0 z-50 h-full w-full bg-white shadow-drawer flex flex-col',
+              'fixed top-0 z-50 h-full w-full bg-[#F7EEDB] flex flex-col',
+              drawerSide === 'right' ? 'right-0 border-l-2 border-[#171717] shadow-[-6px_0px_0px_#171717]' : 'left-0 border-r-2 border-[#171717] shadow-[6px_0px_0px_#171717]',
               sizeClasses[size],
-              drawerSide === 'right' ? 'right-0' : 'left-0',
               className,
             )}
             initial={slideFrom}
@@ -95,14 +95,14 @@ export function Drawer({
           >
             {/* Header */}
             {title && (
-              <div className="flex items-center justify-between border-b border-border px-5 py-4 shrink-0">
-                <h2 className="text-heading font-bold text-ink">{title}</h2>
+              <div className="flex items-center justify-between border-b-2 border-[#171717] bg-[#F7EEDB] px-5 py-4 shrink-0">
+                <h2 className="text-sm sm:text-base font-black uppercase tracking-tight text-[#171717]">{title}</h2>
                 <button
                   onClick={onClose}
-                  className="rounded-full p-1 text-muted hover:bg-ink/5 hover:text-ink transition-colors duration-hover"
+                  className="rounded-[2px] border-2 border-[#171717] bg-white p-1 text-[#171717] hover:bg-[#E6321C] hover:text-white shadow-[2px_2px_0px_#171717] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all"
                   aria-label="Close"
                 >
-                  <X size={20} />
+                  <X size={18} />
                 </button>
               </div>
             )}

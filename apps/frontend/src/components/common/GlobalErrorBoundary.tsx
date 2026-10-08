@@ -49,7 +49,7 @@ export class GlobalErrorBoundary extends Component<Props, State> {
     if (this.state.hasError) {
       return (
         <div className="min-h-screen bg-[#111111] text-[#FAF8F5] flex flex-col items-center justify-center p-6 text-center select-none font-sans">
-          <div className="max-w-md w-full p-8 rounded-2xl bg-[#1c1c1c] border border-white/10 shadow-2xl flex flex-col items-center">
+          <div className="max-w-md w-full p-8 rounded-[2px] bg-[#1c1c1c] border border-white/10 shadow-2xl flex flex-col items-center">
             {/* Warning Icon Badge */}
             <div className="w-16 h-16 rounded-full bg-[#e6321c]/15 text-[#e6321c] flex items-center justify-center mb-6 ring-8 ring-[#e6321c]/5">
               <AlertTriangle className="w-8 h-8 animate-pulse" />
@@ -70,7 +70,7 @@ export class GlobalErrorBoundary extends Component<Props, State> {
             <div className="flex flex-col sm:flex-row gap-3 w-full">
               <button
                 onClick={this.handleReload}
-                className="flex-1 inline-flex items-center justify-center gap-2 h-12 rounded-xl bg-[#e6321c] text-white font-bold text-xs uppercase tracking-wider hover:bg-[#ff3b24] active:scale-95 transition-all shadow-lg shadow-[#e6321c]/20 cursor-pointer"
+                className="flex-1 inline-flex items-center justify-center gap-2 h-12 rounded-[2px] bg-[#e6321c] text-white font-bold text-xs uppercase tracking-wider hover:bg-[#ff3b24] active:scale-95 transition-all shadow-lg shadow-[#e6321c]/20 cursor-pointer"
               >
                 <RotateCcw className="w-4 h-4" />
                 Reload Studio
@@ -78,7 +78,7 @@ export class GlobalErrorBoundary extends Component<Props, State> {
 
               <button
                 onClick={this.handleHardReset}
-                className="flex-1 inline-flex items-center justify-center gap-2 h-12 rounded-xl bg-white/5 border border-white/10 text-white font-bold text-xs uppercase tracking-wider hover:bg-white/10 active:scale-95 transition-all cursor-pointer"
+                className="flex-1 inline-flex items-center justify-center gap-2 h-12 rounded-[2px] bg-white/5 border border-white/10 text-white font-bold text-xs uppercase tracking-wider hover:bg-white/10 active:scale-95 transition-all cursor-pointer"
               >
                 <Home className="w-4 h-4" />
                 Reset to Home

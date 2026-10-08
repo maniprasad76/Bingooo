@@ -111,16 +111,16 @@ export function ProductCard({
 
   return (
     <>
-      <InteractiveTilt maxTilt={8} className="h-full">
-        <div className="group relative flex h-full flex-col rounded-2xl bg-white border border-border/80 overflow-hidden shadow-card transition-all duration-500 hover:shadow-card-hover hover:border-ink/25">
+      <InteractiveTilt maxTilt={6} className="h-full">
+        <div className="group relative flex h-full flex-col bg-white border-2 border-[#171717] overflow-hidden shadow-[4px_4px_0px_#171717] transition-all duration-200 hover:shadow-[6px_6px_0px_#171717] hover:-translate-x-0.5 hover:-translate-y-0.5">
           {/* Product Image Showcase */}
-          <div className="relative aspect-[4/5] w-full bg-[#EDE0CC] flex items-center justify-center p-2 sm:p-4 overflow-hidden">
+          <div className="relative aspect-[4/5] w-full bg-[#EDE0CC] border-b-2 border-[#171717] flex items-center justify-center p-2 sm:p-4 overflow-hidden">
             <Link to={`/product/${slug}`} className="w-full h-full flex items-center justify-center">
               {mainImage && !imgError ? (
                 <img
                   src={mainImage}
                   alt={title}
-                  className="h-full w-full object-contain p-1 sm:p-2 transition-transform duration-700 ease-out group-hover:scale-105"
+                  className="h-full w-full object-contain p-1 sm:p-2 transition-transform duration-500 ease-out group-hover:scale-105"
                   loading="lazy"
                   onError={() => setImgError(true)}
                 />
@@ -130,27 +130,27 @@ export function ProductCard({
             </Link>
 
             {/* Badges Top-Left */}
-            <div className="absolute top-2 left-2 sm:top-3.5 sm:left-3.5 flex flex-col gap-1 z-10">
+            <div className="absolute top-2 left-2 sm:top-3 sm:left-3 flex flex-col gap-1 z-10">
               {bestseller && (
-                <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-amber-500 text-black text-[8px] sm:text-[9px] font-sans font-extrabold uppercase tracking-wider shadow-sm">
+                <span className="inline-flex items-center px-2 py-0.5 border border-[#171717] bg-amber-400 text-black text-[8px] sm:text-[9px] font-mono font-black uppercase tracking-wider shadow-[1px_1px_0px_#171717]">
                   BESTSELLER
                 </span>
               )}
               {badgeText ? (
-                <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-[#171717] text-white text-[8px] sm:text-[9px] font-sans font-bold uppercase tracking-wider shadow-sm">
+                <span className="inline-flex items-center px-2 py-0.5 border border-[#171717] bg-[#171717] text-white text-[8px] sm:text-[9px] font-mono font-bold uppercase tracking-wider shadow-[1px_1px_0px_#171717]">
                   {badgeText}
                 </span>
               ) : !bestseller && (
-                <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-[#171717] text-white text-[8px] sm:text-[9px] font-sans font-bold uppercase tracking-wider shadow-sm">
+                <span className="inline-flex items-center px-2 py-0.5 border border-[#171717] bg-[#171717] text-white text-[8px] sm:text-[9px] font-mono font-bold uppercase tracking-wider shadow-[1px_1px_0px_#171717]">
                   ESSENTIAL
                 </span>
               )}
               {saleTag ? (
-                <span className="inline-flex items-center px-1.5 py-0.5 sm:px-2 rounded-full bg-[#E6321C] text-white text-[8px] sm:text-[10px] font-sans font-bold tracking-wider shadow-sm">
+                <span className="inline-flex items-center px-1.5 py-0.5 sm:px-2 border border-[#171717] bg-[#E6321C] text-white text-[8px] sm:text-[9px] font-mono font-bold tracking-wider shadow-[1px_1px_0px_#171717]">
                   {saleTag}
                 </span>
               ) : discountPct ? (
-                <span className="inline-flex items-center px-1.5 py-0.5 sm:px-2 rounded-full bg-[#E6321C] text-white text-[8px] sm:text-[10px] font-sans font-bold tracking-wider shadow-sm">
+                <span className="inline-flex items-center px-1.5 py-0.5 sm:px-2 border border-[#171717] bg-[#E6321C] text-white text-[8px] sm:text-[9px] font-mono font-bold tracking-wider shadow-[1px_1px_0px_#171717]">
                   {discountPct}% OFF
                 </span>
               ) : null}
@@ -159,11 +159,11 @@ export function ProductCard({
             {/* Top-Right Quick View & Wishlist Buttons */}
             <div className="absolute top-2 right-2 sm:top-3 sm:right-3 flex flex-col gap-1.5 z-10">
               <motion.button
-                whileHover={{ scale: 1.15 }}
-                whileTap={{ scale: 0.88 }}
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
                 onClick={handleWishlistToggle}
                 aria-label={inWishlist ? 'Remove from wishlist' : 'Save to wishlist'}
-                className="flex h-7 w-7 sm:h-8 sm:w-8 items-center justify-center rounded-full bg-white/90 shadow-2xs backdrop-blur-md text-ink hover:text-brand-red"
+                className="flex h-7 w-7 sm:h-8 sm:w-8 items-center justify-center border-2 border-[#171717] bg-white text-[#171717] hover:bg-[#E6321C] hover:text-white shadow-[2px_2px_0px_#171717] transition-colors"
               >
                 <motion.div
                   animate={inWishlist ? { scale: [1, 1.35, 1] } : { scale: 1 }}
@@ -172,30 +172,30 @@ export function ProductCard({
                   <Heart
                     size={13}
                     className={`transition-colors ${
-                      inWishlist ? 'fill-brand-red text-brand-red' : 'text-muted hover:text-brand-red'
+                      inWishlist ? 'fill-[#E6321C] text-[#E6321C]' : 'text-[#171717]'
                     }`}
                   />
                 </motion.div>
               </motion.button>
 
               <motion.button
-                whileHover={{ scale: 1.15 }}
-                whileTap={{ scale: 0.88 }}
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
                 onClick={handleQuickView}
                 aria-label="Quick preview"
-                className="hidden sm:flex h-8 w-8 items-center justify-center rounded-full bg-white/90 shadow-2xs backdrop-blur-md opacity-0 translate-x-2 transition-all duration-300 group-hover:opacity-100 group-hover:translate-x-0 text-ink hover:text-brand-red"
+                className="hidden sm:flex h-8 w-8 items-center justify-center border-2 border-[#171717] bg-white text-[#171717] hover:bg-[#171717] hover:text-white shadow-[2px_2px_0px_#171717] opacity-0 translate-x-2 transition-all duration-200 group-hover:opacity-100 group-hover:translate-x-0"
               >
                 <Eye size={14} />
               </motion.button>
             </div>
 
             {/* Bottom Floating Quick Actions on Hover (Desktop only) */}
-            <div className="hidden sm:flex absolute inset-x-3.5 bottom-3.5 z-10 gap-1.5 opacity-0 translate-y-2 transition-all duration-300 ease-out group-hover:opacity-100 group-hover:translate-y-0">
+            <div className="hidden sm:flex absolute inset-x-3.5 bottom-3.5 z-10 gap-1.5 opacity-0 translate-y-2 transition-all duration-200 ease-out group-hover:opacity-100 group-hover:translate-y-0">
               <motion.button
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.97 }}
                 onClick={handleQuickAdd}
-                className="flex-1 flex items-center justify-center gap-1.5 rounded-lg bg-[#171717] text-white py-2 text-[11px] font-sans font-semibold uppercase tracking-wide shadow-md hover:bg-[#E6321C] transition-colors"
+                className="flex-1 flex items-center justify-center gap-1.5 border-2 border-[#171717] bg-[#171717] text-white py-2 text-[11px] font-mono font-bold uppercase tracking-wider shadow-[3px_3px_0px_#171717] hover:bg-[#E6321C] transition-colors"
               >
                 <ShoppingBag size={12} />
                 Quick Bag

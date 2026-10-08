@@ -29,17 +29,17 @@ export function CartDrawer() {
       onClose={closeDrawer}
       position="right"
       size="md"
-      className="!bg-[#F7EEDB] border-l border-[#DDD3C5] font-sans text-[#171717]"
+      className="!bg-[#F7EEDB] border-l-2 border-[#171717] font-sans text-[#171717]"
     >
       <div className="flex h-full flex-col justify-between">
         {/* ================= HEADER ================= */}
-        <div className="flex items-center justify-between border-b border-[#DDD3C5] px-6 py-5 bg-[#F7EEDB] shrink-0">
-          <div className="flex items-baseline gap-2">
-            <h2 className="m-0 text-[18px] font-extrabold uppercase tracking-[-0.04em] text-[#171717]">
-              YOUR CART
+        <div className="flex items-center justify-between border-b-2 border-[#171717] px-6 py-5 bg-[#F7EEDB] shrink-0">
+          <div className="flex items-center gap-2.5">
+            <h2 className="m-0 text-[18px] font-black uppercase tracking-tight text-[#171717]">
+              YOUR CART.
             </h2>
-            <span className="font-mono text-xs font-bold text-[#6F6A63]">
-              ({items.reduce((sum: number, item: any) => sum + (item.quantity || 1), 0)})
+            <span className="inline-flex items-center justify-center min-w-[22px] h-[22px] px-1.5 bg-[#171717] text-white font-mono text-[10px] font-bold border border-[#171717]">
+              {items.reduce((sum: number, item: any) => sum + (item.quantity || 1), 0)}
             </span>
           </div>
 
@@ -49,26 +49,29 @@ export function CartDrawer() {
               triggerHaptic('light');
               closeDrawer();
             }}
-            className="w-7 h-7 grid place-items-center text-xl text-[#171717] hover:text-[#E6321C] transition-colors cursor-pointer"
+            className="w-8 h-8 grid place-items-center bg-[#F7EEDB] border-2 border-[#171717] shadow-[2px_2px_0px_#171717] hover:bg-[#E6321C] hover:text-white hover:border-[#E6321C] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all cursor-pointer"
             aria-label="Close cart drawer"
           >
-            <X size={18} />
+            <X size={15} />
           </button>
         </div>
 
         {/* ================= ITEM LIST ================= */}
-        <div className="flex-1 overflow-y-auto px-6 py-4 divide-y divide-[#DDD3C5]">
+        <div className="flex-1 overflow-y-auto px-6 py-4 divide-y-2 divide-[#171717]/10">
           {isLoading ? (
             <div className="flex h-40 items-center justify-center text-xs font-mono text-[#6F6A63]">
               Loading cart...
             </div>
           ) : items.length === 0 ? (
             <div className="flex h-full flex-col items-center justify-center py-20 text-center">
-              <h3 className="text-[26px] font-extrabold uppercase tracking-[-0.04em] text-[#171717] mb-2">
+              <span className="w-12 h-12 rounded-full border-2 border-[#171717] flex items-center justify-center text-xs font-black font-mono mb-4 bg-white shadow-[2px_2px_0px_#171717]">
+                00
+              </span>
+              <h3 className="text-[24px] font-black uppercase tracking-tight text-[#171717] mb-2">
                 YOUR CART IS EMPTY.
               </h3>
-              <p className="text-[12px] text-[#6F6A63] max-w-[240px] leading-relaxed mb-6">
-                Nothing here yet. Find something that feels like you.
+              <p className="text-[12px] text-[#6F6A63] max-w-[240px] leading-relaxed mb-6 font-medium">
+                Nothing here yet. Find garments engineered to define you.
               </p>
               <button
                 type="button"
@@ -77,9 +80,9 @@ export function CartDrawer() {
                   closeDrawer();
                   navigate('/shop');
                 }}
-                className="inline-flex h-11 items-center px-6 bg-[#171717] text-white text-[10px] font-extrabold uppercase tracking-wider hover:bg-[#E6321C] transition-colors cursor-pointer"
+                className="inline-flex h-12 items-center px-6 bg-[#171717] text-white text-[10px] font-black uppercase tracking-wider border-2 border-[#171717] shadow-[3px_3px_0px_#171717] hover:bg-[#E6321C] hover:border-[#171717] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all cursor-pointer"
               >
-                SHOP THE COLLECTION →
+                EXPLORE COLLECTION →
               </button>
             </div>
           ) : (
@@ -122,7 +125,7 @@ export function CartDrawer() {
                   >
                     <div className="flex gap-4 py-4.5">
                       {/* Image Thumbnail */}
-                      <div className="relative h-[105px] w-[82px] shrink-0 overflow-hidden bg-[#EDE0CC] border border-[#DDD3C5] flex items-center justify-center">
+                      <div className="relative h-[105px] w-[82px] shrink-0 overflow-hidden bg-[#EDE0CC] border-2 border-[#171717] shadow-[2px_2px_0px_#171717] flex items-center justify-center">
                         {imageUrl ? (
                           productSlug ? (
                             <Link
@@ -152,8 +155,8 @@ export function CartDrawer() {
                           </div>
                         )}
                         {item.customization && (
-                          <span className="absolute bottom-1 right-1 px-1 py-0.5 bg-[#E6321C] text-white text-[7px] font-mono font-bold uppercase">
-                            CUSTOM
+                          <span className="absolute bottom-1 right-1 px-1 py-0.5 bg-[#E6321C] text-white text-[7px] font-mono font-bold uppercase border border-[#171717]">
+                            BESPOKE
                           </span>
                         )}
                       </div>
@@ -163,7 +166,7 @@ export function CartDrawer() {
                         <div>
                           <div className="flex items-start justify-between gap-2">
                             <div className="min-w-0">
-                              <div className="text-[8px] font-extrabold uppercase tracking-[1.2px] text-[#6F6A63] mb-0.5">
+                              <div className="text-[8px] font-mono font-bold uppercase tracking-[1.5px] text-[#E6321C] mb-0.5">
                                 {category}
                               </div>
                               {productSlug ? (
@@ -171,12 +174,12 @@ export function CartDrawer() {
                                   to={`/product/${productSlug}`}
                                   onClick={closeDrawer}
                                 >
-                                  <h4 className="m-0 text-[13px] font-extrabold text-[#171717] hover:text-[#E6321C] transition-colors line-clamp-1">
+                                  <h4 className="m-0 text-[13px] font-black uppercase text-[#171717] hover:text-[#E6321C] transition-colors line-clamp-1">
                                     {productTitle}
                                   </h4>
                                 </Link>
                               ) : (
-                                <h4 className="m-0 text-[13px] font-extrabold text-[#171717] line-clamp-1">
+                                <h4 className="m-0 text-[13px] font-black uppercase text-[#171717] line-clamp-1">
                                   {productTitle}
                                 </h4>
                               )}
@@ -188,7 +191,7 @@ export function CartDrawer() {
                                 triggerHaptic('light');
                                 removeItem(item.id);
                               }}
-                              className="text-[#6F6A63] hover:text-[#E6321C] text-base p-1 transition-colors cursor-pointer shrink-0"
+                              className="w-6 h-6 grid place-items-center bg-[#F7EEDB] border border-[#171717] text-[#171717] hover:bg-[#E6321C] hover:text-white hover:border-[#E6321C] text-xs font-black transition-colors cursor-pointer shrink-0"
                               aria-label="Remove item"
                             >
                               ×
@@ -196,10 +199,9 @@ export function CartDrawer() {
                           </div>
 
                           {attributes.length > 0 && (
-                            <div className="mt-1 flex flex-wrap items-center gap-1.5 text-[10px] text-[#6F6A63] font-semibold">
+                            <div className="mt-1.5 flex flex-wrap items-center gap-1.5 text-[9px] font-mono font-bold uppercase text-[#6F6A63]">
                               {attributes.map((attr, idx) => (
-                                <span key={idx} className="flex items-center gap-1.5">
-                                  {idx > 0 && <span>/</span>}
+                                <span key={idx} className="flex items-center gap-1.5 bg-white px-1.5 py-0.5 border border-[#171717]/30">
                                   <span>{attr}</span>
                                 </span>
                               ))}
@@ -209,7 +211,7 @@ export function CartDrawer() {
 
                         {/* Stepper & Price */}
                         <div className="mt-2.5 flex items-center justify-between pt-1">
-                          <div className="flex items-center border border-[#DDD3C5] bg-transparent">
+                          <div className="flex items-center border-2 border-[#171717] bg-white shadow-[2px_2px_0px_#171717]">
                             <button
                               type="button"
                               onClick={() => {
@@ -220,12 +222,12 @@ export function CartDrawer() {
                                   removeItem(item.id);
                                 }
                               }}
-                              className="flex h-6 w-6 items-center justify-center text-[#171717] hover:bg-[#F4EEE4] transition-colors cursor-pointer"
+                              className="flex h-6 w-6 items-center justify-center text-[#171717] hover:bg-[#E6321C] hover:text-white transition-colors cursor-pointer"
                               aria-label="Decrease quantity"
                             >
-                              <Minus size={11} />
+                              <Minus size={10} strokeWidth={3} />
                             </button>
-                            <span className="w-6 text-center font-mono text-[10px] font-extrabold text-[#171717]">
+                            <span className="w-6 text-center font-mono text-[10px] font-black text-[#171717]">
                               {item.quantity}
                             </span>
                             <button
@@ -234,14 +236,14 @@ export function CartDrawer() {
                                 triggerHaptic('light');
                                 updateQuantity(item.id, item.quantity + 1);
                               }}
-                              className="flex h-6 w-6 items-center justify-center text-[#171717] hover:bg-[#F4EEE4] transition-colors cursor-pointer"
+                              className="flex h-6 w-6 items-center justify-center text-[#171717] hover:bg-[#E6321C] hover:text-white transition-colors cursor-pointer"
                               aria-label="Increase quantity"
                             >
-                              <Plus size={11} />
+                              <Plus size={10} strokeWidth={3} />
                             </button>
                           </div>
 
-                          <span className="font-mono text-[13px] font-extrabold text-[#171717]">
+                          <span className="font-mono text-[14px] font-black text-[#171717]">
                             ₹{(item.total || (item.unitPrice * item.quantity)).toLocaleString('en-IN')}
                           </span>
                         </div>
@@ -256,25 +258,25 @@ export function CartDrawer() {
 
         {/* ================= FOOTER ================= */}
         {items.length > 0 && (
-          <div className="border-t border-[#DDD3C5] bg-white/30 backdrop-blur-xs p-6 space-y-3.5 shrink-0">
-            <div className="space-y-1.5 text-xs text-[#6F6A63]">
+          <div className="border-t-2 border-[#171717] bg-[#F7EEDB] p-6 space-y-4 shrink-0 shadow-[0_-4px_0px_#171717]/5">
+            <div className="space-y-2 text-xs text-[#6F6A63]">
               <div className="flex justify-between">
-                <span>Subtotal</span>
+                <span className="font-mono font-bold uppercase tracking-wider text-[10px] text-[#6F6A63]">Subtotal</span>
                 <span className="font-mono font-bold text-[#171717]">₹{subtotal.toLocaleString('en-IN')}</span>
               </div>
-              <div className="flex justify-between items-baseline pt-2 border-t border-[#DDD3C5] text-base font-extrabold text-[#171717]">
-                <span className="uppercase tracking-tight">Total</span>
-                <span className="font-mono text-xl text-[#171717]">₹{total.toLocaleString('en-IN')}</span>
+              <div className="flex justify-between items-baseline pt-2 border-t-2 border-[#171717] text-base font-black text-[#171717]">
+                <span className="uppercase tracking-tight text-sm font-black">TOTAL</span>
+                <span className="font-mono text-xl font-black text-[#E6321C]">₹{total.toLocaleString('en-IN')}</span>
               </div>
-              <div className="text-right text-[9px] text-[#6F6A63]">
-                Inclusive of all applicable taxes
+              <div className="text-right text-[9px] font-mono uppercase text-[#6F6A63]">
+                PAN-INDIA TAXES & COMPLIMENTARY SHIPPING
               </div>
             </div>
 
             <button
               type="button"
               onClick={handleCheckout}
-              className="w-full h-[48px] bg-[#E6321C] text-white text-[10px] font-extrabold uppercase tracking-[0.5px] hover:bg-[#B91F12] active:translate-y-[1px] transition-all cursor-pointer shadow-xs"
+              className="w-full h-[50px] bg-[#E6321C] text-white text-[11px] font-black uppercase tracking-[1px] border-2 border-[#171717] shadow-[4px_4px_0px_#171717] hover:bg-[#171717] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all cursor-pointer flex items-center justify-center gap-2"
             >
               PROCEED TO CHECKOUT →
             </button>
@@ -282,9 +284,9 @@ export function CartDrawer() {
             <Link
               to="/cart"
               onClick={closeDrawer}
-              className="block text-center text-[10px] font-extrabold tracking-wider uppercase text-[#171717] hover:text-[#E6321C] underline underline-offset-4 transition-colors"
+              className="block text-center py-2 text-[10px] font-black tracking-wider uppercase text-[#171717] border border-[#171717] bg-white hover:bg-[#171717] hover:text-white transition-all shadow-[2px_2px_0px_#171717]"
             >
-              VIEW FULL CART DETAILS
+              VIEW FULL BAG SUMMARY
             </Link>
           </div>
         )}

@@ -229,13 +229,13 @@ export function SmartSearchModal() {
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.97, y: -12 }}
             transition={{ type: 'spring', stiffness: 450, damping: 32 }}
-            className="relative w-full max-w-2xl bg-[#F7EEDB] border border-[#DDD3C5] rounded-[3px] shadow-2xl overflow-hidden flex flex-col max-h-[85vh] z-10"
+            className="relative w-full max-w-2xl bg-[#F7EEDB] border-2 border-[#171717] rounded-[2px] shadow-[8px_8px_0px_#171717] overflow-hidden flex flex-col max-h-[85vh] z-10"
             role="dialog"
             aria-modal="true"
             aria-label="Smart Search"
           >
             {/* Top Search Input Row */}
-            <div className="relative flex items-center px-4 py-3.5 sm:px-6 sm:py-4 border-b border-[#DDD3C5] bg-[#F7EEDB]">
+            <div className="relative flex items-center px-4 py-3.5 sm:px-6 sm:py-4 border-b-2 border-[#171717] bg-[#F7EEDB]">
               <Search
                 size={20}
                 className={`mr-3 shrink-0 transition-colors ${
@@ -249,7 +249,7 @@ export function SmartSearchModal() {
                 onChange={(e) => setInputQuery(e.target.value)}
                 onKeyDown={handleKeyDown}
                 placeholder="Search heavyweight tees, 240 GSM, hoodies, fits..."
-                className="search-palette-input no-focus-outline w-full bg-transparent text-sm sm:text-base font-bold text-[#171717] placeholder-[#8C867E] outline-none border-none shadow-none focus:outline-none focus:ring-0 font-sans"
+                className="search-palette-input no-focus-outline w-full bg-transparent text-sm sm:text-base font-black text-[#171717] placeholder-[#8C867E] outline-none border-none shadow-none focus:outline-none focus:ring-0 font-sans"
               />
 
               {/* Clear button */}
@@ -260,10 +260,10 @@ export function SmartSearchModal() {
                     setInputQuery('');
                     inputRef.current?.focus();
                   }}
-                  className="p-1 rounded-[2px] text-[#6F6A63] hover:text-[#171717] hover:bg-[#EDE0CC] transition-colors mr-1 sm:mr-2"
+                  className="p-1 rounded-[2px] border border-[#171717] text-[#171717] hover:bg-[#E6321C] hover:text-white transition-colors mr-1 sm:mr-2 shadow-[1px_1px_0px_#171717]"
                   aria-label="Clear search input"
                 >
-                  <X size={16} />
+                  <X size={15} />
                 </button>
               )}
 
@@ -271,7 +271,7 @@ export function SmartSearchModal() {
               <button
                 type="button"
                 onClick={closeSearchModal}
-                className="hidden sm:inline-flex items-center gap-1 px-2 py-0.5 rounded-[2px] bg-[#EDE0CC] border border-[#DDD3C5] text-[10px] font-mono font-bold text-[#171717] hover:bg-[#171717] hover:text-white transition-colors"
+                className="hidden sm:inline-flex items-center gap-1 px-2.5 py-1 rounded-[2px] bg-[#EDE0CC] border-2 border-[#171717] text-[10px] font-mono font-black text-[#171717] hover:bg-[#171717] hover:text-white shadow-[2px_2px_0px_#171717] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all"
                 title="Press Escape to close"
               >
                 <span>ESC</span>
@@ -330,7 +330,7 @@ export function SmartSearchModal() {
                         key={product.id || product.slug}
                         whileHover={{ scale: 1.008 }}
                         onClick={() => handleSelectProduct(product)}
-                        className={`group flex items-center justify-between p-2.5 sm:p-3 rounded-xl cursor-pointer transition-all ${
+                        className={`group flex items-center justify-between p-2.5 sm:p-3 rounded-[2px] cursor-pointer transition-all ${
                           isSelected
                             ? 'bg-[#F7EEDB] border border-[#DDD3C5] shadow-xs'
                             : 'hover:bg-white border border-transparent hover:border-[#DDD3C5]/60'
@@ -415,7 +415,7 @@ export function SmartSearchModal() {
                         closeSearchModal();
                         navigate('/shop');
                       }}
-                      className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#171717] text-white text-xs font-bold uppercase tracking-wide hover:bg-[#E6321C] transition-colors shadow-xs"
+                      className="inline-flex items-center gap-1.5 px-4 py-2 rounded-[2px] bg-[#171717] text-white text-xs font-bold uppercase tracking-wide hover:bg-[#E6321C] transition-colors shadow-xs"
                     >
                       Browse All Garments
                     </button>
@@ -446,7 +446,7 @@ export function SmartSearchModal() {
                           <div
                             key={term}
                             onClick={() => handleSearchTagClick(term)}
-                            className="group flex items-center gap-2 px-3 py-1.5 rounded-[2px] bg-white border border-[#DDD3C5] text-[10px] font-bold uppercase tracking-wider text-[#171717] hover:border-[#171717] hover:bg-[#171717] hover:text-white cursor-pointer transition-colors shadow-2xs"
+                            className="group flex items-center gap-2 px-3 py-1.5 rounded-[2px] bg-white border-2 border-[#171717] text-[10px] font-black uppercase tracking-wider text-[#171717] hover:bg-[#171717] hover:text-white cursor-pointer transition-colors shadow-[2px_2px_0px_#171717] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none"
                           >
                             <span>{term}</span>
                             <button
@@ -474,7 +474,7 @@ export function SmartSearchModal() {
                           key={tag.label}
                           type="button"
                           onClick={() => handleSearchTagClick(tag.query)}
-                          className="px-3.5 py-1.5 rounded-[2px] bg-white border border-[#DDD3C5] text-[10px] font-extrabold uppercase tracking-wider text-[#171717] hover:bg-[#171717] hover:border-[#171717] hover:text-white transition-all shadow-2xs cursor-pointer"
+                          className="px-3.5 py-1.5 rounded-[2px] bg-white border-2 border-[#171717] text-[10px] font-black uppercase tracking-wider text-[#171717] hover:bg-[#171717] hover:text-white transition-all shadow-[2px_2px_0px_#171717] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none cursor-pointer"
                         >
                           {tag.label}
                         </button>
@@ -488,7 +488,7 @@ export function SmartSearchModal() {
                       Browse by Category
                     </div>
 
-                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
                       {CATEGORY_QUICK_LINKS.map((cat) => (
                         <button
                           key={cat.name}
@@ -501,12 +501,12 @@ export function SmartSearchModal() {
                               navigate(`/category/${cat.slug}`);
                             }
                           }}
-                          className="flex flex-col items-start p-3.5 rounded-[2px] bg-[#EDE0CC] border border-[#DDD3C5] hover:bg-[#171717] hover:border-[#171717] transition-all text-left shadow-2xs group cursor-pointer"
+                          className="flex flex-col items-start p-3.5 rounded-[2px] bg-white border-2 border-[#171717] hover:bg-[#171717] transition-all text-left shadow-[3px_3px_0px_#171717] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none group cursor-pointer"
                         >
-                          <span className="text-[11px] font-extrabold uppercase tracking-wider text-[#171717] group-hover:text-white transition-colors">
+                          <span className="text-[11px] font-black uppercase tracking-wider text-[#171717] group-hover:text-white transition-colors">
                             {cat.name}
                           </span>
-                          <span className="text-[10px] text-[#6F6A63] group-hover:text-[#CCCCCC] transition-colors mt-0.5">
+                          <span className="text-[10px] font-mono text-[#6F6A63] group-hover:text-[#EDE0CC] transition-colors mt-0.5">
                             {cat.gsm || 'Explore catalog'}
                           </span>
                         </button>
@@ -518,11 +518,11 @@ export function SmartSearchModal() {
             </div>
 
             {/* Bottom Action Footer */}
-            <div className="px-4 py-3 sm:px-6 sm:py-3.5 bg-[#EDE0CC] border-t border-[#DDD3C5] flex flex-col sm:flex-row items-center justify-between gap-2 text-xs">
+            <div className="px-4 py-3 sm:px-6 sm:py-3.5 bg-[#EDE0CC] border-t-2 border-[#171717] flex flex-col sm:flex-row items-center justify-between gap-2 text-xs">
               <button
                 type="button"
                 onClick={handleViewAllInShop}
-                className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 text-[10px] font-extrabold uppercase tracking-[0.14em] text-[#171717] hover:text-[#E6321C] transition-colors cursor-pointer"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 text-[10px] font-black uppercase tracking-[0.14em] text-[#171717] hover:text-[#E6321C] transition-colors cursor-pointer"
               >
                 <span>
                   {inputQuery.trim()
@@ -533,13 +533,13 @@ export function SmartSearchModal() {
 
               <div className="hidden sm:flex items-center gap-3 text-[10px] text-[#6F6A63] font-mono">
                 <span className="flex items-center gap-1">
-                  <kbd className="px-1.5 py-0.5 rounded-[2px] bg-white border border-[#DDD3C5] text-[9px] font-bold text-[#171717]">
+                  <kbd className="px-1.5 py-0.5 rounded-[2px] bg-white border border-[#171717] text-[9px] font-black text-[#171717] shadow-[1px_1px_0px_#171717]">
                     ↵
                   </kbd>
                   to select
                 </span>
                 <span className="flex items-center gap-1">
-                  <kbd className="px-1.5 py-0.5 rounded-[2px] bg-white border border-[#DDD3C5] text-[9px] font-bold text-[#171717]">
+                  <kbd className="px-1.5 py-0.5 rounded-[2px] bg-white border border-[#171717] text-[9px] font-black text-[#171717] shadow-[1px_1px_0px_#171717]">
                     esc
                   </kbd>
                   to close

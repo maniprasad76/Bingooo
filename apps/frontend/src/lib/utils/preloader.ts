@@ -75,6 +75,7 @@ const routeChunkMap: Record<string, () => Promise<any>> = {
   '/checkout': () => import('../../pages/CheckoutPage'),
   '/account': () => import('../../pages/AccountPage'),
   '/track-order': () => import('../../pages/TrackOrderPage'),
+  '/customize': () => import('../../pages/CustomizerPage'),
 };
 
 /** Preload JS chunk bundle for a target route on link hover */

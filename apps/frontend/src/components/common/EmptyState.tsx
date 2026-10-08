@@ -57,17 +57,17 @@ export function EmptyState({
         initial={{ opacity: 0, scale: 0.88, y: 16 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
         transition={{ duration: 0.4, ease: 'easeOut' }}
-        className="relative mx-auto w-24 h-24 sm:w-28 sm:h-28 rounded-3xl bg-gradient-to-tr from-[#E6D9C5] to-[#F7EEDB] border border-[#DDD3C5] shadow-sm flex items-center justify-center mb-6"
+        className="relative mx-auto w-24 h-24 sm:w-28 sm:h-28 rounded-[2px] bg-[#EDE0CC] border-2 border-[#171717] shadow-[4px_4px_0px_#171717] flex items-center justify-center mb-6"
       >
-        <div className="absolute -top-2 -right-2 p-1.5 rounded-full bg-[#E6321C] text-white shadow-xs">
-          <Sparkles size={14} />
+        <div className="absolute -top-2 -right-2 p-1 rounded-[2px] border-2 border-[#171717] bg-[#E6321C] text-white shadow-[2px_2px_0px_#171717]">
+          <Sparkles size={13} />
         </div>
-        <IconComponent size={44} className="text-[#171717]/60" />
+        <IconComponent size={44} className="text-[#171717]" />
       </motion.div>
 
       {/* Subtitle tag */}
       {subtitle && (
-        <span className="inline-block px-3 py-1 rounded-full bg-[#EDE0CC] text-[#171717] font-mono text-[10px] sm:text-xs font-bold uppercase tracking-widest mb-3">
+        <span className="inline-block px-3 py-1 rounded-[2px] border border-[#171717] bg-white text-[#171717] font-mono text-[9px] sm:text-[10px] font-black uppercase tracking-widest mb-3 shadow-[1px_1px_0px_#171717]">
           {subtitle}
         </span>
       )}
@@ -87,7 +87,7 @@ export function EmptyState({
         {actionText && actionTo && (
           <Link
             to={actionTo}
-            className="w-full sm:w-auto min-h-[44px] inline-flex items-center justify-center gap-2 px-7 py-3 rounded-xl bg-[#E6321C] hover:bg-[#B91F12] text-white font-sans font-bold text-xs uppercase tracking-wider transition-all shadow-sm active:scale-95"
+            className="w-full sm:w-auto min-h-[44px] inline-flex items-center justify-center gap-2 px-7 py-3 rounded-[2px] border-2 border-[#171717] bg-[#E6321C] hover:bg-[#171717] text-white font-black text-xs uppercase tracking-wider transition-all shadow-[3px_3px_0px_#171717] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none"
           >
             <span>{actionText}</span>
             <ArrowRight size={14} />
@@ -97,7 +97,7 @@ export function EmptyState({
         {secondaryActionText && secondaryActionTo && (
           <Link
             to={secondaryActionTo}
-            className="w-full sm:w-auto min-h-[44px] inline-flex items-center justify-center gap-2 px-7 py-3 rounded-xl border border-[#DDD3C5] bg-white hover:border-[#171717] text-[#171717] font-sans font-bold text-xs uppercase tracking-wider transition-all shadow-xs active:scale-95"
+            className="w-full sm:w-auto min-h-[44px] inline-flex items-center justify-center gap-2 px-7 py-3 rounded-[2px] border-2 border-[#171717] bg-white hover:bg-[#F7EEDB] text-[#171717] font-black text-xs uppercase tracking-wider transition-all shadow-[3px_3px_0px_#171717] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none"
           >
             <Sparkles size={14} className="text-[#E6321C]" />
             <span>{secondaryActionText}</span>
@@ -107,19 +107,19 @@ export function EmptyState({
 
       {/* Quick Suggestions Shelf */}
       {showSuggestions && suggestions.length > 0 && (
-        <div className="mt-14 pt-10 border-t border-[#DDD3C5]/60 text-left">
+        <div className="mt-14 pt-10 border-t-2 border-[#171717] text-left">
           <div className="flex items-center justify-between mb-5">
             <div>
-              <span className="font-mono text-[10px] uppercase tracking-widest text-[#E6321C] font-bold">
+              <span className="font-mono text-[9px] uppercase tracking-widest text-[#E6321C] font-black">
                 RECOMMENDED DROPS
               </span>
-              <h3 className="font-heading font-bold text-base sm:text-lg text-[#171717] uppercase tracking-wide">
+              <h3 className="font-heading font-black text-base sm:text-lg text-[#171717] uppercase tracking-wide">
                 Popular In Atelier Today
               </h3>
             </div>
             <Link
               to="/shop"
-              className="text-xs font-bold text-[#E6321C] hover:text-[#B91F12] inline-flex items-center gap-1"
+              className="text-xs font-black text-[#E6321C] hover:text-[#171717] inline-flex items-center gap-1 uppercase tracking-wider"
             >
               <span>View All</span>
               <ArrowRight size={12} />
@@ -131,20 +131,20 @@ export function EmptyState({
               <Link
                 key={item.id}
                 to={`/product/${item.slug}`}
-                className="group p-4 rounded-xl bg-white border border-[#DDD3C5] hover:border-[#E6321C] transition-all shadow-xs hover:shadow-sm flex items-center justify-between"
+                className="group p-4 rounded-[2px] bg-white border-2 border-[#171717] shadow-[3px_3px_0px_#171717] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[5px_5px_0px_#171717] transition-all flex items-center justify-between"
               >
                 <div className="space-y-1">
-                  <span className="text-[10px] font-mono uppercase text-[#6F6A63] tracking-wide">
+                  <span className="text-[9px] font-mono font-bold uppercase text-[#6F6A63] tracking-wide">
                     {item.category} • {item.tag}
                   </span>
-                  <h4 className="font-heading font-bold text-xs sm:text-sm text-[#171717] group-hover:text-[#E6321C] transition-colors line-clamp-1">
+                  <h4 className="font-heading font-black text-xs sm:text-sm text-[#171717] group-hover:text-[#E6321C] transition-colors line-clamp-1">
                     {item.title}
                   </h4>
-                  <span className="font-heading font-extrabold text-xs text-[#171717]">
+                  <span className="font-mono font-black text-xs text-[#171717]">
                     ₹{item.price.toLocaleString('en-IN')}
                   </span>
                 </div>
-                <div className="w-8 h-8 rounded-lg bg-[#FAF8F5] border border-[#DDD3C5] flex items-center justify-center text-[#171717] group-hover:bg-[#E6321C] group-hover:text-white transition-colors shrink-0">
+                <div className="w-8 h-8 rounded-[2px] bg-[#EDE0CC] border-2 border-[#171717] flex items-center justify-center text-[#171717] group-hover:bg-[#E6321C] group-hover:text-white transition-colors shrink-0 shadow-[1px_1px_0px_#171717]">
                   <ArrowRight size={14} />
                 </div>
               </Link>

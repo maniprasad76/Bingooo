@@ -322,7 +322,7 @@ export function AccountPage() {
       />
 
       {/* ── Breadcrumb Bar ── */}
-      <div className="border-b border-[#DDD3C5] bg-[#EDE0CC]/40 px-4 sm:px-8 py-3 text-xs">
+      <div className="border-b-2 border-[#171717] bg-[#EDE0CC]/40 px-4 sm:px-8 py-3 text-xs">
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row sm:items-center justify-between gap-2">
           <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-[#6F6A63] text-xs font-medium">
             <Link to="/" className="hover:text-[#171717] transition-colors">Home</Link>
@@ -342,26 +342,26 @@ export function AccountPage() {
         {/* =======================================================
              HERO: PREMIUM PROFILE CARD
         ======================================================= */}
-        <section className="bg-white border border-[#DDD3C5] rounded-2xl p-6 sm:p-8 shadow-xs transition-all">
+        <section className="bg-white border-2 border-[#171717] rounded-[2px] p-6 sm:p-8 shadow-[4px_4px_0px_#171717] transition-all">
           <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-8">
             {/* Left: Avatar & Identity Details */}
             <div className="flex flex-col sm:flex-row items-start sm:items-center gap-5 sm:gap-6 w-full lg:w-auto">
               <div className="relative shrink-0">
-                <div className="w-20 h-20 sm:w-22 sm:h-22 rounded-2xl bg-gradient-to-br from-[#1F1D1B] to-[#171717] text-[#F7EEDB] font-bold text-3xl flex items-center justify-center shadow-sm ring-4 ring-[#EDE0CC]/50">
+                <div className="w-20 h-20 sm:w-22 sm:h-22 rounded-[2px] bg-[#171717] text-[#F7EEDB] font-black text-3xl flex items-center justify-center border-2 border-[#171717] shadow-[3px_3px_0px_#171717]">
                   {displayName.charAt(0).toUpperCase()}
                 </div>
-                <div className="absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-emerald-500 text-white flex items-center justify-center shadow-xs ring-2 ring-white">
+                <div className="absolute -bottom-1 -right-1 w-6 h-6 rounded-[2px] bg-[#E6321C] text-white flex items-center justify-center border-2 border-[#171717]">
                   <CheckCircle2 size={14} className="stroke-[2.5]" />
                 </div>
               </div>
 
               <div className="space-y-2">
-                <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-[#E6321C]/10 text-[#E6321C] text-[11px] font-bold tracking-wide uppercase">
+                <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-[2px] border-2 border-[#171717] bg-[#E6321C] text-white text-[10px] font-black tracking-widest uppercase font-mono">
                   <Sparkles size={12} />
                   <span>Verified Member</span>
                 </div>
 
-                <h1 className="text-2xl sm:text-3xl font-extrabold text-[#171717] tracking-tight">
+                <h1 className="text-2xl sm:text-3xl font-black text-[#171717] tracking-tight uppercase">
                   {displayName}
                 </h1>
 
@@ -384,7 +384,7 @@ export function AccountPage() {
                       setProfileForm({ fullName: displayName, phone: displayPhone });
                       setIsEditProfileOpen(true);
                     }}
-                    className="h-9 px-4 rounded-xl bg-[#171717] text-white text-xs font-bold hover:bg-black transition-all inline-flex items-center gap-1.5 shadow-xs"
+                    className="h-9 px-4 rounded-[2px] border-2 border-[#171717] bg-[#171717] text-white text-xs font-black uppercase tracking-wider hover:bg-black transition-all inline-flex items-center gap-1.5 shadow-[2px_2px_0px_#171717] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none"
                   >
                     <Edit3 size={13} />
                     <span>Edit Profile</span>
@@ -393,7 +393,7 @@ export function AccountPage() {
                   <button
                     type="button"
                     onClick={() => setActiveTab('addresses')}
-                    className="h-9 px-4 rounded-xl border border-[#DDD3C5] bg-white text-[#171717] text-xs font-bold hover:bg-[#F7EEDB] transition-all inline-flex items-center gap-1.5"
+                    className="h-9 px-4 rounded-[2px] border-2 border-[#171717] bg-white text-[#171717] text-xs font-black uppercase tracking-wider hover:bg-[#F7EEDB] transition-all inline-flex items-center gap-1.5 shadow-[2px_2px_0px_#171717] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none"
                   >
                     <MapPin size={13} className="text-[#E6321C]" />
                     <span>Addresses</span>
@@ -403,12 +403,12 @@ export function AccountPage() {
             </div>
 
             {/* Right: Modern Stat Cards */}
-            <div className="w-full lg:w-auto grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 pt-6 lg:pt-0 border-t lg:border-t-0 lg:border-l border-[#DDD3C5] lg:pl-8">
+            <div className="w-full lg:w-auto grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 pt-6 lg:pt-0 border-t-2 lg:border-t-0 lg:border-l-2 border-[#171717] lg:pl-8">
               {/* Stat 1: Orders */}
               <button
                 type="button"
                 onClick={() => setActiveTab('orders')}
-                className="p-3.5 sm:p-4 rounded-xl bg-[#F7EEDB]/50 hover:bg-[#F7EEDB] border border-[#DDD3C5]/80 hover:border-[#171717] transition-all text-left group"
+                className="p-3.5 sm:p-4 rounded-[2px] bg-[#F7EEDB]/50 hover:bg-[#F7EEDB] border-2 border-[#171717] shadow-[2px_2px_0px_#171717] hover:shadow-[3px_3px_0px_#171717] transition-all text-left group"
               >
                 <div className="flex items-center justify-between text-[#6F6A63] mb-1">
                   <span className="text-[11px] font-bold uppercase tracking-wider text-[#6F6A63]">Orders</span>
@@ -424,7 +424,7 @@ export function AccountPage() {
               {/* Stat 2: Wishlist */}
               <Link
                 to="/account/wishlist"
-                className="p-3.5 sm:p-4 rounded-xl bg-[#F7EEDB]/50 hover:bg-[#F7EEDB] border border-[#DDD3C5]/80 hover:border-[#171717] transition-all text-left group block"
+                className="p-3.5 sm:p-4 rounded-[2px] bg-[#F7EEDB]/50 hover:bg-[#F7EEDB] border-2 border-[#171717] shadow-[2px_2px_0px_#171717] hover:shadow-[3px_3px_0px_#171717] transition-all text-left group block"
               >
                 <div className="flex items-center justify-between text-[#6F6A63] mb-1">
                   <span className="text-[11px] font-bold uppercase tracking-wider text-[#6F6A63]">Wishlist</span>
@@ -440,7 +440,7 @@ export function AccountPage() {
               {/* Stat 3: Recently Viewed */}
               <Link
                 to="/recently-viewed"
-                className="p-3.5 sm:p-4 rounded-xl bg-[#F7EEDB]/50 hover:bg-[#F7EEDB] border border-[#DDD3C5]/80 hover:border-[#171717] transition-all text-left group block"
+                className="p-3.5 sm:p-4 rounded-[2px] bg-[#F7EEDB]/50 hover:bg-[#F7EEDB] border-2 border-[#171717] shadow-[2px_2px_0px_#171717] hover:shadow-[3px_3px_0px_#171717] transition-all text-left group block"
               >
                 <div className="flex items-center justify-between text-[#6F6A63] mb-1">
                   <span className="text-[11px] font-bold uppercase tracking-wider text-[#6F6A63]">Recent</span>
@@ -457,7 +457,7 @@ export function AccountPage() {
               <button
                 type="button"
                 onClick={() => setActiveTab('addresses')}
-                className="p-3.5 sm:p-4 rounded-xl bg-[#F7EEDB]/50 hover:bg-[#F7EEDB] border border-[#DDD3C5]/80 hover:border-[#171717] transition-all text-left group"
+                className="p-3.5 sm:p-4 rounded-[2px] bg-[#F7EEDB]/50 hover:bg-[#F7EEDB] border-2 border-[#171717] shadow-[2px_2px_0px_#171717] hover:shadow-[3px_3px_0px_#171717] transition-all text-left group"
               >
                 <div className="flex items-center justify-between text-[#6F6A63] mb-1">
                   <span className="text-[11px] font-bold uppercase tracking-wider text-[#6F6A63]">Addresses</span>
@@ -480,7 +480,7 @@ export function AccountPage() {
           {/* Left Column: Navigation Tabs */}
           <aside className="lg:col-span-4 space-y-4">
             {/* Tab Container (Horizontal pill scroll on mobile, sleek vertical list on desktop) */}
-            <div className="bg-white border border-[#DDD3C5] rounded-2xl p-2.5 sm:p-3 shadow-xs">
+            <div className="bg-white border-2 border-[#171717] rounded-[2px] p-2.5 sm:p-3 shadow-[3px_3px_0px_#171717]">
               <div className="hidden lg:block px-3 py-2 text-[11px] font-bold uppercase tracking-wider text-[#6F6A63] border-b border-[#DDD3C5]/60 mb-2">
                 Account Navigation
               </div>
@@ -496,7 +496,7 @@ export function AccountPage() {
                         key={nav.id}
                         to={nav.href}
                         onClick={() => triggerHaptic('light')}
-                        className="flex items-center justify-between px-4 py-2.5 rounded-xl text-xs sm:text-sm font-medium text-[#171717] hover:bg-[#F7EEDB] hover:text-[#E6321C] transition-all shrink-0 whitespace-nowrap lg:w-full"
+                        className="flex items-center justify-between px-4 py-2.5 rounded-[2px] text-xs sm:text-sm font-medium text-[#171717] hover:bg-[#F7EEDB] hover:text-[#E6321C] transition-all shrink-0 whitespace-nowrap lg:w-full"
                       >
                         <span className="flex items-center gap-3">
                           <Icon size={16} className="text-[#6F6A63] shrink-0" />
@@ -515,7 +515,7 @@ export function AccountPage() {
                         triggerHaptic('light');
                         setActiveTab(nav.id);
                       }}
-                      className={`flex items-center justify-between px-4 py-2.5 rounded-xl text-xs sm:text-sm font-medium transition-all shrink-0 whitespace-nowrap lg:w-full cursor-pointer ${
+                      className={`flex items-center justify-between px-4 py-2.5 rounded-[2px] text-xs sm:text-sm font-medium transition-all shrink-0 whitespace-nowrap lg:w-full cursor-pointer ${
                         isActive
                           ? 'bg-[#171717] text-white font-bold shadow-xs'
                           : 'text-[#171717] hover:bg-[#F7EEDB] hover:text-[#E6321C]'
@@ -553,7 +553,7 @@ export function AccountPage() {
                   <button
                     type="button"
                     onClick={handleLogout}
-                    className="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold text-rose-600 hover:bg-rose-50 transition-colors cursor-pointer"
+                    className="w-full flex items-center gap-3 px-4 py-2.5 rounded-[2px] text-xs sm:text-sm font-bold text-rose-600 hover:bg-rose-50 transition-colors cursor-pointer"
                   >
                     <LogOut size={16} />
                     <span>Sign Out</span>
@@ -563,7 +563,7 @@ export function AccountPage() {
             </div>
 
             {/* Assistance / Guarantee Card */}
-            <div className="bg-gradient-to-br from-[#EDE0CC] to-[#F7EEDB] border border-[#DDD3C5] p-5 rounded-2xl text-left hidden lg:block space-y-2.5 shadow-xs">
+            <div className="bg-[#F7EEDB] border-2 border-[#171717] p-5 rounded-[2px] text-left hidden lg:block space-y-2.5 shadow-[3px_3px_0px_#171717]">
               <div className="flex items-center gap-2 text-[#E6321C] text-xs font-bold uppercase tracking-wider">
                 <ShieldCheck size={16} />
                 <span>Bingooo Promise</span>
@@ -596,7 +596,7 @@ export function AccountPage() {
                 {activeTab === 'dashboard' && (
                   <>
                     {/* Recent Orders Section */}
-                    <div className="bg-white border border-[#DDD3C5] p-6 sm:p-7 rounded-2xl shadow-xs space-y-5">
+                    <div className="bg-white border-2 border-[#171717] p-6 sm:p-7 rounded-[2px] shadow-[4px_4px_0px_#171717] space-y-5">
                       <div className="flex items-center justify-between pb-4 border-b border-[#DDD3C5]">
                         <div>
                           <h2 className="text-lg sm:text-xl font-extrabold text-[#171717] tracking-tight">
@@ -631,7 +631,7 @@ export function AccountPage() {
                             <p className="text-xs text-[#6F6A63] max-w-sm mx-auto">
                               Your closet is waiting for our premium heavyweight tees and relaxed streetwear.
                             </p>
-                            <Link to="/shop" className="btn btn-black text-xs inline-flex items-center gap-2 rounded-xl mt-2">
+                            <Link to="/shop" className="btn btn-black text-xs inline-flex items-center gap-2 rounded-[2px] mt-2">
                               <ShoppingBag size={14} />
                               <span>Explore Collection</span>
                             </Link>
@@ -643,7 +643,7 @@ export function AccountPage() {
                             return (
                               <div key={ord.id} className="py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                                 <div className="flex items-center gap-4">
-                                  <div className="h-16 w-16 rounded-xl bg-[#F7EEDB] border border-[#DDD3C5] flex items-center justify-center shrink-0">
+                                  <div className="h-16 w-16 rounded-[2px] bg-[#F7EEDB] border border-[#DDD3C5] flex items-center justify-center shrink-0">
                                     <Shirt size={24} className="text-[#171717]/60" />
                                   </div>
                                   <div>
@@ -666,7 +666,7 @@ export function AccountPage() {
                                     <span className="text-xs text-[#6F6A63] block">
                                       {new Date(ord.created_at).toLocaleDateString('en-IN')}
                                     </span>
-                                    <span className={`inline-block mt-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase border ${getStatusBadge(ord.status)}`}>
+                                    <span className={`inline-block mt-1 px-2.5 py-0.5 rounded-[2px] text-[10px] font-black uppercase font-mono border ${getStatusBadge(ord.status)}`}>
                                       {ord.status?.replace('_', ' ')}
                                     </span>
                                   </div>
@@ -693,9 +693,9 @@ export function AccountPage() {
                         <button
                           type="button"
                           onClick={() => setActiveTab('profile')}
-                          className="p-5 rounded-2xl border border-[#DDD3C5] bg-white hover:border-[#171717] hover:shadow-xs transition-all text-left group"
+                          className="p-5 rounded-[2px] border-2 border-[#171717] bg-white shadow-[2px_2px_0px_#171717] hover:shadow-[3px_3px_0px_#171717] transition-all text-left group"
                         >
-                          <div className="w-10 h-10 rounded-xl bg-[#E6321C]/10 text-[#E6321C] flex items-center justify-center mb-3 group-hover:scale-105 transition-transform">
+                          <div className="w-10 h-10 rounded-[2px] bg-[#E6321C]/10 text-[#E6321C] flex items-center justify-center mb-3 group-hover:scale-105 transition-transform">
                             <User size={20} />
                           </div>
                           <h4 className="font-bold text-sm text-[#171717]">Profile Information</h4>
@@ -705,9 +705,9 @@ export function AccountPage() {
                         <button
                           type="button"
                           onClick={() => setActiveTab('addresses')}
-                          className="p-5 rounded-2xl border border-[#DDD3C5] bg-white hover:border-[#171717] hover:shadow-xs transition-all text-left group"
+                          className="p-5 rounded-[2px] border-2 border-[#171717] bg-white shadow-[2px_2px_0px_#171717] hover:shadow-[3px_3px_0px_#171717] transition-all text-left group"
                         >
-                          <div className="w-10 h-10 rounded-xl bg-[#171717]/10 text-[#171717] flex items-center justify-center mb-3 group-hover:scale-105 transition-transform">
+                          <div className="w-10 h-10 rounded-[2px] bg-[#171717]/10 text-[#171717] flex items-center justify-center mb-3 group-hover:scale-105 transition-transform">
                             <MapPin size={20} />
                           </div>
                           <h4 className="font-bold text-sm text-[#171717]">Shipping Destinations</h4>
@@ -717,9 +717,9 @@ export function AccountPage() {
                         <button
                           type="button"
                           onClick={() => setActiveTab('returns')}
-                          className="p-5 rounded-2xl border border-[#DDD3C5] bg-white hover:border-[#171717] hover:shadow-xs transition-all text-left group"
+                          className="p-5 rounded-[2px] border-2 border-[#171717] bg-white shadow-[2px_2px_0px_#171717] hover:shadow-[3px_3px_0px_#171717] transition-all text-left group"
                         >
-                          <div className="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center mb-3 group-hover:scale-105 transition-transform">
+                          <div className="w-10 h-10 rounded-[2px] bg-emerald-50 text-emerald-600 flex items-center justify-center mb-3 group-hover:scale-105 transition-transform">
                             <RotateCcw size={20} />
                           </div>
                           <h4 className="font-bold text-sm text-[#171717]">Returns & Exchanges</h4>
@@ -733,7 +733,7 @@ export function AccountPage() {
                 {/* ─── TAB: PROFILE INFORMATION ─── */}
                 {activeTab === 'profile' && (
                   <div className="space-y-6">
-                    <div className="bg-white border border-[#DDD3C5] p-6 sm:p-8 rounded-2xl shadow-xs space-y-6">
+                    <div className="bg-white border-2 border-[#171717] p-6 sm:p-8 rounded-[2px] shadow-[4px_4px_0px_#171717] space-y-6">
                       <div className="pb-4 border-b border-[#DDD3C5]">
                         <div className="text-[11px] font-bold uppercase tracking-wider text-[#E6321C] mb-1">
                           Personal Information
@@ -765,7 +765,7 @@ export function AccountPage() {
                             required
                             value={profileForm.fullName || displayName}
                             onChange={(e) => setProfileForm({ ...profileForm, fullName: e.target.value })}
-                            className="w-full px-4 py-3 rounded-xl border border-[#DDD3C5] text-sm text-[#171717] bg-white focus:outline-none focus:ring-2 focus:ring-[#E6321C]/20 focus:border-[#E6321C] transition-all"
+                            className="w-full px-4 py-3 rounded-[2px] border border-[#DDD3C5] text-sm text-[#171717] bg-white focus:outline-none focus:ring-2 focus:ring-[#E6321C]/20 focus:border-[#E6321C] transition-all"
                             placeholder="Your full name"
                           />
                         </div>
@@ -778,7 +778,7 @@ export function AccountPage() {
                             type="email"
                             disabled
                             value={displayEmail}
-                            className="w-full px-4 py-3 rounded-xl border border-[#DDD3C5] bg-[#EDE0CC]/40 text-sm text-[#6F6A63] cursor-not-allowed"
+                            className="w-full px-4 py-3 rounded-[2px] border border-[#DDD3C5] bg-[#EDE0CC]/40 text-sm text-[#6F6A63] cursor-not-allowed"
                           />
                           <span className="text-xs text-[#6F6A63] block mt-1.5">
                             Email address is linked to your login provider and cannot be changed.
@@ -793,7 +793,7 @@ export function AccountPage() {
                             type="tel"
                             value={profileForm.phone || displayPhone}
                             onChange={(e) => setProfileForm({ ...profileForm, phone: e.target.value })}
-                            className="w-full px-4 py-3 rounded-xl border border-[#DDD3C5] text-sm text-[#171717] bg-white focus:outline-none focus:ring-2 focus:ring-[#E6321C]/20 focus:border-[#E6321C] transition-all"
+                            className="w-full px-4 py-3 rounded-[2px] border border-[#DDD3C5] text-sm text-[#171717] bg-white focus:outline-none focus:ring-2 focus:ring-[#E6321C]/20 focus:border-[#E6321C] transition-all"
                             placeholder="+91 98765 43210"
                           />
                           <span className="text-xs text-[#6F6A63] block mt-1.5">
@@ -805,7 +805,7 @@ export function AccountPage() {
                           <button
                             type="submit"
                             disabled={updateProfileMutation.isPending}
-                            className="h-11 px-6 rounded-xl bg-[#171717] hover:bg-black text-white text-xs font-bold tracking-wider uppercase transition-all shadow-xs disabled:opacity-50"
+                            className="h-11 px-6 rounded-[2px] bg-[#171717] hover:bg-black text-white text-xs font-bold tracking-wider uppercase transition-all shadow-xs disabled:opacity-50"
                           >
                             {updateProfileMutation.isPending ? 'Saving...' : 'Save Profile Changes'}
                           </button>
@@ -814,7 +814,7 @@ export function AccountPage() {
                     </div>
 
                     {/* Sizing & Fit Preferences Card */}
-                    <div className="bg-white border border-[#DDD3C5] p-6 sm:p-8 rounded-2xl shadow-xs space-y-4">
+                    <div className="bg-white border border-[#DDD3C5] p-6 sm:p-8 rounded-[2px] shadow-xs space-y-4">
                       <div className="text-[11px] font-bold uppercase tracking-wider text-[#E6321C]">
                         Wardrobe Preferences
                       </div>
@@ -839,7 +839,7 @@ export function AccountPage() {
                                 setPreferredFit(fit.id);
                                 toast({ title: 'Preference Saved', description: `${fit.label} selected.`, variant: 'info' });
                               }}
-                              className={`p-4 rounded-xl text-left border transition-all cursor-pointer ${
+                              className={`p-4 rounded-[2px] text-left border transition-all cursor-pointer ${
                                 isSelected
                                   ? 'bg-[#171717] text-white border-[#171717] shadow-xs'
                                   : 'bg-[#F7EEDB]/40 border-[#DDD3C5] hover:bg-white text-[#171717]'
@@ -862,7 +862,7 @@ export function AccountPage() {
 
                 {/* ─── TAB: MY ORDERS ─── */}
                 {activeTab === 'orders' && (
-                  <div className="bg-white border border-[#DDD3C5] p-6 sm:p-8 rounded-2xl shadow-xs space-y-6">
+                  <div className="bg-white border-2 border-[#171717] p-6 sm:p-8 rounded-[2px] shadow-[4px_4px_0px_#171717] space-y-6">
                     <div className="pb-4 border-b border-[#DDD3C5] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                       <div>
                         <div className="text-[11px] font-bold uppercase tracking-wider text-[#E6321C] mb-1">
@@ -877,12 +877,12 @@ export function AccountPage() {
                           type="button"
                           onClick={handleSyncOrders}
                           disabled={isSyncingOrders}
-                          className="h-9 px-3.5 rounded-xl border border-[#DDD3C5] text-xs font-bold text-[#171717] hover:bg-[#F7EEDB] transition-all inline-flex items-center gap-1.5"
+                          className="h-9 px-3.5 rounded-[2px] border border-[#DDD3C5] text-xs font-bold text-[#171717] hover:bg-[#F7EEDB] transition-all inline-flex items-center gap-1.5"
                         >
                           <RotateCcw size={13} className={isSyncingOrders ? 'animate-spin' : ''} />
                           <span>{isSyncingOrders ? 'Syncing...' : 'Sync Orders'}</span>
                         </button>
-                        <Link to="/shop" className="h-9 px-4 rounded-xl bg-[#171717] hover:bg-black text-white text-xs font-bold inline-flex items-center gap-1 transition-all">
+                        <Link to="/shop" className="h-9 px-4 rounded-[2px] bg-[#171717] hover:bg-black text-white text-xs font-bold inline-flex items-center gap-1 transition-all">
                           <span>Shop More</span>
                           <ArrowRight size={12} />
                         </Link>
@@ -899,7 +899,7 @@ export function AccountPage() {
                           <Package className="w-10 h-10 text-[#6F6A63] mx-auto opacity-40" />
                           <p className="text-sm font-semibold text-[#171717]">No orders registered yet</p>
                           <p className="text-xs text-[#6F6A63]">All your confirmed purchases and tracking links will appear here.</p>
-                          <Link to="/shop" className="btn btn-black text-xs inline-flex items-center gap-2 rounded-xl mt-2">
+                          <Link to="/shop" className="btn btn-black text-xs inline-flex items-center gap-2 rounded-[2px] mt-2">
                             <span>Browse Bingooo Collection</span>
                           </Link>
                         </div>
@@ -910,7 +910,7 @@ export function AccountPage() {
                           return (
                             <div key={ord.id} className="py-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                               <div className="flex items-center gap-4">
-                                <div className="h-16 w-16 rounded-xl bg-[#F7EEDB] border border-[#DDD3C5] flex items-center justify-center shrink-0">
+                                <div className="h-16 w-16 rounded-[2px] bg-[#F7EEDB] border border-[#DDD3C5] flex items-center justify-center shrink-0">
                                   <Shirt size={26} className="text-[#171717]/60" />
                                 </div>
                                 <div>
@@ -933,7 +933,7 @@ export function AccountPage() {
                                   <span className="text-xs text-[#6F6A63] block">
                                     {new Date(ord.created_at).toLocaleDateString('en-IN')}
                                   </span>
-                                  <span className={`inline-block mt-1 px-3 py-0.5 rounded-full text-[10px] font-bold uppercase border ${getStatusBadge(ord.status)}`}>
+                                  <span className={`inline-block mt-1 px-3 py-0.5 rounded-[2px] text-[10px] font-black uppercase font-mono border ${getStatusBadge(ord.status)}`}>
                                     {ord.status?.replace('_', ' ')}
                                   </span>
                                 </div>
@@ -955,7 +955,7 @@ export function AccountPage() {
 
                 {/* ─── TAB: ADDRESSES ─── */}
                 {activeTab === 'addresses' && (
-                  <div className="bg-white border border-[#DDD3C5] p-6 sm:p-8 rounded-2xl shadow-xs space-y-6">
+                  <div className="bg-white border-2 border-[#171717] p-6 sm:p-8 rounded-[2px] shadow-[4px_4px_0px_#171717] space-y-6">
                     <div className="flex items-center justify-between pb-4 border-b border-[#DDD3C5]">
                       <div>
                         <div className="text-[11px] font-bold uppercase tracking-wider text-[#E6321C] mb-1">
@@ -971,7 +971,7 @@ export function AccountPage() {
                       <button
                         type="button"
                         onClick={() => setIsAddAddressOpen(true)}
-                        className="h-9 px-4 rounded-xl bg-[#171717] hover:bg-black text-white text-xs font-bold inline-flex items-center gap-1.5 transition-all shadow-xs"
+                        className="h-9 px-4 rounded-[2px] bg-[#171717] hover:bg-black text-white text-xs font-bold inline-flex items-center gap-1.5 transition-all shadow-xs"
                       >
                         <Plus size={14} /> <span>Add New</span>
                       </button>
@@ -986,9 +986,9 @@ export function AccountPage() {
                     ) : (
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         {addresses.map((addr: any) => (
-                          <div key={addr.id} className="p-5 rounded-xl border border-[#DDD3C5] bg-[#F7EEDB]/30 relative space-y-2">
+                          <div key={addr.id} className="p-5 rounded-[2px] border border-[#DDD3C5] bg-[#F7EEDB]/30 relative space-y-2">
                             {addr.is_default && (
-                              <span className="inline-block px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase bg-[#E6321C] text-white tracking-wide">
+                              <span className="inline-block px-2.5 py-0.5 rounded-[2px] text-[10px] font-black uppercase font-mono bg-[#E6321C] text-white tracking-wide">
                                 Default Destination
                               </span>
                             )}
@@ -1014,7 +1014,7 @@ export function AccountPage() {
 
                 {/* ─── TAB: SECURITY & PASSWORD ─── */}
                 {activeTab === 'password' && (
-                  <div className="bg-white border border-[#DDD3C5] p-6 sm:p-8 rounded-2xl shadow-xs space-y-6">
+                  <div className="bg-white border-2 border-[#171717] p-6 sm:p-8 rounded-[2px] shadow-[4px_4px_0px_#171717] space-y-6">
                     <div className="pb-4 border-b border-[#DDD3C5]">
                       <div className="text-[11px] font-bold uppercase tracking-wider text-[#E6321C] mb-1">
                         Security
@@ -1050,7 +1050,7 @@ export function AccountPage() {
                           required
                           value={passwordForm.currentPassword}
                           onChange={(e) => setPasswordForm({ ...passwordForm, currentPassword: e.target.value })}
-                          className="w-full px-4 py-3 rounded-xl border border-[#DDD3C5] text-sm text-[#171717] bg-white focus:outline-none focus:ring-2 focus:ring-[#E6321C]/20 focus:border-[#E6321C]"
+                          className="w-full px-4 py-3 rounded-[2px] border border-[#DDD3C5] text-sm text-[#171717] bg-white focus:outline-none focus:ring-2 focus:ring-[#E6321C]/20 focus:border-[#E6321C]"
                         />
                       </div>
 
@@ -1064,7 +1064,7 @@ export function AccountPage() {
                           minLength={6}
                           value={passwordForm.newPassword}
                           onChange={(e) => setPasswordForm({ ...passwordForm, newPassword: e.target.value })}
-                          className="w-full px-4 py-3 rounded-xl border border-[#DDD3C5] text-sm text-[#171717] bg-white focus:outline-none focus:ring-2 focus:ring-[#E6321C]/20 focus:border-[#E6321C]"
+                          className="w-full px-4 py-3 rounded-[2px] border border-[#DDD3C5] text-sm text-[#171717] bg-white focus:outline-none focus:ring-2 focus:ring-[#E6321C]/20 focus:border-[#E6321C]"
                         />
                       </div>
 
@@ -1078,7 +1078,7 @@ export function AccountPage() {
                           minLength={6}
                           value={passwordForm.confirmPassword}
                           onChange={(e) => setPasswordForm({ ...passwordForm, confirmPassword: e.target.value })}
-                          className="w-full px-4 py-3 rounded-xl border border-[#DDD3C5] text-sm text-[#171717] bg-white focus:outline-none focus:ring-2 focus:ring-[#E6321C]/20 focus:border-[#E6321C]"
+                          className="w-full px-4 py-3 rounded-[2px] border border-[#DDD3C5] text-sm text-[#171717] bg-white focus:outline-none focus:ring-2 focus:ring-[#E6321C]/20 focus:border-[#E6321C]"
                         />
                       </div>
 
@@ -1086,7 +1086,7 @@ export function AccountPage() {
                         <button
                           type="submit"
                           disabled={changePasswordMutation.isPending}
-                          className="h-11 px-6 rounded-xl bg-[#171717] hover:bg-black text-white text-xs font-bold uppercase tracking-wider transition-all disabled:opacity-50"
+                          className="h-11 px-6 rounded-[2px] bg-[#171717] hover:bg-black text-white text-xs font-bold uppercase tracking-wider transition-all disabled:opacity-50"
                         >
                           {changePasswordMutation.isPending ? 'Updating...' : 'Update Password'}
                         </button>
@@ -1094,9 +1094,9 @@ export function AccountPage() {
                     </form>
 
                     {/* ─── DANGER ZONE: ACCOUNT DELETION ─── */}
-                    <div className="mt-8 border border-red-200 bg-red-50/40 p-6 rounded-2xl space-y-4">
+                    <div className="mt-8 border border-red-200 bg-red-50/40 p-6 rounded-[2px] space-y-4">
                       <div className="flex items-start gap-3.5">
-                        <div className="w-10 h-10 rounded-xl bg-red-100 text-rose-600 flex items-center justify-center shrink-0">
+                        <div className="w-10 h-10 rounded-[2px] bg-red-100 text-rose-600 flex items-center justify-center shrink-0">
                           <AlertTriangle size={20} />
                         </div>
                         <div>
@@ -1113,7 +1113,7 @@ export function AccountPage() {
                         <button
                           type="button"
                           onClick={() => setIsDeleteAccountModalOpen(true)}
-                          className="h-9 px-4 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold tracking-wide inline-flex items-center gap-2 transition-colors cursor-pointer"
+                          className="h-9 px-4 rounded-[2px] bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold tracking-wide inline-flex items-center gap-2 transition-colors cursor-pointer"
                         >
                           <Trash2 size={13} />
                           <span>Delete My Account</span>
@@ -1125,7 +1125,7 @@ export function AccountPage() {
 
                 {/* ─── TAB: RETURNS & REFUNDS ─── */}
                 {activeTab === 'returns' && (
-                  <div className="bg-white border border-[#DDD3C5] p-6 sm:p-8 rounded-2xl shadow-xs space-y-6">
+                  <div className="bg-white border-2 border-[#171717] p-6 sm:p-8 rounded-[2px] shadow-[4px_4px_0px_#171717] space-y-6">
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-[#DDD3C5]">
                       <div>
                         <div className="text-[11px] font-bold uppercase tracking-wider text-[#E6321C] mb-1">
@@ -1141,7 +1141,7 @@ export function AccountPage() {
                       <button
                         type="button"
                         onClick={() => setIsReturnModalOpen(true)}
-                        className="h-9 px-4 rounded-xl bg-[#171717] hover:bg-black text-white text-xs font-bold inline-flex items-center gap-1.5 shadow-xs"
+                        className="h-9 px-4 rounded-[2px] bg-[#171717] hover:bg-black text-white text-xs font-bold inline-flex items-center gap-1.5 shadow-xs"
                       >
                         <RotateCcw size={14} /> <span>Request Exchange</span>
                       </button>
@@ -1187,7 +1187,7 @@ export function AccountPage() {
 
                 {/* ─── TAB: REVIEWS ─── */}
                 {activeTab === 'reviews' && (
-                  <div className="bg-white border border-[#DDD3C5] p-6 sm:p-8 rounded-2xl shadow-xs space-y-6">
+                  <div className="bg-white border-2 border-[#171717] p-6 sm:p-8 rounded-[2px] shadow-[4px_4px_0px_#171717] space-y-6">
                     <div className="pb-4 border-b border-[#DDD3C5]">
                       <div className="text-[11px] font-bold uppercase tracking-wider text-[#E6321C] mb-1">
                         Feedback
@@ -1247,9 +1247,9 @@ export function AccountPage() {
         {/* =======================================================
              NEWSLETTER DISPATCH STRIP
         ======================================================= */}
-        <section className="bg-gradient-to-br from-[#EDE0CC] to-[#F7EEDB] border border-[#DDD3C5] p-6 sm:p-8 rounded-2xl flex flex-col md:flex-row items-center justify-between gap-6 shadow-xs">
+        <section className="bg-[#F7EEDB] border-2 border-[#171717] p-6 sm:p-8 rounded-[2px] flex flex-col md:flex-row items-center justify-between gap-6 shadow-[4px_4px_0px_#171717]">
           <div className="flex items-center gap-4 text-left">
-            <div className="w-12 h-12 rounded-2xl bg-[#171717] text-[#F7EEDB] flex items-center justify-center shrink-0 shadow-xs">
+            <div className="w-12 h-12 rounded-[2px] bg-[#171717] text-[#F7EEDB] flex items-center justify-center shrink-0 shadow-xs">
               <Mail size={22} />
             </div>
             <div>
@@ -1271,12 +1271,12 @@ export function AccountPage() {
               placeholder="Enter your email"
               value={newsletterEmail}
               onChange={(e) => setNewsletterEmail(e.target.value)}
-              className="flex-1 px-4 py-2.5 rounded-xl border border-[#DDD3C5] bg-white text-xs text-[#171717] focus:outline-none focus:ring-2 focus:ring-[#E6321C]/20 focus:border-[#E6321C]"
+              className="flex-1 px-4 py-2.5 rounded-[2px] border border-[#DDD3C5] bg-white text-xs text-[#171717] focus:outline-none focus:ring-2 focus:ring-[#E6321C]/20 focus:border-[#E6321C]"
             />
             <button
               type="submit"
               disabled={isSubscribingNewsletter}
-              className="h-10 px-5 rounded-xl bg-[#171717] hover:bg-black text-white text-xs font-bold uppercase tracking-wide shrink-0 transition-all"
+              className="h-10 px-5 rounded-[2px] bg-[#171717] hover:bg-black text-white text-xs font-bold uppercase tracking-wide shrink-0 transition-all"
             >
               {isSubscribingNewsletter ? 'Joining...' : 'Subscribe'}
             </button>
@@ -1299,7 +1299,7 @@ export function AccountPage() {
               initial={shouldReduceMotion ? false : { scale: 0.98, opacity: 0, y: 10 }}
               animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={shouldReduceMotion ? undefined : { scale: 0.98, opacity: 0, y: 10 }}
-              className="w-full max-w-md bg-white border border-[#DDD3C5] rounded-2xl p-6 sm:p-7 shadow-2xl space-y-5 text-left"
+              className="w-full max-w-md bg-white border border-[#DDD3C5] rounded-[2px] p-6 sm:p-7 shadow-[6px_6px_0px_#171717] space-y-5 text-left"
             >
               <div className="flex items-center justify-between border-b border-[#DDD3C5] pb-3">
                 <h3 className="font-extrabold text-base text-[#171717] tracking-tight">
@@ -1325,7 +1325,7 @@ export function AccountPage() {
                     required
                     value={profileForm.fullName}
                     onChange={(e) => setProfileForm({ ...profileForm, fullName: e.target.value })}
-                    className="w-full px-4 py-2.5 rounded-xl border border-[#DDD3C5] text-xs text-[#171717] focus:outline-none focus:border-[#E6321C]"
+                    className="w-full px-4 py-2.5 rounded-[2px] border border-[#DDD3C5] text-xs text-[#171717] focus:outline-none focus:border-[#E6321C]"
                   />
                 </div>
                 <div>
@@ -1337,21 +1337,21 @@ export function AccountPage() {
                     required
                     value={profileForm.phone}
                     onChange={(e) => setProfileForm({ ...profileForm, phone: e.target.value })}
-                    className="w-full px-4 py-2.5 rounded-xl border border-[#DDD3C5] text-xs text-[#171717] focus:outline-none focus:border-[#E6321C]"
+                    className="w-full px-4 py-2.5 rounded-[2px] border border-[#DDD3C5] text-xs text-[#171717] focus:outline-none focus:border-[#E6321C]"
                   />
                 </div>
                 <div className="pt-3 border-t border-[#DDD3C5] flex justify-end gap-2.5">
                   <button
                     type="button"
                     onClick={() => setIsEditProfileOpen(false)}
-                    className="h-10 px-4 rounded-xl border border-[#DDD3C5] text-xs font-bold text-[#171717] hover:bg-[#F7EEDB]"
+                    className="h-10 px-4 rounded-[2px] border border-[#DDD3C5] text-xs font-bold text-[#171717] hover:bg-[#F7EEDB]"
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
                     disabled={updateProfileMutation.isPending}
-                    className="h-10 px-5 rounded-xl bg-[#171717] hover:bg-black text-white text-xs font-bold tracking-wide shadow-xs"
+                    className="h-10 px-5 rounded-[2px] bg-[#171717] hover:bg-black text-white text-xs font-bold tracking-wide shadow-xs"
                   >
                     {updateProfileMutation.isPending ? 'Saving...' : 'Save Changes'}
                   </button>
@@ -1377,7 +1377,7 @@ export function AccountPage() {
               initial={shouldReduceMotion ? false : { scale: 0.98, opacity: 0, y: 10 }}
               animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={shouldReduceMotion ? undefined : { scale: 0.98, opacity: 0, y: 10 }}
-              className="w-full max-w-lg bg-white border border-[#DDD3C5] rounded-2xl p-6 sm:p-7 shadow-2xl space-y-4 text-left"
+              className="w-full max-w-lg bg-white border border-[#DDD3C5] rounded-[2px] p-6 sm:p-7 shadow-[6px_6px_0px_#171717] space-y-4 text-left"
             >
               <div className="flex items-center justify-between border-b border-[#DDD3C5] pb-3">
                 <h3 className="font-extrabold text-base text-[#171717] tracking-tight">
@@ -1404,7 +1404,7 @@ export function AccountPage() {
                       required
                       value={newAddressForm.name}
                       onChange={(e) => setNewAddressForm({ ...newAddressForm, name: e.target.value })}
-                      className="w-full px-3.5 py-2 rounded-xl border border-[#DDD3C5] text-xs"
+                      className="w-full px-3.5 py-2 rounded-[2px] border border-[#DDD3C5] text-xs"
                     />
                   </div>
                   <div>
@@ -1416,7 +1416,7 @@ export function AccountPage() {
                       required
                       value={newAddressForm.phone}
                       onChange={(e) => setNewAddressForm({ ...newAddressForm, phone: e.target.value })}
-                      className="w-full px-3.5 py-2 rounded-xl border border-[#DDD3C5] text-xs"
+                      className="w-full px-3.5 py-2 rounded-[2px] border border-[#DDD3C5] text-xs"
                     />
                   </div>
                 </div>
@@ -1430,7 +1430,7 @@ export function AccountPage() {
                     placeholder="Flat / Building / Road"
                     value={newAddressForm.line1}
                     onChange={(e) => setNewAddressForm({ ...newAddressForm, line1: e.target.value })}
-                    className="w-full px-3.5 py-2 rounded-xl border border-[#DDD3C5] text-xs"
+                    className="w-full px-3.5 py-2 rounded-[2px] border border-[#DDD3C5] text-xs"
                   />
                 </div>
                 <div className="grid grid-cols-3 gap-3">
@@ -1443,7 +1443,7 @@ export function AccountPage() {
                       required
                       value={newAddressForm.city}
                       onChange={(e) => setNewAddressForm({ ...newAddressForm, city: e.target.value })}
-                      className="w-full px-3.5 py-2 rounded-xl border border-[#DDD3C5] text-xs"
+                      className="w-full px-3.5 py-2 rounded-[2px] border border-[#DDD3C5] text-xs"
                     />
                   </div>
                   <div>
@@ -1455,7 +1455,7 @@ export function AccountPage() {
                       required
                       value={newAddressForm.state}
                       onChange={(e) => setNewAddressForm({ ...newAddressForm, state: e.target.value })}
-                      className="w-full px-3.5 py-2 rounded-xl border border-[#DDD3C5] text-xs"
+                      className="w-full px-3.5 py-2 rounded-[2px] border border-[#DDD3C5] text-xs"
                     />
                   </div>
                   <div>
@@ -1468,7 +1468,7 @@ export function AccountPage() {
                       maxLength={6}
                       value={newAddressForm.postalCode}
                       onChange={(e) => setNewAddressForm({ ...newAddressForm, postalCode: e.target.value })}
-                      className="w-full px-3.5 py-2 rounded-xl border border-[#DDD3C5] text-xs font-mono"
+                      className="w-full px-3.5 py-2 rounded-[2px] border border-[#DDD3C5] text-xs font-mono"
                     />
                   </div>
                 </div>
@@ -1476,14 +1476,14 @@ export function AccountPage() {
                   <button
                     type="button"
                     onClick={() => setIsAddAddressOpen(false)}
-                    className="h-10 px-4 rounded-xl border border-[#DDD3C5] text-xs font-bold text-[#171717] hover:bg-[#F7EEDB]"
+                    className="h-10 px-4 rounded-[2px] border border-[#DDD3C5] text-xs font-bold text-[#171717] hover:bg-[#F7EEDB]"
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
                     disabled={addAddressMutation.isPending}
-                    className="h-10 px-5 rounded-xl bg-[#171717] hover:bg-black text-white text-xs font-bold uppercase tracking-wider shadow-xs"
+                    className="h-10 px-5 rounded-[2px] bg-[#171717] hover:bg-black text-white text-xs font-bold uppercase tracking-wider shadow-xs"
                   >
                     Save Address
                   </button>
@@ -1509,7 +1509,7 @@ export function AccountPage() {
               initial={shouldReduceMotion ? false : { scale: 0.98, opacity: 0, y: 10 }}
               animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={shouldReduceMotion ? undefined : { scale: 0.98, opacity: 0, y: 10 }}
-              className="w-full max-w-md bg-white border border-[#DDD3C5] rounded-2xl p-6 sm:p-7 shadow-2xl space-y-4 text-left"
+              className="w-full max-w-md bg-white border border-[#DDD3C5] rounded-[2px] p-6 sm:p-7 shadow-[6px_6px_0px_#171717] space-y-4 text-left"
             >
               <div className="flex items-center justify-between border-b border-[#DDD3C5] pb-3">
                 <h3 className="font-extrabold text-base text-[#171717] tracking-tight">
@@ -1536,7 +1536,7 @@ export function AccountPage() {
                     placeholder="e.g. BING-89412"
                     value={returnForm.orderNumber}
                     onChange={(e) => setReturnForm({ ...returnForm, orderNumber: e.target.value })}
-                    className="w-full px-3.5 py-2 rounded-xl border border-[#DDD3C5] text-xs font-mono uppercase"
+                    className="w-full px-3.5 py-2 rounded-[2px] border border-[#DDD3C5] text-xs font-mono uppercase"
                   />
                 </div>
                 <div>
@@ -1549,7 +1549,7 @@ export function AccountPage() {
                     placeholder="e.g. 240 GSM Boxy Heavyweight Tee"
                     value={returnForm.garmentTitle}
                     onChange={(e) => setReturnForm({ ...returnForm, garmentTitle: e.target.value })}
-                    className="w-full px-3.5 py-2 rounded-xl border border-[#DDD3C5] text-xs"
+                    className="w-full px-3.5 py-2 rounded-[2px] border border-[#DDD3C5] text-xs"
                   />
                 </div>
                 <div>
@@ -1559,7 +1559,7 @@ export function AccountPage() {
                   <select
                     value={returnForm.reason}
                     onChange={(e: any) => setReturnForm({ ...returnForm, reason: e.target.value })}
-                    className="w-full px-3.5 py-2 rounded-xl border border-[#DDD3C5] text-xs bg-white"
+                    className="w-full px-3.5 py-2 rounded-[2px] border border-[#DDD3C5] text-xs bg-white"
                   >
                     <option value="size_fit">Size / Fit Adjustment (Swap size)</option>
                     <option value="print_defect">Fabric or Print Defect</option>
@@ -1577,21 +1577,21 @@ export function AccountPage() {
                     placeholder="Please specify your desired replacement size..."
                     value={returnForm.comments}
                     onChange={(e) => setReturnForm({ ...returnForm, comments: e.target.value })}
-                    className="w-full px-3.5 py-2 rounded-xl border border-[#DDD3C5] text-xs"
+                    className="w-full px-3.5 py-2 rounded-[2px] border border-[#DDD3C5] text-xs"
                   />
                 </div>
                 <div className="pt-3 border-t border-[#DDD3C5] flex justify-end gap-2.5">
                   <button
                     type="button"
                     onClick={() => setIsReturnModalOpen(false)}
-                    className="h-10 px-4 rounded-xl border border-[#DDD3C5] text-xs font-bold text-[#171717] hover:bg-[#F7EEDB]"
+                    className="h-10 px-4 rounded-[2px] border border-[#DDD3C5] text-xs font-bold text-[#171717] hover:bg-[#F7EEDB]"
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
                     disabled={createReturnMutation.isPending}
-                    className="h-10 px-5 rounded-xl bg-[#171717] hover:bg-black text-white text-xs font-bold uppercase tracking-wider shadow-xs"
+                    className="h-10 px-5 rounded-[2px] bg-[#171717] hover:bg-black text-white text-xs font-bold uppercase tracking-wider shadow-xs"
                   >
                     Submit Request
                   </button>
@@ -1612,7 +1612,7 @@ export function AccountPage() {
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
-              className="w-full max-w-md bg-white border border-red-300 rounded-2xl p-6 sm:p-7 shadow-2xl space-y-5 text-left"
+              className="w-full max-w-md bg-white border border-red-300 rounded-[2px] p-6 sm:p-7 shadow-[6px_6px_0px_#171717] space-y-5 text-left"
             >
               <div className="flex items-center justify-between pb-3 border-b border-[#DDD3C5]">
                 <div className="flex items-center gap-2 text-rose-600 font-bold text-sm uppercase tracking-wide">
@@ -1639,7 +1639,7 @@ export function AccountPage() {
                 <li>Order history will be anonymized for tax and statutory records.</li>
               </ul>
 
-              <div className="p-3 bg-red-50 border border-red-200 rounded-xl text-xs text-red-700">
+              <div className="p-3 bg-red-50 border border-red-200 rounded-[2px] text-xs text-red-700">
                 ⚠️ This action cannot be undone.
               </div>
 
@@ -1648,7 +1648,7 @@ export function AccountPage() {
                   type="button"
                   onClick={() => setIsDeleteAccountModalOpen(false)}
                   disabled={isDeletingAccount}
-                  className="h-10 px-4 rounded-xl border border-[#DDD3C5] text-xs font-bold text-[#171717] hover:bg-[#F7EEDB]"
+                  className="h-10 px-4 rounded-[2px] border border-[#DDD3C5] text-xs font-bold text-[#171717] hover:bg-[#F7EEDB]"
                 >
                   Cancel
                 </button>
@@ -1656,7 +1656,7 @@ export function AccountPage() {
                   type="button"
                   onClick={handleDeleteAccount}
                   disabled={isDeletingAccount}
-                  className="h-10 px-5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold uppercase tracking-wider flex items-center gap-2 shadow-xs"
+                  className="h-10 px-5 rounded-[2px] bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold uppercase tracking-wider flex items-center gap-2 shadow-xs"
                 >
                   {isDeletingAccount ? (
                     <>

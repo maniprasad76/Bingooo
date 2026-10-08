@@ -74,7 +74,7 @@ export function AddressesPage() {
             exit={shouldReduceMotion ? undefined : { opacity: 0, height: 0 }}
             transition={{ duration: 0.25 }}
             onSubmit={handleAddSubmit}
-            className="overflow-hidden rounded-xl border border-border bg-white p-6 shadow-sm space-y-4 max-w-xl"
+            className="overflow-hidden rounded-[2px] border border-border bg-white p-6 shadow-sm space-y-4 max-w-xl"
           >
             <h3 className="text-heading font-bold text-ink">New Delivery Address</h3>
             <div className="grid grid-cols-2 gap-4">
@@ -102,7 +102,7 @@ export function AddressesPage() {
       {isLoading ? (
         <div className="py-16 text-center text-muted">Loading addresses...</div>
       ) : addresses.length === 0 && !showAddForm ? (
-        <div className="flex flex-col items-center justify-center py-20 text-center rounded-xl border border-dashed border-border bg-paper/50">
+        <div className="flex flex-col items-center justify-center py-20 text-center rounded-[2px] border border-dashed border-border bg-paper/50">
           <MapPin size={32} className="text-muted mb-3" />
           <h3 className="text-heading font-bold text-ink">No saved addresses</h3>
           <p className="text-body text-muted mt-1">Add an address to make checkout faster.</p>
@@ -119,7 +119,7 @@ export function AddressesPage() {
                 exit={shouldReduceMotion ? undefined : { opacity: 0, scale: 0.9 }}
                 transition={{ type: 'spring', stiffness: 350, damping: 25 }}
                 whileHover={shouldReduceMotion ? undefined : { y: -2, boxShadow: '0 8px 24px -6px rgba(0, 0, 0, 0.08)' }}
-                className="rounded-xl border border-border bg-white p-6 shadow-sm flex justify-between items-start transition-colors"
+                className="rounded-[2px] border border-border bg-white p-6 shadow-sm flex justify-between items-start transition-colors"
               >
                 <div>
                   <div className="flex items-center gap-2 mb-2">

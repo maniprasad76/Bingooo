@@ -74,13 +74,13 @@ function RecentlyViewedCard({
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.95 }}
-        className="group flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-4 rounded-2xl bg-white border border-[#DDD3C5] shadow-xs hover:shadow-md transition-all text-left"
+        className="group flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-4 rounded-[2px] bg-white border border-[#DDD3C5] shadow-xs hover:shadow-md transition-all text-left"
       >
         <div className="flex items-center gap-4 min-w-0 w-full sm:w-auto">
           {/* Thumbnail */}
           <Link
             to={`/product/${item.slug}`}
-            className="relative h-20 w-20 sm:h-24 sm:w-24 rounded-xl bg-[#EDE0CC] border border-[#DDD3C5] overflow-hidden shrink-0 flex items-center justify-center group-hover:scale-105 transition-transform"
+            className="relative h-20 w-20 sm:h-24 sm:w-24 rounded-[2px] bg-[#EDE0CC] border border-[#DDD3C5] overflow-hidden shrink-0 flex items-center justify-center group-hover:scale-105 transition-transform"
           >
             {mainImage ? (
               <img src={mainImage} alt={item.title} className="h-full w-full object-cover" />
@@ -143,7 +143,7 @@ function RecentlyViewedCard({
           <button
             type="button"
             onClick={() => toggleWishlist(item.id, inWishlist)}
-            className="p-2.5 rounded-xl border border-[#DDD3C5] hover:border-[#E6321C] text-[#171717] hover:text-[#E6321C] transition-colors"
+            className="p-2.5 rounded-[2px] border border-[#DDD3C5] hover:border-[#E6321C] text-[#171717] hover:text-[#E6321C] transition-colors"
             aria-label={inWishlist ? 'Remove from wishlist' : 'Add to wishlist'}
           >
             <Heart size={16} className={inWishlist ? 'fill-[#E6321C] text-[#E6321C]' : ''} />
@@ -152,7 +152,7 @@ function RecentlyViewedCard({
           <button
             type="button"
             onClick={() => onAddToCart(item)}
-            className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl bg-[#E6321C] hover:bg-[#B91F12] text-white font-sans font-bold text-xs uppercase tracking-wider transition-colors shadow-xs"
+            className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-[2px] bg-[#E6321C] hover:bg-[#B91F12] text-white font-sans font-bold text-xs uppercase tracking-wider transition-colors shadow-xs"
           >
             <ShoppingBag size={14} />
             <span>ADD TO BAG</span>
@@ -161,7 +161,7 @@ function RecentlyViewedCard({
           <button
             type="button"
             onClick={() => onRemove(item.id)}
-            className="p-2.5 rounded-xl border border-[#DDD3C5] hover:border-[#171717] text-[#6F6A63] hover:text-[#E6321C] transition-colors"
+            className="p-2.5 rounded-[2px] border border-[#DDD3C5] hover:border-[#171717] text-[#6F6A63] hover:text-[#E6321C] transition-colors"
             title="Remove from history"
             aria-label={`Remove ${item.title} from recently viewed`}
           >
@@ -181,9 +181,9 @@ function RecentlyViewedCard({
       className="h-full"
     >
       <InteractiveTilt maxTilt={6} className="h-full">
-        <div className="group relative flex h-full flex-col justify-between rounded-2xl bg-white border border-[#DDD3C5] p-3 sm:p-4 shadow-sm hover:shadow-md transition-all duration-300 text-left">
+        <div className="group relative flex h-full flex-col justify-between rounded-[2px] bg-white border border-[#DDD3C5] p-3 sm:p-4 shadow-sm hover:shadow-md transition-all duration-300 text-left">
           {/* Top Image Box */}
-          <div className="relative aspect-[4/5] rounded-xl bg-[#EDE0CC] overflow-hidden flex items-center justify-center">
+          <div className="relative aspect-[4/5] rounded-[2px] bg-[#EDE0CC] overflow-hidden flex items-center justify-center">
             <Link
               to={`/product/${item.slug}`}
               className="w-full h-full flex items-center justify-center group-hover:scale-105 transition-transform duration-500"
@@ -294,7 +294,7 @@ function RecentlyViewedCard({
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.96 }}
                 onClick={() => onAddToCart(item)}
-                className="flex-1 inline-flex items-center justify-center gap-1.5 py-2.5 rounded-xl bg-[#E6321C] hover:bg-[#B91F12] text-white text-[11px] font-sans font-bold uppercase tracking-wider transition-colors shadow-xs"
+                className="flex-1 inline-flex items-center justify-center gap-1.5 py-2.5 rounded-[2px] bg-[#E6321C] hover:bg-[#B91F12] text-white text-[11px] font-sans font-bold uppercase tracking-wider transition-colors shadow-xs"
               >
                 <ShoppingBag size={13} />
                 <span>ADD TO BAG</span>
@@ -415,7 +415,7 @@ export function RecentlyViewedPage() {
               <button
                 type="button"
                 onClick={() => setIsClearModalOpen(true)}
-                className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl border border-[#DDD3C5] bg-white hover:border-[#E6321C] hover:text-[#E6321C] text-xs font-sans font-bold uppercase tracking-wider transition-colors shadow-2xs text-[#6F6A63]"
+                className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-[2px] border border-[#DDD3C5] bg-white hover:border-[#E6321C] hover:text-[#E6321C] text-xs font-sans font-bold uppercase tracking-wider transition-colors shadow-2xs text-[#6F6A63]"
               >
                 <Trash2 size={13} />
                 <span>Clear History</span>
@@ -470,7 +470,7 @@ export function RecentlyViewedPage() {
                   id="sort-by"
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value as SortOption)}
-                  className="bg-white border border-[#DDD3C5] rounded-xl px-2.5 py-1.5 text-xs font-semibold text-[#171717] focus:outline-none focus:border-[#E6321C] cursor-pointer"
+                  className="bg-white border border-[#DDD3C5] rounded-[2px] px-2.5 py-1.5 text-xs font-semibold text-[#171717] focus:outline-none focus:border-[#E6321C] cursor-pointer"
                 >
                   <option value="recent">Most Recently Viewed</option>
                   <option value="price-asc">Price: Low to High</option>
@@ -480,7 +480,7 @@ export function RecentlyViewedPage() {
               </div>
 
               {/* View Toggle */}
-              <div className="hidden sm:flex items-center rounded-xl bg-white border border-[#DDD3C5] p-0.5">
+              <div className="hidden sm:flex items-center rounded-[2px] bg-white border border-[#DDD3C5] p-0.5">
                 <button
                   type="button"
                   onClick={() => setViewMode('grid')}
@@ -520,7 +520,7 @@ export function RecentlyViewedPage() {
             />
           </div>
         ) : filteredItems.length === 0 ? (
-          <div className="py-12 bg-white rounded-2xl border border-[#DDD3C5] text-center p-8 space-y-3">
+          <div className="py-12 bg-white rounded-[2px] border border-[#DDD3C5] text-center p-8 space-y-3">
             <Filter size={32} className="mx-auto text-[#6F6A63]" />
             <h3 className="font-heading font-bold text-lg text-[#171717] uppercase">
               No garments found for "{selectedCategory}"
@@ -531,7 +531,7 @@ export function RecentlyViewedPage() {
             <button
               type="button"
               onClick={() => setSelectedCategory('all')}
-              className="mt-2 inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#171717] text-white text-xs font-bold uppercase tracking-wider"
+              className="mt-2 inline-flex items-center gap-1.5 px-4 py-2 rounded-[2px] bg-[#171717] text-white text-xs font-bold uppercase tracking-wider"
             >
               Show All Categories
             </button>
@@ -560,7 +560,7 @@ export function RecentlyViewedPage() {
 
         {/* ─── Atelier Trust Badges Strip ─── */}
         <div className="mt-16 pt-10 border-t border-[#DDD3C5] grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-6 text-center">
-          <div className="p-4 rounded-2xl bg-white border border-[#DDD3C5] shadow-xs flex flex-col items-center">
+          <div className="p-4 rounded-[2px] bg-white border border-[#DDD3C5] shadow-xs flex flex-col items-center">
             <Shirt size={22} className="text-[#E6321C] mb-2" />
             <span className="font-heading font-bold text-xs uppercase text-[#171717]">
               240 GSM COMBED COTTON
@@ -568,7 +568,7 @@ export function RecentlyViewedPage() {
             <span className="text-[10px] text-[#6F6A63] font-sans mt-0.5">Heavyweight Luxury Drape</span>
           </div>
 
-          <div className="p-4 rounded-2xl bg-white border border-[#DDD3C5] shadow-xs flex flex-col items-center">
+          <div className="p-4 rounded-[2px] bg-white border border-[#DDD3C5] shadow-xs flex flex-col items-center">
             <RotateCcw size={22} className="text-[#E6321C] mb-2" />
             <span className="font-heading font-bold text-xs uppercase text-[#171717]">
               7-DAY EASY RETURNS
@@ -576,7 +576,7 @@ export function RecentlyViewedPage() {
             <span className="text-[10px] text-[#6F6A63] font-sans mt-0.5">Doorstep Pickup Exchanges</span>
           </div>
 
-          <div className="p-4 rounded-2xl bg-white border border-[#DDD3C5] shadow-xs flex flex-col items-center">
+          <div className="p-4 rounded-[2px] bg-white border border-[#DDD3C5] shadow-xs flex flex-col items-center">
             <ShieldCheck size={22} className="text-[#E6321C] mb-2" />
             <span className="font-heading font-bold text-xs uppercase text-[#171717]">
               100% PROTECTED CHECKOUT
@@ -584,7 +584,7 @@ export function RecentlyViewedPage() {
             <span className="text-[10px] text-[#6F6A63] font-sans mt-0.5">Razorpay Encrypted Security</span>
           </div>
 
-          <div className="p-4 rounded-2xl bg-white border border-[#DDD3C5] shadow-xs flex flex-col items-center">
+          <div className="p-4 rounded-[2px] bg-white border border-[#DDD3C5] shadow-xs flex flex-col items-center">
             <Truck size={22} className="text-[#E6321C] mb-2" />
             <span className="font-heading font-bold text-xs uppercase text-[#171717]">
               EXPRESS 3–7 DAY DISPATCH
@@ -622,14 +622,14 @@ export function RecentlyViewedPage() {
                 <button
                   type="button"
                   onClick={() => setIsClearModalOpen(false)}
-                  className="px-4 py-2 rounded-xl border border-[#DDD3C5] text-xs font-bold text-[#171717] hover:bg-[#EDE0CC]/40 transition-colors"
+                  className="px-4 py-2 rounded-[2px] border border-[#DDD3C5] text-xs font-bold text-[#171717] hover:bg-[#EDE0CC]/40 transition-colors"
                 >
                   Cancel
                 </button>
                 <button
                   type="button"
                   onClick={handleClearConfirm}
-                  className="px-4 py-2 rounded-xl bg-[#E6321C] hover:bg-[#B91F12] text-white text-xs font-bold uppercase tracking-wider transition-colors shadow-xs"
+                  className="px-4 py-2 rounded-[2px] bg-[#E6321C] hover:bg-[#B91F12] text-white text-xs font-bold uppercase tracking-wider transition-colors shadow-xs"
                 >
                   Clear All
                 </button>

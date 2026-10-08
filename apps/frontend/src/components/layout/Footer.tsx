@@ -109,16 +109,16 @@ export function Footer() {
     >
       <div className="w-[min(calc(100%-32px),1440px)] md:w-[min(calc(100%-48px),1440px)] mx-auto">
         {/* ─── Bulk Order Typography Banner (Chat on WhatsApp) ─── */}
-        <div className="border-b border-white/10 pb-8 sm:pb-10 mb-10 sm:mb-12 flex flex-col md:flex-row items-center md:items-center justify-between gap-6 text-center md:text-left">
+        <div className="bg-[#1F1D1B] border-2 border-white/20 p-6 sm:p-8 mb-10 sm:mb-12 shadow-[4px_4px_0px_#E6321C] flex flex-col md:flex-row items-center md:items-center justify-between gap-6 text-center md:text-left">
           <div className="max-w-2xl flex flex-col items-center md:items-start">
-            <div className="text-[10px] font-extrabold tracking-[0.24em] uppercase text-[#E6321C] mb-2 flex items-center justify-center md:justify-start gap-2">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#E6321C]" />
+            <div className="text-[10px] font-mono font-bold tracking-[0.2em] uppercase text-[#E6321C] mb-2 flex items-center justify-center md:justify-start gap-2">
+              <span className="w-2 h-2 rounded-full bg-[#E6321C] animate-pulse" />
               <span>CUSTOM TEAMS, MERCH & WHOLESALE APPAREL</span>
             </div>
             <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black uppercase tracking-tight text-white leading-none">
               PLANNING A BULK ORDER? <span className="text-[#F7EEDB]">CHAT ON WHATSAPP.</span>
             </h2>
-            <p className="text-[#aaa7a1] text-xs sm:text-[13px] mt-2 leading-relaxed">
+            <p className="text-[#aaa7a1] text-xs sm:text-[13px] mt-2 leading-relaxed font-medium">
               Wholesale custom manufacturing for college fests, corporate teams & streetwear brands. Direct factory pricing, free mockups & priority delivery.
             </p>
           </div>
@@ -127,9 +127,9 @@ export function Footer() {
             href={getWhatsAppUrl('Hi Bingooo, I would like to inquire about a bulk order for custom apparel.')}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center justify-center gap-2.5 px-6 py-3.5 bg-[#F7EEDB] text-[#171717] font-bold text-xs tracking-[0.14em] uppercase hover:bg-[#E6321C] hover:text-white transition-all shrink-0 border border-transparent shadow-sm select-none"
+            className="inline-flex items-center justify-center gap-2.5 px-6 py-3.5 bg-[#E6321C] text-white font-extrabold text-xs tracking-[0.14em] uppercase hover:bg-[#ff3b20] transition-all shrink-0 border-2 border-white/40 shadow-[3px_3px_0px_#FFFFFF] active:translate-x-[2px] active:translate-y-[2px] select-none"
           >
-            <WhatsAppIcon className="w-4 h-4 text-[#25D366]" />
+            <WhatsAppIcon className="w-4 h-4 text-white fill-current" />
             <span>CHAT ON WHATSAPP →</span>
           </a>
         </div>
@@ -158,7 +158,7 @@ export function Footer() {
                 rel="noopener noreferrer"
                 aria-label="Follow Bingooo on Instagram"
                 title={`Instagram (${BINGOOO_INSTAGRAM_HANDLE})`}
-                className="w-[34px] h-[34px] border border-white/20 rounded-full flex items-center justify-center bg-white/5 hover:bg-[#E1306C]/20 hover:border-[#E1306C] transition-all duration-150 p-1.5"
+                className="w-[36px] h-[36px] border-2 border-white/30 rounded-none flex items-center justify-center bg-white/5 hover:bg-[#E6321C] hover:border-white transition-all p-1.5 shadow-[2px_2px_0px_rgba(255,255,255,0.2)]"
               >
                 <InstagramIcon className="w-4 h-4" />
               </a>
@@ -168,7 +168,7 @@ export function Footer() {
                 rel="noopener noreferrer"
                 aria-label="Chat with Bingooo on WhatsApp"
                 title={`WhatsApp (${BINGOOO_PHONE_DISPLAY})`}
-                className="w-[34px] h-[34px] border border-white/20 rounded-full flex items-center justify-center bg-white/5 hover:bg-[#25D366]/20 hover:border-[#25D366] transition-all duration-150 p-1.5"
+                className="w-[36px] h-[36px] border-2 border-white/30 rounded-none flex items-center justify-center bg-white/5 hover:bg-[#25D366] hover:border-white transition-all p-1.5 shadow-[2px_2px_0px_rgba(255,255,255,0.2)]"
               >
                 <WhatsAppIcon className="w-4 h-4" />
               </a>
@@ -178,7 +178,7 @@ export function Footer() {
                 rel="noopener noreferrer"
                 aria-label="Follow Bingooo on YouTube"
                 title={`YouTube (${BINGOOO_YOUTUBE_HANDLE})`}
-                className="w-[34px] h-[34px] border border-white/20 rounded-full flex items-center justify-center bg-white/5 hover:bg-[#FF0000]/20 hover:border-[#FF0000] transition-all duration-150 p-1.5"
+                className="w-[36px] h-[36px] border-2 border-white/30 rounded-none flex items-center justify-center bg-white/5 hover:bg-[#FF0000] hover:border-white transition-all p-1.5 shadow-[2px_2px_0px_rgba(255,255,255,0.2)]"
               >
                 <YouTubeIcon className="w-4 h-4" />
               </a>
@@ -188,7 +188,7 @@ export function Footer() {
                 rel="noopener noreferrer"
                 aria-label="Follow Bingooo on Twitter"
                 title={`Twitter (${BINGOOO_TWITTER_HANDLE})`}
-                className="w-[34px] h-[34px] border border-white/20 rounded-full flex items-center justify-center bg-white/5 hover:bg-[#171717] hover:border-white/40 transition-all duration-150 p-1.5"
+                className="w-[36px] h-[36px] border-2 border-white/30 rounded-none flex items-center justify-center bg-white/5 hover:bg-[#171717] hover:border-white transition-all p-1.5 shadow-[2px_2px_0px_rgba(255,255,255,0.2)]"
               >
                 <XTwitterIcon className="w-4 h-4" />
               </a>
@@ -196,7 +196,7 @@ export function Footer() {
                 href={`mailto:${BINGOOO_EMAIL_SUPPORT}?subject=Inquiry%20from%20Bingooo%20Footer`}
                 aria-label="Email Bingooo Support"
                 title={`Email (${BINGOOO_EMAIL_SUPPORT})`}
-                className="w-[34px] h-[34px] border border-white/20 rounded-full flex items-center justify-center text-[#d4d1cc] hover:text-white bg-white/5 hover:bg-[#E6321C] hover:border-[#E6321C] transition-all duration-150 p-1.5"
+                className="w-[36px] h-[36px] border-2 border-white/30 rounded-none flex items-center justify-center text-[#d4d1cc] hover:text-white bg-white/5 hover:bg-[#E6321C] hover:border-white transition-all p-1.5 shadow-[2px_2px_0px_rgba(255,255,255,0.2)]"
               >
                 <EmailIcon className="w-4 h-4" />
               </a>

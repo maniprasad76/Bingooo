@@ -187,25 +187,296 @@
   </head>
   <body>
     <!-- ── Brand Preloader: Displayed instantly with zero latency while JS bundle initializes ── -->
-    <div id="root">
-      <div id="bingooo-initial-loader" style="position:fixed;inset:0;background:#111111;color:#f7eedb;display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:'Manrope',system-ui,-apple-system,sans-serif;z-index:99999;user-select:none;">
-        <div style="display:flex;align-items:baseline;font-size:32px;font-weight:900;letter-spacing:-0.05em;color:#f7eedb;line-height:1;">
-          BINGOOO<span style="color:#e6321c;display:inline-block;margin-left:2px;">.</span>
+    <!-- ── Brand Intro: Multilingual 1.2-second fast animated luxury intro with plain background and full colors ── -->
+    <div id="bingooo-brand-intro" style="position:fixed;inset:0;background:#171717;color:#F7EEDB;display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:'Manrope',system-ui,-apple-system,sans-serif;z-index:99999;user-select:none;transition:background-color 0.22s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease, transform 0.3s ease;overflow:hidden;">
+      <!-- Skip Button (Tactile Bauhaus control) -->
+      <button id="intro-skip-btn" type="button" aria-label="Skip brand intro" style="position:absolute;top:24px;right:24px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.18);color:#F7EEDB;font-family:inherit;font-size:10px;font-weight:800;letter-spacing:0.2em;text-transform:uppercase;padding:7px 14px;border-radius:2px;cursor:pointer;transition:all 0.2s ease;z-index:10;display:flex;align-items:center;gap:6px;">
+        <span>SKIP</span>
+        <span style="opacity:0.5;font-size:9px;font-family:monospace;">[ESC]</span>
+      </button>
+
+      <!-- Center Brand Content -->
+      <div style="position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;text-align:center;padding:0 24px;max-width:720px;">
+        
+        <!-- Language / Sequence Badge -->
+        <div id="intro-lang-badge" style="display:inline-flex;align-items:center;gap:8px;padding:5px 12px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.18);font-family:monospace;font-size:9px;font-weight:800;letter-spacing:0.18em;text-transform:uppercase;color:#E6321C;margin-bottom:20px;border-radius:2px;transition:all 0.2s ease;">
+          <span id="intro-lang-dot" style="display:inline-block;width:6px;height:6px;border-radius:50%;background:#E6321C;transition:background 0.2s ease;"></span>
+          <span id="intro-lang-code">EN // 01</span>
         </div>
-        <div style="margin-top:8px;font-size:11px;letter-spacing:0.25em;text-transform:uppercase;color:#888888;font-weight:600;">
-          Wear What Defines You
+
+        <!-- Brand Mark (Rock-solid, architectural) -->
+        <div id="intro-brand-title" style="display:flex;align-items:baseline;font-size:clamp(36px, 6vw, 48px);font-weight:900;letter-spacing:-0.05em;color:#F7EEDB;line-height:1;margin-bottom:14px;transition:color 0.2s ease;">
+          BINGOOO<span id="intro-brand-dot" style="color:#E6321C;display:inline-block;margin-left:2px;animation:intro-dot-pulse 1s ease-in-out infinite;transition:color 0.2s ease;">.</span>
         </div>
-        <div style="margin-top:28px;width:120px;height:2px;background:rgba(255,255,255,0.08);border-radius:999px;overflow:hidden;position:relative;">
-          <div style="position:absolute;top:0;left:0;height:100%;width:40%;background:#e6321c;border-radius:999px;animation:bingooo-pulse 1.2s ease-in-out infinite alternate;"></div>
+
+        <!-- Dynamic Multilingual Tagline with smooth morphing -->
+        <div style="height:36px;display:flex;align-items:center;justify-content:center;position:relative;width:100%;">
+          <div id="intro-tagline" style="font-size:clamp(12px, 2.5vw, 15px);font-weight:800;letter-spacing:0.24em;text-transform:uppercase;color:#F7EEDB;transition:opacity 0.12s cubic-bezier(0.16, 1, 0.3, 1), transform 0.12s cubic-bezier(0.16, 1, 0.3, 1), color 0.2s ease;white-space:nowrap;transform:translateY(0);opacity:1;">
+            WEAR WHAT DEFINES YOU
+          </div>
         </div>
-        <style>
-          @keyframes bingooo-pulse {
-            0% { transform: translateX(0); width: 25%; }
-            100% { transform: translateX(200%); width: 45%; }
-          }
-        </style>
+
+        <!-- Sub-Origin Tagline -->
+        <div id="intro-subtext" style="margin-top:10px;font-family:monospace;font-size:10px;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;color:#A89F91;transition:opacity 0.15s ease, color 0.2s ease;">
+          ARCHITECTURAL ESSENTIALS • 240+ GSM
+        </div>
+
+        <!-- Precision Hairline Progress Bar -->
+        <div id="intro-progress-track" style="margin-top:34px;width:160px;height:2px;background:rgba(255,255,255,0.12);border-radius:2px;overflow:hidden;position:relative;transition:background 0.2s ease;">
+          <div id="intro-progress-bar" style="position:absolute;top:0;left:0;height:100%;width:0%;background:#E6321C;border-radius:2px;transition:width 1200ms linear, background 0.2s ease;"></div>
+        </div>
       </div>
+
+      <!-- Architectural Corner Accents -->
+      <div class="intro-corner-accent" style="position:absolute;bottom:24px;left:24px;font-family:monospace;font-size:9px;font-weight:700;letter-spacing:0.18em;color:rgba(247,238,219,0.35);text-transform:uppercase;transition:color 0.2s ease;">
+        EST. 2026 // SRIKAKULAM
+      </div>
+      <div class="intro-corner-accent" style="position:absolute;bottom:24px;right:24px;font-family:monospace;font-size:9px;font-weight:700;letter-spacing:0.18em;color:rgba(247,238,219,0.35);text-transform:uppercase;transition:color 0.2s ease;">
+        ATELIER AP // 7 ROADS
+      </div>
+
+      <style>
+        @keyframes intro-dot-pulse {
+          0%, 100% { transform: scale(1); opacity: 1; filter: drop-shadow(0 0 0px #E6321C); }
+          50% { transform: scale(1.35); opacity: 0.95; filter: drop-shadow(0 0 8px #E6321C); }
+        }
+      </style>
+
+      <script>
+        (function() {
+          var STAGES = [
+            {
+              code: 'EN // 01',
+              tagline: 'WEAR WHAT DEFINES YOU',
+              subtext: 'ARCHITECTURAL ESSENTIALS • 240+ GSM',
+              bg: '#171717',
+              textColor: '#F7EEDB',
+              dotColor: '#E6321C',
+              taglineColor: '#F7EEDB',
+              subtextColor: '#A89F91',
+              badgeBg: 'rgba(255,255,255,0.08)',
+              badgeBorder: 'rgba(255,255,255,0.18)',
+              badgeText: '#E6321C',
+              badgeDot: '#E6321C',
+              progressTrack: 'rgba(255,255,255,0.12)',
+              progressFill: '#E6321C',
+              cornerColor: 'rgba(247,238,219,0.35)',
+              skipBorder: 'rgba(255,255,255,0.18)',
+              skipBg: 'rgba(255,255,255,0.08)'
+            },
+            {
+              code: 'TE // 02',
+              tagline: 'నీ శైలి. నీ గుర్తింపు.',
+              subtext: '7 ROADS ATELIER • AP',
+              bg: '#E6321C',
+              textColor: '#FFFFFF',
+              dotColor: '#FFFFFF',
+              taglineColor: '#FFFFFF',
+              subtextColor: 'rgba(255,255,255,0.85)',
+              badgeBg: 'rgba(255,255,255,0.16)',
+              badgeBorder: 'rgba(255,255,255,0.32)',
+              badgeText: '#FFFFFF',
+              badgeDot: '#FFFFFF',
+              progressTrack: 'rgba(255,255,255,0.25)',
+              progressFill: '#FFFFFF',
+              cornerColor: 'rgba(255,255,255,0.5)',
+              skipBorder: 'rgba(255,255,255,0.32)',
+              skipBg: 'rgba(255,255,255,0.15)'
+            },
+            {
+              code: 'HI // 03',
+              tagline: 'अपनी पहचान पहनो.',
+              subtext: 'LUXURY STREETWEAR INDIA',
+              bg: '#F7EEDB',
+              textColor: '#171717',
+              dotColor: '#E6321C',
+              taglineColor: '#171717',
+              subtextColor: '#6F6A63',
+              badgeBg: 'rgba(23,23,23,0.06)',
+              badgeBorder: 'rgba(23,23,23,0.18)',
+              badgeText: '#E6321C',
+              badgeDot: '#E6321C',
+              progressTrack: 'rgba(23,23,23,0.12)',
+              progressFill: '#E6321C',
+              cornerColor: 'rgba(23,23,23,0.4)',
+              skipBorder: 'rgba(23,23,23,0.22)',
+              skipBg: 'rgba(23,23,23,0.06)'
+            },
+            {
+              code: 'JA // 04',
+              tagline: '己を語る服を着ろ。',
+              subtext: 'BESPOKE HARIKEN SILHOUETTE',
+              bg: '#1E293B',
+              textColor: '#FFFFFF',
+              dotColor: '#38BDF8',
+              taglineColor: '#F1F5F9',
+              subtextColor: '#94A3B8',
+              badgeBg: 'rgba(255,255,255,0.1)',
+              badgeBorder: 'rgba(255,255,255,0.22)',
+              badgeText: '#38BDF8',
+              badgeDot: '#38BDF8',
+              progressTrack: 'rgba(255,255,255,0.15)',
+              progressFill: '#38BDF8',
+              cornerColor: 'rgba(255,255,255,0.45)',
+              skipBorder: 'rgba(255,255,255,0.22)',
+              skipBg: 'rgba(255,255,255,0.08)'
+            },
+            {
+              code: 'FR // 05',
+              tagline: 'PORTE CE QUI TE D\u00C9FINIT.',
+              subtext: 'HAUTE ATELIER BINGOOO',
+              bg: '#7F1D1D',
+              textColor: '#F7EEDB',
+              dotColor: '#FFFFFF',
+              taglineColor: '#F7EEDB',
+              subtextColor: 'rgba(247,238,219,0.8)',
+              badgeBg: 'rgba(255,255,255,0.15)',
+              badgeBorder: 'rgba(255,255,255,0.3)',
+              badgeText: '#F7EEDB',
+              badgeDot: '#FFFFFF',
+              progressTrack: 'rgba(255,255,255,0.25)',
+              progressFill: '#F7EEDB',
+              cornerColor: 'rgba(247,238,219,0.5)',
+              skipBorder: 'rgba(255,255,255,0.3)',
+              skipBg: 'rgba(255,255,255,0.12)'
+            }
+          ];
+
+          var introEl = document.getElementById('bingooo-brand-intro');
+          if (!introEl) return;
+
+          var langBadgeEl = document.getElementById('intro-lang-badge');
+          var langDotEl = document.getElementById('intro-lang-dot');
+          var langCodeEl = document.getElementById('intro-lang-code');
+          var brandTitleEl = document.getElementById('intro-brand-title');
+          var brandDotEl = document.getElementById('intro-brand-dot');
+          var taglineEl = document.getElementById('intro-tagline');
+          var subtextEl = document.getElementById('intro-subtext');
+          var progressTrackEl = document.getElementById('intro-progress-track');
+          var progressBarEl = document.getElementById('intro-progress-bar');
+          var skipBtn = document.getElementById('intro-skip-btn');
+          var cornerAccents = document.querySelectorAll('.intro-corner-accent');
+
+          var currentStage = 0;
+          var intervalMs = 240; // 5 stages * 240ms = 1200ms total
+          var isFinished = false;
+          var timers = [];
+
+          // Start hairline progress bar interpolation over 1200ms
+          requestAnimationFrame(function() {
+            if (progressBarEl) {
+              progressBarEl.style.width = '100%';
+            }
+          });
+
+          function switchStage(idx) {
+            if (isFinished || idx >= STAGES.length) return;
+            var stage = STAGES[idx];
+
+            // 1. Plain solid background transition
+            if (introEl) {
+              introEl.style.backgroundColor = stage.bg;
+              introEl.style.color = stage.textColor;
+            }
+
+            // 2. Coordinated typography & accents
+            if (brandTitleEl) brandTitleEl.style.color = stage.textColor;
+            if (brandDotEl) brandDotEl.style.color = stage.dotColor;
+            if (taglineEl) taglineEl.style.color = stage.taglineColor;
+            if (subtextEl) subtextEl.style.color = stage.subtextColor;
+
+            if (langBadgeEl) {
+              langBadgeEl.style.background = stage.badgeBg;
+              langBadgeEl.style.borderColor = stage.badgeBorder;
+              langBadgeEl.style.color = stage.badgeText;
+            }
+            if (langDotEl) {
+              langDotEl.style.background = stage.badgeDot;
+            }
+
+            if (progressTrackEl) progressTrackEl.style.background = stage.progressTrack;
+            if (progressBarEl) progressBarEl.style.background = stage.progressFill;
+
+            if (skipBtn) {
+              skipBtn.style.color = stage.textColor;
+              skipBtn.style.borderColor = stage.skipBorder;
+              skipBtn.style.background = stage.skipBg;
+            }
+
+            cornerAccents.forEach(function(el) {
+              el.style.color = stage.cornerColor;
+            });
+
+            // 3. Animate tagline typography out and in fast
+            if (taglineEl) {
+              taglineEl.style.opacity = '0';
+              taglineEl.style.transform = 'translateY(-6px) scale(0.98)';
+
+              setTimeout(function() {
+                if (isFinished) return;
+                taglineEl.textContent = stage.tagline;
+                if (langCodeEl) langCodeEl.textContent = stage.code;
+                if (subtextEl) subtextEl.textContent = stage.subtext;
+
+                taglineEl.style.transform = 'translateY(6px) scale(0.98)';
+                void taglineEl.offsetWidth; // Force CSS reflow
+
+                taglineEl.style.opacity = '1';
+                taglineEl.style.transform = 'translateY(0) scale(1)';
+              }, 50);
+            }
+          }
+
+          // Schedule language changes across 1.2 seconds
+          for (var i = 1; i < STAGES.length; i++) {
+            (function(stageIndex) {
+              var t = setTimeout(function() {
+                switchStage(stageIndex);
+              }, stageIndex * intervalMs);
+              timers.push(t);
+            })(i);
+          }
+
+          function finishIntro() {
+            if (isFinished) return;
+            isFinished = true;
+            timers.forEach(function(t) { clearTimeout(t); });
+
+            if (progressBarEl) progressBarEl.style.width = '100%';
+            if (introEl) {
+              introEl.style.opacity = '0';
+              introEl.style.transform = 'scale(1.02)';
+              introEl.style.pointerEvents = 'none';
+
+              setTimeout(function() {
+                if (introEl && introEl.parentNode) {
+                  introEl.parentNode.removeChild(introEl);
+                }
+              }, 280);
+            }
+            window.removeEventListener('keydown', handleKey);
+          }
+
+          // Automatically finish after 1250ms
+          var endTimer = setTimeout(finishIntro, 1250);
+          timers.push(endTimer);
+
+          if (skipBtn) {
+            skipBtn.addEventListener('click', function(e) {
+              e.preventDefault();
+              finishIntro();
+            });
+          }
+
+          function handleKey(e) {
+            if (e.key === 'Escape') finishIntro();
+          }
+          window.addEventListener('keydown', handleKey);
+        })();
+      </script>
     </div>
+
+    <div id="root"></div>
 
     <!-- ── Search Engine & Non-JS Fallback: Parsed by crawlers without flashing to JS users ── -->
     <noscript>

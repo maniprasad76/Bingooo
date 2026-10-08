@@ -100,9 +100,16 @@ export default {
         'card-hover': '0 4px 16px rgba(0,0,0,0.1)',
         'elevated': '0 8px 24px rgba(0,0,0,0.08)',
         'drawer': '0 -4px 24px rgba(0,0,0,0.1)',
+        'bauhaus-sm': '2px 2px 0px #171717',
+        'bauhaus': '4px 4px 0px #171717',
+        'bauhaus-lg': '6px 6px 0px #171717',
+        'bauhaus-xl': '8px 8px 0px #171717',
+        'bauhaus-red': '4px 4px 0px #E6321C',
+        'bauhaus-white': '4px 4px 0px #FFFFFF',
       },
       borderRadius: {
         'card': '0.5rem',
+        'bauhaus': '2px',
       },
       spacing: {
         '13': '3.25rem',

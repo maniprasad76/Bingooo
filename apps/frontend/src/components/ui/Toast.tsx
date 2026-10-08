@@ -121,9 +121,9 @@ const icons = {
 };
 
 const typeStyles = {
-  success: 'border-[#238636]/30 bg-[#FDF9F4] text-[#238636]',
-  error: 'border-[#E6321C]/30 bg-[#FDF0EE] text-[#E6321C]',
-  info: 'border-[#DDD3C5] bg-white text-[#171717]',
+  success: 'border-2 border-[#171717] bg-[#FDF9F4] text-[#238636] shadow-[4px_4px_0px_#171717]',
+  error: 'border-2 border-[#171717] bg-[#FDF0EE] text-[#E6321C] shadow-[4px_4px_0px_#E6321C]',
+  info: 'border-2 border-[#171717] bg-white text-[#171717] shadow-[4px_4px_0px_#171717]',
 };
 
 function ToastItem({ toast, onRemove }: { toast: ToastItemData; onRemove: (id: string) => void }) {
@@ -151,7 +151,7 @@ function ToastItem({ toast, onRemove }: { toast: ToastItemData; onRemove: (id: s
       exit={{ opacity: 0, y: 8, scale: 0.96 }}
       transition={{ duration: 0.2 }}
       className={cn(
-        'flex items-center gap-3 rounded-xl border px-4 py-3 shadow-lg select-none',
+        'flex items-center gap-3 rounded-[2px] px-4 py-3 select-none',
         'w-[calc(100vw-2rem)] sm:w-auto sm:min-w-[300px] max-w-md',
         typeStyles[toast.type],
       )}
@@ -159,9 +159,9 @@ function ToastItem({ toast, onRemove }: { toast: ToastItemData; onRemove: (id: s
     >
       <Icon size={18} className="shrink-0" />
       <div className="flex-1 min-w-0">
-        <p className="text-xs font-bold text-[#171717] leading-snug">{toast.title}</p>
+        <p className="text-xs font-black text-[#171717] uppercase tracking-wide leading-snug">{toast.title}</p>
         {toast.description && (
-          <p className="text-[11px] text-[#6F6A63] mt-0.5 leading-snug">{toast.description}</p>
+          <p className="text-[11px] font-bold text-[#6F6A63] mt-0.5 leading-snug">{toast.description}</p>
         )}
       </div>
 
@@ -170,7 +170,7 @@ function ToastItem({ toast, onRemove }: { toast: ToastItemData; onRemove: (id: s
         <button
           type="button"
           onClick={handleUndo}
-          className="inline-flex items-center gap-1 rounded-lg bg-[#171717] text-white hover:bg-[#E6321C] px-2.5 py-1 text-[11px] font-bold uppercase tracking-wider transition-colors shrink-0 shadow-xs focus-visible:ring-2 focus-visible:ring-[#E6321C] focus-visible:outline-none"
+          className="inline-flex items-center gap-1 rounded-[2px] border-2 border-[#171717] bg-[#171717] text-white hover:bg-[#E6321C] px-2.5 py-1 text-[10px] font-black uppercase tracking-wider transition-colors shrink-0 shadow-[2px_2px_0px_#171717] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none"
         >
           <Undo2 size={12} />
           <span>{toast.undoLabel || 'Undo'}</span>
@@ -185,7 +185,7 @@ function ToastItem({ toast, onRemove }: { toast: ToastItemData; onRemove: (id: s
             toast.action?.onClick();
             onRemove(toast.id);
           }}
-          className="rounded-lg border border-[#DDD3C5] bg-white px-2.5 py-1 text-[11px] font-bold text-[#171717] hover:bg-[#EDE0CC]/40 transition-colors shrink-0"
+          className="rounded-[2px] border-2 border-[#171717] bg-white px-2.5 py-1 text-[10px] font-black uppercase tracking-wider text-[#171717] hover:bg-[#EDE0CC] transition-colors shrink-0 shadow-[2px_2px_0px_#171717] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none"
         >
           {toast.action.label}
         </button>
@@ -193,7 +193,7 @@ function ToastItem({ toast, onRemove }: { toast: ToastItemData; onRemove: (id: s
 
       <button
         onClick={() => onRemove(toast.id)}
-        className="shrink-0 rounded p-1 text-[#6F6A63] hover:text-[#171717] hover:bg-black/5 transition-colors"
+        className="shrink-0 rounded-[2px] p-1 text-[#6F6A63] hover:text-[#171717] hover:bg-black/5 transition-colors"
         aria-label="Dismiss"
       >
         <X size={14} />

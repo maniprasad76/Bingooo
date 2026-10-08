@@ -90,10 +90,16 @@ export function LoginPage() {
         initial={shouldReduceMotion ? false : { opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ type: 'spring', stiffness: 350, damping: 30 }}
-        className="w-full max-w-[430px] bg-white rounded-2xl border border-[#DDD3C5] shadow-card overflow-hidden"
+        className="w-full max-w-[430px] bg-white rounded-[2px] border-2 border-[#171717] shadow-[6px_6px_0px_#171717] overflow-hidden"
       >
         {/* Top Brand Accent Bar */}
-        <div className="h-1 w-full bg-gradient-to-r from-[#E6321C] via-[#B91F12] to-[#E6321C]" />
+        <div className="border-b-2 border-[#171717] bg-[#EDE0CC] px-4 py-2 flex items-center justify-between font-mono text-[9px] font-black uppercase tracking-widest text-[#171717]">
+          <span>01 // ACCESS TERMINAL</span>
+          <span className="flex items-center gap-1.5 text-[#E6321C]">
+            <span className="w-2 h-2 rounded-full bg-[#E6321C] animate-pulse" />
+            SECURE
+          </span>
+        </div>
 
         <div className="p-6 sm:p-7">
           {/* Header */}
@@ -101,10 +107,10 @@ export function LoginPage() {
             <motion.div whileHover={{ scale: 1.03 }} transition={{ type: 'spring', stiffness: 400 }}>
               <Logo variant="red" size="md" withLink className="mb-2.5" />
             </motion.div>
-            <h1 className="font-heading text-2xl sm:text-[26px] font-extrabold uppercase tracking-tight text-[#171717] leading-tight">
+            <h1 className="font-heading text-2xl sm:text-[26px] font-black uppercase tracking-tight text-[#171717] leading-tight">
               Welcome Back
             </h1>
-            <p className="mt-1 text-xs sm:text-sm text-[#6F6A63]">
+            <p className="mt-1 text-xs sm:text-sm font-medium text-[#6F6A63]">
               Sign in to manage your orders & bespoke designs
             </p>
           </div>
@@ -115,7 +121,7 @@ export function LoginPage() {
               type="button"
               disabled={socialLoading !== null || loading}
               onClick={() => handleSocialSignIn('google')}
-              className="w-full flex items-center justify-center gap-3 h-10 px-4 rounded-lg border border-[#DDD3C5] bg-white text-xs sm:text-sm font-semibold text-[#171717] hover:bg-[#F7EEDB]/30 hover:border-[#171717] transition-all duration-200 active:scale-[0.99] disabled:opacity-60 disabled:cursor-not-allowed shadow-2xs"
+              className="w-full flex items-center justify-center gap-3 h-10 px-4 rounded-[2px] border-2 border-[#171717] bg-white text-xs font-black uppercase tracking-wider text-[#171717] hover:bg-[#F7EEDB] transition-all active:translate-x-[1px] active:translate-y-[1px] active:shadow-none disabled:opacity-60 disabled:cursor-not-allowed shadow-[2px_2px_0px_#171717]"
             >
               {socialLoading === 'google' ? (
                 <div className="h-4 w-4 rounded-full border-2 border-[#171717] border-t-transparent animate-spin" />
@@ -129,7 +135,7 @@ export function LoginPage() {
               type="button"
               disabled={socialLoading !== null || loading}
               onClick={() => handleSocialSignIn('facebook')}
-              className="w-full flex items-center justify-center gap-3 h-10 px-4 rounded-lg border border-[#DDD3C5] bg-white text-xs sm:text-sm font-semibold text-[#171717] hover:bg-[#F7EEDB]/30 hover:border-[#1877F2] transition-all duration-200 active:scale-[0.99] disabled:opacity-60 disabled:cursor-not-allowed shadow-2xs"
+              className="w-full flex items-center justify-center gap-3 h-10 px-4 rounded-[2px] border-2 border-[#171717] bg-white text-xs font-black uppercase tracking-wider text-[#171717] hover:bg-[#F7EEDB] transition-all active:translate-x-[1px] active:translate-y-[1px] active:shadow-none disabled:opacity-60 disabled:cursor-not-allowed shadow-[2px_2px_0px_#171717]"
             >
               {socialLoading === 'facebook' ? (
                 <div className="h-4 w-4 rounded-full border-2 border-[#1877F2] border-t-transparent animate-spin" />
@@ -142,9 +148,9 @@ export function LoginPage() {
 
           {/* Divider */}
           <div className="relative my-4 flex items-center justify-center">
-            <div className="w-full border-t border-[#DDD3C5]" />
-            <span className="absolute bg-white px-3 text-[11px] font-bold uppercase tracking-wider text-[#6F6A63]">
-              or continue with email
+            <div className="w-full border-t-2 border-[#171717]" />
+            <span className="absolute bg-white px-2.5 border border-[#171717] text-[10px] font-mono font-black uppercase tracking-wider text-[#171717] shadow-[1px_1px_0px_#171717]">
+              or email
             </span>
           </div>
 
@@ -171,7 +177,7 @@ export function LoginPage() {
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="text-muted hover:text-ink focus:outline-none p-1 transition-colors"
+                    className="text-[#171717] hover:text-[#E6321C] focus:outline-none p-1 transition-colors"
                     aria-label={showPassword ? 'Hide password' : 'Show password'}
                   >
                     {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
@@ -184,18 +190,18 @@ export function LoginPage() {
 
             {/* Remember Me & Forgot Password */}
             <div className="flex items-center justify-between text-xs pt-0.5">
-              <label className="flex items-center gap-2 cursor-pointer select-none text-[#6F6A63] hover:text-[#171717]">
+              <label className="flex items-center gap-2 cursor-pointer select-none text-[#171717] font-bold">
                 <input
                   type="checkbox"
-                  className="h-4 w-4 rounded border-[#DDD3C5] text-[#E6321C] focus:ring-[#E6321C] cursor-pointer accent-[#E6321C]"
+                  className="h-4 w-4 rounded-[2px] border-2 border-[#171717] text-[#E6321C] focus:ring-0 cursor-pointer accent-[#E6321C]"
                   {...register('rememberMe')}
                 />
-                <span>Remember me</span>
+                <span className="text-[11px] font-mono uppercase">Remember me</span>
               </label>
 
               <Link
                 to="/forgot-password"
-                className="font-medium text-[#6F6A63] hover:text-[#E6321C] transition-colors"
+                className="font-mono text-[11px] font-bold text-[#6F6A63] hover:text-[#E6321C] transition-colors uppercase tracking-wider"
               >
                 Forgot password?
               </Link>
@@ -213,15 +219,15 @@ export function LoginPage() {
           </form>
 
           {/* Footer */}
-          <p className="mt-6 text-center text-xs text-[#6F6A63]">
+          <p className="mt-6 text-center text-xs font-medium text-[#6F6A63]">
             Don't have an account?{' '}
-            <Link to="/signup" className="text-[#E6321C] font-bold hover:underline">
+            <Link to="/signup" className="text-[#E6321C] font-black uppercase tracking-wider hover:underline">
               Create an account
             </Link>
           </p>
 
           {/* Security Guarantee */}
-          <div className="mt-6 pt-5 border-t border-[#DDD3C5]/60 flex items-center justify-center gap-2 text-[11px] text-[#6F6A63]">
+          <div className="mt-6 pt-5 border-t-2 border-[#171717] flex items-center justify-center gap-2 text-[11px] font-mono uppercase font-bold text-[#6F6A63]">
             <ShieldCheck size={14} className="text-[#238636] shrink-0" />
             <span>256-bit encrypted secure authentication</span>
           </div>

@@ -99,8 +99,8 @@ export function ArtworkGuidelinesPage() {
 
         {/* ─── The Golden Rules (3 Key Technical Standards) ─── */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
-          <div className="p-6 rounded-2xl bg-white border border-[#DDD3C5] shadow-2xs space-y-3">
-            <div className="w-10 h-10 rounded-xl bg-[#FDF0EE] text-[#E6321C] flex items-center justify-center">
+          <div className="p-6 rounded-[2px] bg-white border border-[#DDD3C5] shadow-2xs space-y-3">
+            <div className="w-10 h-10 rounded-[2px] bg-[#FDF0EE] text-[#E6321C] flex items-center justify-center">
               <Maximize2 size={20} />
             </div>
             <h3 className="text-sm font-bold uppercase font-heading text-[#171717]">
@@ -111,8 +111,8 @@ export function ArtworkGuidelinesPage() {
             </p>
           </div>
 
-          <div className="p-6 rounded-2xl bg-white border border-[#DDD3C5] shadow-2xs space-y-3">
-            <div className="w-10 h-10 rounded-xl bg-[#FDF0EE] text-[#E6321C] flex items-center justify-center">
+          <div className="p-6 rounded-[2px] bg-white border border-[#DDD3C5] shadow-2xs space-y-3">
+            <div className="w-10 h-10 rounded-[2px] bg-[#FDF0EE] text-[#E6321C] flex items-center justify-center">
               <ImageIcon size={20} />
             </div>
             <h3 className="text-sm font-bold uppercase font-heading text-[#171717]">
@@ -123,8 +123,8 @@ export function ArtworkGuidelinesPage() {
             </p>
           </div>
 
-          <div className="p-6 rounded-2xl bg-white border border-[#DDD3C5] shadow-2xs space-y-3">
-            <div className="w-10 h-10 rounded-xl bg-[#FDF0EE] text-[#E6321C] flex items-center justify-center">
+          <div className="p-6 rounded-[2px] bg-white border border-[#DDD3C5] shadow-2xs space-y-3">
+            <div className="w-10 h-10 rounded-[2px] bg-[#FDF0EE] text-[#E6321C] flex items-center justify-center">
               <Palette size={20} />
             </div>
             <h3 className="text-sm font-bold uppercase font-heading text-[#171717]">
@@ -139,7 +139,7 @@ export function ArtworkGuidelinesPage() {
         {/* ─── Do's and Don'ts Comparison ─── */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Do's */}
-          <div className="p-6 sm:p-8 rounded-2xl bg-white border border-[#DDD3C5] shadow-xs space-y-5">
+          <div className="p-6 sm:p-8 rounded-[2px] bg-white border border-[#DDD3C5] shadow-xs space-y-5">
             <div className="flex items-center gap-2 text-emerald-700">
               <CheckCircle2 size={20} />
               <h3 className="text-base font-bold uppercase font-heading text-[#171717]">
@@ -157,7 +157,7 @@ export function ArtworkGuidelinesPage() {
           </div>
 
           {/* Don'ts */}
-          <div className="p-6 sm:p-8 rounded-2xl bg-white border border-[#DDD3C5] shadow-xs space-y-5">
+          <div className="p-6 sm:p-8 rounded-[2px] bg-white border border-[#DDD3C5] shadow-xs space-y-5">
             <div className="flex items-center gap-2 text-[#E6321C]">
               <XCircle size={20} />
               <h3 className="text-base font-bold uppercase font-heading text-[#171717]">
@@ -186,7 +186,7 @@ export function ArtworkGuidelinesPage() {
             </h2>
           </div>
 
-          <div className="overflow-x-auto rounded-2xl border border-[#DDD3C5] bg-white shadow-2xs">
+          <div className="overflow-x-auto rounded-[2px] border border-[#DDD3C5] bg-white shadow-2xs">
             <table className="w-full text-left border-collapse text-xs">
               <thead>
                 <tr className="bg-[#F7EEDB] border-b border-[#DDD3C5] font-heading font-extrabold uppercase text-[#171717]">
@@ -219,7 +219,7 @@ export function ArtworkGuidelinesPage() {
         </div>
 
         {/* ─── Need Help Preparing Your Files? CTA Box ─── */}
-        <div className="p-6 sm:p-8 rounded-2xl bg-[#F7EEDB] border border-[#DDD3C5] space-y-4">
+        <div className="p-6 sm:p-8 rounded-[2px] bg-[#F7EEDB] border border-[#DDD3C5] space-y-4">
           <div className="flex items-center gap-2">
             <ShieldAlert size={18} className="text-[#E6321C]" />
             <h3 className="text-sm font-bold uppercase tracking-wider font-heading text-[#171717]">
@@ -234,7 +234,7 @@ export function ArtworkGuidelinesPage() {
               href={getWhatsAppUrl('Hi Bingooo Atelier, could you please check if my artwork is print-ready for a custom tee?')}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#25D366] text-white hover:bg-[#1EBE5D] text-xs font-bold uppercase tracking-wider shadow-2xs transition-colors"
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-[2px] bg-[#25D366] text-white hover:bg-[#1EBE5D] text-xs font-bold uppercase tracking-wider shadow-2xs transition-colors"
             >
               <Phone size={14} />
               <span>Send Artwork for Free Verification</span>

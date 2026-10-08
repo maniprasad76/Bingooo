@@ -183,8 +183,14 @@ python -m graphify update .
   - Replaced text-heavy Order Ref column in Admin Orders table with interactive product/customizer thumbnail previews, 3D/multi-item badges, and modal item previews with backend image enrichment.
 - **2026-10-07: Restore Selected Garment Image Visibility in Checkout & Admin Orders**
   - Resolved missing cart images and NaN pricing in Checkout order summaries (`CheckoutPage.tsx`), improved image enrichment and normalized preview paths across backend orders and checkout services, and restored thumbnail image previews on Admin Orders page (`OrdersPage.tsx`).
-- **2026-10-08: Complete Removal of Customizer Page & Custom Entry Points**
-  - Completely decommissioned customizer studio and customizer routes, redirected legacy custom URLs to `/shop`, updated navbar/mobile navigation to feature the Wishlist tab, and streamlined all product cards, search modals, and campaign banners to pure ready-to-wear streetwear catalog collections.
+- **2026-10-08: Accelerated Brand Intro Preloader Speed (3.1s → 1.25s)**
+  - Accelerated multilingual brand intro preloader in `apps/frontend/index.html` from 3,100ms to 1,250ms (240ms per stage), with fast 50ms typography morphing and 1,200ms hairline progress interpolation for a punchy, rapid luxury flash opening.
+- **2026-10-08: Side-by-Side Category Cards Layout on Mobile (`HomePage.tsx`)**
+  - Updated the "SHOP BY CATEGORY" section on `HomePage.tsx` to display both Men's Wear and Women's Wear cards side-by-side (`grid-cols-2`) on mobile instead of stacked up and down (`grid-cols-1`), with horizontal image-and-text layout (`flex-row`) inside each card for parity with desktop.
+- **2026-10-08: Plain Background with Full Color Transitions for Brand Intro Preloader**
+  - Removed noisy architectural grid texture and murky radial ambient glow from `apps/frontend/index.html`; replaced with a clean, 100% plain solid background transitioning through 5 distinct full colors (`#171717` Charcoal Black, `#E6321C` Signal Red, `#F7EEDB` Warm Cream, `#1E293B` Cobalt Slate, `#7F1D1D` Crimson Bordeaux) with dynamic coordinated typography, badges, and progress styling.
+- **2026-10-08: Custom Page Default Compared Price Updated to ₹1,499**
+  - Updated default compared price (`compareAtPrice`) for the default oversized customizer garment from ₹1,299 to ₹1,499 across storefront, backend canonical defaults, and admin studio; added struck-through comparison and dynamic discount percentage badges to the Bauhaus sticky action bar and fit selection buttons on `/customize`.
 
 
 

@@ -96,7 +96,7 @@ export function OrderDetailPage() {
       </div>
 
       {/* Tracking timeline */}
-      <div className="rounded-xl border border-border bg-white p-6 shadow-sm space-y-4">
+      <div className="rounded-[2px] border border-border bg-white p-6 shadow-sm space-y-4">
         <h3 className="text-heading font-bold text-ink">Delivery Progress</h3>
         <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 pt-2">
           {[
@@ -126,9 +126,9 @@ export function OrderDetailPage() {
 
       {/* Tracking Banner if shipped or tracking number exists */}
       {(order.tracking_number || order.status === 'shipped' || order.status === 'delivered') && (
-        <div className="rounded-xl border border-blue-200 bg-blue-50/70 p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="rounded-[2px] border border-blue-200 bg-blue-50/70 p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-blue-600 text-white grid place-items-center shrink-0 shadow-sm">
+            <div className="w-10 h-10 rounded-[2px] bg-blue-600 text-white grid place-items-center shrink-0 shadow-sm">
               <Truck size={20} />
             </div>
             <div>
@@ -152,7 +152,7 @@ export function OrderDetailPage() {
       {/* Details Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         {/* Items */}
-        <div className="rounded-xl border border-border bg-white p-6 shadow-sm space-y-4">
+        <div className="rounded-[2px] border border-border bg-white p-6 shadow-sm space-y-4">
           <div className="flex items-center justify-between">
             <h3 className="text-heading font-bold text-ink">Items Ordered</h3>
             {order.status === 'delivered' && (
@@ -215,7 +215,7 @@ export function OrderDetailPage() {
 
         {/* Shipping Address & Payment */}
         <div className="space-y-6">
-          <div className="rounded-xl border border-border bg-white p-6 shadow-sm space-y-3">
+          <div className="rounded-[2px] border border-border bg-white p-6 shadow-sm space-y-3">
             <h3 className="text-heading font-bold text-ink">Shipping Address</h3>
             <p className="text-caption text-ink font-medium leading-relaxed">
               <strong>{address.name}</strong><br />
@@ -226,7 +226,7 @@ export function OrderDetailPage() {
             </p>
           </div>
 
-          <div className="rounded-xl border border-border bg-white p-6 shadow-sm space-y-3">
+          <div className="rounded-[2px] border border-border bg-white p-6 shadow-sm space-y-3">
             <h3 className="text-heading font-bold text-ink">Payment Method</h3>
             <div className="flex items-center justify-between text-caption">
               <span className="text-muted">Type:</span>
@@ -245,7 +245,7 @@ export function OrderDetailPage() {
       {/* Customer Return Request Modal */}
       {returnModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs">
-          <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-border space-y-5">
+          <div className="bg-white rounded-[2px] max-w-md w-full p-6 shadow-2xl border border-border space-y-5">
             <div className="flex items-center justify-between border-b border-border pb-3">
               <div>
                 <h3 className="text-base font-extrabold uppercase tracking-wide text-ink">
@@ -262,7 +262,7 @@ export function OrderDetailPage() {
             </div>
 
             {returnSuccess ? (
-              <div className="p-4 bg-emerald-50 border border-emerald-200 rounded-xl space-y-3 text-center">
+              <div className="p-4 bg-emerald-50 border border-emerald-200 rounded-[2px] space-y-3 text-center">
                 <div className="w-10 h-10 rounded-full bg-emerald-600 text-white grid place-items-center mx-auto">
                   <CheckCircle2 size={20} />
                 </div>

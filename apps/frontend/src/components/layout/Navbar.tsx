@@ -26,6 +26,7 @@ import { preloadRouteChunk } from '../../lib/utils/preloader';
 const navLinks = [
   { label: 'Men', href: '/shop?category=men' },
   { label: 'Women', href: '/shop?category=women' },
+  { label: 'Custom', href: '/customize' },
   { label: 'Collections', href: '/shop' },
   { label: 'About', href: '/about' },
 ];
@@ -92,15 +93,15 @@ export function Navbar() {
   return (
     <header
       className={cn(
-        'sticky top-0 z-40 w-full transition-all duration-300',
+        'sticky top-0 z-40 w-full transition-all duration-200 border-b-2 border-[#171717]',
         isScrolled
-          ? 'shadow-md bg-[#FAF8F5]/98 backdrop-blur-xl'
-          : 'shadow-2xs bg-[#FAF8F5]'
+          ? 'shadow-[0_4px_0px_#171717] bg-[#F7EEDB]'
+          : 'bg-[#F7EEDB]'
       )}
     >
       {/* ─── Top Bar ─── */}
-      <div className="min-h-[28px] bg-[#171717] text-white flex items-center justify-between px-4 sm:px-8 text-[9px] font-semibold tracking-[0.08em] uppercase select-none">
-        <div>FREE DELIVERY ON ALL ORDERS</div>
+      <div className="min-h-[28px] bg-[#171717] text-white flex items-center justify-between px-4 sm:px-8 text-[9px] font-mono font-bold tracking-[0.1em] uppercase select-none border-b border-[#171717]">
+        <div>FREE DELIVERY ACROSS INDIA · 240+ GSM HEAVYWEIGHT</div>
 
         <div className="hidden sm:flex items-center gap-[22px]">
           <a
@@ -118,7 +119,7 @@ export function Navbar() {
       </div>
 
       {/* ─── Header ─── */}
-      <nav className="h-[64px] md:h-[76px] bg-[#F7EEDB] border-b border-[#DDD3C5] flex items-center relative z-40">
+      <nav className="h-[64px] md:h-[74px] bg-[#F7EEDB] flex items-center relative z-40">
         <div className="w-[min(calc(100%-32px),1440px)] md:w-[min(calc(100%-48px),1440px)] mx-auto grid grid-cols-[auto_1fr_auto] md:grid-cols-[1fr_auto_1fr] items-center gap-4 md:gap-[30px]">
           {/* Left: Navigation links */}
           <div className="hidden md:flex items-center gap-[27px]">
@@ -195,12 +196,14 @@ export function Navbar() {
                 openCartDrawer();
               }}
               onMouseEnter={() => preloadRouteChunk('/cart')}
-              className="hidden md:inline-flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-normal text-[#171717] hover:text-[#E6321C] transition-colors cursor-pointer"
+              className="hidden md:inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-[#171717] hover:text-[#E6321C] transition-colors cursor-pointer"
               aria-label="Cart"
             >
-              <ShoppingBag className="w-3.5 h-3.5" />
+              <ShoppingBag className="w-4 h-4" />
               <span>Cart</span>
-              <span>({itemCount})</span>
+              <span className="px-1.5 py-0.5 bg-[#171717] text-white text-[10px] font-mono font-bold rounded-[2px]">
+                {itemCount}
+              </span>
             </button>
 
             {/* Menu toggle */}
@@ -246,12 +249,12 @@ export function Navbar() {
                   animate={{ x: 0 }}
                   exit={{ x: '-100%' }}
                   transition={{ duration: 0.28, ease: [0.32, 0.72, 0, 1] }}
-                  className="fixed top-0 bottom-0 left-0 z-[9999] w-[88vw] max-w-[360px] h-[100dvh] max-h-[100dvh] bg-[#FAF8F5] border-r border-[#DDD3C5] shadow-2xl flex flex-col overflow-hidden md:hidden overscroll-contain"
+                  className="fixed top-0 bottom-0 left-0 z-[9999] w-[88vw] max-w-[360px] h-[100dvh] max-h-[100dvh] bg-[#F7EEDB] border-r-2 border-[#171717] shadow-[6px_0px_0px_#171717] flex flex-col overflow-hidden md:hidden overscroll-contain"
                   role="dialog"
                   aria-label="Mobile Navigation"
                 >
                   {/* Drawer Top Header */}
-                  <div className="p-4 border-b border-[#DDD3C5] flex items-center justify-between bg-[#F7EEDB] shrink-0">
+                  <div className="p-4 border-b-2 border-[#171717] flex items-center justify-between bg-[#F7EEDB] shrink-0">
                     <div className="flex items-center gap-2.5">
                       <Logo variant="red" size="sm" />
                     </div>
@@ -260,7 +263,7 @@ export function Navbar() {
                         triggerHaptic('light');
                         closeMobileMenu();
                       }}
-                      className="w-8 h-8 rounded-full border border-[#DDD3C5] bg-white hover:bg-[#171717] hover:text-white flex items-center justify-center text-[#171717] transition-colors cursor-pointer"
+                      className="w-8 h-8 rounded-none border-2 border-[#171717] bg-white hover:bg-[#E6321C] hover:text-white flex items-center justify-center text-[#171717] transition-colors cursor-pointer shadow-[2px_2px_0px_#171717]"
                       aria-label="Close menu"
                     >
                       <X size={16} />
@@ -437,7 +440,7 @@ export function Navbar() {
                       href={getWhatsAppUrl('Hi Bingooo, I would like to inquire about your apparel.')}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-[#171717] active:bg-[#252525] hover:bg-[#252525] text-white text-xs font-bold uppercase tracking-wider transition-colors shadow-md cursor-pointer"
+                      className="flex items-center justify-center gap-2 py-3 px-4 rounded-[2px] bg-[#171717] active:bg-[#252525] hover:bg-[#252525] text-white text-xs font-bold uppercase tracking-wider transition-colors shadow-md cursor-pointer"
                     >
                       <WhatsAppIcon className="w-4 h-4 text-[#25D366]" />
                       <span>WhatsApp Concierge</span>

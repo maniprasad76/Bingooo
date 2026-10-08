@@ -60,9 +60,9 @@ export function ForgotPasswordPage() {
       />
 
       <div className="container-bingooo">
-        <div className="max-w-[1040px] mx-auto grid grid-cols-1 lg:grid-cols-[1.1fr_1fr] overflow-hidden border border-[#ddd3c5] bg-white shadow-sm">
+        <div className="max-w-[1040px] mx-auto grid grid-cols-1 lg:grid-cols-[1.1fr_1fr] overflow-hidden border-2 border-[#171717] rounded-[2px] bg-white shadow-[6px_6px_0px_#171717]">
           {/* Editorial Visual Column (Inspired by HomePage / AboutPage) */}
-          <div className="relative hidden lg:flex flex-col justify-between p-10 bg-[#171717] text-white overflow-hidden">
+          <div className="relative hidden lg:flex flex-col justify-between p-10 bg-[#171717] text-white overflow-hidden border-r-2 border-[#171717]">
             <div className="absolute inset-0 opacity-40">
               <img
                 src="/real-fit-1.jpg"
@@ -73,10 +73,10 @@ export function ForgotPasswordPage() {
             </div>
 
             <div className="relative z-10">
-              <div className="text-[10px] font-semibold tracking-[0.22em] uppercase text-[#e6321c] font-mono mb-2">
-                ACCOUNT RECOVERY
+              <div className="text-[10px] font-mono font-black tracking-[0.22em] uppercase text-[#e6321c] mb-2">
+                01 // ACCOUNT RECOVERY
               </div>
-              <h2 className="text-3xl lg:text-4xl font-extrabold uppercase leading-[0.9] tracking-[-0.06em] text-white">
+              <h2 className="text-3xl lg:text-4xl font-black uppercase leading-[0.9] tracking-[-0.06em] text-white">
                 REGAIN<br />
                 YOUR<br />
                 <span className="text-[#e6321c]">ACCESS.</span>
@@ -98,11 +98,11 @@ export function ForgotPasswordPage() {
             <div className="mb-8">
               <div className="flex items-center gap-2 mb-3">
                 <Logo variant="red" size="sm" />
-                <span className="text-[9px] font-mono uppercase tracking-[0.18em] text-[#6f6a63] pl-2 border-l border-[#ddd3c5]">
+                <span className="text-[9px] font-mono font-black uppercase tracking-[0.18em] text-[#6f6a63] pl-2 border-l-2 border-[#171717]">
                   SECURITY
                 </span>
               </div>
-              <h1 className="text-2xl sm:text-3xl font-extrabold uppercase tracking-tight text-[#171717]">
+              <h1 className="text-2xl sm:text-3xl font-black uppercase tracking-tight text-[#171717]">
                 RESET PASSWORD
               </h1>
               <p className="mt-1 text-xs text-[#6f6a63] leading-relaxed">
@@ -111,12 +111,12 @@ export function ForgotPasswordPage() {
             </div>
 
             {submittedEmail ? (
-              <div className="p-6 border border-[#ddd3c5] bg-white text-center space-y-4">
-                <div className="w-12 h-12 rounded-full bg-[#238636]/10 text-[#238636] mx-auto flex items-center justify-center">
+              <div className="p-6 rounded-[2px] border-2 border-[#171717] bg-[#EDE0CC] shadow-[4px_4px_0px_#171717] space-y-4">
+                <div className="w-12 h-12 rounded-[2px] bg-[#238636] border-2 border-[#171717] text-white flex items-center justify-center shadow-[2px_2px_0px_#171717]">
                   <CheckCircle2 size={24} />
                 </div>
                 <div>
-                  <h3 className="text-sm font-bold uppercase tracking-wider text-[#171717]">
+                  <h3 className="text-sm font-black uppercase tracking-wider text-[#171717]">
                     Instructions Dispatched
                   </h3>
                   <p className="mt-1 text-xs text-[#6f6a63] leading-relaxed">
@@ -133,14 +133,14 @@ export function ForgotPasswordPage() {
                       triggerHaptic('light');
                       setSubmittedEmail(null);
                     }}
-                    className="flex-1 py-3 px-4 border border-[#171717] text-[#171717] text-[10px] font-bold uppercase tracking-wider hover:bg-[#171717] hover:text-white transition-colors cursor-pointer"
+                    className="flex-1 py-3 px-4 rounded-[2px] border-2 border-[#171717] bg-white text-[#171717] text-[10px] font-black uppercase tracking-wider hover:bg-[#F7EEDB] shadow-[2px_2px_0px_#171717] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all cursor-pointer"
                   >
                     Try Another Email
                   </button>
                   <Link
                     to="/login"
                     onClick={() => triggerHaptic('light')}
-                    className="flex-1 py-3 px-4 bg-[#171717] text-white text-[10px] font-bold uppercase tracking-wider hover:bg-black transition-colors text-center inline-flex items-center justify-center gap-1"
+                    className="flex-1 py-3 px-4 rounded-[2px] border-2 border-[#171717] bg-[#171717] text-white text-[10px] font-black uppercase tracking-wider hover:bg-[#E6321C] shadow-[2px_2px_0px_#171717] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all text-center inline-flex items-center justify-center gap-1"
                   >
                     <span>Back to Login</span>
                     <ArrowRight size={12} />
@@ -150,7 +150,7 @@ export function ForgotPasswordPage() {
             ) : (
               <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
                 <div>
-                  <label htmlFor="email" className="block text-[10px] font-mono font-bold uppercase tracking-[0.16em] text-[#171717] mb-1.5">
+                  <label htmlFor="email" className="block text-[10px] font-mono font-black uppercase tracking-[0.16em] text-[#171717] mb-1.5">
                     REGISTERED EMAIL ADDRESS
                   </label>
                   <div className="relative">
@@ -160,12 +160,12 @@ export function ForgotPasswordPage() {
                       autoComplete="email"
                       placeholder="e.g. yourname@gmail.com"
                       {...register('email')}
-                      className="w-full h-12 px-3.5 bg-white border border-[#ddd3c5] text-xs text-[#171717] placeholder:text-[#999] outline-none focus:border-[#171717] transition-colors rounded-none"
+                      className="w-full h-12 px-3.5 bg-white border-2 border-[#171717] rounded-[2px] text-xs font-bold text-[#171717] placeholder:text-[#999] outline-none shadow-[2px_2px_0px_#171717] focus:shadow-[4px_4px_0px_#171717] transition-all"
                     />
-                    <Mail size={15} className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[#6f6a63] pointer-events-none" />
+                    <Mail size={15} className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[#171717] pointer-events-none" />
                   </div>
                   {errors.email && (
-                    <p className="mt-1 text-[11px] font-medium text-[#e6321c]">
+                    <p className="mt-1 font-mono text-[11px] font-bold uppercase text-[#e6321c]">
                       {errors.email.message}
                     </p>
                   )}
@@ -175,7 +175,7 @@ export function ForgotPasswordPage() {
                   type="submit"
                   disabled={loading}
                   onClick={() => triggerHaptic('light')}
-                  className="w-full h-12 bg-[#171717] text-white text-[11px] font-bold uppercase tracking-[0.14em] hover:bg-[#e6321c] transition-colors flex items-center justify-center gap-2 cursor-pointer disabled:opacity-60"
+                  className="w-full h-12 rounded-[2px] border-2 border-[#171717] bg-[#E6321C] text-white text-[11px] font-black uppercase tracking-[0.14em] hover:bg-[#171717] shadow-[3px_3px_0px_#171717] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-60"
                 >
                   {loading ? (
                     <span>DISPATCHING...</span>
@@ -187,11 +187,11 @@ export function ForgotPasswordPage() {
                   )}
                 </button>
 
-                <div className="flex items-center justify-between pt-4 border-t border-[#ddd3c5]/70 text-xs">
+                <div className="flex items-center justify-between pt-4 border-t-2 border-[#171717] text-xs">
                   <Link
                     to="/login"
                     onClick={() => triggerHaptic('light')}
-                    className="inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-[#6f6a63] hover:text-[#e6321c] transition-colors"
+                    className="inline-flex items-center gap-1.5 text-[11px] font-black uppercase tracking-wider text-[#171717] hover:text-[#e6321c] transition-colors"
                   >
                     <ArrowLeft size={13} />
                     <span>Back to Sign In</span>
@@ -199,7 +199,7 @@ export function ForgotPasswordPage() {
                   <Link
                     to="/contact"
                     onClick={() => triggerHaptic('light')}
-                    className="text-[11px] text-[#6f6a63] hover:text-[#171717] transition-colors"
+                    className="text-[11px] font-bold uppercase tracking-wider text-[#6f6a63] hover:text-[#171717] transition-colors"
                   >
                     Need Help?
                   </Link>
@@ -208,7 +208,7 @@ export function ForgotPasswordPage() {
             )}
 
             {/* Trust Assurance */}
-            <div className="mt-8 pt-4 border-t border-[#ddd3c5]/50 flex items-center gap-2 text-[10px] text-[#6f6a63]">
+            <div className="mt-8 pt-4 border-t-2 border-[#171717] flex items-center gap-2 text-[10px] font-mono uppercase font-bold text-[#6f6a63]">
               <ShieldCheck size={14} className="text-[#238636] shrink-0" />
               <span>Bingooo encrypted account security &bull; Srikakulam Atelier</span>
             </div>

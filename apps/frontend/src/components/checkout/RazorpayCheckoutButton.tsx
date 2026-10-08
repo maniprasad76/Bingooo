@@ -227,7 +227,7 @@ export const RazorpayCheckoutButton: React.FC<RazorpayCheckoutButtonProps> = ({
       disabled={disabled || isLoading}
       className={
         className ||
-        'inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-red-600 hover:bg-red-700 active:scale-[0.98] text-white font-semibold text-sm rounded-xl transition-all shadow-md disabled:opacity-50 disabled:cursor-not-allowed'
+        'inline-flex items-center justify-center gap-2 px-6 py-3.5 border-2 border-[#171717] bg-[#E6321C] hover:bg-[#171717] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none text-white font-black text-xs sm:text-sm uppercase tracking-wider rounded-[2px] transition-all shadow-[4px_4px_0px_#171717] disabled:opacity-50 disabled:cursor-not-allowed'
       }
     >
       {isLoading ? (

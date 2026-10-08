@@ -113,7 +113,7 @@ export function CommunityInvitePopup() {
             role="dialog"
             aria-modal="true"
             aria-labelledby="community-invite-title"
-            className="relative w-full sm:max-w-[420px] max-h-[92dvh] overflow-y-auto rounded-t-3xl sm:rounded-2xl border-t sm:border border-[#DDD3C5] bg-[#F7EEDB] text-[#171717] shadow-2xl font-sans"
+            className="relative w-full sm:max-w-[420px] max-h-[92dvh] overflow-y-auto rounded-t-3xl sm:rounded-[2px] border-t sm:border border-[#DDD3C5] bg-[#F7EEDB] text-[#171717] shadow-2xl font-sans"
             initial={{ y: 48, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: 32, opacity: 0, transition: { duration: 0.18 } }}
@@ -164,7 +164,7 @@ export function CommunityInvitePopup() {
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={handleJoin}
-                className="mt-6 flex w-full items-center justify-center gap-2.5 rounded-xl bg-[#171717] px-4 py-3.5 text-[12px] font-extrabold uppercase tracking-[0.08em] text-white no-underline transition-colors hover:bg-[#2a2a2a]"
+                className="mt-6 flex w-full items-center justify-center gap-2.5 rounded-[2px] bg-[#171717] px-4 py-3.5 text-[12px] font-extrabold uppercase tracking-[0.08em] text-white no-underline transition-colors hover:bg-[#2a2a2a]"
               >
                 <WhatsAppIcon className="w-5 h-5" />
                 Join the community
@@ -172,7 +172,7 @@ export function CommunityInvitePopup() {
               <button
                 type="button"
                 onClick={closeInvite}
-                className="mt-2 w-full rounded-xl px-4 py-2.5 text-[12px] font-semibold text-[#6F6A63] hover:text-[#171717] transition-colors"
+                className="mt-2 w-full rounded-[2px] px-4 py-2.5 text-[12px] font-semibold text-[#6F6A63] hover:text-[#171717] transition-colors"
               >
                 Maybe later
               </button>

@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Heart, ShoppingBag } from 'lucide-react';
-import { Button } from '../ui/Button';
 import { WhatsAppIcon } from '../ui/SocialIcons';
 import { triggerHaptic } from '../../lib/native/capacitorBridge';
 
@@ -60,7 +59,7 @@ export function StickyMobileActionBar({
           animate={{ y: 0, opacity: 1 }}
           exit={{ y: 80, opacity: 0 }}
           transition={{ type: 'spring', stiffness: 350, damping: 28 }}
-          className="fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-[#DDD3C5] px-4 py-2.5 flex items-center justify-between gap-3 shadow-lg md:hidden"
+          className="fixed bottom-0 left-0 right-0 z-40 bg-[#F7EEDB] border-t-2 border-[#171717] px-4 py-2.5 flex items-center justify-between gap-3 shadow-[0_-4px_0px_#171717] md:hidden"
         >
           {/* Mini info */}
           <div className="flex items-center gap-2.5 min-w-0 flex-1">
@@ -68,23 +67,23 @@ export function StickyMobileActionBar({
               <img
                 src={image}
                 alt={title}
-                className="w-10 h-10 object-cover rounded-[2px] bg-[#EDE0CC] shrink-0 border border-[#DDD3C5]/60"
+                className="w-10 h-10 object-cover bg-[#EDE0CC] shrink-0 border-2 border-[#171717] shadow-[2px_2px_0px_#171717]"
               />
             ) : (
-              <div className="w-10 h-10 rounded-[2px] bg-[#EDE0CC] shrink-0 border border-[#DDD3C5]/60 flex items-center justify-center font-mono text-[9px] font-bold text-[#6F6A63]">
-                BGO
+              <div className="w-10 h-10 bg-[#EDE0CC] shrink-0 border-2 border-[#171717] shadow-[2px_2px_0px_#171717] flex items-center justify-center font-mono text-[9px] font-black text-[#171717]">
+                B.
               </div>
             )}
             <div className="min-w-0 flex-1">
-              <h4 className="text-xs font-bold text-[#171717] truncate uppercase tracking-tight">
+              <h4 className="text-xs font-black text-[#171717] truncate uppercase tracking-tight">
                 {title}
               </h4>
               <div className="flex items-center gap-1.5 text-[11px]">
-                <span className="font-extrabold text-[#E6321C]">
+                <span className="font-mono font-black text-[#E6321C]">
                   {typeof price === 'number' ? `₹${price}` : price}
                 </span>
                 {selectedSize && (
-                  <span className="font-mono text-[9px] uppercase px-1.5 py-0.5 rounded-[2px] bg-[#F7EEDB] text-[#171717] border border-[#DDD3C5]">
+                  <span className="font-mono text-[9px] font-black uppercase px-1.5 py-0.2 bg-white text-[#171717] border border-[#171717]">
                     {selectedSize}
                   </span>
                 )}
@@ -101,7 +100,7 @@ export function StickyMobileActionBar({
                   triggerHaptic('light');
                   onShareWhatsApp();
                 }}
-                className="w-10 h-10 rounded-[8px] border border-[#DDD3C5] bg-white text-[#25D366] grid place-items-center active:scale-95 transition-all shadow-2xs hover:border-[#25D366] hover:bg-[#25D366]/10 cursor-pointer"
+                className="w-10 h-10 border-2 border-[#171717] bg-white text-[#25D366] grid place-items-center active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all shadow-[2px_2px_0px_#171717] hover:bg-[#25D366] hover:text-white cursor-pointer"
                 aria-label="Share via WhatsApp"
                 title="Share via WhatsApp"
               >
@@ -115,29 +114,28 @@ export function StickyMobileActionBar({
                 triggerHaptic('light');
                 onToggleWishlist();
               }}
-              className="w-10 h-10 rounded-[8px] border border-[#DDD3C5] bg-white grid place-items-center active:scale-95 transition-all shadow-2xs hover:border-[#171717] cursor-pointer"
+              className="w-10 h-10 border-2 border-[#171717] bg-white grid place-items-center active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all shadow-[2px_2px_0px_#171717] hover:bg-[#E6321C] hover:text-white cursor-pointer"
               aria-label="Toggle wishlist"
               title={inWishlist ? 'Remove from wishlist' : 'Save to wishlist'}
             >
               <Heart
-                size={17}
+                size={16}
                 className={inWishlist ? 'fill-[#E6321C] text-[#E6321C]' : 'text-[#171717]'}
               />
             </button>
 
-            <Button
-              variant="primary"
-              size="lg"
-              loading={isAdding}
+            <button
+              type="button"
+              disabled={isAdding}
               onClick={() => {
                 triggerHaptic('medium');
                 onAddToCart();
               }}
-              className="px-5 text-xs font-extrabold tracking-wider whitespace-nowrap h-11 rounded-[8px] shadow-[0_4px_16px_rgba(230,50,28,0.35)]"
+              className="px-4 h-10 text-[10px] font-black uppercase tracking-wider whitespace-nowrap bg-[#E6321C] text-white border-2 border-[#171717] shadow-[2px_2px_0px_#171717] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none flex items-center gap-1.5 cursor-pointer"
             >
-              <ShoppingBag size={15} className="mr-1.5" />
+              <ShoppingBag size={13} strokeWidth={2.5} />
               <span>ADD TO BAG</span>
-            </Button>
+            </button>
           </div>
         </motion.div>
       )}

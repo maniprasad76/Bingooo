@@ -41,7 +41,7 @@ export function SavedDesignsPage() {
       {isLoading ? (
         <div className="py-16 text-center text-muted">Loading your designs...</div>
       ) : designs.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-20 text-center rounded-xl border border-dashed border-border bg-paper/50">
+        <div className="flex flex-col items-center justify-center py-20 text-center rounded-[2px] border border-dashed border-border bg-paper/50">
           <div className="h-16 w-16 rounded-full bg-paper flex items-center justify-center mb-4 text-muted">
             <Palette size={28} />
           </div>
@@ -62,7 +62,7 @@ export function SavedDesignsPage() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: idx * 0.07, type: 'spring', stiffness: 350, damping: 25 }}
               whileHover={shouldReduceMotion ? undefined : { y: -4, boxShadow: '0 12px 30px -8px rgba(0, 0, 0, 0.08)' }}
-              className="rounded-xl border border-border bg-white p-5 shadow-sm space-y-4 transition-colors"
+              className="rounded-[2px] border border-border bg-white p-5 shadow-sm space-y-4 transition-colors"
             >
               <div className="aspect-[4/5] rounded-lg bg-paper border border-border flex items-center justify-center relative overflow-hidden">
                 <div className="text-center p-4">

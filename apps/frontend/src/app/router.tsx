@@ -12,6 +12,7 @@ import { lazyPage } from './lazyPage';
 // ─── Lazy-loaded route components (code-splitting for faster first paint) ───
 const ShopPage = lazyPage(() => import('../pages/ShopPage'), 'ShopPage');
 const ProductPage = lazyPage(() => import('../pages/ProductPage'), 'ProductPage');
+const CustomizerPage = lazyPage(() => import('../pages/CustomizerPage'), 'CustomizerPage');
 const CartPage = lazyPage(() => import('../pages/CartPage'), 'CartPage');
 const CheckoutPage = lazyPage(() => import('../pages/CheckoutPage'), 'CheckoutPage');
 const OrderSuccessPage = lazyPage(() => import('../pages/OrderSuccessPage'), 'OrderSuccessPage');
@@ -71,10 +72,10 @@ export const router = createBrowserRouter([
       { path: 'collection/:slug', element: <CollectionRedirect /> },
       { path: 'product/:slug', element: <ProductPage /> },
 
-      // Redirect legacy customizer routes to shop
-      { path: 'customize', element: <Navigate to="/shop" replace /> },
-      { path: 'customize/:productSlug', element: <Navigate to="/shop" replace /> },
-      { path: 'custom', element: <Navigate to="/shop" replace /> },
+      // Bauhaus Custom Studio
+      { path: 'customize', element: <CustomizerPage /> },
+      { path: 'customize/:productSlug', element: <CustomizerPage /> },
+      { path: 'custom', element: <Navigate to="/customize" replace /> },
 
       // Shopping Bag & Checkout
       { path: 'cart', element: <CartPage /> },
@@ -135,7 +136,7 @@ export const router = createBrowserRouter([
 
       // Services & Textile Engineering Guides
       { path: 'bulk-orders', element: <Navigate to="/contact" replace /> },
-      { path: 'dtf-printing', element: <Navigate to="/shop" replace /> },
+      { path: 'dtf-printing', element: <Navigate to="/customize" replace /> },
       { path: 'fabric-guide', element: <Navigate to="/about" replace /> },
       { path: 'fabric-specifications', element: <Navigate to="/about" replace /> },
       { path: 'artwork-guidelines', element: <ArtworkGuidelinesPage /> },

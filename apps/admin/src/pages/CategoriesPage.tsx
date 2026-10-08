@@ -9,11 +9,9 @@ import {
   Trash2,
   Search,
   CheckCircle2,
-  XCircle,
   Package,
   Layers,
   Sparkles,
-  ExternalLink,
   RefreshCw,
   X,
 } from 'lucide-react';

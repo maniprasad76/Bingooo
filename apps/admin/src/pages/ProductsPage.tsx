@@ -1,19 +1,14 @@
 import { useEffect, useState, useMemo } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { api, resolveImageUrl } from '../lib/api';
 import {
   Plus,
   Pencil,
   Trash2,
   Search,
-  ExternalLink,
-  Sparkles,
   Filter,
   Loader2,
   Package,
-  Layers,
-  CheckCircle2,
-  Eye,
   RefreshCw,
 } from 'lucide-react';
 import { useToast } from '../components/Toast';
@@ -37,7 +32,6 @@ interface Product {
 }
 
 export function ProductsPage() {
-  const navigate = useNavigate();
   const { toast } = useToast();
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);

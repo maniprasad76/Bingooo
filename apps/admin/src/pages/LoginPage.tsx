@@ -11,7 +11,6 @@ import {
   LoaderCircle,
   ArrowRight,
   Sparkles,
-  Layers,
 } from 'lucide-react';
 import { adminLogin, adminGoogleLogin } from '../lib/auth';
 

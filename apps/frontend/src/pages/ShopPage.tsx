@@ -120,13 +120,15 @@ export function ShopPage() {
   const [quickAddedId, setQuickAddedId] = useState<string | null>(null);
   const [failedImages, setFailedImages] = useState<Record<string, boolean>>({});
 
-  // Keep active tab in sync if URL changes
-  useEffect(() => {
+  // Keep active tab in sync if the category in the URL changes (adjusted during render)
+  const [syncedSlug, setSyncedSlug] = useState(slug);
+  if (slug !== syncedSlug) {
+    setSyncedSlug(slug);
     if (slug) {
       setActiveTab(slug);
       setSelectedCategories([slug]);
     }
-  }, [slug]);
+  }
 
   // Fetch products from API (with fallback)
   const { data: apiProductsData, isLoading } = useProducts({

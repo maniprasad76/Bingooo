@@ -214,23 +214,24 @@ export function CustomizerPage() {
     };
   }, []);
 
-  // Handle URL param ?fit=polo or ?fit=hoodie
-  useEffect(() => {
-    const fitParam = searchParams.get('fit')?.toLowerCase();
+  // Handle URL param ?fit=polo or ?fit=hoodie (adjusted during render)
+  const fitParam = searchParams.get('fit')?.toLowerCase() || '';
+  const [syncedFitParam, setSyncedFitParam] = useState('');
+  if (fitParam !== syncedFitParam) {
+    setSyncedFitParam(fitParam);
     if (fitParam === 'polo' || fitParam === 'hoodie' || fitParam === 'oversized') {
       setSelectedFit(fitParam as GarmentType);
       if (fitParam === 'polo') setSelectedSize('40');
     }
-  }, [searchParams]);
+  }
 
   // Ensure selected size matches current fit's available sizes
-  useEffect(() => {
-    const activeGarment = garmentsConfig[selectedFit] || DEFAULT_GARMENTS[selectedFit];
-    const availableSizes = activeGarment.activeSizes?.length ? activeGarment.activeSizes : activeGarment.sizes;
-    if (!availableSizes.includes(selectedSize)) {
-      setSelectedSize(availableSizes[0] || (selectedFit === 'polo' ? '40' : 'L'));
-    }
-  }, [selectedFit, garmentsConfig, selectedSize]);
+  const fitGarment = garmentsConfig[selectedFit] || DEFAULT_GARMENTS[selectedFit];
+  const fitSizes = fitGarment.activeSizes?.length ? fitGarment.activeSizes : fitGarment.sizes;
+  const fallbackSize = fitSizes[0] || (selectedFit === 'polo' ? '40' : 'L');
+  if (!fitSizes.includes(selectedSize) && selectedSize !== fallbackSize) {
+    setSelectedSize(fallbackSize);
+  }
 
   // Current garment config
   const currentGarment = useMemo(() => {
@@ -246,7 +247,7 @@ export function CustomizerPage() {
   // Selected color object
   const activeColor = useMemo(() => {
     return availableColors.find((c) => c.id === selectedColorId) || availableColors[0] || DEFAULT_GARMENTS[selectedFit].colors[0];
-  }, [availableColors, selectedColorId]);
+  }, [availableColors, selectedColorId, selectedFit]);
 
   // Mockup image URL based on fit, color, and view
   const mockupImageUrl = useMemo(() => {

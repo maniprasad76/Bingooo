@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useRef } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useNavigate, useParams, Link } from 'react-router-dom';
 import { useToast } from '../components/Toast';
 import {
@@ -9,17 +9,11 @@ import {
   Image as ImageIcon,
   Check,
   X,
-  Sparkles,
-  Layers,
-  Tag,
   Eye,
   RefreshCw,
   LoaderCircle,
   CheckCircle2,
   AlertCircle,
-  Star,
-  Zap,
-  Info,
   Flame,
   Percent,
 } from 'lucide-react';

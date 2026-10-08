@@ -73,12 +73,12 @@ export function SocialFab() {
   const fabRef = useRef<HTMLDivElement>(null);
   const mobileMenuOpen = useUIStore((s) => s.mobileMenuOpen);
 
-  // Close speed dial if mobile menu opens
-  useEffect(() => {
-    if (mobileMenuOpen) {
-      setIsOpen(false);
-    }
-  }, [mobileMenuOpen]);
+  // Close speed dial if mobile menu opens (adjusted during render)
+  const [menuWasOpen, setMenuWasOpen] = useState(mobileMenuOpen);
+  if (mobileMenuOpen !== menuWasOpen) {
+    setMenuWasOpen(mobileMenuOpen);
+    if (mobileMenuOpen) setIsOpen(false);
+  }
 
   // Close on outside click
   useEffect(() => {

@@ -16,6 +16,16 @@ import { resolveImageUrl } from '../../lib/utils';
 import { triggerHaptic } from '../../lib/native/capacitorBridge';
 
 const RECENT_SEARCHES_KEY = 'bingooo_recent_searches';
+
+function readRecentSearches(): string[] {
+  try {
+    const stored = localStorage.getItem(RECENT_SEARCHES_KEY);
+    const parsed = stored ? JSON.parse(stored) : [];
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
+}
 const MAX_RECENT = 6;
 
 const TRENDING_TAGS = [
@@ -42,21 +52,24 @@ export function SmartSearchModal() {
   const [inputQuery, setInputQuery] = useState('');
   const [debouncedQuery, setDebouncedQuery] = useState('');
   const [selectedIndex, setSelectedIndex] = useState<number>(-1);
-  const [recentSearches, setRecentSearches] = useState<string[]>([]);
+  const [recentSearches, setRecentSearches] = useState<string[]>(readRecentSearches);
   const inputRef = useRef<HTMLInputElement>(null);
   const resultsContainerRef = useRef<HTMLDivElement>(null);
 
   // Load recent searches from localStorage
-  useEffect(() => {
-    try {
-      const stored = localStorage.getItem(RECENT_SEARCHES_KEY);
-      if (stored) {
-        setRecentSearches(JSON.parse(stored));
-      }
-    } catch {
-      // Ignore JSON parse errors
+  // Reset when the modal opens or closes (adjusted during render, not in an effect,
+  // so the modal never paints one frame with stale state).
+  const [wasOpen, setWasOpen] = useState(searchModalOpen);
+  if (searchModalOpen !== wasOpen) {
+    setWasOpen(searchModalOpen);
+    if (searchModalOpen) {
+      setSelectedIndex(-1);
+      setRecentSearches(readRecentSearches());
+    } else {
+      setInputQuery('');
+      setDebouncedQuery('');
     }
-  }, [searchModalOpen]);
+  }
 
   // Save query to recent searches
   const saveRecentSearch = (term: string) => {
@@ -98,17 +111,11 @@ export function SmartSearchModal() {
     return () => clearTimeout(timer);
   }, [inputQuery]);
 
-  // Focus input when modal opens & reset
+  // Focus the input once the modal has opened
   useEffect(() => {
-    if (searchModalOpen) {
-      setTimeout(() => {
-        inputRef.current?.focus();
-      }, 50);
-      setSelectedIndex(-1);
-    } else {
-      setInputQuery('');
-      setDebouncedQuery('');
-    }
+    if (!searchModalOpen) return;
+    const timer = setTimeout(() => inputRef.current?.focus(), 50);
+    return () => clearTimeout(timer);
   }, [searchModalOpen]);
 
   // Global keyboard shortcut: Cmd/Ctrl + K and Escape

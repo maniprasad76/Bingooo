@@ -53,14 +53,6 @@ export function TrackOrderPage() {
   const [isSearching, setIsSearching] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    const urlAwb = searchParams.get('awb') || searchParams.get('orderNumber') || searchParams.get('q');
-    if (urlAwb) {
-      setOrderQuery(urlAwb);
-      handleTrack(undefined, urlAwb);
-    }
-  }, [searchParams]);
-
   // Shows only what the order actually records: real status, real timestamps,
   // real courier/AWB once assigned. Unknown numbers get a clear "not found".
   const handleTrack = async (e?: React.FormEvent, customId?: string) => {
@@ -106,6 +98,17 @@ export function TrackOrderPage() {
       setSearched(true);
     }
   };
+
+  // Track straight away when the link already carries an order number (e.g. from
+  // the WhatsApp or email shipping message).
+  useEffect(() => {
+    const urlAwb = searchParams.get('awb') || searchParams.get('orderNumber') || searchParams.get('q');
+    if (urlAwb) {
+      setOrderQuery(urlAwb);
+      handleTrack(undefined, urlAwb);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- re-run only when the URL changes
+  }, [searchParams]);
 
   return (
     <div className="w-full bg-[#FAF8F5] text-[#171717] min-h-screen py-10 sm:py-16 font-sans">

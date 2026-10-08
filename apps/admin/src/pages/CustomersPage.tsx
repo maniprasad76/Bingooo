@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { api } from '../lib/api';
-import { Search, Users as UsersIcon, RefreshCw, UserCheck, ShieldCheck, Mail, Phone, Calendar } from 'lucide-react';
+import { Search, Users as UsersIcon, RefreshCw } from 'lucide-react';
 
 interface Customer {
   id: string;

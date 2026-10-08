@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { Search as SearchIcon, X, Truck, ShieldCheck, RotateCcw, Sparkles } from 'lucide-react';
 import { SEO } from '../components/common/SEO';
@@ -31,11 +31,12 @@ export function SearchPage() {
   const [searchQuery, setSearchQuery] = useState(initialQuery);
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
 
-  // Sync state when URL param changes
-  useEffect(() => {
-    const q = searchParams.get('q') || searchParams.get('search') || '';
-    setSearchQuery(q);
-  }, [searchParams]);
+  // Sync the input when the URL query changes (adjusted during render)
+  const [syncedQuery, setSyncedQuery] = useState(initialQuery);
+  if (initialQuery !== syncedQuery) {
+    setSyncedQuery(initialQuery);
+    setSearchQuery(initialQuery);
+  }
 
   // Query products with search filter
   const { data, isLoading } = useProducts({
@@ -43,7 +44,7 @@ export function SearchPage() {
     limit: 40,
   });
 
-  const products: any[] = Array.isArray(data) ? data : data?.data || [];
+  const products: any[] = useMemo(() => (Array.isArray(data) ? data : data?.data || []), [data]);
 
   // Filter by category tab if selected
   const filteredProducts = useMemo(() => {

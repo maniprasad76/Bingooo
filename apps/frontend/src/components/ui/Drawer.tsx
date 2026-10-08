@@ -1,4 +1,4 @@
-import { useEffect, useState, type ReactNode } from 'react';
+import { useEffect, type ReactNode } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { X } from 'lucide-react';
 import { cn } from '../../lib/utils';
@@ -49,9 +49,7 @@ export function Drawer({
   }, [isDrawerOpen]);
 
   // Close on Escape
-  const [, setMounted] = useState(false);
   useEffect(() => {
-    setMounted(true);
     const handleEscape = (e: KeyboardEvent) => {
       if (e.key === 'Escape') onClose();
     };

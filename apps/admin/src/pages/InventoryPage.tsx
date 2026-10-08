@@ -6,7 +6,6 @@ import {
   Search,
   RefreshCw,
   AlertTriangle,
-  CheckCircle2,
   Sliders,
   Plus,
   Minus,
@@ -15,7 +14,6 @@ import {
   Layers,
   ArrowUpRight,
   ArrowDownRight,
-  Package,
   X,
 } from 'lucide-react';
 

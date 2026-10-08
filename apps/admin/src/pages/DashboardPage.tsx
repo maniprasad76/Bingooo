@@ -4,16 +4,12 @@ import { api } from '../lib/api';
 import {
   DollarSign,
   ShoppingBag,
-  Clock,
   Package,
   AlertTriangle,
-  TrendingUp,
   ArrowUpRight,
   Boxes,
   Palette,
-  ExternalLink,
   ChevronRight,
-  Sparkles,
 } from 'lucide-react';
 
 interface DashboardData {

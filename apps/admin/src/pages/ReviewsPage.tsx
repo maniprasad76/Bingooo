@@ -6,13 +6,11 @@ import {
   Star,
   Search,
   CheckCircle2,
-  XCircle,
   Trash2,
   ThumbsUp,
   ThumbsDown,
   MessageSquare,
   ShieldCheck,
-  Filter,
   RefreshCw,
 } from 'lucide-react';
 

@@ -21,8 +21,6 @@ import {
   MessageSquare,
   RotateCcw,
   ExternalLink,
-  ShieldCheck,
-  Radio,
 } from 'lucide-react';
 
 interface NavGroup {

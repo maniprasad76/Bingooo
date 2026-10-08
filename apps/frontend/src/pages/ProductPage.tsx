@@ -172,17 +172,6 @@ export function ProductPage() {
 
   const [selectedColor, setSelectedColor] = useState('');
 
-  // Keep selectedColor synchronized with available color options
-  useEffect(() => {
-    if (colorOptions.length > 0) {
-      if (!selectedColor || !colorOptions.some((c) => c.name.toLowerCase() === selectedColor.toLowerCase())) {
-        setSelectedColor(colorOptions[0].name);
-      }
-    } else {
-      setSelectedColor('');
-    }
-  }, [colorOptions, selectedColor]);
-
   // Dynamic sizes derived from product.variants for selected color
   const sizeOptions = useMemo(() => {
     if (product?.variants && product.variants.length > 0) {
@@ -227,14 +216,19 @@ export function ProductPage() {
   const [fitGuideCategory, setFitGuideCategory] = useState<'oversized' | 'acidwash' | 'hoodie'>('oversized');
   const [sizeUnit, setSizeUnit] = useState<'in' | 'cm'>('in');
 
-  useEffect(() => {
+  // Follow the product's garment type when navigating between products
+  const [syncedCategoryKey, setSyncedCategoryKey] = useState<typeof productCategoryKey | null>(null);
+  if (productCategoryKey !== syncedCategoryKey) {
+    setSyncedCategoryKey(productCategoryKey);
     setSizeModalCategory(productCategoryKey);
     setFitGuideCategory(productCategoryKey);
-  }, [productCategoryKey]);
+  }
 
   // Adjust selection during render if options changed
   if (colorOptions.length > 0 && !colorOptions.some((c) => c.name.toLowerCase() === selectedColor.toLowerCase())) {
     setSelectedColor(colorOptions[0].name);
+  } else if (colorOptions.length === 0 && selectedColor) {
+    setSelectedColor('');
   }
   if (sizeOptions.length > 0 && !sizeOptions.includes(selectedSize)) {
     setSelectedSize(sizeOptions[0]);

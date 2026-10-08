@@ -45,6 +45,9 @@ jobs:
 
       - name: Production dependency audit (high and above)
         run: npm audit --omit=dev --audit-level=high
+      - name: Lint (storefront + admin)
+        run: npm run lint
+
 
       - name: Backend — security suite
         run: npm run test:security -w apps/backend
@@ -60,3 +63,10 @@ jobs:
 
       - name: Backend — durability, stock & refunds
         run: npm run test:durability -w apps/backend
+
+      # Storefront in a real browser against a mocked API (apps/frontend/e2e).
+      - name: Install Chromium for browser E2E
+        run: npx playwright install --with-deps chromium
+
+      - name: Storefront — browser E2E
+        run: npm run test:e2e -w apps/frontend

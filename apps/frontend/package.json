@@ -12,7 +12,8 @@
     "cap:open": "cap open android",
     "preview": "vite preview",
     "typecheck": "tsc --noEmit -p tsconfig.app.json && tsc --noEmit -p tsconfig.node.json",
-    "lint": "oxlint"
+    "lint": "oxlint",
+    "test:e2e": "node e2e/storefront.e2e.mjs"
   },
   "dependencies": {
     "@capacitor/android": "^8.5.1",

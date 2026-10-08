@@ -32,7 +32,7 @@ bingooo/
 │   │   ├── src/checkout/# Multi-step checkout pipeline
 │   │   ├── src/orders/  # Order processing & state machine
 │   │   └── src/payments/# Razorpay, UPI & manual payment flows
-│   └── admin/           # Vite 8 + React 19 back-office management dashboard (27 routes)
+│   └── admin/           # Vite 8 + React 19 back-office management dashboard (15 routes: 13 management pages + login/callback)
 │       └── src/pages/   # OrdersPage, ProductEditorPage, DashboardPage, SettingsPage, etc.
 ├── packages/
 │   ├── types/           # Shared TypeScript domain models, DTOs & interfaces

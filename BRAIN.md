@@ -183,6 +183,8 @@ python -m graphify update .
   - Replaced text-heavy Order Ref column in Admin Orders table with interactive product/customizer thumbnail previews, 3D/multi-item badges, and modal item previews with backend image enrichment.
 - **2026-10-07: Restore Selected Garment Image Visibility in Checkout & Admin Orders**
   - Resolved missing cart images and NaN pricing in Checkout order summaries (`CheckoutPage.tsx`), improved image enrichment and normalized preview paths across backend orders and checkout services, and restored thumbnail image previews on Admin Orders page (`OrdersPage.tsx`).
+- **2026-10-08: Layered GPU Wipe Transitions for Brand Intro (Zero-Hang / Silky Color Motion)**
+  - Re-architected brand intro in `apps/frontend/index.html` with 5 stacked, full-bleed color layers (`#171717`, `#E6321C`, `#F7EEDB`, `#1E293B`, `#7F1D1D`). Replaced static pauses and muddy RGB color interpolation with pure GPU-composited slide-up wipes (`translate3d`, `cubic-bezier(0.16, 1, 0.3, 1)` with soft drop-shadow depth). Colors now glide in smoothly with continuous kinetic motion and zero JS thread contention.
 - **2026-10-08: Accelerated Brand Intro Preloader Speed (3.1s → 1.25s)**
   - Accelerated multilingual brand intro preloader in `apps/frontend/index.html` from 3,100ms to 1,250ms (240ms per stage), with fast 50ms typography morphing and 1,200ms hairline progress interpolation for a punchy, rapid luxury flash opening.
 - **2026-10-08: Side-by-Side Category Cards Layout on Mobile (`HomePage.tsx`)**

@@ -67,6 +67,9 @@ export const db = {
     prepaid_discount_percentage: 5,
   } as any,
   media_assets: [] as any[],
+  // Logged-out sessions: { id: sha256(token or jti), expires_at }. Persisted so a
+  // restart does not bring revoked tokens back to life.
+  revoked_tokens: [] as any[],
   customizer_config: {
     garments: [] as any[],
     updatedAt: new Date().toISOString(),

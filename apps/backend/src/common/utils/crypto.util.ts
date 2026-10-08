@@ -1,4 +1,5 @@
 import * as crypto from 'crypto';
+import { db, saveDb } from '../database/store';
 
 // JWT signing secret must come from the environment. There is no hardcoded
 // fallback: a public fallback secret would let anyone forge valid session
@@ -15,17 +16,64 @@ export function getJwtSecret(): string {
   return secret;
 }
 
-// In-memory token revocation blacklist (persists across active sessions)
-const revokedTokens = new Set<string>();
+// ── Session revocation ──────────────────────────────────────────────
+// Logged-out tokens live in db.revoked_tokens, which is saved with the rest of
+// the store (and mirrored to Supabase in production), so a restart or redeploy
+// cannot revive a session the user ended. Only SHA-256 digests are stored.
+// Entries are dropped once the token would have expired anyway.
+
+/** Longest session this API issues (7 days) plus a margin, for entries without a readable exp. */
+const REVOCATION_TTL_MS = 8 * 24 * 60 * 60 * 1000;
+
+const revocationId = (value: string) => crypto.createHash('sha256').update(value).digest('hex');
+
+/** Lookup cache over db.revoked_tokens; rebuilt whenever the array is replaced (e.g. on boot hydration). */
+let cachedList: any[] | null = null;
+let cachedExpiry = new Map<string, number>();
+
+function revocations(): Map<string, number> {
+  const list: any[] = Array.isArray(db.revoked_tokens) ? db.revoked_tokens : (db.revoked_tokens = []);
+  if (list !== cachedList) {
+    cachedList = list;
+    cachedExpiry = new Map(list.map((e: any) => [String(e.id), Date.parse(e.expires_at) || 0]));
+  }
+  return cachedExpiry;
+}
+
+function jwtParts(value: string): { exp?: number; jti?: string } {
+  const parts = value.split('.');
+  if (parts.length !== 3) return {};
+  try {
+    const payload = JSON.parse(Buffer.from(parts[1], 'base64url').toString('utf8'));
+    return { exp: typeof payload.exp === 'number' ? payload.exp * 1000 : undefined, jti: typeof payload.jti === 'string' ? payload.jti : undefined };
+  } catch {
+    return {};
+  }
+}
 
 export function revokeToken(tokenIdOrToken: string): void {
   if (!tokenIdOrToken) return;
-  revokedTokens.add(tokenIdOrToken);
+  const now = Date.now();
+  const { exp, jti } = jwtParts(tokenIdOrToken);
+  const expiresAt = exp && exp > now ? exp : now + REVOCATION_TTL_MS;
+
+  // Drop entries that can no longer match a live token.
+  db.revoked_tokens = (Array.isArray(db.revoked_tokens) ? db.revoked_tokens : []).filter(
+    (e: any) => (Date.parse(e.expires_at) || 0) > now,
+  );
+  for (const value of jti ? [tokenIdOrToken, jti] : [tokenIdOrToken]) {
+    const id = revocationId(value);
+    if (!db.revoked_tokens.some((e: any) => e.id === id)) {
+      db.revoked_tokens.push({ id, expires_at: new Date(expiresAt).toISOString(), revoked_at: new Date(now).toISOString() });
+    }
+  }
+  saveDb();
 }
 
 export function isTokenRevoked(tokenIdOrToken: string): boolean {
   if (!tokenIdOrToken) return false;
-  return revokedTokens.has(tokenIdOrToken);
+  const expiresAt = revocations().get(revocationId(tokenIdOrToken));
+  return expiresAt !== undefined && expiresAt > Date.now();
 }
 
 /**

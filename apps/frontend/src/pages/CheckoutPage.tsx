@@ -1,5 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { trackBeginCheckout } from '../lib/analytics';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -28,6 +29,8 @@ import { useToast } from '../components/ui/Toast';
 import { useAuthStore } from '../store/auth';
 import { SEO } from '../components/common/SEO';
 import { PhonePeIcon, GooglePayIcon, PaytmIcon, UpiIcon } from '../components/checkout/PaymentAppIcons';
+import { resolveImageUrl } from '../lib/utils';
+import { getCartItemMeta } from '../lib/cartMeta';
 
 const addressSchema = z.object({
   name: z.string().min(2, 'Name is required'),
@@ -71,6 +74,14 @@ export function CheckoutPage() {
   const [selectedAddressId, setSelectedAddressId] = useState<string>('custom');
   const [isMobileSummaryOpen, setIsMobileSummaryOpen] = useState(false);
   const couponCode = (location.state as any)?.couponCode;
+  const checkoutTracked = useRef(false);
+
+  useEffect(() => {
+    if (cart?.total && !checkoutTracked.current) {
+      checkoutTracked.current = true;
+      trackBeginCheckout(cart.total, cart.itemCount || 1);
+    }
+  }, [cart?.total, cart?.itemCount]);
 
   // Load live payment configuration from backend
   const { data: paymentConfig } = useQuery({
@@ -400,30 +411,94 @@ export function CheckoutPage() {
               >
                 <div className="p-4 space-y-4">
                   <div className="space-y-3 max-h-56 overflow-y-auto divide-y divide-border/60">
-                    {cart.items.map((item: any) => (
-                      <div key={item.id} className="pt-2.5 first:pt-0 flex gap-3 text-left">
-                        <div className="h-12 w-12 rounded-lg bg-paper border border-border flex items-center justify-center shrink-0 overflow-hidden">
-                          {item.customization?.previewKey ? (
-                            <img
-                              src={item.customization.previewKey}
-                              alt="Custom artwork"
-                              className="h-full w-full object-cover"
-                            />
-                          ) : (
-                            <span className="font-heading font-black text-[10px] text-muted">BGO</span>
-                          )}
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <h4 className="text-xs font-bold text-ink truncate">{item.product?.title || 'Garment'}</h4>
-                          <span className="text-[10px] text-muted block">
-                            Size: {item.variant?.size} • Qty: {item.quantity}
-                          </span>
-                          <div className="text-xs font-bold text-ink mt-0.5">
-                            ₹{item.total_price || item.unit_price * item.quantity}
+                    {cart.items.map((item: any) => {
+                      const meta = getCartItemMeta(
+                        item.variantId || item.variant_id || item.variant?.id || item.id,
+                        item.product?.title || item.productTitle,
+                        item.product?.slug,
+                      );
+                      const title = item.product?.title || item.productTitle || meta?.title || 'Garment';
+                      const size = item.variant?.size || meta?.size || '';
+                      const rawImg =
+                        item.customization?.previewKey ||
+                        item.customization?.preview_key ||
+                        item.customization?.preview_url ||
+                        item.image ||
+                        item.imageUrl ||
+                        item.image_url ||
+                        item.product?.primaryImage ||
+                        item.product?.primary_image ||
+                        item.product?.image ||
+                        item.product?.imageUrl ||
+                        item.product?.image_url ||
+                        item.product?.images?.[0]?.url ||
+                        item.product?.images?.[0]?.object_key ||
+                        item.product?.images?.[0] ||
+                        item.variant?.image ||
+                        item.variant?.imageUrl ||
+                        item.variant?.image_url ||
+                        item.variant?.product?.primaryImage ||
+                        item.variant?.product?.primary_image ||
+                        item.variant?.product?.imageUrl ||
+                        item.variant?.product?.image_url ||
+                        item.variant?.product?.images?.[0]?.url ||
+                        item.variant?.product?.images?.[0]?.object_key ||
+                        item.variant?.product?.images?.[0] ||
+                        meta?.image;
+                      const imageUrl = rawImg
+                        ? resolveImageUrl(
+                            typeof rawImg === 'string'
+                              ? rawImg
+                              : rawImg.url || rawImg.object_key || rawImg.src || '',
+                          )
+                        : '';
+                      const itemPrice =
+                        item.total ??
+                        (item.unitPrice
+                          ? item.unitPrice * item.quantity
+                          : item.price
+                          ? item.price * item.quantity
+                          : item.total_price ??
+                            (item.unit_price
+                              ? item.unit_price * item.quantity
+                              : meta?.price
+                              ? meta.price * item.quantity
+                              : 0));
+
+                      return (
+                        <div key={item.id} className="pt-2.5 first:pt-0 flex gap-3 text-left">
+                          <div className="h-12 w-12 rounded-lg bg-paper border border-border flex items-center justify-center shrink-0 overflow-hidden relative">
+                            {imageUrl ? (
+                              <img
+                                src={imageUrl}
+                                alt={title}
+                                className="h-full w-full object-cover"
+                                onError={(e) => {
+                                  (e.target as HTMLElement).style.display = 'none';
+                                  const fallback = (e.target as HTMLElement).nextElementSibling;
+                                  if (fallback) (fallback as HTMLElement).style.display = 'flex';
+                                }}
+                              />
+                            ) : null}
+                            <span
+                              className="font-heading font-black text-[10px] text-muted flex items-center justify-center"
+                              style={{ display: imageUrl ? 'none' : 'flex' }}
+                            >
+                              BGO
+                            </span>
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <h4 className="text-xs font-bold text-ink truncate">{title}</h4>
+                            <span className="text-[10px] text-muted block">
+                              Size: {size || 'M'} • Qty: {item.quantity}
+                            </span>
+                            <div className="text-xs font-bold text-ink mt-0.5">
+                              ₹{Number(itemPrice || 0).toLocaleString('en-IN')}
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
 
                   <div className="space-y-1.5 border-t border-border pt-3 text-xs">
@@ -748,36 +823,100 @@ export function CheckoutPage() {
 
               {/* Items List */}
               <div className="space-y-4 max-h-[280px] overflow-y-auto pr-1 divide-y divide-border/60">
-                {cart.items.map((item: any) => (
-                  <div key={item.id} className="pt-3 first:pt-0 flex gap-3 text-left">
-                    <div className="h-16 w-16 rounded-lg bg-paper border border-border flex items-center justify-center shrink-0 overflow-hidden">
-                      {item.customization?.previewKey ? (
-                        <img
-                          src={item.customization.previewKey}
-                          alt="Custom artwork"
-                          className="h-full w-full object-cover"
-                        />
-                      ) : (
-                        <span className="font-heading font-black text-xs text-muted">BGO</span>
-                      )}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <h4 className="text-caption font-bold text-ink truncate">{item.product?.title || 'Garment'}</h4>
-                      <span className="text-[11px] text-muted block">
-                        Size: {item.variant?.size} • Qty: {item.quantity}
-                      </span>
-                      {item.customization && (
-                        <span className="inline-flex items-center gap-1 mt-0.5 text-[10px] font-bold text-accent uppercase">
-                          <Sparkles size={10} />
-                          <span>Custom Artwork</span>
+                {cart.items.map((item: any) => {
+                  const meta = getCartItemMeta(
+                    item.variantId || item.variant_id || item.variant?.id || item.id,
+                    item.product?.title || item.productTitle,
+                    item.product?.slug,
+                  );
+                  const title = item.product?.title || item.productTitle || meta?.title || 'Garment';
+                  const size = item.variant?.size || meta?.size || '';
+                  const rawImg =
+                    item.customization?.previewKey ||
+                    item.customization?.preview_key ||
+                    item.customization?.preview_url ||
+                    item.image ||
+                    item.imageUrl ||
+                    item.image_url ||
+                    item.product?.primaryImage ||
+                    item.product?.primary_image ||
+                    item.product?.image ||
+                    item.product?.imageUrl ||
+                    item.product?.image_url ||
+                    item.product?.images?.[0]?.url ||
+                    item.product?.images?.[0]?.object_key ||
+                    item.product?.images?.[0] ||
+                    item.variant?.image ||
+                    item.variant?.imageUrl ||
+                    item.variant?.image_url ||
+                    item.variant?.product?.primaryImage ||
+                    item.variant?.product?.primary_image ||
+                    item.variant?.product?.imageUrl ||
+                    item.variant?.product?.image_url ||
+                    item.variant?.product?.images?.[0]?.url ||
+                    item.variant?.product?.images?.[0]?.object_key ||
+                    item.variant?.product?.images?.[0] ||
+                    meta?.image;
+                  const imageUrl = rawImg
+                    ? resolveImageUrl(
+                        typeof rawImg === 'string'
+                          ? rawImg
+                          : rawImg.url || rawImg.object_key || rawImg.src || '',
+                      )
+                    : '';
+                  const itemPrice =
+                    item.total ??
+                    (item.unitPrice
+                      ? item.unitPrice * item.quantity
+                      : item.price
+                      ? item.price * item.quantity
+                      : item.total_price ??
+                        (item.unit_price
+                          ? item.unit_price * item.quantity
+                          : meta?.price
+                          ? meta.price * item.quantity
+                          : 0));
+
+                  return (
+                    <div key={item.id} className="pt-3 first:pt-0 flex gap-3 text-left">
+                      <div className="h-16 w-16 rounded-lg bg-paper border border-border flex items-center justify-center shrink-0 overflow-hidden relative">
+                        {imageUrl ? (
+                          <img
+                            src={imageUrl}
+                            alt={title}
+                            className="h-full w-full object-cover"
+                            onError={(e) => {
+                              (e.target as HTMLElement).style.display = 'none';
+                              const fallback = (e.target as HTMLElement).nextElementSibling;
+                              if (fallback) (fallback as HTMLElement).style.display = 'flex';
+                            }}
+                          />
+                        ) : null}
+                        <span
+                          className="font-heading font-black text-xs text-muted flex items-center justify-center"
+                          style={{ display: imageUrl ? 'none' : 'flex' }}
+                        >
+                          BGO
                         </span>
-                      )}
-                      <div className="text-caption font-bold text-ink mt-1">
-                        ₹{item.total_price || item.unit_price * item.quantity}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <h4 className="text-caption font-bold text-ink truncate">{title}</h4>
+                        <span className="text-[11px] text-muted block">
+                          Size: {size || 'M'} • Qty: {item.quantity}
+                        </span>
+                        {item.customization && (
+                          <span className="inline-flex items-center gap-1 mt-0.5 text-[10px] font-bold text-accent uppercase">
+                            <Sparkles size={10} />
+                            <span>Custom Artwork</span>
+                          </span>
+                        )}
+                        <div className="text-caption font-bold text-ink mt-1">
+                          ₹{Number(itemPrice || 0).toLocaleString('en-IN')}
+                        </div>
                       </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
 
               {/* Calculations Breakdown */}

@@ -117,6 +117,10 @@ python -m graphify update .
 
 ## 6. Changelog & Recent Decisions
 
+- **2026-10-06: WhatsApp Cloud API & Email Order Confirmations**
+  - Integrated Meta WhatsApp Cloud API and webhook fallback in `WhatsAppService` with named template support (`order_confirmed`).
+  - Automated WhatsApp and Resend email order confirmations dispatched on payment capture; updated `OrderSuccessPage` with live parcel tracking timeline and luxury receipt.
+
 - **2026-10-04: Audit Phase 3 — Platform Hygiene**
   - CI workflow (typecheck, build, prod audit, 5 backend suites) on every push; frontend/admin `typecheck` now checks real files — it immediately caught a `codTotal` reference left by the COD removal that had broken the production frontend build.
   - NestJS 10 → 11.2.7 (Express 5, patched multer/body-parser/lodash); production audit has no high advisories (remaining moderate js-yaml is Swagger-only, and Swagger is now off in production unless `ENABLE_SWAGGER=true`). `@capacitor/cli` aligned to 8.
@@ -177,7 +181,10 @@ python -m graphify update .
   - Streamlined admin navigation by deprecating the unused Banners route and elevated admin table, badges, and view craftsmanship across admin pages.
 - **2026-10-05: Admin Orders Visual Thumbnail Preview & Image Enrichment**
   - Replaced text-heavy Order Ref column in Admin Orders table with interactive product/customizer thumbnail previews, 3D/multi-item badges, and modal item previews with backend image enrichment.
-- **2026-10-06: Fix Unstyled Crawler Fallback & Stale Cache Lock**
-  - Encapsulated crawler fallback in <noscript>, integrated brand-aligned BINGOOO. splash preloader in #root, updated prerender-seo script, bumped SW cache to v3, and added global stale-chunk error recovery.
+- **2026-10-07: Restore Selected Garment Image Visibility in Checkout & Admin Orders**
+  - Resolved missing cart images and NaN pricing in Checkout order summaries (`CheckoutPage.tsx`), improved image enrichment and normalized preview paths across backend orders and checkout services, and restored thumbnail image previews on Admin Orders page (`OrdersPage.tsx`).
+- **2026-10-08: Complete Removal of Customizer Page & Custom Entry Points**
+  - Completely decommissioned customizer studio and customizer routes, redirected legacy custom URLs to `/shop`, updated navbar/mobile navigation to feature the Wishlist tab, and streamlined all product cards, search modals, and campaign banners to pure ready-to-wear streetwear catalog collections.
+
 
 

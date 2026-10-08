@@ -1,63 +1,75 @@
-# PLAN: Fix Unstyled Crawler Fallback & Stale Cache Flash Issue
+# PLAN: BlanqFactory-Inspired Bespoke Customizer Page
 
-> **Milestone / Issue:** Resolve persistent display of raw unstyled crawler fallback HTML and prevent FOUC / stale cache locks.
-> **Date:** October 2026
-> **Stack:** React 19 + Vite 8 (`apps/frontend`), Service Worker PWA (`public/sw.js`), Pre-render SEO (`scripts/prerender-seo.mjs`)
+> **Goal:** Transform `apps/frontend/src/pages/CustomizerPage.tsx` into a high-converting, manufacturer-grade customizer inspired by [Blanq Factory](https://www.blanqfactory.com/products/180gsm-honeycomb-matty-polo-t-shirt-manufacturer-india) while adhering strictly to Bingooo's design tokens and retaining the interactive canvas drag, size increase/decrease controls, and thumbnail previews.
 
 ---
 
-## 1. Root Cause Analysis
-1. **Raw HTML in `#root`:** `apps/frontend/index.html` has ~120 lines of unstyled, raw crawler fallback HTML directly inside `<div id="root">` with inline styles (`font-family: sans-serif`, `border: 1px solid #ddd`).
-2. **Flash of Unstyled Content (FOUC):** Whenever any user opens or refreshes the website, the browser parses and displays this raw HTML immediately before the ~476 KB JavaScript bundle finishes loading and mounting React.
-3. **Stale Cache / Chunk Lock:** In `public/sw.js`, `index.html` was cached under `bingooo-cache-v2`. If an older `index.html` references an outdated JS hash that 404s, React never mounts, permanently trapping users on this raw fallback view.
-4. **Pre-render Route Flashing:** `scripts/prerender-seo.mjs` injected unstyled route HTML directly into `<div id="root">` for static routes (`/shop`, `/category/*`), causing similar flashing on direct route navigation.
+## 1. Analysis of Blanq Factory Page & User Requirements
+
+### Core Elements on Blanq Factory:
+1. **Garment Mockup (Left Side)**:
+   - Clean garment canvas with Front/Back views.
+   - Thumbnail colorway gallery directly beneath the main preview.
+   - Interactive canvas drag for artwork placement.
+2. **Product Header & Trust Signals (Right Side)**:
+   - Product title with GSM callout (e.g., `240 GSM Drop-Shoulder Oversized Cotton T-Shirt | Atelier Blanks`).
+   - Price range banner & stock status pill (`In Stock - Ready to Dispatch`).
+   - 4 trust badges: `100% Cotton`, `Fast Dispatch`, `Secure Order`, `Bulk Expert`.
+   - Pincode delivery estimator with interactive check input.
+3. **Colour / Size Matrix Grid**:
+   - A multi-quantity matrix table allowing customers to order 1 custom piece or specify quantity breakdowns across sizes (`S`, `M`, `L`, `XL`, `2XL`) and colors.
+   - Dynamic total piece counter and live subtotal calculator.
+4. **Print Technique & Branding Options**:
+   - Technique selector dropdown: `HD DTF Print (Free)`, `Puff Screen Print (3D Raised)`, `Screen Print`.
+   - Dedicated slots for:
+     - 👕 Front Design (.PNG)
+     - 🔙 Back Design (.PNG)
+     - 📍 Chest Logo (.PNG)
+     - 🏷️ Neck Label (.PNG)
+     - 🧼 Wash Care Tag (.PNG)
+   - **User requirement**: Instead of static links, each slot displays a visual thumbnail preview, live size slider (`–` / `+` micro-buttons), scale presets (`Compact`, `Standard`, `Oversized`), and real-time garment canvas drag.
+5. **Packaging Selector**:
+   - `Standard Clear Polybag (Free)` vs `Bingooo Frosted Matte Zip-Lock Bag (Free)`.
+6. **Order Pricing Summary & Dual Actions**:
+   - Transparent price breakdown: Total Pieces, Subtotal, Delivery (Free), 5% GST, Grand Total.
+   - Dual action buttons: `🛍️ Add to Bag / Checkout` and `💬 Order on WhatsApp` (with automatic formatted message containing all artwork placements, sizes, and colors).
+7. **Key Specifications Table**:
+   - Comprehensive technical garment attributes table: Sizes, Colors, MOQ, Fabric, GSM, Fit Type, Print Tech, Country of Origin.
 
 ---
 
-## 2. Target Files & Detailed Changes
-
-### File 1: `apps/frontend/index.html`
-- **Action:**
-  1. Remove all unstyled wireframe HTML from `<div id="root">`.
-  2. Inside `<div id="root">`, add an ultra-lightweight, luxury Bingooo splash loader styled with brand tokens:
-     - Background: `#111111` (dark charcoal matching brand)
-     - Typography: `BINGOOO.` with signal red dot `#E6321C`
-     - CSS animation: subtle loading bar / pulse that runs instantly with 0ms delay.
-  3. Wrap the SEO crawler text, category links, and FAQ schema text inside `<noscript>` tags.
-     - Browsers with JS enabled: `<noscript>` is ignored by default (never painted).
-     - Crawlers & non-JS clients: parse the full text, links, and content cleanly.
-
-### File 2: `apps/frontend/scripts/prerender-seo.mjs`
-- **Action:**
-  1. Modify line 306-326 where `routeFallback` is injected.
-  2. Instead of replacing the `#root` inner HTML with raw visible text, wrap `routeFallback` inside `<noscript>` or keep `#root` clean while appending `<noscript>${routeFallback}</noscript>` to the body.
-  3. Maintain full SEO metadata, JSON-LD schemas, Title, and Meta description tags.
-
-### File 3: `apps/frontend/public/sw.js`
-- **Action:**
-  1. Bump `CACHE_NAME` to `'bingooo-cache-v3'`.
-  2. In the `activate` event listener, purge all outdated caches (`bingooo-cache-v1`, `bingooo-cache-v2`).
-  3. Ensure navigation requests fetch the latest network copy and do not lock users into broken script hashes.
-
-### File 4: `apps/frontend/src/lib/sw/registerServiceWorker.ts`
-- **Action:**
-  1. Enhance Service Worker controller change handling so that when a new worker activates, the page updates cleanly.
-  2. Add an unhandled module script error fallback: if a dynamic script import fails due to a stale deploy hash, automatically bypass service worker cache and reload.
+## 2. Invariants & Scope Rules
+- **Rule 1**: Only touch `apps/frontend/src/pages/CustomizerPage.tsx`. Do NOT touch any other file.
+- **Rule 2**: Strict adherence to Bingooo design tokens (`#F7EEDB` warm cream, `#171717` charcoal, `#E6321C` signal red, Manrope font, Lucide icons).
+- **Rule 3**: Zero TypeScript errors (`npm run typecheck`).
+- **Rule 4**: Keep existing features intact: 3D WebGL viewer toggle, custom text mode, and wishlist saving.
 
 ---
 
-## 3. Verification & Acceptance Criteria
-- [ ] `npm run typecheck` passes with zero errors.
-- [ ] `npm run build:frontend` completes successfully, generating static routes.
-- [ ] Playwright test confirms:
-  - No raw unstyled text or 1990s wireframe appears on first paint.
-  - `#root` renders cleanly and mounts the full React application seamlessly.
-- [ ] Knowledge graph updated via `python -m graphify update .`.
+## 3. Implementation Steps in `CustomizerPage.tsx`
 
----
-
-## 4. Risks & Mitigations
-- **Risk:** Search engines losing crawlable keywords.
-  - **Mitigation:** Full keyword text, links, and FAQ are preserved in `<noscript>`, plus `<head>` JSON-LD `WebSite`, `Organization`, `FAQPage`, and OpenGraph tags remain 100% intact.
-- **Risk:** Existing users having stale service worker cache in their browsers.
-  - **Mitigation:** Bumping cache name to `bingooo-cache-v3` forces eviction of `bingooo-cache-v2` upon next visit.
+1. **State Enhancements**:
+   - `sizeMatrix`: Quantities per color and size (`Record<string, Record<string, number>>`).
+   - `selectedPrintTechnique`: `'dtf' | 'puff' | 'screen'`.
+   - `selectedPackaging`: `'polybag' | 'ziplock'`.
+   - `pincodeInput` & `pincodeDeliveryStatus`: Estimated delivery days.
+   - Artwork slots: Support `front`, `back`, `chest`, `neckLabel`, `washCare`.
+   - Sliders & motion values for each artwork placement.
+2. **Left Column (Preview & Thumbnails)**:
+   - Sticky desktop viewport container with 2D Canvas / 3D Viewer toggle.
+   - Interactive draggable artwork with selection badges.
+   - Swatch / thumbnail selector row below the garment canvas for switching colors and views.
+3. **Right Column (BlanqFactory Structure)**:
+   - Title, GSM badge, price banner, trust badges.
+   - Pincode delivery checker.
+   - Color / Size matrix table with stepper buttons and direct number inputs.
+   - Print technique dropdown selector.
+   - Custom branding section with interactive thumbnail cards, size sliders, and canvas drag indicators.
+   - Packaging selector.
+   - Live order total calculation card.
+   - Dual action buttons: `Add to Bag` + `Order on WhatsApp`.
+4. **Key Specifications Table**:
+   - Clean, high-contrast specs table at the bottom of the page detailing 240 GSM loopknit cotton, DTF printing, oversized boxy fit, and Indian manufacturing heritage.
+5. **Verification**:
+   - Run `npm run typecheck`.
+   - Browser subagent verification of matrix table, artwork upload, size sliders, canvas drag, and responsive layout.

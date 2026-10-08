@@ -23,6 +23,7 @@ import { api } from '../lib/api/client';
 import { useToast } from '../components/ui/Toast';
 import { getWhatsAppUrl, WhatsAppIcon } from '../components/ui/SocialIcons';
 import { triggerHaptic } from '../lib/native/capacitorBridge';
+import { trackPurchase } from '../lib/analytics';
 
 const PAID_STATUSES = ['captured', 'paid'];
 // The WhatsApp confirmation is sent a moment after payment; re-check briefly so
@@ -50,6 +51,7 @@ export function OrderSuccessPage() {
   const [isLoading, setIsLoading] = useState<boolean>(!stateOrder && !!orderNumber && !isPaymentFailure);
   const [copied, setCopied] = useState(false);
   const refreshCount = useRef(0);
+  const purchaseTracked = useRef(false);
 
   // Load the latest copy of the order (the checkout snapshot predates payment).
   useEffect(() => {
@@ -64,6 +66,16 @@ export function OrderSuccessPage() {
           setOrder(data);
           setHasFreshOrder(true);
           const paid = PAID_STATUSES.includes(String(data?.payment_status));
+
+          if (paid && !purchaseTracked.current) {
+            purchaseTracked.current = true;
+            trackPurchase({
+              orderNumber: String(data.order_number || data.id || orderNumber),
+              amount: Number(data.total_amount || data.total || 0),
+              items: data.items,
+            });
+          }
+
           if (paid && data?.whatsapp_confirmation?.status === 'sending' && refreshCount.current < REFRESH_DELAYS_MS.length) {
             timer = setTimeout(load, REFRESH_DELAYS_MS[refreshCount.current++]);
           }

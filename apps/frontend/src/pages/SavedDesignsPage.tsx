@@ -31,9 +31,9 @@ export function SavedDesignsPage() {
           <h1 className="text-display-lg font-bold text-ink">My Custom Designs</h1>
           <p className="text-body text-muted">Review your saved print artworks & designs</p>
         </div>
-        <Link to="/customize">
+        <Link to="/shop">
           <Button variant="primary">
-            <Sparkles size={16} /> Create New Design
+            Browse Collection
           </Button>
         </Link>
       </div>
@@ -49,8 +49,8 @@ export function SavedDesignsPage() {
           <p className="mt-1 text-body text-muted max-w-sm">
             You haven't created any custom apparel designs yet. Try our design studio!
           </p>
-          <Link to="/customize" className="mt-6">
-            <Button variant="primary">Start Designing</Button>
+          <Link to="/shop" className="mt-6">
+            <Button variant="primary">Explore Collection</Button>
           </Link>
         </div>
       ) : (
@@ -86,9 +86,9 @@ export function SavedDesignsPage() {
                 </span>
               </div>
 
-              <Link to={`/customize/${design.product?.slug || ''}`} className="block">
+              <Link to={`/product/${design.product?.slug || ''}`} className="block">
                 <Button variant="outline" size="sm" fullWidth>
-                  Open in Customizer <ArrowRight size={14} />
+                  View Garment <ArrowRight size={14} />
                 </Button>
               </Link>
             </motion.div>

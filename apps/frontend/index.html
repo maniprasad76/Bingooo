@@ -175,6 +175,15 @@
         if (fv) fv.href = '/brand-logo.svg?t=' + Date.now();
       } catch (e) {}
     </script>
+
+    <!-- ── Google Analytics 4 (GA4) ── -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-N5EGTHS9SG"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-N5EGTHS9SG');
+    </script>
   </head>
   <body>
     <!-- ── Brand Preloader: Displayed instantly with zero latency while JS bundle initializes ── -->

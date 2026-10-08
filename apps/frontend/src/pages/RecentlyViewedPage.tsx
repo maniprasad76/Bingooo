@@ -299,17 +299,6 @@ function RecentlyViewedCard({
                 <ShoppingBag size={13} />
                 <span>ADD TO BAG</span>
               </motion.button>
-
-              {item.customizationEnabled && (
-                <Link
-                  to={`/customize/${item.slug}`}
-                  className="p-2.5 rounded-xl border border-[#DDD3C5] hover:border-[#171717] text-[#171717] transition-colors"
-                  title="Customize in Atelier Studio"
-                  aria-label="Customize"
-                >
-                  <Sparkles size={14} className="text-[#E6321C]" />
-                </Link>
-              )}
             </div>
           </div>
         </div>
@@ -524,11 +513,9 @@ export function RecentlyViewedPage() {
               icon="compass"
               title="NO RECENTLY VIEWED GARMENTS"
               subtitle="ZERO BROWSING FOOTPRINTS"
-              description="You haven't explored any pieces yet. Browse our signature 240 GSM drops, heavyweight hoodies, or launch the 3D Customizer to craft bespoke apparel."
+              description="You haven't explored any pieces yet. Browse our signature 240 GSM drops and heavyweight hoodies crafted for everyday wear."
               actionText="DISCOVER THE SHOP"
               actionTo="/shop"
-              secondaryActionText="CUSTOM DESIGN STUDIO"
-              secondaryActionTo="/customize"
               showSuggestions={true}
             />
           </div>

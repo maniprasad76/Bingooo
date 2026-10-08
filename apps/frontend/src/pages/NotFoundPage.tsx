@@ -4,7 +4,6 @@ import {
   Search,
   Phone,
   ArrowRight,
-  Sparkles,
   ShoppingBag,
   Package,
   Ruler,
@@ -126,15 +125,6 @@ export function NotFoundPage() {
             </Link>
 
             <Link
-              to="/customize"
-              onClick={() => triggerHaptic('light')}
-              className="btn btn-red text-xs inline-flex items-center gap-2"
-            >
-              <Sparkles className="w-3.5 h-3.5" />
-              <span>CUSTOM 3D STUDIO</span>
-            </Link>
-
-            <Link
               to="/"
               onClick={() => triggerHaptic('light')}
               className="btn btn-outline text-xs"
@@ -186,8 +176,6 @@ export function NotFoundPage() {
 
           <div className="flex flex-wrap justify-center items-center gap-3 mt-8 font-mono text-[11px] uppercase tracking-wider text-[#DDD3C5]">
             <Link to="/shop" className="hover:text-white underline">SHOP ALL TEES</Link>
-            <span>•</span>
-            <Link to="/customize" className="hover:text-white underline">3D CUSTOMIZER</Link>
             <span>•</span>
             <Link to="/size-guide" className="hover:text-white underline">SIZE & FIT GUIDE</Link>
             <span>•</span>

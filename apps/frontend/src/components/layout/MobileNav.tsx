@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'react-router-dom';
-import { Home, LayoutGrid, Sparkles, ShoppingBag, User } from 'lucide-react';
+import { Home, LayoutGrid, Heart, ShoppingBag, User } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '../../lib/utils';
 import { useCartStore } from '../../store/cart';
@@ -23,13 +23,12 @@ export function MobileNav() {
     ) {
       return 'shop';
     }
-    if (path.startsWith('/customize')) return 'custom';
+    if (path.startsWith('/wishlist')) return 'wishlist';
     if (path.startsWith('/cart') || path.startsWith('/checkout')) return 'bag';
     if (
       path.startsWith('/account') ||
       path.startsWith('/login') ||
-      path.startsWith('/signup') ||
-      path.startsWith('/wishlist')
+      path.startsWith('/signup')
     ) {
       return 'profile';
     }
@@ -47,20 +46,19 @@ export function MobileNav() {
     },
     {
       id: 'shop',
-      label: 'Shop Catalog',
+      label: 'Shop',
       href: '/shop',
       icon: LayoutGrid,
     },
     {
-      id: 'custom',
-      label: 'Custom Studio',
-      href: '/customize',
-      icon: Sparkles,
-      isHighlight: true,
+      id: 'wishlist',
+      label: 'Wishlist',
+      href: '/wishlist',
+      icon: Heart,
     },
     {
       id: 'bag',
-      label: 'Shopping Bag',
+      label: 'Bag',
       onClick: openDrawer,
       icon: ShoppingBag,
       badge: itemCount,
@@ -73,8 +71,8 @@ export function MobileNav() {
     },
   ];
 
-  // In the Atelier Customizer or when mobile menu drawer is open, hide global mobile nav
-  if (location.pathname.startsWith('/customize') || mobileMenuOpen) {
+  // When mobile menu drawer is open, hide global mobile nav
+  if (mobileMenuOpen) {
     return null;
   }
 
@@ -114,8 +112,7 @@ export function MobileNav() {
                     'transition-all duration-200',
                     isActive
                       ? 'scale-110 stroke-[2.2]'
-                      : 'stroke-[1.8]',
-                    item.isHighlight && !isActive && 'text-[#E6321C] stroke-[2]'
+                      : 'stroke-[1.8]'
                   )}
                 />
 
@@ -134,11 +131,6 @@ export function MobileNav() {
                       </motion.span>
                     )}
                   </AnimatePresence>
-                )}
-
-                {/* Custom Studio highlight dot when inactive */}
-                {item.isHighlight && !isActive && (
-                  <span className="absolute -top-0.5 -right-1 h-1.5 w-1.5 rounded-full bg-[#E6321C] shadow-[0_0_6px_#E6321C]" />
                 )}
               </div>
 

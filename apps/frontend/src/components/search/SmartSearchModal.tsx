@@ -24,14 +24,14 @@ const TRENDING_TAGS = [
   { label: 'Hoodies & Fleece', query: 'hoodie' },
   { label: 'Boxy Drop Shoulder', query: 'boxy' },
   { label: 'Vintage Acid Wash', query: 'wash' },
-  { label: 'Custom Design Lab', query: 'custom' },
+  { label: 'Heavyweight Drop', query: 'heavyweight' },
 ];
 
 const CATEGORY_QUICK_LINKS = [
   { name: 'Oversized Tees', slug: 'oversized-tees', gsm: '240 GSM' },
   { name: 'Hoodies & Fleece', slug: 'hoodies', gsm: '380 GSM' },
   { name: 'Pants & Cargos', slug: 'cargos', gsm: 'Heavy Twill' },
-  { name: 'Design Studio', slug: 'customize', isCustomizer: true },
+  { name: 'All Drops', slug: 'all-products', gsm: 'Full Catalog' },
 ];
 
 export function SmartSearchModal() {
@@ -413,19 +413,9 @@ export function SmartSearchModal() {
                     <button
                       onClick={() => {
                         closeSearchModal();
-                        navigate('/customize');
-                      }}
-                      className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#E6321C] text-white text-xs font-bold uppercase tracking-wide hover:bg-[#B91F12] transition-colors shadow-xs"
-                    >
-                      <Sparkles size={13} />
-                      Open Design Studio
-                    </button>
-                    <button
-                      onClick={() => {
-                        closeSearchModal();
                         navigate('/shop');
                       }}
-                      className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-white border border-[#DDD3C5] text-xs font-bold text-[#171717] hover:border-[#171717] transition-colors"
+                      className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#171717] text-white text-xs font-bold uppercase tracking-wide hover:bg-[#E6321C] transition-colors shadow-xs"
                     >
                       Browse All Garments
                     </button>
@@ -505,8 +495,8 @@ export function SmartSearchModal() {
                           type="button"
                           onClick={() => {
                             closeSearchModal();
-                            if (cat.isCustomizer) {
-                              navigate('/customize');
+                            if (cat.slug === 'all-products') {
+                              navigate('/shop');
                             } else {
                               navigate(`/category/${cat.slug}`);
                             }

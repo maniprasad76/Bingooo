@@ -51,7 +51,6 @@ const FOOTER_SECTIONS: FooterSection[] = [
     links: [
       { label: 'Men', href: '/shop?category=men' },
       { label: 'Women', href: '/shop?category=women' },
-      { label: 'Custom Studio', href: '/customize' },
       { label: 'All Products', href: '/shop' },
       {
         label: 'Bulk Orders (WA)',

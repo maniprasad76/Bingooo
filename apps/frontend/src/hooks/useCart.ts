@@ -5,6 +5,7 @@ import { useToast } from '../components/ui/Toast';
 import { useEffect } from 'react';
 import { triggerHaptic } from '../lib/native/capacitorBridge';
 import { saveCartItemMeta, type CartItemMeta } from '../lib/cartMeta';
+import { trackAddToCart } from '../lib/analytics';
 
 export function useCart() {
   const queryClient = useQueryClient();
@@ -26,10 +27,15 @@ export function useCart() {
   const addItemMutation = useMutation({
     mutationFn: (data: { variantId: string; quantity: number; customizationId?: string }) =>
       api.post<any>('/cart/items', data),
-    onSuccess: (updatedCart) => {
+    onSuccess: (updatedCart, vars) => {
       triggerHaptic('medium');
       queryClient.setQueryData(['cart'], updatedCart);
       setItemCount(updatedCart.itemCount || 0);
+      trackAddToCart({
+        id: vars.variantId,
+        name: 'Bingooo Garment',
+        quantity: vars.quantity,
+      });
       toast({ title: 'Added to cart', description: 'Item has been added to your shopping bag', variant: 'success' });
       openDrawer();
     },

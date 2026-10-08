@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Heart, Sparkles, ShoppingBag, Eye } from 'lucide-react';
+import { Heart, ShoppingBag, Eye } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useWishlist, useIsInWishlist } from '../../hooks/useWishlist';
 import { useCart } from '../../hooks/useCart';
@@ -145,12 +145,6 @@ export function ProductCard({
                   ESSENTIAL
                 </span>
               )}
-              {customizationEnabled && (
-                <span className="inline-flex items-center gap-1 px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-full bg-[#E6321C] text-white text-[8px] sm:text-[10px] font-sans font-bold uppercase tracking-wider shadow-sm">
-                  <Sparkles size={10} />
-                  Custom
-                </span>
-              )}
               {saleTag ? (
                 <span className="inline-flex items-center px-1.5 py-0.5 sm:px-2 rounded-full bg-[#E6321C] text-white text-[8px] sm:text-[10px] font-sans font-bold tracking-wider shadow-sm">
                   {saleTag}
@@ -197,27 +191,15 @@ export function ProductCard({
 
             {/* Bottom Floating Quick Actions on Hover (Desktop only) */}
             <div className="hidden sm:flex absolute inset-x-3.5 bottom-3.5 z-10 gap-1.5 opacity-0 translate-y-2 transition-all duration-300 ease-out group-hover:opacity-100 group-hover:translate-y-0">
-              {customizationEnabled ? (
-                <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.97 }} className="flex-1 flex">
-                  <Link
-                    to={`/customize/${slug}`}
-                    className="w-full flex items-center justify-center gap-1.5 rounded-lg bg-[#171717] text-white py-2 text-[11px] font-sans font-semibold uppercase tracking-wide shadow-md hover:bg-[#E6321C] transition-colors"
-                  >
-                    <Sparkles size={12} />
-                    Design Studio
-                  </Link>
-                </motion.div>
-              ) : (
-                <motion.button
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.97 }}
-                  onClick={handleQuickAdd}
-                  className="flex-1 flex items-center justify-center gap-1.5 rounded-lg bg-[#171717] text-white py-2 text-[11px] font-sans font-semibold uppercase tracking-wide shadow-md hover:bg-[#E6321C] transition-colors"
-                >
-                  <ShoppingBag size={12} />
-                  Quick Bag
-                </motion.button>
-              )}
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.97 }}
+                onClick={handleQuickAdd}
+                className="flex-1 flex items-center justify-center gap-1.5 rounded-lg bg-[#171717] text-white py-2 text-[11px] font-sans font-semibold uppercase tracking-wide shadow-md hover:bg-[#E6321C] transition-colors"
+              >
+                <ShoppingBag size={12} />
+                Quick Bag
+              </motion.button>
             </div>
           </div>
 

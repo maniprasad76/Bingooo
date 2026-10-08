@@ -3,7 +3,6 @@ import {
   FileCheck,
   CheckCircle2,
   XCircle,
-  Sparkles,
   ArrowRight,
   ShieldAlert,
   Image as ImageIcon,
@@ -71,7 +70,7 @@ export function ArtworkGuidelinesPage() {
         <div className="space-y-4 text-left border-b border-[#DDD3C5] pb-10">
           <Breadcrumbs
             items={[
-              { name: 'Custom Studio', url: '/customize' },
+              { name: 'Shop', url: '/shop' },
               { name: 'Artwork Guidelines', url: '/artwork-guidelines' },
             ]}
           />
@@ -90,11 +89,10 @@ export function ArtworkGuidelinesPage() {
             </div>
 
             <Link
-              to="/customize"
+              to="/shop"
               className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-[#E6321C] hover:bg-[#B91F12] text-white text-xs font-semibold uppercase tracking-wide transition-colors shadow-xs shrink-0 self-start lg:self-auto"
             >
-              <Sparkles size={14} />
-              <span>Open 3D Studio & Upload</span>
+              <span>Explore Garments</span>
             </Link>
           </div>
         </div>
@@ -242,10 +240,10 @@ export function ArtworkGuidelinesPage() {
               <span>Send Artwork for Free Verification</span>
             </a>
             <Link
-              to="/customize"
+              to="/shop"
               className="inline-flex items-center gap-1.5 text-xs font-bold text-[#171717] hover:text-[#E6321C]"
             >
-              <span>Test File in 3D Customizer</span>
+              <span>Browse Garments</span>
               <ArrowRight size={13} />
             </Link>
           </div>

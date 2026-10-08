@@ -250,11 +250,11 @@ export function PrivacyPolicyPage() {
 
           <div>
             <Link
-              to="/customize"
+              to="/shop"
               onClick={() => triggerHaptic('medium')}
               className="inline-flex items-center justify-center min-h-[48px] px-[23px] rounded-[7px] bg-[#e6321c] text-white text-[10px] font-bold uppercase tracking-wider hover:bg-[#b91f12] hover:-translate-y-0.5 transition-all"
             >
-              EXPLORE 3D STUDIO →
+              EXPLORE THE ATELIER →
             </Link>
           </div>
         </div>

@@ -193,6 +193,7 @@ export class OrdersService implements OnModuleInit, OnModuleDestroy {
         quantity: item.quantity,
         unit_price: item.unitPrice,
         total: item.total,
+        image_url: item.imageUrl || item.customizationPreview || null,
         created_at: new Date().toISOString(),
       });
 
@@ -398,15 +399,32 @@ export class OrdersService implements OnModuleInit, OnModuleDestroy {
           : null;
         const variant = i.variant_id ? db.product_variants.find((v) => v.id === i.variant_id) : null;
         const productId = i.product_id || variant?.product_id;
-        const product = productId ? db.products.find((p) => p.id === productId) : null;
-        const productImages = productId ? getImagesByProductId(productId) : [];
+        const product = productId
+          ? db.products.find((p) => p.id === productId)
+          : (i.title_snapshot ? db.products.find((p) => p.title?.toLowerCase() === i.title_snapshot.toLowerCase()) : null);
+        const productImages = product?.id ? getImagesByProductId(product.id) : [];
         const primaryImage = productImages.find((img: any) => img.is_primary) || productImages[0];
-        const imageUrl =
+        let imageUrl =
+          i.image_url ||
+          i.imageUrl ||
+          i.image ||
           customization?.preview_url ||
           customization?.preview_key ||
           (primaryImage ? (primaryImage.url || primaryImage.object_key) : null) ||
           (product as any)?.image_url ||
+          (product as any)?.primary_image ||
+          (product as any)?.images?.[0]?.url ||
+          (product as any)?.images?.[0] ||
           null;
+
+        if (imageUrl && imageUrl.includes('tshirt-step-3-black.png')) {
+          imageUrl = '/custom/black-front.png';
+        }
+
+        if (!imageUrl && customization) {
+          const garment = customization.design_json?.garment;
+          imageUrl = garment?.frontImageUrl || '/custom/black-front.png';
+        }
 
         return {
           ...i,

@@ -239,25 +239,25 @@ export function AboutPage() {
 
         <div className="flex flex-col justify-center p-[45px_24px] sm:p-[clamp(45px,7vw,100px)] bg-[#171717] text-white">
           <div className="text-[10px] font-semibold tracking-[0.2em] uppercase text-[#e6321c] mb-3">
-            CUSTOM STUDIO
+            BINGOOO ATELIER
           </div>
 
           <h2 className="my-3 mb-5 text-[clamp(40px,5vw,70px)] font-extrabold leading-[0.88] tracking-[-0.065em] uppercase text-white">
-            YOUR IDEA.<br />
-            YOUR CANVAS.
+            WEAR WHAT<br />
+            DEFINES YOU.
           </h2>
 
           <p className="max-w-[410px] m-0 mb-[30px] text-[#aaa7a1] text-[12px] leading-[1.8]">
-            We believe your favourite piece of clothing doesn't always exist yet. That's why we built BINGOOO Custom. Upload your artwork, choose your garment, customize it and make something completely yours.
+            We build streetwear that stands apart. From 240 GSM single jersey cotton to precision-tailored drop shoulders, every garment is engineered for durability, structure, and distinctive style.
           </p>
 
           <div>
             <Link
-              to="/customize"
+              to="/shop"
               onClick={() => triggerHaptic('medium')}
               className="inline-flex items-center justify-center min-h-[48px] px-[23px] rounded-[7px] bg-[#e6321c] text-white text-[10px] font-bold uppercase tracking-wider hover:bg-[#b91f12] hover:-translate-y-0.5 transition-all"
             >
-              CREATE YOUR OWN →
+              EXPLORE THE COLLECTION →
             </Link>
           </div>
         </div>

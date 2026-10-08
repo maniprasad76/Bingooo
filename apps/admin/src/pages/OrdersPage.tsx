@@ -33,6 +33,9 @@ interface OrderItem {
   image?: string;
   image_url?: string;
   imageUrl?: string;
+  product?: any;
+  variant?: any;
+  variant_snapshot_json?: any;
   customization?: any;
 }
 
@@ -299,8 +302,17 @@ export function OrdersPage() {
                     firstItem?.image_url ||
                     firstItem?.imageUrl ||
                     firstItem?.image ||
+                    firstItem?.product?.images?.[0]?.url ||
+                    firstItem?.product?.images?.[0] ||
+                    firstItem?.product?.image_url ||
+                    firstItem?.product?.primary_image ||
+                    firstItem?.product?.primaryImage ||
+                    firstItem?.variant?.image ||
+                    firstItem?.variant_snapshot_json?.image ||
                     firstItem?.customization?.previewKey ||
-                    firstItem?.customization?.preview_url;
+                    firstItem?.customization?.preview_url ||
+                    firstItem?.customization?.preview_key ||
+                    firstItem?.customization?.design_json?.garment?.frontImageUrl;
                   const itemImg = resolveImageUrl(rawImg);
                   const itemCount = o.items?.length || o.itemCount || 1;
                   const hasCustom = o.items?.some((it) => !!it.customization) || !!firstItem?.customization;
@@ -322,13 +334,17 @@ export function OrdersPage() {
                               className="w-full h-full object-cover group-hover/thumb:scale-110 transition-transform duration-300"
                               onError={(e) => {
                                 (e.target as HTMLElement).style.display = 'none';
+                                const fallback = (e.target as HTMLElement).nextElementSibling;
+                                if (fallback) (fallback as HTMLElement).style.display = 'flex';
                               }}
                             />
-                          ) : (
-                            <div className="flex flex-col items-center justify-center text-muted/60 group-hover/thumb:text-brand-red transition-colors">
-                              <Shirt size={22} />
-                            </div>
-                          )}
+                          ) : null}
+                          <div
+                            className="flex flex-col items-center justify-center text-muted/60 group-hover/thumb:text-brand-red transition-colors"
+                            style={{ display: itemImg ? 'none' : 'flex' }}
+                          >
+                            <Shirt size={22} />
+                          </div>
 
                           {/* 3D Customizer Badge if bespoke print */}
                           {hasCustom && (
@@ -535,8 +551,16 @@ export function OrdersPage() {
                     it.image_url ||
                       it.imageUrl ||
                       it.image ||
+                      (it as any).product?.images?.[0]?.url ||
+                      (it as any).product?.images?.[0] ||
+                      (it as any).product?.image_url ||
+                      (it as any).product?.primary_image ||
+                      (it as any).variant?.image ||
+                      (it as any).variant_snapshot_json?.image ||
                       it.customization?.previewKey ||
-                      it.customization?.preview_url
+                      it.customization?.preview_url ||
+                      (it.customization as any)?.preview_key ||
+                      (it.customization as any)?.design_json?.garment?.frontImageUrl
                   );
                   return (
                     <div key={idx} className="py-3 first:pt-0 last:pb-0 flex items-center justify-between text-xs gap-3">
@@ -549,11 +573,17 @@ export function OrdersPage() {
                               className="w-full h-full object-cover"
                               onError={(e) => {
                                 (e.target as HTMLElement).style.display = 'none';
+                                const fallback = (e.target as HTMLElement).nextElementSibling;
+                                if (fallback) (fallback as HTMLElement).style.display = 'flex';
                               }}
                             />
-                          ) : (
-                            <Shirt size={18} className="text-muted/60" />
-                          )}
+                          ) : null}
+                          <div
+                            className="flex flex-col items-center justify-center text-muted/60"
+                            style={{ display: itImg ? 'none' : 'flex' }}
+                          >
+                            <Shirt size={18} />
+                          </div>
                           {it.customization && (
                             <span className="absolute top-0.5 right-0.5 px-0.5 py-0.2 rounded text-[6px] font-mono font-black uppercase bg-brand-red text-white">
                               3D

@@ -71,7 +71,6 @@ export function prefetchCategory(categorySlug: string): void {
 /** Route prefetching dictionary for dynamic chunk warm-up */
 const routeChunkMap: Record<string, () => Promise<any>> = {
   '/shop': () => import('../../pages/ShopPage'),
-  '/customizer': () => import('../../pages/CustomizerPage'),
   '/cart': () => import('../../pages/CartPage'),
   '/checkout': () => import('../../pages/CheckoutPage'),
   '/account': () => import('../../pages/AccountPage'),

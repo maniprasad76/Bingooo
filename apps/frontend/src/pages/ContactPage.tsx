@@ -567,24 +567,24 @@ export function ContactPage() {
 
             <div className="relative z-10">
               <div className="text-[#e6321c] text-[10px] font-extrabold tracking-[0.15em] uppercase mb-4">
-                Custom Design Studio
+                Signature Atelier Drops
               </div>
 
               <h2 className="m-0 text-[clamp(36px,5vw,64px)] leading-[0.92] tracking-[-0.06em] font-extrabold uppercase text-white">
-                YOUR IDEA.<br />YOUR GARMENT.
+                WEAR WHAT<br />DEFINES YOU.
               </h2>
 
               <p className="mt-5 mb-0 text-[#999999] text-[14px] leading-[1.8] max-w-[560px]">
-                Have something specific in mind? Upload your artwork, customize your garment and create something that feels completely yours.
+                Explore our full catalog of heavyweight oversized tees, hoodies, and cargo pants tailored for modern streetwear.
               </p>
             </div>
 
             <Link
-              to="/customize"
+              to="/shop"
               onClick={() => triggerHaptic('medium')}
               className="relative z-10 inline-flex items-center justify-center h-[50px] px-[26px] bg-[#e6321c] text-white rounded-[10px] text-[11px] font-extrabold uppercase tracking-[0.05em] hover:bg-[#b91f12] transition-colors whitespace-nowrap"
             >
-              Create Your Design →
+              Explore Collection →
             </Link>
           </div>
         </div>

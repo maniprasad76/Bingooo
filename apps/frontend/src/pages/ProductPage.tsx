@@ -10,12 +10,14 @@ import { SEO } from '../components/common/SEO';
 import { generateProductSchema } from '../lib/seo/schema';
 import { SITE_URL, categoryUrl, productImages, productSeoDescription, productSeoTitle, productUrl } from '../lib/seo/catalog-seo.mjs';
 import { triggerHaptic } from '../lib/native/capacitorBridge';
+import { trackViewItem } from '../lib/analytics';
 import { ProductDetailSkeleton } from '../components/ui/Skeleton';
 import { StickyMobileActionBar } from '../components/product/StickyMobileActionBar';
 import { ProductPlaceholder } from '../components/ui/ProductPlaceholder';
 import { WhatsAppIcon } from '../components/ui/SocialIcons';
 import { resolveImageUrl } from '../lib/utils';
 import { ProductReviews } from '../components/product/ProductReviews';
+import { ProductDeliveryTimeline } from '../components/product/ProductDeliveryTimeline';
 
 const DEFAULT_RELATED: any[] = [];
 
@@ -88,10 +90,16 @@ export function ProductPage() {
   const { data: wishlistData } = useIsInWishlist(product?.id);
   const inWishlist = !!wishlistData?.inWishlist;
 
-  // Track product in recently viewed
+  // Track product in recently viewed and GA4 view_item
   useEffect(() => {
     if (product) {
       addProduct(product);
+      trackViewItem({
+        id: product.id,
+        name: product.title,
+        price: Number(product.price),
+        category: (product as any)?.category?.name || (product as any)?.category,
+      });
     }
   }, [product, addProduct]);
 
@@ -102,6 +110,11 @@ export function ProductPage() {
         .map((img: any) => resolveImageUrl(typeof img === 'string' ? img : img.url || img.object_key))
         .filter(Boolean);
       if (urls.length > 0) return urls;
+    }
+    const single = product?.image_url || product?.imageUrl || product?.primary_image || product?.primaryImage || (product as any)?.image;
+    if (single) {
+      const resolved = resolveImageUrl(typeof single === 'string' ? single : single.url || single.object_key);
+      if (resolved) return [resolved];
     }
     return [];
   }, [product]);
@@ -759,6 +772,9 @@ export function ProductPage() {
                 <WhatsAppIcon className="w-5 h-5" />
               </button>
             </div>
+
+            {/* Delivery Timeline */}
+            <ProductDeliveryTimeline />
 
             {/* Delivery Check */}
             <div className="mt-[28px] pt-[25px] border-t border-[#ddd3c5]">

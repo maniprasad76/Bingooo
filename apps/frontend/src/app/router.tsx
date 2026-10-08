@@ -12,14 +12,12 @@ import { lazyPage } from './lazyPage';
 // ─── Lazy-loaded route components (code-splitting for faster first paint) ───
 const ShopPage = lazyPage(() => import('../pages/ShopPage'), 'ShopPage');
 const ProductPage = lazyPage(() => import('../pages/ProductPage'), 'ProductPage');
-const CustomizerPage = lazyPage(() => import('../pages/CustomizerPage'), 'CustomizerPage');
 const CartPage = lazyPage(() => import('../pages/CartPage'), 'CartPage');
 const CheckoutPage = lazyPage(() => import('../pages/CheckoutPage'), 'CheckoutPage');
 const OrderSuccessPage = lazyPage(() => import('../pages/OrderSuccessPage'), 'OrderSuccessPage');
 const AccountPage = lazyPage(() => import('../pages/AccountPage'), 'AccountPage');
 const OrderDetailPage = lazyPage(() => import('../pages/OrderDetailPage'), 'OrderDetailPage');
 const WishlistPage = lazyPage(() => import('../pages/WishlistPage'), 'WishlistPage');
-const SavedDesignsPage = lazyPage(() => import('../pages/SavedDesignsPage'), 'SavedDesignsPage');
 const AddressesPage = lazyPage(() => import('../pages/AddressesPage'), 'AddressesPage');
 const SearchPage = lazyPage(() => import('../pages/SearchPage'), 'SearchPage');
 const PoliciesPage = lazyPage(() => import('../pages/PoliciesPage'), 'PoliciesPage');
@@ -73,10 +71,10 @@ export const router = createBrowserRouter([
       { path: 'collection/:slug', element: <CollectionRedirect /> },
       { path: 'product/:slug', element: <ProductPage /> },
 
-      // Custom Atelier
-      { path: 'customize', element: <CustomizerPage /> },
-      { path: 'customize/:productSlug', element: <CustomizerPage /> },
-      { path: 'custom', element: <Navigate to="/customize" replace /> },
+      // Redirect legacy customizer routes to shop
+      { path: 'customize', element: <Navigate to="/shop" replace /> },
+      { path: 'customize/:productSlug', element: <Navigate to="/shop" replace /> },
+      { path: 'custom', element: <Navigate to="/shop" replace /> },
 
       // Shopping Bag & Checkout
       { path: 'cart', element: <CartPage /> },
@@ -101,7 +99,7 @@ export const router = createBrowserRouter([
       { path: 'account/orders', element: <RequireAuth><AccountPage /></RequireAuth> },
       { path: 'account/orders/:orderNumber', element: <RequireAuth><OrderDetailPage /></RequireAuth> },
       { path: 'account/recently-viewed', element: <RecentlyViewedPage /> },
-      { path: 'account/designs', element: <RequireAuth><SavedDesignsPage /></RequireAuth> },
+      { path: 'account/designs', element: <Navigate to="/account" replace /> },
       { path: 'account/addresses', element: <RequireAuth><AddressesPage /></RequireAuth> },
 
       // Auth
@@ -137,7 +135,7 @@ export const router = createBrowserRouter([
 
       // Services & Textile Engineering Guides
       { path: 'bulk-orders', element: <Navigate to="/contact" replace /> },
-      { path: 'dtf-printing', element: <Navigate to="/customize" replace /> },
+      { path: 'dtf-printing', element: <Navigate to="/shop" replace /> },
       { path: 'fabric-guide', element: <Navigate to="/about" replace /> },
       { path: 'fabric-specifications', element: <Navigate to="/about" replace /> },
       { path: 'artwork-guidelines', element: <ArtworkGuidelinesPage /> },

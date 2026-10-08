@@ -237,11 +237,11 @@ export function HomePage() {
               </Link>
 
               <Link
-                to="/customize"
+                to="/shop?category=women"
                 className="h-[52px] px-8 rounded-[10px] text-xs font-bold tracking-wider uppercase inline-flex items-center justify-center gap-2.5 bg-[#171717] text-white hover:bg-black shadow-[0_6px_20px_rgba(23,23,23,0.18)] hover:shadow-[0_8px_26px_rgba(23,23,23,0.28)] transition-all duration-200 group w-full sm:w-auto cursor-pointer active:scale-[0.98] border border-[#171717]"
               >
-                <Sparkles size={15} className="text-[#E6321C] transition-transform duration-200 group-hover:rotate-12" />
-                <span>CREATE YOUR DESIGN</span>
+                <span>SHOP WOMEN'S WEAR</span>
+                <span className="transition-transform duration-200 group-hover:translate-x-1">→</span>
               </Link>
             </div>
           </div>
@@ -442,26 +442,25 @@ export function HomePage() {
 
         <div className="px-6 py-12 sm:p-12 md:p-14 lg:p-16 xl:p-20 flex flex-col justify-center text-left">
           <div className="eyebrow text-[#171717] mb-2">
-            CUSTOM STUDIO
+            SIGNATURE COLLECTION
           </div>
 
           <h2 className="my-2 mb-4 text-[clamp(36px,4.8vw,68px)] font-extrabold leading-[0.9] tracking-[-0.065em] uppercase text-[#171717]">
-            YOUR IDEA.<br />
-            OUR CANVAS<span className="text-[#e6321c]">.</span>
+            PURE FORM.<br />
+            ZERO NOISE<span className="text-[#e6321c]">.</span>
           </h2>
 
           <p className="m-0 mb-8 text-[#6f6a63] text-[13px] sm:text-sm leading-[1.7] max-w-md">
-            Create your own design. Customize your fit.
-            Make something that feels completely yours.
+            Engineered silhouettes. Heavyweight 240 GSM combed cotton.
+            Streetwear crafted to define your everyday presence.
           </p>
 
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4 max-w-md w-full">
             <Link
-              to="/customize"
+              to="/shop"
               className="btn btn-red min-h-[52px] px-8 text-xs font-extrabold tracking-wider justify-center w-full sm:w-auto shadow-[0_6px_22px_rgba(230,50,28,0.32)] hover:shadow-[0_8px_26px_rgba(230,50,28,0.42)] group"
             >
-              <Sparkles size={14} className="shrink-0" />
-              <span>START CREATING</span>
+              <span>EXPLORE COLLECTION</span>
               <span className="transition-transform duration-200 group-hover:translate-x-1">→</span>
             </Link>
 

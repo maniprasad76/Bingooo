@@ -1,9 +1,7 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Sparkles, ShoppingBag, Check, ArrowRight, ShieldCheck, Truck } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { X, ShoppingBag, Check, ShieldCheck, Truck } from 'lucide-react';
 import { Button } from '../ui/Button';
-import { Badge } from '../ui/Badge';
 import { useCart } from '../../hooks/useCart';
 import { useToast } from '../ui/Toast';
 import { resolveImageUrl } from '../../lib/utils';
@@ -168,12 +166,6 @@ export function QuickViewModal({ product, isOpen, onClose }: QuickViewModalProps
                         {product.category.name}
                       </span>
                     )}
-                    {product.customizationEnabled && (
-                      <Badge variant="accent" size="sm">
-                        <Sparkles size={11} className="mr-1" />
-                        Studio Ready
-                      </Badge>
-                    )}
                   </div>
 
                   <h2 className="text-heading font-extrabold text-ink leading-tight font-display">
@@ -265,16 +257,6 @@ export function QuickViewModal({ product, isOpen, onClose }: QuickViewModalProps
                     <ShoppingBag size={18} />
                     Add to Bag — ₹{product.basePrice}
                   </Button>
-
-                  {product.customizationEnabled && (
-                    <Link to={`/customize/${product.slug}`} onClick={onClose} className="block w-full">
-                      <Button variant="outline" size="lg" fullWidth className="border-ink text-ink hover:bg-ink hover:text-white">
-                        <Sparkles size={16} />
-                        Open in 2D Design Studio
-                        <ArrowRight size={16} />
-                      </Button>
-                    </Link>
-                  )}
                 </div>
               </div>
             </div>

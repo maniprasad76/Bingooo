@@ -162,11 +162,11 @@ export function TermsPage() {
 
           <div>
             <Link
-              to="/customize"
+              to="/artwork-guidelines"
               onClick={() => triggerHaptic('medium')}
               className="inline-flex items-center justify-center min-h-[48px] px-[23px] rounded-[7px] bg-[#e6321c] text-white text-[10px] font-bold uppercase tracking-wider hover:bg-[#b91f12] hover:-translate-y-0.5 transition-all"
             >
-              CUSTOM STUDIO GUIDELINES →
+              ARTWORK GUIDELINES →
             </Link>
           </div>
         </div>

@@ -7,7 +7,6 @@ import {
   Heart,
   ShoppingBag,
   X,
-  Sparkles,
   Package,
   ChevronRight,
   Phone,
@@ -27,7 +26,6 @@ import { preloadRouteChunk } from '../../lib/utils/preloader';
 const navLinks = [
   { label: 'Men', href: '/shop?category=men' },
   { label: 'Women', href: '/shop?category=women' },
-  { label: 'Custom', href: '/customize' },
   { label: 'Collections', href: '/shop' },
   { label: 'About', href: '/about' },
 ];
@@ -154,7 +152,7 @@ export function Navbar() {
           </Link>
 
           {/* Right: Actions */}
-          <div className="flex items-center justify-end gap-1.5 md:gap-5">
+          <div className="flex items-center justify-end gap-1 md:gap-5">
             <button
               onClick={() => {
                 triggerHaptic('light');
@@ -182,12 +180,13 @@ export function Navbar() {
 
             <Link
               to="/account/wishlist"
+              onClick={() => triggerHaptic('light')}
               onMouseEnter={() => preloadRouteChunk('/account')}
-              className="hidden md:inline-flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-normal text-[#171717] hover:text-[#E6321C] transition-colors"
+              className="inline-flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-normal text-[#171717] hover:text-[#E6321C] transition-colors cursor-pointer p-2 md:p-0"
               aria-label="Wishlist"
             >
-              <Heart className="w-3.5 h-3.5" />
-              <span>Wishlist</span>
+              <Heart className="w-5 h-5 md:w-3.5 md:h-3.5 stroke-[1.6]" />
+              <span className="hidden md:inline">Wishlist</span>
             </Link>
 
             <button
@@ -210,10 +209,10 @@ export function Navbar() {
                 triggerHaptic('light');
                 openMobileMenu();
               }}
-              className="md:hidden p-2 text-[#171717] hover:text-[#E6321C] transition-colors cursor-pointer"
+              className="md:hidden p-2 -mr-1.5 text-[#171717] hover:text-[#E6321C] transition-colors cursor-pointer"
               aria-label="Open menu"
             >
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6">
                 <path d="M4 7h16M4 12h16M4 17h16" />
               </svg>
             </button>
@@ -311,20 +310,6 @@ export function Navbar() {
                       >
                         <span>WOMEN</span>
                         <ChevronRight size={15} className="text-[#6F6A63] group-hover:text-[#171717] group-hover:translate-x-0.5 transition-all" />
-                      </Link>
-
-                      <Link
-                        to="/customize"
-                        onClick={closeMobileMenu}
-                        className="flex items-center justify-between p-2.5 rounded-lg bg-[#E6321C]/8 border border-[#E6321C]/20 text-[#171717] font-extrabold text-sm uppercase tracking-wider transition-colors group hover:bg-[#E6321C]/15"
-                      >
-                        <div className="flex items-center gap-2">
-                          <Sparkles size={15} className="text-[#E6321C]" />
-                          <span>CUSTOM STUDIO</span>
-                        </div>
-                        <span className="text-[9px] font-mono font-bold px-1.5 py-0.5 rounded bg-[#E6321C] text-white uppercase">
-                          3D ATELIER
-                        </span>
                       </Link>
 
                       <Link

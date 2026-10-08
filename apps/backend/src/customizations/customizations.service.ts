@@ -29,7 +29,7 @@ export class CustomizationsService {
       status: 'approved', // ready for print
       print_status: 'ready_to_print',
       design_json: data.designJson || {},
-      preview_url: data.previewKey || '/custom/tshirt-step-3-black.png',
+      preview_url: data.previewKey || '/custom/black-front.png',
       print_file_key: data.printFileKey || null,
       print_spec: data.printSpec || {
         method: 'DTG (Direct-to-Garment)',

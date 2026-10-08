@@ -47,7 +47,18 @@ export class CheckoutService {
       }
 
       const product = db.products.find((p) => p.id === variant.product_id);
+      const productImages = product ? db.product_images.filter((img) => img.product_id === product.id) : [];
+      const primaryImg = productImages.find((img) => img.is_primary) || productImages[0];
       const customization = item.customization_id ? db.customizations.find((c) => c.id === item.customization_id) : null;
+      const imageUrl =
+        customization?.preview_url ||
+        customization?.preview_key ||
+        primaryImg?.url ||
+        primaryImg?.object_key ||
+        (product as any)?.image_url ||
+        (item as any)?.image ||
+        (item as any)?.imageUrl ||
+        null;
 
       return {
         variantId: variant.id,
@@ -61,7 +72,8 @@ export class CheckoutService {
         quantity: item.quantity,
         total: variant.price * item.quantity,
         customizationId: item.customization_id,
-        customizationPreview: customization?.preview_key || null,
+        customizationPreview: customization?.preview_key || customization?.preview_url || null,
+        imageUrl,
       };
     });
 

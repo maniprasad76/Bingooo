@@ -143,10 +143,10 @@ const FAQ_ITEMS: FaqItem[] = [
   {
     id: 'custom-1',
     category: 'custom',
-    question: 'How does the custom clothing feature work?',
+    question: 'How do custom or bulk merchandise orders work?',
     answer:
-      'Visit our 3D Customizer Studio, select your blank silhouette (Oversized Tee, Hoodie, or Sweatshirt), pick a color, and upload your high-resolution artwork or type custom typography. Position, scale, and rotate your graphics on the front or back in real time before placing your order.',
-    searchKeywords: 'custom clothing customizer artwork upload print design 3d personalize create your own',
+      'For bespoke prints and custom merchandise inquiries, reach out directly to our WhatsApp concierge. Our team assists with garment blank selection (240 GSM tees, 380 GSM hoodies), digital mockups, artwork verification, and direct-to-film (DTF) print execution.',
+    searchKeywords: 'custom clothing bulk orders merchandise inquiry dtf print personalized',
   },
   {
     id: 'custom-2',

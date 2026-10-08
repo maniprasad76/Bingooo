@@ -28,7 +28,7 @@
     "clean": "npm run clean --workspaces --if-present"
   },
   "engines": {
-    "node": ">=20.0.0"
+    "node": ">=22.12.0"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.6",

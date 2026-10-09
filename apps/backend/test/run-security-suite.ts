@@ -589,14 +589,24 @@ async function runSecuritySuite() {
     process.env.SUPABASE_URL = fakeSupabaseHost;
     process.env.SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY || 'security-suite-anon-key';
     process.env.ADMIN_EMAILS = fakeAdminEmail;
+    // Supabase access tokens are JWTs issued by <SUPABASE_URL>/auth/v1; the guard
+    // only forwards tokens with that issuer to Supabase.
+    const sbToken = (name: string, iss = `${fakeSupabaseHost}/auth/v1`) =>
+      [
+        Buffer.from(JSON.stringify({ alg: 'HS256', typ: 'JWT' })).toString('base64url'),
+        Buffer.from(JSON.stringify({ iss, sub: name, exp: Math.floor(Date.now() / 1000) + 3600 })).toString('base64url'),
+        'supabase-signature',
+      ].join('.');
     const fakeSupabaseUsers: Record<string, any> = {
-      'sb-unconfirmed-admin': { id: `sb-u-${Date.now()}`, email: fakeAdminEmail, email_confirmed_at: null },
-      'sb-confirmed-admin': { id: `sb-c-${Date.now()}`, email: fakeAdminEmail, email_confirmed_at: new Date().toISOString() },
-      'sb-unconfirmed-takeover': { id: `sb-t-${Date.now()}`, email: userBEmail, email_confirmed_at: null },
+      [sbToken('sb-unconfirmed-admin')]: { id: `sb-u-${Date.now()}`, email: fakeAdminEmail, email_confirmed_at: null },
+      [sbToken('sb-confirmed-admin')]: { id: `sb-c-${Date.now()}`, email: fakeAdminEmail, email_confirmed_at: new Date().toISOString() },
+      [sbToken('sb-unconfirmed-takeover')]: { id: `sb-t-${Date.now()}`, email: userBEmail, email_confirmed_at: null },
     };
+    let supabaseCalls = 0;
     globalThis.fetch = (async (input: any, init?: any) => {
       const url = typeof input === 'string' ? input : input?.url;
       if (typeof url === 'string' && url.startsWith(`${fakeSupabaseHost}/auth/v1/user`)) {
+        supabaseCalls++;
         const auth = new Headers(init?.headers).get('Authorization') || '';
         const user = fakeSupabaseUsers[auth.replace('Bearer ', '')];
         return new Response(JSON.stringify(user || {}), { status: user ? 200 : 401 });
@@ -605,7 +615,7 @@ async function runSecuritySuite() {
     }) as typeof fetch;
     try {
       const unconfirmedAdminRes = await fetch(`${BASE_URL}/admin/settings`, {
-        headers: bearer('sb-unconfirmed-admin'),
+        headers: bearer(sbToken('sb-unconfirmed-admin')),
       });
       assert(
         unconfirmedAdminRes.status === 403,
@@ -617,7 +627,7 @@ async function runSecuritySuite() {
       db.users = db.users.filter((u) => u.email !== fakeAdminEmail);
 
       const confirmedAdminRes = await fetch(`${BASE_URL}/admin/settings`, {
-        headers: bearer('sb-confirmed-admin'),
+        headers: bearer(sbToken('sb-confirmed-admin')),
       });
       assert(
         confirmedAdminRes.status === 200,
@@ -626,12 +636,23 @@ async function runSecuritySuite() {
         `Got status ${confirmedAdminRes.status}`,
       );
 
-      const takeoverRes = await fetch(`${BASE_URL}/auth/me`, { headers: bearer('sb-unconfirmed-takeover') });
+      const takeoverRes = await fetch(`${BASE_URL}/auth/me`, { headers: bearer(sbToken('sb-unconfirmed-takeover')) });
       assert(
         takeoverRes.status === 401,
         'Audit Regressions',
         'An unconfirmed Supabase signup cannot take over an existing account by email',
         `Got status ${takeoverRes.status}`,
+      );
+
+      const callsBefore = supabaseCalls;
+      const foreignRes = await fetch(`${BASE_URL}/auth/me`, {
+        headers: bearer(sbToken('sb-confirmed-admin', 'https://attacker.example/auth/v1')),
+      });
+      assert(
+        foreignRes.status === 401 && supabaseCalls === callsBefore,
+        'Audit Regressions',
+        'A token from another issuer is rejected without calling Supabase',
+        `Got status ${foreignRes.status}, Supabase calls +${supabaseCalls - callsBefore}`,
       );
     } finally {
       globalThis.fetch = realFetch;

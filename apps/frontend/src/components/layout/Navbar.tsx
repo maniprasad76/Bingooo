@@ -100,21 +100,23 @@ export function Navbar() {
       )}
     >
       {/* ─── Top Bar ─── */}
-      <div className="min-h-[28px] bg-[#171717] text-white flex items-center justify-between px-4 sm:px-8 text-[9px] font-mono font-bold tracking-[0.1em] uppercase select-none border-b border-[#171717]">
-        <div>FREE DELIVERY ACROSS INDIA · 240+ GSM HEAVYWEIGHT</div>
+      <div className="min-h-[28px] bg-[#171717] text-white border-b border-[#171717]">
+        <div className="container-bingooo min-h-[28px] flex items-center justify-between text-[9px] font-mono font-bold tracking-[0.1em] uppercase select-none">
+          <div>FREE DELIVERY ACROSS INDIA · 240+ GSM HEAVYWEIGHT</div>
 
-        <div className="hidden sm:flex items-center gap-[22px]">
-          <a
-            href={getWhatsAppUrl('Hi Bingooo, I would like to inquire about a bulk order for custom apparel.')}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="hover:text-[#25D366] text-[#F7EEDB] transition-colors inline-flex items-center gap-1.5 font-bold"
-          >
-            <WhatsAppIcon className="w-3 h-3 text-[#25D366]" />
-            <span>BULK ORDERS (WHATSAPP)</span>
-          </a>
-          <Link to="/track-order" className="hover:text-[#E6321C] transition-colors">TRACK ORDER</Link>
-          <Link to="/faq" className="hover:text-[#E6321C] transition-colors">HELP</Link>
+          <div className="hidden sm:flex items-center gap-[22px]">
+            <a
+              href={getWhatsAppUrl('Hi Bingooo, I would like to inquire about a bulk order for custom apparel.')}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-[#25D366] text-[#F7EEDB] transition-colors inline-flex items-center gap-1.5 font-bold"
+            >
+              <WhatsAppIcon className="w-3 h-3 text-[#25D366]" />
+              <span>BULK ORDERS (WHATSAPP)</span>
+            </a>
+            <Link to="/track-order" className="hover:text-[#E6321C] transition-colors">TRACK ORDER</Link>
+            <Link to="/faq" className="hover:text-[#E6321C] transition-colors">HELP</Link>
+          </div>
         </div>
       </div>
 

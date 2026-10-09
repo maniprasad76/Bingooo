@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { Picture } from '../components/ui/Picture';
-import { IMAGES } from '../lib/images';
+import { ABOUT_HERO_SIZES, IMAGES } from '../lib/images';
 import { SEO } from '../components/common/SEO';
 import { triggerHaptic } from '../lib/native/capacitorBridge';
 
@@ -46,7 +46,7 @@ export function AboutPage() {
         <div className="h-[400px] sm:h-[500px] lg:h-auto overflow-hidden relative">
           <Picture
             image={IMAGES.aboutAtelier}
-            sizes="(min-width: 1024px) 55vw, 100vw"
+            sizes={ABOUT_HERO_SIZES}
             loading="eager"
             alt="Bingooo Atelier — Wear What Feels Like You"
             className="w-full h-full object-cover object-center"

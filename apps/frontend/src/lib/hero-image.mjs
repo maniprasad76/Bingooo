@@ -8,3 +8,8 @@ export const HERO_WIDTHS = [480, 720, 960, 1280, 1600, 1920];
 // The photo is portrait and fills the hero with object-cover: on phones it is
 // height-bound and renders slightly wider than the screen.
 export const HERO_SIZES = '(min-width: 1280px) 58vw, (min-width: 1024px) 60vw, (min-width: 768px) 64vw, 110vw';
+
+// About page hero (public/img/v1/about-atelier-<width>.<avif|webp>), its largest
+// paint; the prerendered /about page preloads it the same way.
+export const ABOUT_HERO_WIDTHS = [640, 1024];
+export const ABOUT_HERO_SIZES = '(min-width: 1024px) 55vw, 100vw';

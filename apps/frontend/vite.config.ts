@@ -24,6 +24,9 @@ export default defineConfig({
   build: {
     // Enable CSS code splitting — loads only the CSS needed per route
     cssCodeSplit: true,
+    // Read by scripts/prerender-seo.mjs to preload each prerendered route's page chunk
+    // (it deletes the manifest from dist afterwards).
+    manifest: true,
     rollupOptions: {
       output: {
         /**

@@ -1,4 +1,4 @@
-import { HERO_SIZES, HERO_WIDTHS } from './hero-image.mjs';
+import { ABOUT_HERO_SIZES, ABOUT_HERO_WIDTHS, HERO_SIZES, HERO_WIDTHS } from './hero-image.mjs';
 
 /**
  * Optimised copies of the site's photos, artwork and icons.
@@ -48,7 +48,7 @@ export const IMAGES = {
   realFit4: photo('real-fit-4', [360, 720, 1024], 935),
   realFit5: photo('real-fit-5', [360, 682], 1024),
   realFit6: photo('real-fit-6', [360, 682], 1024),
-  aboutAtelier: photo('about-atelier', [640, 1024], 682),
+  aboutAtelier: photo('about-atelier', ABOUT_HERO_WIDTHS, 682),
   customStudio: photo('custom-studio', [640, 1024], 682),
   privacyHero: photo('privacy-hero', [640, 1024], 576),
   termsHero: photo('terms-hero', [480, 682], 1024),
@@ -73,6 +73,8 @@ export const IMAGES = {
 
 /** `sizes` for IMAGES.hero; the homepage HTML preloads the hero with the same value. */
 export { HERO_SIZES };
+/** `sizes` for the About page hero (IMAGES.aboutAtelier); the /about HTML preloads it with the same value. */
+export { ABOUT_HERO_SIZES };
 
 export function imageSrcSet(image: ImageAsset, format: string): string {
   // A single size gets no width descriptor, so it keeps its natural size like a plain src.

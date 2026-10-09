@@ -227,9 +227,9 @@ export function HomePage() {
           <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-[#f7eedb] to-transparent pointer-events-none" />
         </div>
 
-        {/* Hero Content — Full Width Grid with Edge-Aware Padding */}
-        <div className="w-full min-h-[inherit] relative z-10 flex items-center px-4 sm:px-8 md:px-12 lg:px-16 xl:px-24">
-          <div className="w-full max-w-[620px] py-12 sm:py-16 md:py-20 lg:py-24">
+        {/* Hero Content — Aligned with Bauhaus Container */}
+        <div className="container-bingooo min-h-[inherit] relative z-10 flex items-center">
+          <div className="w-full max-w-[640px] py-12 sm:py-16 md:py-20 lg:py-24">
             <div className="eyebrow max-w-[140px] leading-[1.8] mb-6 sm:mb-7 text-[#171717]">
               CLOTHING<br />
               CUSTOM<br />

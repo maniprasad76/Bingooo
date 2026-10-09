@@ -1,6 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { v4 as uuidv4 } from 'uuid';
 import { db, saveDb } from '../common/database/store';
+import { normalizeStudioConfig, type StudioConfig } from './studio-config';
 
 @Injectable()
 export class CustomizationsService {
@@ -29,7 +30,7 @@ export class CustomizationsService {
       status: 'approved', // ready for print
       print_status: 'ready_to_print',
       design_json: data.designJson || {},
-      preview_url: data.previewKey || '/custom/black-front.png',
+      preview_url: data.previewKey || data.designJson?.garment?.frontImageUrl || null,
       print_file_key: data.printFileKey || null,
       print_spec: data.printSpec || {
         method: 'DTG (Direct-to-Garment)',
@@ -171,225 +172,65 @@ export class CustomizationsService {
     return req;
   }
 
-  /** Studio Customizer Garments & Color Mockup Configuration */
-  getStudioConfig() {
-    const CANONICAL_DEFAULTS = [
-      {
-        id: 'oversized',
-        name: 'Drop-Shoulder / Oversized T-Shirt',
-        price: 649,
-        compareAtPrice: 1499,
-        description: '240 GSM 100% Combed Cotton · Drop-Shoulder Oversized Streetwear Fit',
-        isActive: true,
-        sizes: ['S', 'M', 'L', 'XL', 'XXL'],
-        activeSizes: ['S', 'M', 'L', 'XL', 'XXL'],
-        sizeMeasurements: {
-          in: [
-            { size: 'S', chest: '42 in', length: '27.5 in', shoulder: '20 in', sleeve: '8.5 in' },
-            { size: 'M', chest: '44 in', length: '28 in', shoulder: '21 in', sleeve: '9 in' },
-            { size: 'L', chest: '46 in', length: '28.5 in', shoulder: '22 in', sleeve: '9.5 in' },
-            { size: 'XL', chest: '48 in', length: '29 in', shoulder: '23 in', sleeve: '10 in' },
-            { size: 'XXL', chest: '50 in', length: '29.5 in', shoulder: '24 in', sleeve: '10.5 in' },
-          ],
-          cm: [
-            { size: 'S', chest: '107 cm', length: '70 cm', shoulder: '51 cm', sleeve: '22 cm' },
-            { size: 'M', chest: '112 cm', length: '71 cm', shoulder: '53 cm', sleeve: '23 cm' },
-            { size: 'L', chest: '117 cm', length: '72 cm', shoulder: '56 cm', sleeve: '24 cm' },
-            { size: 'XL', chest: '122 cm', length: '74 cm', shoulder: '58 cm', sleeve: '25 cm' },
-            { size: 'XXL', chest: '127 cm', length: '75 cm', shoulder: '61 cm', sleeve: '27 cm' },
-          ],
-        },
-        colors: [
-          { id: 'black', name: 'Obsidian Black', hex: '#171717', textContrast: '#FFFFFF', frontImageUrl: '/custom/black-front.png', backImageUrl: '/custom/black-back.png', isActive: true },
-          { id: 'white', name: 'Pure White', hex: '#FFFFFF', textContrast: '#171717', frontImageUrl: '/custom/white-front.png', backImageUrl: '/custom/white-back.png', isActive: true },
-          { id: 'beige', name: 'Washed Beige', hex: '#D8C8B1', textContrast: '#171717', frontImageUrl: '/custom/beige-front.png', backImageUrl: '/custom/beige-back.png', isActive: true },
-          { id: 'red', name: 'Signal Red', hex: '#E6321C', textContrast: '#FFFFFF', frontImageUrl: '/custom/red-front.png', backImageUrl: '/custom/red-back.png', isActive: true },
-        ],
-      },
-      {
-        id: 'polo',
-        name: 'Regular Fit Round Neck / Polo',
-        price: 699,
-        compareAtPrice: 1499,
-        description: 'Premium Combed Cotton Matty · Tailored Regular Fit Polo',
-        isActive: true,
-        sizes: ['36', '38', '40', '42', '44', '46'],
-        activeSizes: ['36', '38', '40', '42', '44', '46'],
-        sizeMeasurements: {
-          in: [
-            { size: '36', chest: '36 in', length: '26 in', shoulder: '16 in', sleeve: '8 in' },
-            { size: '38', chest: '38 in', length: '27 in', shoulder: '17 in', sleeve: '8.5 in' },
-            { size: '40', chest: '40 in', length: '28 in', shoulder: '17.5 in', sleeve: '9 in' },
-            { size: '42', chest: '42 in', length: '29 in', shoulder: '18 in', sleeve: '9.5 in' },
-            { size: '44', chest: '44 in', length: '30 in', shoulder: '18.5 in', sleeve: '10 in' },
-            { size: '46', chest: '46 in', length: '31 in', shoulder: '19 in', sleeve: '10.5 in' },
-          ],
-          cm: [
-            { size: '36', chest: '91 cm', length: '66 cm', shoulder: '41 cm', sleeve: '20 cm' },
-            { size: '38', chest: '97 cm', length: '68 cm', shoulder: '43 cm', sleeve: '22 cm' },
-            { size: '40', chest: '102 cm', length: '71 cm', shoulder: '44 cm', sleeve: '23 cm' },
-            { size: '42', chest: '107 cm', length: '74 cm', shoulder: '46 cm', sleeve: '24 cm' },
-            { size: '44', chest: '112 cm', length: '76 cm', shoulder: '47 cm', sleeve: '25 cm' },
-            { size: '46', chest: '117 cm', length: '79 cm', shoulder: '48 cm', sleeve: '27 cm' },
-          ],
-        },
-        colors: [
-          { id: 'black', name: 'Obsidian Black', hex: '#171717', textContrast: '#FFFFFF', frontImageUrl: '/custom/black-front.png', backImageUrl: '/custom/black-back.png', isActive: true },
-          { id: 'white', name: 'Pure White', hex: '#FFFFFF', textContrast: '#171717', frontImageUrl: '/custom/white-front.png', backImageUrl: '/custom/white-back.png', isActive: true },
-          { id: 'beige', name: 'Washed Beige', hex: '#D8C8B1', textContrast: '#171717', frontImageUrl: '/custom/beige-front.png', backImageUrl: '/custom/beige-back.png', isActive: true },
-          { id: 'red', name: 'Signal Red', hex: '#E6321C', textContrast: '#FFFFFF', frontImageUrl: '/custom/red-front.png', backImageUrl: '/custom/red-back.png', isActive: true },
-        ],
-      },
-      {
-        id: 'hoodie',
-        name: 'Drop Shoulder Hoodie (430gsm)',
-        price: 799,
-        compareAtPrice: 1799,
-        description: '430 GSM Heavyweight Brushed Fleece Pullover Hoodie',
-        isActive: true,
-        sizes: ['S', 'M', 'L', 'XL', 'XXL'],
-        activeSizes: ['S', 'M', 'L', 'XL', 'XXL'],
-        sizeMeasurements: {
-          in: [
-            { size: 'S', chest: '42 in', length: '25 in', shoulder: '21 in', sleeve: '24 in' },
-            { size: 'M', chest: '44 in', length: '26 in', shoulder: '22 in', sleeve: '24.5 in' },
-            { size: 'L', chest: '46 in', length: '27 in', shoulder: '23 in', sleeve: '25 in' },
-            { size: 'XL', chest: '48 in', length: '28 in', shoulder: '24 in', sleeve: '25.5 in' },
-            { size: 'XXL', chest: '50 in', length: '29 in', shoulder: '25 in', sleeve: '26 in' },
-          ],
-          cm: [
-            { size: 'S', chest: '107 cm', length: '64 cm', shoulder: '53 cm', sleeve: '61 cm' },
-            { size: 'M', chest: '112 cm', length: '66 cm', shoulder: '56 cm', sleeve: '62 cm' },
-            { size: 'L', chest: '117 cm', length: '69 cm', shoulder: '58 cm', sleeve: '63 cm' },
-            { size: 'XL', chest: '122 cm', length: '71 cm', shoulder: '61 cm', sleeve: '65 cm' },
-            { size: 'XXL', chest: '127 cm', length: '74 cm', shoulder: '64 cm', sleeve: '66 cm' },
-          ],
-        },
-        colors: [
-          { id: 'black', name: 'Obsidian Black', hex: '#171717', textContrast: '#FFFFFF', frontImageUrl: '/custom/hoodie-black-front.png', backImageUrl: '/custom/hoodie-black-back.png', isActive: true },
-          { id: 'white', name: 'Pure White', hex: '#FFFFFF', textContrast: '#171717', frontImageUrl: '/custom/hoodie-white-front.png', backImageUrl: '/custom/hoodie-white-back.png', isActive: true },
-          { id: 'beige', name: 'Washed Beige', hex: '#D8C8B1', textContrast: '#171717', frontImageUrl: '', isActive: true },
-          { id: 'red', name: 'Signal Red', hex: '#E6321C', textContrast: '#FFFFFF', frontImageUrl: '', isActive: true },
-        ],
-      },
-    ];
-
-    if (!db.customizer_config || !Array.isArray(db.customizer_config.garments) || db.customizer_config.garments.length === 0) {
-      db.customizer_config = {
-        garments: CANONICAL_DEFAULTS,
-        updatedAt: new Date().toISOString(),
-      };
-      saveDb();
-    } else {
-      // Ensure all 3 canonical garments exist with correct structure
-      CANONICAL_DEFAULTS.forEach((canonical) => {
-        const existing = db.customizer_config.garments.find((g: any) => g.id === canonical.id);
-        if (!existing) {
-          db.customizer_config.garments.push(canonical);
-        } else {
-          // Keep admin customized overrides if set, or sync base structure
-          if (!existing.sizes || existing.sizes.length === 0) existing.sizes = canonical.sizes;
-          if (!existing.activeSizes || existing.activeSizes.length === 0) existing.activeSizes = canonical.activeSizes;
-          if (!existing.sizeMeasurements) existing.sizeMeasurements = canonical.sizeMeasurements;
-          if (existing.compareAtPrice === 1299) existing.compareAtPrice = canonical.compareAtPrice;
-        }
-      });
+  /** Custom studio catalogue, managed entirely from the admin panel. */
+  getStudioConfig(): StudioConfig {
+    if (!db.customizer_config || !Array.isArray(db.customizer_config.garments)) {
+      return { garments: [], updatedAt: null };
     }
-
-    return db.customizer_config;
+    const normalized = normalizeStudioConfig(db.customizer_config, false);
+    // One-time cleanup of stored data (e.g. links to the removed bundled mockups).
+    if (JSON.stringify(normalized) !== JSON.stringify({ garments: db.customizer_config.garments, updatedAt: db.customizer_config.updatedAt ?? null })) {
+      db.customizer_config = normalized;
+      saveDb();
+    }
+    return normalized;
   }
 
-  updateStudioConfig(data: any) {
-    db.customizer_config = {
-      ...db.customizer_config,
-      ...data,
-      updatedAt: new Date().toISOString(),
-    };
+  updateStudioConfig(data: any): StudioConfig {
+    const normalized = normalizeStudioConfig(data, true);
+    db.customizer_config = { garments: normalized.garments, updatedAt: new Date().toISOString() };
     saveDb();
     return db.customizer_config;
   }
 
-  addColorToGarment(
-    garmentId: string,
-    colorData: {
-      id?: string;
-      name: string;
-      hex: string;
-      textContrast?: string;
-      frontImageUrl: string;
-      backImageUrl?: string;
-      isActive?: boolean;
-    },
-  ) {
+  private saveGarments(garments: any[]) {
+    return this.updateStudioConfig({ garments });
+  }
+
+  private findGarment(garmentId: string) {
     const config = this.getStudioConfig();
-    const garment = config.garments.find((g: any) => g.id === garmentId);
+    const garment = config.garments.find((g) => g.id === garmentId);
     if (!garment) {
       throw new NotFoundException({ code: 'GARMENT_NOT_FOUND', message: `Garment ${garmentId} not found` });
     }
+    return { config, garment };
+  }
 
-    const colorId =
-      colorData.id ||
-      colorData.name.toLowerCase().replace(/[^a-z0-9]/g, '-') ||
-      `col-${Date.now()}`;
-
-    const hex = colorData.hex.replace('#', '');
-    const r = parseInt(hex.substring(0, 2) || '0', 16);
-    const g = parseInt(hex.substring(2, 4) || '0', 16);
-    const b = parseInt(hex.substring(4, 6) || '0', 16);
-    const brightness = (r * 299 + g * 587 + b * 114) / 1000;
-    const computedContrast = brightness > 140 ? '#171717' : '#FFFFFF';
-
-    const newColor = {
-      id: colorId,
-      name: colorData.name,
-      hex: colorData.hex.startsWith('#') ? colorData.hex : `#${colorData.hex}`,
-      textContrast: colorData.textContrast || computedContrast,
-      frontImageUrl: colorData.frontImageUrl,
-      backImageUrl: colorData.backImageUrl || '',
-      isActive: colorData.isActive !== false,
-    };
-
-    const existingIndex = garment.colors.findIndex((c: any) => c.id === newColor.id);
-    if (existingIndex >= 0) {
-      garment.colors[existingIndex] = { ...garment.colors[existingIndex], ...newColor };
-    } else {
-      garment.colors.push(newColor);
-    }
-
-    config.updatedAt = new Date().toISOString();
-    saveDb();
-    return { garment, color: newColor };
+  addColorToGarment(garmentId: string, colorData: any) {
+    const { config, garment } = this.findGarment(garmentId);
+    garment.colors = [...garment.colors.filter((c) => c.id !== colorData?.id), { ...colorData, isActive: colorData?.isActive !== false }];
+    const saved = this.saveGarments(config.garments);
+    const updated = saved.garments.find((g) => g.id === garmentId)!;
+    return { garment: updated, color: updated.colors[updated.colors.length - 1] };
   }
 
   updateGarmentColor(garmentId: string, colorId: string, colorData: any) {
-    const config = this.getStudioConfig();
-    const garment = config.garments.find((g: any) => g.id === garmentId);
-    if (!garment) {
-      throw new NotFoundException({ code: 'GARMENT_NOT_FOUND', message: `Garment ${garmentId} not found` });
-    }
-
-    const color = garment.colors.find((c: any) => c.id === colorId);
+    const { config, garment } = this.findGarment(garmentId);
+    const color = garment.colors.find((c) => c.id === colorId);
     if (!color) {
       throw new NotFoundException({ code: 'COLOR_NOT_FOUND', message: `Color ${colorId} not found` });
     }
-
-    Object.assign(color, colorData);
-    config.updatedAt = new Date().toISOString();
-    saveDb();
-    return { garment, color };
+    Object.assign(color, colorData, { id: colorId });
+    const saved = this.saveGarments(config.garments);
+    const updated = saved.garments.find((g) => g.id === garmentId)!;
+    return { garment: updated, color: updated.colors.find((c) => c.id === colorId) };
   }
 
   deleteGarmentColor(garmentId: string, colorId: string) {
-    const config = this.getStudioConfig();
-    const garment = config.garments.find((g: any) => g.id === garmentId);
-    if (!garment) {
-      throw new NotFoundException({ code: 'GARMENT_NOT_FOUND', message: `Garment ${garmentId} not found` });
-    }
-
-    garment.colors = garment.colors.filter((c: any) => c.id !== colorId);
-    config.updatedAt = new Date().toISOString();
-    saveDb();
-    return { success: true, garment };
+    const { config, garment } = this.findGarment(garmentId);
+    garment.colors = garment.colors.filter((c) => c.id !== colorId);
+    const saved = this.saveGarments(config.garments);
+    return { success: true, garment: saved.garments.find((g) => g.id === garmentId) };
   }
 }
 

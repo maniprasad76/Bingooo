@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
-import { Heart, Truck, Package, Sparkles, ShieldCheck, CheckCircle2, Mail, ArrowRight, X, ChevronLeft, ChevronRight, Maximize2 } from 'lucide-react';
+import { Heart, Truck, Package, Sparkles, ShieldCheck, CheckCircle2, Mail, ArrowRight, X, ChevronLeft, ChevronRight, Maximize2, Shirt } from 'lucide-react';
+import { useQuery } from '@tanstack/react-query';
 import { SEO } from '../components/common/SEO';
 import { generateOrganizationSchema, generateLocalBusinessSchema, generateWebSiteSchema } from '../lib/seo/schema';
 import { BINGOOO_INSTAGRAM_URL, BINGOOO_INSTAGRAM_HANDLE, InstagramIcon } from '../components/ui/SocialIcons';
@@ -92,6 +93,20 @@ const COMMUNITY_FITS: CommunityFit[] = [
 ];
 
 export function HomePage() {
+  // Custom-studio teaser: the first garment photo uploaded in the admin studio.
+  const { data: studioPhoto } = useQuery({
+    queryKey: ['studio-teaser-photo'],
+    queryFn: async () => {
+      const res = await api.get<{ garments?: any[] }>('/customizations/studio/config');
+      for (const g of res?.garments || []) {
+        if (g?.isActive === false) continue;
+        const colour = (g.colors || []).find((c: any) => c?.isActive !== false && c?.frontImageUrl);
+        if (colour) return colour.frontImageUrl as string;
+      }
+      return null;
+    },
+    staleTime: 10 * 60 * 1000,
+  });
   const [wishlist, setWishlist] = useState<Record<string, boolean>>({});
   const [email, setEmail] = useState('');
   const [subscribed, setSubscribed] = useState(false);
@@ -521,11 +536,15 @@ export function HomePage() {
               </div>
 
               <div className="relative z-10 my-6 w-48 sm:w-60 aspect-square flex items-center justify-center">
-                <img
-                  src="/custom/black-front.png"
-                  alt="Bingooo Bespoke Mockup"
-                  className="w-full h-full object-contain filter drop-shadow-[0_20px_32px_rgba(0,0,0,0.5)]"
-                />
+                {studioPhoto ? (
+                  <img
+                    src={studioPhoto}
+                    alt="Custom garment ready for your design"
+                    className="w-full h-full object-contain filter drop-shadow-[0_20px_32px_rgba(0,0,0,0.5)]"
+                  />
+                ) : (
+                  <Shirt className="w-3/4 h-3/4 text-[#171717]" strokeWidth={1.25} fill="#171717" />
+                )}
                 <div className="absolute z-20 text-center pointer-events-none">
                   <span className="font-extrabold text-white text-xs sm:text-sm tracking-widest uppercase">
                     YOUR

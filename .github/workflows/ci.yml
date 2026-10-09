@@ -64,6 +64,9 @@ jobs:
       - name: Backend — durability, stock & refunds
         run: npm run test:durability -w apps/backend
 
+      - name: Backend — custom studio catalogue
+        run: npm run test:studio -w apps/backend
+
       # Storefront in a real browser against a mocked API (apps/frontend/e2e).
       - name: Install Chromium for browser E2E
         run: npx playwright install --with-deps chromium

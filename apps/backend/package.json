@@ -14,6 +14,7 @@
     "test:load": "node --require @swc-node/register test/run-load-test.ts",
     "test:backup": "node --require @swc-node/register test/run-backup-test.ts",
     "test:durability": "node --require @swc-node/register test/run-durability-test.ts",
+    "test:studio": "node --require @swc-node/register test/run-studio-config-test.ts",
     "lint": "echo 'TODO: add linter'"
   },
   "dependencies": {

@@ -15,6 +15,8 @@ import {
   DollarSign,
   Ruler,
   Save,
+  Shirt,
+  AlertTriangle,
 } from 'lucide-react';
 
 // ─── Types ──────────────────────────────────────────────────────────────────
@@ -36,11 +38,16 @@ export interface GarmentColor {
   isActive: boolean;
 }
 
+/** Drives print-area placement and size-chart columns on the storefront. */
+export type GarmentStyle = 'tshirt' | 'polo' | 'hoodie';
+
 export interface GarmentItem {
-  id: string; // 'tshirt' | 'oversized' | 'hoodie'
+  id: string;
   name: string;
+  shortName: string;
+  style: GarmentStyle;
   price: number;
-  compareAtPrice?: number;
+  compareAtPrice?: number | null;
   description: string;
   isActive: boolean;
   sizes: string[];
@@ -54,14 +61,34 @@ export interface GarmentItem {
 
 export interface CustomizerStudioConfig {
   garments: GarmentItem[];
-  updatedAt: string;
+  updatedAt: string | null;
 }
 
-// ─── Default Sizing Constants ───────────────────────────────────────────────
-const ALL_AVAILABLE_SIZES = ['XS', 'S', 'M', 'L', 'XL', 'XXL', '3XL'];
+// ─── Size presets ───────────────────────────────────────────────────────────
+const LETTER_SIZES = ['XS', 'S', 'M', 'L', 'XL', 'XXL', '3XL'];
+/** Upload target for photos chosen inside the add/edit colour dialog. */
+const MODAL_UPLOAD = '__colour-dialog__';
+const NUMERIC_SIZES = ['36', '38', '40', '42', '44', '46'];
 
-const DEFAULT_MEASUREMENTS: Record<string, { cm: MeasurementRow[]; in: MeasurementRow[] }> = {
-  oversized: {
+const STYLE_OPTIONS: { id: GarmentStyle; label: string }[] = [
+  { id: 'tshirt', label: 'T-shirt (oversized / regular)' },
+  { id: 'polo', label: 'Polo shirt' },
+  { id: 'hoodie', label: 'Hoodie / sweatshirt' },
+];
+
+/** What still has to be filled in before a garment looks right on the storefront. */
+function garmentWarnings(g: GarmentItem): string[] {
+  const active = g.colors.filter((c) => c.isActive !== false);
+  const warnings: string[] = [];
+  if (active.length === 0) warnings.push('Add a colour');
+  else if (active.some((c) => !c.frontImageUrl)) warnings.push('Front photo missing');
+  if ((g.activeSizes || []).length === 0) warnings.push('Add sizes');
+  return warnings;
+}
+
+/** Typical charts, offered as a starting point ("Fill typical measurements"). */
+const DEFAULT_MEASUREMENTS: Record<GarmentStyle, { cm: MeasurementRow[]; in: MeasurementRow[] }> = {
+  tshirt: {
     in: [
       { size: 'S', chest: '42 in', length: '27.5 in', shoulder: '20 in', sleeve: '8.5 in' },
       { size: 'M', chest: '44 in', length: '28 in', shoulder: '21 in', sleeve: '9 in' },
@@ -125,124 +152,19 @@ const SIGNATURE_PALETTE = [
   { name: 'Charcoal Grey', hex: '#2B2B2B', contrast: '#FFFFFF' },
 ];
 
-const DEFAULT_GARMENTS: GarmentItem[] = [
-  {
-    id: 'oversized',
-    name: 'Drop-Shoulder / Oversized T-Shirt',
-    price: 649,
-    compareAtPrice: 1499,
-    description: '240 GSM 100% Combed Cotton · Drop-Shoulder Oversized Streetwear Fit',
-    isActive: true,
-    sizes: ['S', 'M', 'L', 'XL', 'XXL'],
-    activeSizes: ['S', 'M', 'L', 'XL', 'XXL'],
-    sizeMeasurements: DEFAULT_MEASUREMENTS.oversized,
-    colors: [
-      { id: 'black', name: 'Obsidian Black', hex: '#171717', textContrast: '#FFFFFF', frontImageUrl: '/custom/black-front.png', backImageUrl: '/custom/black-back.png', isActive: true },
-      { id: 'white', name: 'Pure White', hex: '#FFFFFF', textContrast: '#171717', frontImageUrl: '/custom/white-front.png', backImageUrl: '/custom/white-back.png', isActive: true },
-      { id: 'beige', name: 'Washed Beige', hex: '#D8C8B1', textContrast: '#171717', frontImageUrl: '/custom/beige-front.png', backImageUrl: '/custom/beige-back.png', isActive: true },
-      { id: 'red', name: 'Signal Red', hex: '#E6321C', textContrast: '#FFFFFF', frontImageUrl: '/custom/red-front.png', backImageUrl: '/custom/red-back.png', isActive: true },
-    ],
-  },
-  {
-    id: 'polo',
-    name: 'Regular Fit Round Neck / Polo',
-    price: 699,
-    compareAtPrice: 1499,
-    description: 'Premium Combed Cotton Matty · Tailored Regular Fit Polo',
-    isActive: true,
-    sizes: ['36', '38', '40', '42', '44', '46'],
-    activeSizes: ['36', '38', '40', '42', '44', '46'],
-    sizeMeasurements: DEFAULT_MEASUREMENTS.polo,
-    colors: [
-      { id: 'black', name: 'Obsidian Black', hex: '#171717', textContrast: '#FFFFFF', frontImageUrl: '/custom/black-front.png', backImageUrl: '/custom/black-back.png', isActive: true },
-      { id: 'white', name: 'Pure White', hex: '#FFFFFF', textContrast: '#171717', frontImageUrl: '/custom/white-front.png', backImageUrl: '/custom/white-back.png', isActive: true },
-      { id: 'beige', name: 'Washed Beige', hex: '#D8C8B1', textContrast: '#171717', frontImageUrl: '/custom/beige-front.png', backImageUrl: '/custom/beige-back.png', isActive: true },
-      { id: 'red', name: 'Signal Red', hex: '#E6321C', textContrast: '#FFFFFF', frontImageUrl: '/custom/red-front.png', backImageUrl: '/custom/red-back.png', isActive: true },
-    ],
-  },
-  {
-    id: 'hoodie',
-    name: 'Drop Shoulder Hoodie (430gsm)',
-    price: 799,
-    compareAtPrice: 1799,
-    description: '430 GSM Heavyweight Brushed Fleece Pullover Hoodie',
-    isActive: true,
-    sizes: ['S', 'M', 'L', 'XL', 'XXL'],
-    activeSizes: ['S', 'M', 'L', 'XL', 'XXL'],
-    sizeMeasurements: DEFAULT_MEASUREMENTS.hoodie,
-    colors: [
-      { id: 'black', name: 'Obsidian Black', hex: '#171717', textContrast: '#FFFFFF', frontImageUrl: '/custom/hoodie-black-front.png', backImageUrl: '/custom/hoodie-black-back.png', isActive: true },
-      { id: 'white', name: 'Pure White', hex: '#FFFFFF', textContrast: '#171717', frontImageUrl: '/custom/hoodie-white-front.png', backImageUrl: '/custom/hoodie-white-back.png', isActive: true },
-      { id: 'beige', name: 'Washed Beige', hex: '#D8C8B1', textContrast: '#171717', frontImageUrl: '', isActive: true },
-      { id: 'red', name: 'Signal Red', hex: '#E6321C', textContrast: '#FFFFFF', frontImageUrl: '', isActive: true },
-    ],
-  },
-];
-
-function SilhouettePreview({ garmentId, colorHex }: { garmentId: string; colorHex: string }) {
-  const isLight = ['#FFFFFF', '#D8C8B1', '#F7EEDB', '#C8B99D', '#FAF6EE'].some(
-    (h) => colorHex?.toUpperCase() === h
-  );
-  const strokeColor = isLight ? '#2B2B2B' : '#FFFFFF';
-
-  if (garmentId === 'hoodie') {
-    return (
-      <svg viewBox="0 0 400 440" className="w-full h-full drop-shadow-md" fill="none">
-        <path
-          d="M130 65 C130 35, 270 35, 270 65 C280 85, 275 110, 260 115 C240 120, 210 118, 200 125 C190 118, 160 120, 140 115 C125 110, 120 85, 130 65 Z"
-          fill={colorHex}
-          stroke={strokeColor}
-          strokeWidth="3"
-        />
-        <path
-          d="M138 108 L55 185 C48 192, 42 208, 55 220 L80 238 C90 245, 102 238, 110 228 L142 188 L140 375 C140 388, 150 395, 165 395 L235 395 C250 395, 260 388, 260 375 L258 188 L290 228 C298 238, 310 245, 320 238 L345 220 C358 208, 352 192, 345 185 L262 108 C242 118, 222 122, 200 122 C178 122, 158 118, 138 108 Z"
-          fill={colorHex}
-          stroke={strokeColor}
-          strokeWidth="3.5"
-        />
-        <path
-          d="M165 290 L235 290 L248 355 L152 355 Z"
-          fill="none"
-          stroke={strokeColor}
-          strokeWidth="2.5"
-          opacity="0.6"
-        />
-      </svg>
-    );
-  }
-
-  const isOversized = garmentId === 'oversized';
-  return (
-    <svg viewBox="0 0 400 440" className="w-full h-full drop-shadow-md" fill="none">
-      <path
-        d={
-          isOversized
-            ? 'M145 78 C175 92, 225 92, 255 78 L330 135 C345 147, 335 175, 315 185 L285 195 L285 390 C285 402, 275 408, 260 408 L140 408 C125 408, 115 402, 115 390 L115 195 L85 185 C65 175, 55 147, 70 135 Z'
-            : 'M148 80 C175 92, 225 92, 252 80 L318 128 C330 137, 324 160, 308 168 L282 178 L282 388 C282 398, 274 405, 260 405 L140 405 C126 405, 118 398, 118 388 L118 178 L92 168 C76 160, 70 137, 82 128 Z'
-        }
-        fill={colorHex}
-        stroke={strokeColor}
-        strokeWidth="3.5"
-      />
-      <path
-        d="M148 80 C175 102, 225 102, 252 80"
-        fill="none"
-        stroke={strokeColor}
-        strokeWidth="3"
-        opacity="0.75"
-      />
-    </svg>
-  );
+function GarmentThumb({ garment }: { garment: GarmentItem }) {
+  const photo = garment.colors.find((c) => c.isActive !== false && c.frontImageUrl)?.frontImageUrl;
+  if (photo) return <img src={photo} alt="" className="w-full h-full object-contain" />;
+  return <Shirt size={28} className="text-gray-300" />;
 }
 
 export function CustomizerStudioPage() {
   const { toast } = useToast();
 
-  const [config, setConfig] = useState<CustomizerStudioConfig>({
-    garments: DEFAULT_GARMENTS,
-    updatedAt: new Date().toISOString(),
-  });
-  const [selectedGarmentId, setSelectedGarmentId] = useState<string>('oversized');
+  const [config, setConfig] = useState<CustomizerStudioConfig>({ garments: [], updatedAt: null });
+  const [loadError, setLoadError] = useState<string | null>(null);
+  const [selectedGarmentId, setSelectedGarmentId] = useState<string>('');
+  const [newSize, setNewSize] = useState('');
   const [activeTab, setActiveTab] = useState<'pricing' | 'colors' | 'sizes' | 'preview'>('pricing');
 
   const [loading, setLoading] = useState<boolean>(true);
@@ -269,29 +191,23 @@ export function CustomizerStudioPage() {
   const uploadInputRef = useRef<HTMLInputElement>(null);
   const [activeUploadTarget, setActiveUploadTarget] = useState<{ colorId: string; side: 'front' | 'back' } | null>(null);
 
+  // Everything shown here comes from the backend; there are no built-in garments.
+  const applyConfig = (data: any) => {
+    const garments: GarmentItem[] = Array.isArray(data?.garments) ? data.garments : [];
+    setConfig({ garments, updatedAt: data?.updatedAt ?? null });
+    setSelectedGarmentId((current) => (garments.some((g) => g.id === current) ? current : garments[0]?.id || ''));
+  };
+
   const loadConfig = async () => {
     setLoading(true);
+    setLoadError(null);
     try {
-      const data = await api.get<any>('/customizations/studio/config');
-      const garmentsRaw = data?.data?.garments || data?.garments;
-      if (Array.isArray(garmentsRaw) && garmentsRaw.length > 0) {
-        const enriched = garmentsRaw.map((g: any) => ({
-          ...g,
-          sizes: g.sizes?.length ? g.sizes : [...ALL_AVAILABLE_SIZES],
-          activeSizes: g.activeSizes?.length ? g.activeSizes : ['XS', 'S', 'M', 'L', 'XL', 'XXL'],
-          sizeMeasurements: g.sizeMeasurements || DEFAULT_MEASUREMENTS[g.id] || DEFAULT_MEASUREMENTS.oversized,
-          compareAtPrice: g.compareAtPrice || Math.round(g.price * 1.4),
-        }));
-        setConfig({
-          garments: enriched,
-          updatedAt: data?.updatedAt || new Date().toISOString(),
-        });
-      }
-    } catch {
-      // Fallback
+      applyConfig(await api.get<any>('/customizations/studio/config'));
+      setHasUnsavedChanges(false);
+    } catch (err: any) {
+      setLoadError(err?.message || 'Could not load the custom studio.');
     } finally {
       setLoading(false);
-      setHasUnsavedChanges(false);
     }
   };
 
@@ -309,20 +225,52 @@ export function CustomizerStudioPage() {
     setHasUnsavedChanges(true);
   };
 
+  const handleAddGarment = () => {
+    const taken = new Set(config.garments.map((g) => g.id));
+    let id = 'new-garment';
+    for (let n = 2; taken.has(id); n++) id = `new-garment-${n}`;
+    const garment: GarmentItem = {
+      id,
+      name: 'New garment',
+      shortName: 'NEW',
+      style: 'tshirt',
+      price: 999,
+      compareAtPrice: null,
+      description: '',
+      // Hidden until it has a colour with photos and sizes.
+      isActive: false,
+      sizes: [],
+      activeSizes: [],
+      sizeMeasurements: { in: [], cm: [] },
+      colors: [],
+    };
+    setConfig((prev) => ({ ...prev, garments: [...prev.garments, garment] }));
+    setSelectedGarmentId(id);
+    setActiveTab('pricing');
+    setHasUnsavedChanges(true);
+  };
+
+  const handleDeleteGarment = () => {
+    if (!activeGarment) return;
+    if (!confirm(`Delete "${activeGarment.name}" from the custom studio? Click Publish to make it final.`)) return;
+    const remaining = config.garments.filter((g) => g.id !== activeGarment.id);
+    setConfig((prev) => ({ ...prev, garments: remaining }));
+    setSelectedGarmentId(remaining[0]?.id || '');
+    setHasUnsavedChanges(true);
+  };
+
   const handleSaveAll = async () => {
     setSaving(true);
     setStatusMessage(null);
     try {
-      const payload: CustomizerStudioConfig = {
-        garments: config.garments,
-        updatedAt: new Date().toISOString(),
-      };
-      await api.put('/customizations/studio/config', payload);
+      const saved = await api.put<any>('/customizations/studio/config', { garments: config.garments });
+      // The server returns the cleaned config (final ids, sizes and photo links).
+      applyConfig(saved);
       setHasUnsavedChanges(false);
       toast.success('Live Customizer Updated', 'All prices, sizes, and colors are live on the customer customizer.');
       setStatusMessage({
         type: 'success',
-        text: '✓ Successfully published changes! Storefront is now synchronized.',
+        text: 'Published. The storefront custom studio now shows these garments.',
       });
       setTimeout(() => setStatusMessage(null), 5000);
     } catch (err: any) {
@@ -438,6 +386,13 @@ export function CustomizerStudioPage() {
 
     const { colorId, side } = activeUploadTarget;
     setUploadingColorId(colorId);
+    if (file.size > 10 * 1024 * 1024) {
+      toast.error('Photo too large', 'Please use an image under 10 MB.');
+      setUploadingColorId(null);
+      setActiveUploadTarget(null);
+      if (uploadInputRef.current) uploadInputRef.current.value = '';
+      return;
+    }
 
     try {
       // Goes through the API (not a relative URL, which on the deployed admin
@@ -445,6 +400,12 @@ export function CustomizerStudioPage() {
       // in the studio config bloats the database and hides the failure.
       const { url: finalUrl } = await api.upload(file, 'garments');
       if (!finalUrl) throw new Error('Upload did not return an image URL.');
+
+      if (colorId === MODAL_UPLOAD) {
+        setColorForm((prev) => (side === 'front' ? { ...prev, frontImageUrl: finalUrl } : { ...prev, backImageUrl: finalUrl }));
+        toast.success('Photo uploaded', `${side === 'front' ? 'Front' : 'Back'} photo attached.`);
+        return;
+      }
 
       updateActiveGarment((prev) => ({
         ...prev,
@@ -456,7 +417,7 @@ export function CustomizerStudioPage() {
         }),
       }));
 
-      toast.success('Photo Attached', `Updated ${side} view for ${colorId}.`);
+      toast.success('Photo Attached', `Updated ${side} photo. Click Publish to make it live.`);
     } catch (err: any) {
       toast.error('Upload Error', err?.message || 'Could not upload image.');
     } finally {
@@ -473,16 +434,38 @@ export function CustomizerStudioPage() {
     let next: string[];
 
     if (exists) {
-      if (current.length <= 1) {
-        toast.error('Validation Warning', 'At least one size must remain active.');
-        return;
-      }
       next = current.filter((s) => s !== size);
     } else {
-      next = [...current, size];
+      // Keep the garment's own size order.
+      next = activeGarment.sizes.filter((s) => s === size || current.includes(s));
     }
 
     updateActiveGarment((prev) => ({ ...prev, activeSizes: next }));
+  };
+
+  const addSizes = (sizesToAdd: string[]) => {
+    if (!activeGarment) return;
+    const additions = sizesToAdd
+      .map((s) => s.trim().slice(0, 12))
+      .filter((s) => s && !activeGarment.sizes.some((x) => x.toLowerCase() === s.toLowerCase()));
+    if (additions.length === 0) return;
+    updateActiveGarment((prev) => ({
+      ...prev,
+      sizes: [...prev.sizes, ...additions],
+      activeSizes: [...(prev.activeSizes || []), ...additions],
+    }));
+  };
+
+  const removeSize = (size: string) => {
+    updateActiveGarment((prev) => ({
+      ...prev,
+      sizes: prev.sizes.filter((s) => s !== size),
+      activeSizes: (prev.activeSizes || []).filter((s) => s !== size),
+      sizeMeasurements: {
+        in: (prev.sizeMeasurements?.in || []).filter((r) => r.size !== size),
+        cm: (prev.sizeMeasurements?.cm || []).filter((r) => r.size !== size),
+      },
+    }));
   };
 
   const handleMeasurementChange = (
@@ -492,7 +475,7 @@ export function CustomizerStudioPage() {
     value: string
   ) => {
     updateActiveGarment((prev) => {
-      const baseMeasurements = prev.sizeMeasurements || DEFAULT_MEASUREMENTS[prev.id] || DEFAULT_MEASUREMENTS.oversized;
+      const baseMeasurements = prev.sizeMeasurements || { in: [], cm: [] };
       const rows = [...(baseMeasurements[unit] || [])];
       const idx = rows.findIndex((r) => r.size === size);
 
@@ -501,10 +484,10 @@ export function CustomizerStudioPage() {
       } else {
         rows.push({
           size,
-          chest: field === 'chest' ? value : '—',
-          length: field === 'length' ? value : '—',
-          shoulder: field === 'shoulder' ? value : '—',
-          sleeve: field === 'sleeve' ? value : '—',
+          chest: field === 'chest' ? value : '',
+          length: field === 'length' ? value : '',
+          shoulder: field === 'shoulder' ? value : '',
+          sleeve: field === 'sleeve' ? value : '',
         });
       }
 
@@ -520,28 +503,41 @@ export function CustomizerStudioPage() {
 
   const handleResetMeasurements = () => {
     if (!activeGarment) return;
-    if (!confirm(`Reset all measurements for ${activeGarment.name} to industry defaults?`)) return;
-    updateActiveGarment((prev) => ({
-      ...prev,
-      sizeMeasurements: DEFAULT_MEASUREMENTS[prev.id] || DEFAULT_MEASUREMENTS.oversized,
-    }));
-    toast.success('Measurements Reset', 'Restored standard garment dimension chart.');
+    if (!confirm(`Fill typical ${activeGarment.style} measurements for matching sizes? Your own values for those sizes are replaced.`)) return;
+    const typical = DEFAULT_MEASUREMENTS[activeGarment.style] || DEFAULT_MEASUREMENTS.tshirt;
+    updateActiveGarment((prev) => {
+      const merge = (unit: 'in' | 'cm') => {
+        const own = prev.sizeMeasurements?.[unit] || [];
+        return prev.sizes
+          .map((size) => typical[unit].find((r) => r.size === size) || own.find((r) => r.size === size))
+          .filter((r): r is MeasurementRow => Boolean(r));
+      };
+      return { ...prev, sizeMeasurements: { in: merge('in'), cm: merge('cm') } };
+    });
+    toast.success('Measurements filled', 'Typical values added where your sizes match. Adjust them to your garment.');
   };
 
   if (loading) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] gap-3">
         <LoaderCircle className="w-8 h-8 animate-spin text-[#E6321C]" />
-        <p className="text-sm font-bold text-gray-600">Loading 3D Customizer Studio...</p>
+        <p className="text-sm font-bold text-gray-600">Loading custom studio...</p>
+      </div>
+    );
+  }
+
+  if (loadError) {
+    return (
+      <div className="max-w-lg mx-auto mt-16 p-6 rounded-3xl border border-red-200 bg-red-50 text-center space-y-3">
+        <AlertTriangle className="w-7 h-7 mx-auto text-red-600" />
+        <p className="text-sm font-bold text-red-800">{loadError}</p>
+        <button type="button" onClick={loadConfig} className="btn-primary">Try again</button>
       </div>
     );
   }
 
   const activeColorObj = activeGarment?.colors?.[previewColorIndex] || activeGarment?.colors?.[0];
-  const activeImageUrl =
-    previewSide === 'BACK'
-      ? activeColorObj?.backImageUrl || activeColorObj?.frontImageUrl
-      : activeColorObj?.frontImageUrl;
+  const activeImageUrl = previewSide === 'BACK' ? activeColorObj?.backImageUrl : activeColorObj?.frontImageUrl;
 
   return (
     <div className="space-y-6 max-w-7xl mx-auto pb-16">
@@ -559,11 +555,11 @@ export function CustomizerStudioPage() {
           <div className="flex items-center gap-2 mb-1">
             <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
             <h1 className="text-xl sm:text-2xl font-black text-gray-900 uppercase tracking-tight">
-              3D Customizer Studio Manager
+              Custom Studio
             </h1>
           </div>
           <p className="text-xs text-gray-500">
-            Control garment silhouettes, live DTF pricing, active colorways, mockups, and measurement matrices.
+            Garments customers can design on /customize: prices, colours with real front and back photos, sizes and size charts.
           </p>
         </div>
 
@@ -618,64 +614,88 @@ export function CustomizerStudioPage() {
         </div>
       )}
 
-      {/* GARMENT SILHOUETTES SWITCHER CARDS */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        {config.garments.map((garment) => {
-          const isSelected = garment.id === selectedGarmentId;
-          const activeColorCount = garment.colors?.filter((c) => c.isActive !== false).length || 0;
-          const sampleColorHex = garment.colors?.[0]?.hex || '#171717';
+      {/* GARMENT CARDS */}
+      {config.garments.length === 0 ? (
+        <div className="p-10 rounded-3xl border-2 border-dashed border-gray-300 bg-white text-center space-y-3">
+          <Shirt className="w-10 h-10 mx-auto text-gray-300" />
+          <h2 className="text-base font-black text-gray-900 uppercase">No garments yet</h2>
+          <p className="text-xs text-gray-500 max-w-md mx-auto">
+            Add a garment (e.g. Oversized T-shirt), set its price and sizes, then add colours with real front and back photos.
+            The storefront custom studio stays hidden until a garment is active.
+          </p>
+          <button type="button" onClick={handleAddGarment} className="btn-primary inline-flex items-center gap-1.5">
+            <Plus size={14} />
+            <span>Add garment</span>
+          </button>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+          {config.garments.map((garment) => {
+            const isSelected = garment.id === selectedGarmentId;
+            const activeColorCount = garment.colors?.filter((c) => c.isActive !== false).length || 0;
+            const warnings = garmentWarnings(garment);
 
-          return (
-            <div
-              key={garment.id}
-              onClick={() => {
-                setSelectedGarmentId(garment.id);
-                setPreviewColorIndex(0);
-              }}
-              className={`p-5 rounded-3xl border-2 transition-all cursor-pointer flex flex-col justify-between relative bg-white shadow-sm hover:shadow-md ${
-                isSelected ? 'border-[#E6321C] ring-2 ring-[#E6321C]/20' : 'border-gray-200 hover:border-gray-300'
-              }`}
-            >
-              <div className="flex items-center justify-between mb-3">
-                <span
-                  className={`text-[10px] font-mono font-bold uppercase px-2.5 py-0.5 rounded-full ${
-                    garment.isActive
-                      ? 'bg-emerald-100 text-emerald-800'
-                      : 'bg-gray-100 text-gray-500'
-                  }`}
-                >
-                  {garment.isActive ? 'Active on Store' : 'Hidden'}
-                </span>
-
-                <span className="text-[10px] font-mono text-gray-400">ID: {garment.id}</span>
-              </div>
-
-              <div className="flex items-center gap-4 my-2">
-                <div className="w-16 h-16 rounded-2xl bg-gray-50 border border-gray-100 flex items-center justify-center p-2 flex-shrink-0 overflow-hidden">
-                  <SilhouettePreview garmentId={garment.id} colorHex={sampleColorHex} />
+            return (
+              <button
+                type="button"
+                key={garment.id}
+                onClick={() => {
+                  setSelectedGarmentId(garment.id);
+                  setPreviewColorIndex(0);
+                }}
+                className={`p-4 rounded-3xl border-2 transition-all cursor-pointer flex flex-col text-left bg-white shadow-sm hover:shadow-md ${
+                  isSelected ? 'border-[#E6321C] ring-2 ring-[#E6321C]/20' : 'border-gray-200 hover:border-gray-300'
+                }`}
+              >
+                <div className="flex items-center justify-between gap-2 mb-3 w-full">
+                  <span
+                    className={`text-[10px] font-mono font-bold uppercase px-2.5 py-0.5 rounded-full ${
+                      garment.isActive ? 'bg-emerald-100 text-emerald-800' : 'bg-gray-100 text-gray-500'
+                    }`}
+                  >
+                    {garment.isActive ? 'Live' : 'Hidden'}
+                  </span>
+                  <span className="text-[10px] font-mono text-gray-400 truncate">{garment.style}</span>
                 </div>
-                <div>
-                  <h3 className="text-base font-black text-gray-900 uppercase tracking-tight">{garment.name}</h3>
-                  <p className="text-[11px] text-gray-500 line-clamp-1">{garment.description}</p>
-                  <div className="flex items-center gap-2 mt-1.5">
-                    <span className="text-base font-extrabold text-[#E6321C]">₹{garment.price.toLocaleString('en-IN')}</span>
-                    {garment.compareAtPrice && garment.compareAtPrice > garment.price && (
-                      <span className="text-xs font-medium text-gray-400 line-through">
-                        ₹{garment.compareAtPrice.toLocaleString('en-IN')}
-                      </span>
-                    )}
+
+                <div className="flex items-center gap-3 w-full">
+                  <div className="w-16 h-16 rounded-2xl bg-gray-50 border border-gray-100 flex items-center justify-center p-1.5 flex-shrink-0 overflow-hidden">
+                    <GarmentThumb garment={garment} />
+                  </div>
+                  <div className="min-w-0">
+                    <h3 className="text-sm font-black text-gray-900 uppercase tracking-tight truncate">{garment.name}</h3>
+                    <div className="flex items-center gap-2 mt-1">
+                      <span className="text-base font-extrabold text-[#E6321C]">₹{garment.price.toLocaleString('en-IN')}</span>
+                      {garment.compareAtPrice && garment.compareAtPrice > garment.price && (
+                        <span className="text-xs font-medium text-gray-400 line-through">₹{garment.compareAtPrice.toLocaleString('en-IN')}</span>
+                      )}
+                    </div>
                   </div>
                 </div>
-              </div>
 
-              <div className="mt-3 pt-3 border-t border-gray-100 flex items-center justify-between text-[10px] text-gray-500 font-mono">
-                <span>{activeColorCount} Colors Configured</span>
-                <span>{(garment.activeSizes || []).join(', ')}</span>
-              </div>
-            </div>
-          );
-        })}
-      </div>
+                <div className="mt-3 pt-3 border-t border-gray-100 w-full text-[10px] font-mono text-gray-500 flex items-center justify-between gap-2">
+                  <span>{activeColorCount} colour{activeColorCount === 1 ? '' : 's'}</span>
+                  <span className="truncate">{(garment.activeSizes || []).join(', ') || 'No sizes'}</span>
+                </div>
+                {warnings.length > 0 && (
+                  <div className="mt-2 w-full text-[10px] font-semibold text-amber-700 flex items-center gap-1">
+                    <AlertTriangle size={11} className="shrink-0" />
+                    <span className="truncate">{warnings.join(' · ')}</span>
+                  </div>
+                )}
+              </button>
+            );
+          })}
+          <button
+            type="button"
+            onClick={handleAddGarment}
+            className="p-4 rounded-3xl border-2 border-dashed border-gray-300 bg-white/60 hover:bg-white hover:border-gray-400 text-gray-500 hover:text-gray-900 flex flex-col items-center justify-center gap-2 min-h-[150px] transition-colors cursor-pointer"
+          >
+            <Plus size={20} />
+            <span className="text-xs font-bold uppercase tracking-wider">Add garment</span>
+          </button>
+        </div>
+      )}
 
       {/* SELECTED GARMENT CONTROLS */}
       {activeGarment && (
@@ -756,16 +776,17 @@ export function CustomizerStudioPage() {
                       <input
                         type="number"
                         min="1"
-                        value={activeGarment.compareAtPrice || Math.round(activeGarment.price * 1.4)}
+                        value={activeGarment.compareAtPrice ?? ''}
+                        placeholder="Optional"
                         onChange={(e) => {
-                          const val = Math.max(1, parseInt(e.target.value) || 0);
-                          updateActiveGarment((prev) => ({ ...prev, compareAtPrice: val }));
+                          const val = parseInt(e.target.value);
+                          updateActiveGarment((prev) => ({ ...prev, compareAtPrice: Number.isFinite(val) && val > 0 ? val : null }));
                         }}
                         className="w-full pl-8 pr-3 py-2.5 rounded-xl border border-gray-200 bg-white text-base font-extrabold text-gray-900 focus:outline-none focus:border-[#E6321C]"
                       />
                     </div>
                     <p className="text-[10px] text-gray-500 mt-1.5">
-                      Shown with strikethrough to highlight savings for customer value.
+                      Optional. Shown crossed out when it is higher than the selling price.
                     </p>
                   </div>
                 </div>
@@ -804,7 +825,7 @@ export function CustomizerStudioPage() {
                 <div className="space-y-4 pt-2">
                   <div>
                     <label className="text-[11px] font-bold uppercase tracking-wider text-gray-700 block mb-1.5">
-                      Garment Silhouette Display Name
+                      Garment Name
                     </label>
                     <input
                       type="text"
@@ -819,7 +840,7 @@ export function CustomizerStudioPage() {
 
                   <div>
                     <label className="text-[11px] font-bold uppercase tracking-wider text-gray-700 block mb-1.5">
-                      Fabric & Specification Subtitle
+                      Fabric & Details (shown under the name)
                     </label>
                     <input
                       type="text"
@@ -833,11 +854,49 @@ export function CustomizerStudioPage() {
                   </div>
                 </div>
 
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-[11px] font-bold uppercase tracking-wider text-gray-700 block mb-1.5">
+                      Button Label (short)
+                    </label>
+                    <input
+                      type="text"
+                      maxLength={24}
+                      value={activeGarment.shortName}
+                      onChange={(e) => {
+                        const val = e.target.value.toUpperCase();
+                        updateActiveGarment((prev) => ({ ...prev, shortName: val }));
+                      }}
+                      placeholder="e.g. OVERSIZED"
+                      className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 bg-white text-sm font-semibold text-gray-900 focus:outline-none focus:border-[#E6321C]"
+                    />
+                    <p className="text-[10px] text-gray-500 mt-1">Shown on the garment picker on the storefront.</p>
+                  </div>
+                  <div>
+                    <label className="text-[11px] font-bold uppercase tracking-wider text-gray-700 block mb-1.5">
+                      Garment Style
+                    </label>
+                    <select
+                      value={activeGarment.style}
+                      onChange={(e) => {
+                        const val = e.target.value as GarmentStyle;
+                        updateActiveGarment((prev) => ({ ...prev, style: val }));
+                      }}
+                      className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 bg-white text-sm font-semibold text-gray-900 focus:outline-none focus:border-[#E6321C]"
+                    >
+                      {STYLE_OPTIONS.map((o) => (
+                        <option key={o.id} value={o.id}>{o.label}</option>
+                      ))}
+                    </select>
+                    <p className="text-[10px] text-gray-500 mt-1">Sets where designs sit on the photo and the size-chart columns.</p>
+                  </div>
+                </div>
+
                 <div className="pt-3 border-t border-gray-100 flex items-center justify-between">
                   <div>
-                    <div className="text-sm font-bold text-gray-900">Silhouette Availability</div>
+                    <div className="text-sm font-bold text-gray-900">Show on storefront</div>
                     <div className="text-xs text-gray-500">
-                      Enable or disable this garment type from appearing in the storefront customizer studio.
+                      Customers only see live garments. Add at least one colour with a front photo and some sizes first.
                     </div>
                   </div>
                   <label className="relative inline-flex items-center cursor-pointer">
@@ -853,6 +912,17 @@ export function CustomizerStudioPage() {
                     <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#E6321C]"></div>
                   </label>
                 </div>
+
+                <div className="pt-3 border-t border-gray-100">
+                  <button
+                    type="button"
+                    onClick={handleDeleteGarment}
+                    className="px-3 py-2 rounded-xl border border-red-200 text-red-700 hover:bg-red-50 text-xs font-bold flex items-center gap-1.5 cursor-pointer"
+                  >
+                    <Trash2 size={13} />
+                    <span>Delete this garment</span>
+                  </button>
+                </div>
               </div>
             )}
 
@@ -863,7 +933,7 @@ export function CustomizerStudioPage() {
                   <div>
                     <h3 className="text-sm font-black text-gray-900 uppercase">Configured Colorways & Photo Mockups</h3>
                     <p className="text-xs text-gray-500">
-                      Attach real-life front and back garment photography for photorealistic customer previews.
+                      Upload real photos of the blank garment (PNG with transparent background works best, JPG/WEBP also fine, max 10 MB).
                     </p>
                   </div>
                   <button
@@ -941,7 +1011,7 @@ export function CustomizerStudioPage() {
                                 </div>
                               )}
 
-                              <div className="absolute inset-0 bg-black/50 backdrop-blur-[2px] opacity-0 hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-1 p-2">
+                              <div className="absolute inset-x-0 bottom-0 bg-black/60 flex items-center justify-center gap-2 p-1.5">
                                 <button
                                   type="button"
                                   onClick={() => triggerPhotoUpload(color.id, 'front')}
@@ -984,7 +1054,7 @@ export function CustomizerStudioPage() {
                                 </div>
                               )}
 
-                              <div className="absolute inset-0 bg-black/50 backdrop-blur-[2px] opacity-0 hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-1 p-2">
+                              <div className="absolute inset-x-0 bottom-0 bg-black/60 flex items-center justify-center gap-2 p-1.5">
                                 <button
                                   type="button"
                                   onClick={() => triggerPhotoUpload(color.id, 'back')}
@@ -1017,7 +1087,7 @@ export function CustomizerStudioPage() {
 
                         <div className="mt-2 pt-2 border-t border-gray-100 flex items-center justify-between text-[10px]">
                           <span className={hasFront ? 'text-emerald-600 font-bold' : 'text-amber-600'}>
-                            {hasFront ? '✓ Photo Ready' : '• Vector Silhouette'}
+                            {hasFront ? (hasBack ? 'Front & back photos' : 'Back photo missing') : 'Front photo needed'}
                           </span>
                           <button
                             type="button"
@@ -1046,53 +1116,86 @@ export function CustomizerStudioPage() {
             {/* TAB 3: SIZES */}
             {activeTab === 'sizes' && (
               <div className="space-y-6">
-                <div className="p-4 rounded-2xl border border-gray-200 bg-gray-50/50">
-                  <div className="flex items-center justify-between mb-3">
-                    <div>
-                      <h4 className="text-xs font-bold uppercase tracking-wider text-gray-900">
-                        Offered Sizes for {activeGarment.name}
-                      </h4>
-                      <p className="text-[11px] text-gray-500">
-                        Toggle which sizes customers can select. Inactive sizes are hidden on the customizer.
-                      </p>
-                    </div>
-
-                    <div className="flex gap-1.5">
-                      <button
-                        type="button"
-                        onClick={() => updateActiveGarment((prev) => ({ ...prev, activeSizes: [...ALL_AVAILABLE_SIZES] }))}
-                        className="text-[10px] font-bold text-gray-600 hover:text-gray-900 px-2 py-1 rounded-md bg-white border border-gray-200 cursor-pointer"
-                      >
-                        Enable All
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => updateActiveGarment((prev) => ({ ...prev, activeSizes: ['M', 'L', 'XL'] }))}
-                        className="text-[10px] font-bold text-gray-600 hover:text-gray-900 px-2 py-1 rounded-md bg-white border border-gray-200 cursor-pointer"
-                      >
-                        Standard (M-XL)
-                      </button>
-                    </div>
+                <div className="p-4 rounded-2xl border border-gray-200 bg-gray-50/50 space-y-4">
+                  <div>
+                    <h4 className="text-xs font-bold uppercase tracking-wider text-gray-900">Sizes for {activeGarment.name}</h4>
+                    <p className="text-[11px] text-gray-500">
+                      Add the sizes you sell. Tap a size to switch it on or off for customers; use the x to remove it.
+                    </p>
                   </div>
 
                   <div className="flex flex-wrap gap-2">
-                    {ALL_AVAILABLE_SIZES.map((size) => {
-                      const isActive = (activeGarment.activeSizes || []).includes(size);
+                    {activeGarment.sizes.length === 0 && (
+                      <span className="text-xs text-gray-500">No sizes yet. Add them below.</span>
+                    )}
+                    {activeGarment.sizes.map((size) => {
+                      const isOn = (activeGarment.activeSizes || []).includes(size);
                       return (
-                        <button
+                        <span
                           key={size}
-                          type="button"
-                          onClick={() => toggleSizeActive(size)}
-                          className={`w-12 h-10 rounded-xl font-mono text-xs font-bold uppercase transition-all flex items-center justify-center cursor-pointer border ${
-                            isActive
-                              ? 'bg-gray-900 text-white border-gray-900 shadow-sm ring-2 ring-gray-900/10'
-                              : 'bg-white text-gray-400 border-gray-200 hover:border-gray-300'
+                          className={`inline-flex items-center rounded-xl border overflow-hidden ${
+                            isOn ? 'border-gray-900' : 'border-gray-200'
                           }`}
                         >
-                          {size}
-                        </button>
+                          <button
+                            type="button"
+                            onClick={() => toggleSizeActive(size)}
+                            title={isOn ? 'Offered: tap to hide' : 'Hidden: tap to offer'}
+                            className={`h-9 px-3 font-mono text-xs font-bold uppercase cursor-pointer ${
+                              isOn ? 'bg-gray-900 text-white' : 'bg-white text-gray-400'
+                            }`}
+                          >
+                            {size}
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => removeSize(size)}
+                            aria-label={`Remove size ${size}`}
+                            className={`h-9 px-2 cursor-pointer ${isOn ? 'bg-gray-800 text-white/70 hover:text-white' : 'bg-white text-gray-400 hover:text-red-600'}`}
+                          >
+                            <X size={12} />
+                          </button>
+                        </span>
                       );
                     })}
+                  </div>
+
+                  <div className="flex flex-wrap items-center gap-2">
+                    <form
+                      onSubmit={(e) => {
+                        e.preventDefault();
+                        addSizes(newSize.split(','));
+                        setNewSize('');
+                      }}
+                      className="flex items-center gap-2"
+                    >
+                      <input
+                        type="text"
+                        value={newSize}
+                        onChange={(e) => setNewSize(e.target.value)}
+                        placeholder="e.g. XL or 42 (comma-separate several)"
+                        maxLength={60}
+                        className="w-60 px-3 py-2 rounded-xl border border-gray-200 bg-white text-xs font-semibold focus:outline-none focus:border-[#E6321C]"
+                      />
+                      <button type="submit" className="px-3 py-2 rounded-xl bg-gray-900 text-white text-xs font-bold flex items-center gap-1 cursor-pointer">
+                        <Plus size={12} />
+                        <span>Add size</span>
+                      </button>
+                    </form>
+                    <button
+                      type="button"
+                      onClick={() => addSizes(LETTER_SIZES)}
+                      className="px-3 py-2 rounded-xl border border-gray-200 bg-white text-xs font-bold text-gray-700 hover:bg-gray-50 cursor-pointer"
+                    >
+                      Add XS–3XL
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => addSizes(NUMERIC_SIZES)}
+                      className="px-3 py-2 rounded-xl border border-gray-200 bg-white text-xs font-bold text-gray-700 hover:bg-gray-50 cursor-pointer"
+                    >
+                      Add 36–46
+                    </button>
                   </div>
                 </div>
 
@@ -1103,7 +1206,7 @@ export function CustomizerStudioPage() {
                         Precision Size Measurement Chart
                       </h4>
                       <p className="text-[11px] text-gray-500">
-                        Displayed in the customer dynamic size guide modal. Admin can customize every dimension.
+                        Shown in the storefront size chart. Leave a cell empty if you don't measure it.
                       </p>
                     </div>
 
@@ -1113,7 +1216,7 @@ export function CustomizerStudioPage() {
                         onClick={handleResetMeasurements}
                         className="text-[10px] font-bold text-gray-500 hover:text-gray-900 px-2 py-1 rounded-lg border border-gray-200 bg-white cursor-pointer"
                       >
-                        Reset Defaults
+                        Fill typical values
                       </button>
 
                       <div className="flex p-1 bg-gray-100 rounded-xl">
@@ -1152,7 +1255,19 @@ export function CustomizerStudioPage() {
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-gray-100 bg-white font-mono">
-                        {((activeGarment.sizeMeasurements || DEFAULT_MEASUREMENTS[activeGarment.id] || DEFAULT_MEASUREMENTS.oversized)[measureUnit] || []).map((row) => {
+                        {activeGarment.sizes.length === 0 && (
+                          <tr>
+                            <td colSpan={6} className="p-4 text-center text-xs text-gray-500 font-sans">Add sizes above to fill in the chart.</td>
+                          </tr>
+                        )}
+                        {activeGarment.sizes.map((size) => {
+                          const row = (activeGarment.sizeMeasurements?.[measureUnit] || []).find((r) => r.size === size) || {
+                            size,
+                            chest: '',
+                            length: '',
+                            shoulder: '',
+                            sleeve: '',
+                          };
                           const isSizeActive = (activeGarment.activeSizes || []).includes(row.size);
                           return (
                             <tr key={row.size} className={isSizeActive ? 'hover:bg-gray-50/70' : 'bg-gray-50/40 opacity-60'}>
@@ -1220,8 +1335,9 @@ export function CustomizerStudioPage() {
                         className="max-h-[90%] max-w-[90%] object-contain drop-shadow-xl"
                       />
                     ) : (
-                      <div className="scale-110">
-                        <SilhouettePreview garmentId={activeGarment.id} colorHex={activeColorObj?.hex || '#171717'} />
+                      <div className="flex flex-col items-center gap-2 text-gray-500">
+                        <Camera size={28} />
+                        <span className="text-xs font-semibold">No {previewSide === 'BACK' ? 'back' : 'front'} photo for this colour yet</span>
                       </div>
                     )}
 
@@ -1313,7 +1429,7 @@ export function CustomizerStudioPage() {
                     <div className="font-bold text-gray-900">Storefront Status:</div>
                     <div>• Silhouette: {activeGarment.isActive ? 'Active on /customize' : 'Hidden'}</div>
                     <div>• Active Color: {activeColorObj?.name || 'Default'} ({activeColorObj?.hex})</div>
-                    <div>• Mockup Status: {activeImageUrl ? 'Real Photo Loaded' : 'Vector SVG Fallback'}</div>
+                    <div>• Photo: {activeImageUrl ? 'Uploaded' : 'Missing (customers see a placeholder)'}</div>
                   </div>
                 </div>
               </div>
@@ -1434,28 +1550,56 @@ export function CustomizerStudioPage() {
               <div className="space-y-2 pt-2 border-t border-gray-100">
                 <div>
                   <label className="text-[10px] font-bold uppercase tracking-wider text-gray-500 block mb-1">
-                    Front Mockup URL (or upload from color card)
+                    Front Photo
                   </label>
-                  <input
-                    type="text"
-                    value={colorForm.frontImageUrl}
-                    onChange={(e) => setColorForm((prev) => ({ ...prev, frontImageUrl: e.target.value }))}
-                    placeholder="/custom/black-front.png or https://..."
-                    className="w-full px-3 py-1.5 rounded-xl border border-gray-200 text-xs font-mono"
-                  />
+                  <div className="flex items-center gap-2">
+                    {colorForm.frontImageUrl && (
+                      <img src={colorForm.frontImageUrl} alt="" className="w-10 h-10 object-contain rounded-lg border border-gray-200 bg-gray-50" />
+                    )}
+                    <button
+                      type="button"
+                      onClick={() => triggerPhotoUpload(MODAL_UPLOAD, 'front')}
+                      disabled={uploadingColorId === MODAL_UPLOAD}
+                      className="px-3 py-1.5 rounded-xl bg-gray-900 text-white text-[11px] font-bold flex items-center gap-1 cursor-pointer disabled:opacity-60"
+                    >
+                      {uploadingColorId === MODAL_UPLOAD && activeUploadTarget?.side === 'front' ? <LoaderCircle size={12} className="animate-spin" /> : <Upload size={12} />}
+                      <span>{colorForm.frontImageUrl ? 'Replace' : 'Upload'}</span>
+                    </button>
+                    <input
+                      type="text"
+                      value={colorForm.frontImageUrl}
+                      onChange={(e) => setColorForm((prev) => ({ ...prev, frontImageUrl: e.target.value }))}
+                      placeholder="or paste an https:// image link"
+                      className="flex-1 min-w-0 px-3 py-1.5 rounded-xl border border-gray-200 text-xs font-mono"
+                    />
+                  </div>
                 </div>
 
                 <div>
                   <label className="text-[10px] font-bold uppercase tracking-wider text-gray-500 block mb-1">
-                    Back Mockup URL (Optional)
+                    Back Photo
                   </label>
-                  <input
-                    type="text"
-                    value={colorForm.backImageUrl}
-                    onChange={(e) => setColorForm((prev) => ({ ...prev, backImageUrl: e.target.value }))}
-                    placeholder="/custom/black-back.png or https://..."
-                    className="w-full px-3 py-1.5 rounded-xl border border-gray-200 text-xs font-mono"
-                  />
+                  <div className="flex items-center gap-2">
+                    {colorForm.backImageUrl && (
+                      <img src={colorForm.backImageUrl} alt="" className="w-10 h-10 object-contain rounded-lg border border-gray-200 bg-gray-50" />
+                    )}
+                    <button
+                      type="button"
+                      onClick={() => triggerPhotoUpload(MODAL_UPLOAD, 'back')}
+                      disabled={uploadingColorId === MODAL_UPLOAD}
+                      className="px-3 py-1.5 rounded-xl bg-gray-900 text-white text-[11px] font-bold flex items-center gap-1 cursor-pointer disabled:opacity-60"
+                    >
+                      {uploadingColorId === MODAL_UPLOAD && activeUploadTarget?.side === 'back' ? <LoaderCircle size={12} className="animate-spin" /> : <Upload size={12} />}
+                      <span>{colorForm.backImageUrl ? 'Replace' : 'Upload'}</span>
+                    </button>
+                    <input
+                      type="text"
+                      value={colorForm.backImageUrl}
+                      onChange={(e) => setColorForm((prev) => ({ ...prev, backImageUrl: e.target.value }))}
+                      placeholder="or paste an https:// image link"
+                      className="flex-1 min-w-0 px-3 py-1.5 rounded-xl border border-gray-200 text-xs font-mono"
+                    />
+                  </div>
                 </div>
               </div>
 

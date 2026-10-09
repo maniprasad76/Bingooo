@@ -419,14 +419,11 @@ export class OrdersService implements OnModuleInit, OnModuleDestroy {
           (product as any)?.images?.[0] ||
           null;
 
-        if (imageUrl && imageUrl.includes('tshirt-step-3-black.png')) {
-          imageUrl = '/custom/black-front.png';
+        // Custom pieces: the garment photo uploaded in the admin studio (bundled mockups were removed).
+        if ((!imageUrl || String(imageUrl).startsWith('/custom/') || String(imageUrl).includes('tshirt-step-3-black.png')) && customization) {
+          imageUrl = customization.design_json?.garment?.frontImageUrl || null;
         }
-
-        if (!imageUrl && customization) {
-          const garment = customization.design_json?.garment;
-          imageUrl = garment?.frontImageUrl || '/custom/black-front.png';
-        }
+        if (imageUrl && String(imageUrl).startsWith('/custom/')) imageUrl = null;
 
         return {
           ...i,

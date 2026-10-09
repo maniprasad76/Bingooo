@@ -52,6 +52,23 @@ const hoodie = {
 };
 const categories = [{ id: 'c1', name: 'T-Shirts', slug: 't-shirts', is_active: true }, { id: 'c2', name: 'Hoodies', slug: 'hoodies', is_active: true }];
 
+// Custom studio catalogue as configured in the admin panel.
+const studioGarment = (over) => ({
+  style: 'tshirt', compareAtPrice: null, description: '', isActive: true, sizes: ['S', 'M', 'L'], activeSizes: ['M', 'L'],
+  sizeMeasurements: { in: [{ size: 'M', chest: '44 in', length: '28 in' }], cm: [] },
+  colors: [{ id: 'black', name: 'Black', hex: '#171717', textContrast: '#FFFFFF', frontImageUrl: img, backImageUrl: '', isActive: true }],
+  ...over,
+});
+const studioConfig = {
+  updatedAt: '2026-10-09T00:00:00.000Z',
+  garments: [
+    studioGarment({ id: 'oversized', name: 'Oversized T-Shirt', shortName: 'OVERSIZED', price: 649, compareAtPrice: 1499 }),
+    studioGarment({ id: 'heavy-hoodie', name: 'Heavy Hoodie', shortName: 'HOODIE', style: 'hoodie', price: 799 }),
+    studioGarment({ id: 'hidden-tee', name: 'Hidden Tee', shortName: 'HIDDEN', price: 499, isActive: false }),
+  ],
+};
+let studioEmpty = false;
+
 function apiData(rawUrl) {
   const url = new URL(rawUrl);
   const p = url.pathname.replace(/^.*\/api\/v1/, '');
@@ -64,6 +81,7 @@ function apiData(rawUrl) {
     return [tee, hoodie].filter((x) => (!slug || x.category.slug === slug) && (!q || x.title.toLowerCase().includes(q)));
   }
   if (p.startsWith('/reviews')) return { reviews: [], summary: { average: 0, count: 0 } };
+  if (p === '/customizations/studio/config') return studioEmpty ? { garments: [], updatedAt: null } : studioConfig;
   return [];
 }
 
@@ -132,11 +150,23 @@ try {
   check(await page.getByText(/Sign In To Review/i).first().isVisible().catch(() => false), 'review link opens the review form and asks a signed-out visitor to sign in');
   await page.keyboard.press('Escape'); await settle(400);
 
-  console.log('-- customizer');
-  for (const fit of ['polo', 'hoodie']) {
-    await page.goto(`${BASE}/customize?fit=${fit}`, { waitUntil: 'load' }); await settle(1500);
-  }
-  check(errors.length === 0, 'customizer ?fit= links render without errors', errors.join(' | '));
+  console.log('-- custom studio (catalogue from the admin panel)');
+  await page.goto(`${BASE}/customize`, { waitUntil: 'load' }); await settle(1500);
+  const studioButtons = await page.locator('button').allInnerTexts();
+  check(studioButtons.some((t) => t.includes('OVERSIZED')) && studioButtons.some((t) => t.includes('HOODIE')), 'garment picker shows the admin garments');
+  check(!studioButtons.some((t) => t.includes('HIDDEN')), 'hidden garments are not offered');
+  check(await page.locator('img[alt="Oversized T-Shirt - Black (front)"]').isVisible(), 'uploaded front photo is shown');
+  const sizeButtons = (await page.locator('button').allInnerTexts()).map((t) => t.trim());
+  check(sizeButtons.includes('M') && sizeButtons.includes('L') && !sizeButtons.includes('S'), 'only the sizes the admin offers are selectable');
+  await page.getByRole('button', { name: 'BACK', exact: true }).first().click(); await settle(500);
+  check(await page.getByText(/Back photo coming soon/i).isVisible(), 'missing back photo shows a placeholder, not a broken image');
+  await page.goto(`${BASE}/customize?fit=hoodie`, { waitUntil: 'load' }); await settle(1500);
+  check(await page.locator('img[alt^="Heavy Hoodie"]').isVisible(), '?fit=hoodie selects the hoodie by style');
+  studioEmpty = true;
+  await page.goto(`${BASE}/customize`, { waitUntil: 'load' }); await settle(1500);
+  check(await page.getByText(/Custom studio opening soon/i).isVisible(), 'empty catalogue shows "opening soon" instead of placeholder garments');
+  studioEmpty = false;
+  check(errors.length === 0, 'custom studio renders without errors', errors.join(' | '));
 
   console.log('-- search modal');
   await page.goto(`${BASE}/shop`, { waitUntil: 'load' }); await settle();

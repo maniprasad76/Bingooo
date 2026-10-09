@@ -6,6 +6,7 @@ import {
   Ruler,
   Check,
   MessageCircle,
+  Shirt,
 } from 'lucide-react';
 import { api } from '../lib/api/client';
 import { useToast } from '../components/ui/Toast';
@@ -13,7 +14,8 @@ import { BINGOOO_PHONE_RAW } from '../components/ui/SocialIcons';
 import { SEO } from '../components/common/SEO';
 
 // ─── TYPES ──────────────────────────────────────────────────────────────────
-export type GarmentType = 'oversized' | 'polo' | 'hoodie';
+/** Set per garment in the admin studio; drives print placement and size-chart columns. */
+export type GarmentStyle = 'tshirt' | 'polo' | 'hoodie';
 export type GarmentView = 'FRONT' | 'BACK';
 export type DesignPlacement = 'center' | 'left_chest' | 'back';
 
@@ -37,10 +39,12 @@ export interface GarmentColor {
 }
 
 export interface GarmentConfig {
-  id: GarmentType;
+  id: string;
   name: string;
+  shortName?: string;
+  style: GarmentStyle;
   price: number;
-  compareAtPrice: number;
+  compareAtPrice: number | null;
   description: string;
   isActive: boolean;
   sizes: string[];
@@ -61,118 +65,19 @@ export interface UploadedArtwork {
   offsetY: number; // -30 to 30 px offset
 }
 
-// ─── CANONICAL BAUHAUS DEFAULTS ─────────────────────────────────────────────
-const DEFAULT_GARMENTS: Record<GarmentType, GarmentConfig> = {
-  oversized: {
-    id: 'oversized',
-    name: 'Drop-Shoulder / Oversized T-Shirt',
-    price: 649,
-    compareAtPrice: 1499,
-    description: '240 GSM Combed Cotton · Drop-Shoulder Relaxed Streetwear Fit',
-    isActive: true,
-    sizes: ['S', 'M', 'L', 'XL', 'XXL'],
-    activeSizes: ['S', 'M', 'L', 'XL', 'XXL'],
-    sizeMeasurements: {
-      in: [
-        { size: 'S', chest: '42', length: '27.5', shoulder: '20', sleeve: '8.5' },
-        { size: 'M', chest: '44', length: '28', shoulder: '21', sleeve: '9' },
-        { size: 'L', chest: '46', length: '28.5', shoulder: '22', sleeve: '9.5' },
-        { size: 'XL', chest: '48', length: '29', shoulder: '23', sleeve: '10' },
-        { size: 'XXL', chest: '50', length: '29.5', shoulder: '24', sleeve: '10.5' },
-      ],
-      cm: [
-        { size: 'S', chest: '107', length: '70', shoulder: '51', sleeve: '22' },
-        { size: 'M', chest: '112', length: '71', shoulder: '53', sleeve: '23' },
-        { size: 'L', chest: '117', length: '72', shoulder: '56', sleeve: '24' },
-        { size: 'XL', chest: '122', length: '74', shoulder: '58', sleeve: '25' },
-        { size: 'XXL', chest: '127', length: '75', shoulder: '61', sleeve: '27' },
-      ],
-    },
-    colors: [
-      { id: 'black', name: 'Obsidian Black', hex: '#171717', textContrast: '#FFFFFF', frontImageUrl: '/custom/black-front.png', backImageUrl: '/custom/black-back.png', isActive: true },
-      { id: 'white', name: 'Pure White', hex: '#FFFFFF', textContrast: '#171717', frontImageUrl: '/custom/white-front.png', backImageUrl: '/custom/white-back.png', isActive: true },
-      { id: 'beige', name: 'Washed Beige', hex: '#D8C8B1', textContrast: '#171717', frontImageUrl: '/custom/beige-front.png', backImageUrl: '/custom/beige-back.png', isActive: true },
-      { id: 'red', name: 'Signal Red', hex: '#E6321C', textContrast: '#FFFFFF', frontImageUrl: '/custom/red-front.png', backImageUrl: '/custom/red-back.png', isActive: true },
-    ],
-  },
-  polo: {
-    id: 'polo',
-    name: 'Regular Fit Round Neck / Polo',
-    price: 699,
-    compareAtPrice: 1499,
-    description: '220 GSM Honeycomb Matty · Premium Combed Cotton Polo Fit',
-    isActive: true,
-    sizes: ['36', '38', '40', '42', '44', '46'],
-    activeSizes: ['36', '38', '40', '42', '44', '46'],
-    sizeMeasurements: {
-      in: [
-        { size: '36', chest: '36', length: '26', shoulder: '16', sleeve: '8' },
-        { size: '38', chest: '38', length: '27', shoulder: '17', sleeve: '8.5' },
-        { size: '40', chest: '40', length: '28', shoulder: '17.5', sleeve: '9' },
-        { size: '42', chest: '42', length: '29', shoulder: '18', sleeve: '9.5' },
-        { size: '44', chest: '44', length: '30', shoulder: '18.5', sleeve: '10' },
-        { size: '46', chest: '46', length: '31', shoulder: '19', sleeve: '10.5' },
-      ],
-      cm: [
-        { size: '36', chest: '91', length: '66', shoulder: '41', sleeve: '20' },
-        { size: '38', chest: '97', length: '68', shoulder: '43', sleeve: '22' },
-        { size: '40', chest: '102', length: '71', shoulder: '44', sleeve: '23' },
-        { size: '42', chest: '107', length: '74', shoulder: '46', sleeve: '24' },
-        { size: '44', chest: '112', length: '76', shoulder: '47', sleeve: '25' },
-        { size: '46', chest: '117', length: '79', shoulder: '48', sleeve: '27' },
-      ],
-    },
-    colors: [
-      { id: 'black', name: 'Obsidian Black', hex: '#171717', textContrast: '#FFFFFF', frontImageUrl: '/custom/black-front.png', backImageUrl: '/custom/black-back.png', isActive: true },
-      { id: 'white', name: 'Pure White', hex: '#FFFFFF', textContrast: '#171717', frontImageUrl: '/custom/white-front.png', backImageUrl: '/custom/white-back.png', isActive: true },
-      { id: 'beige', name: 'Washed Beige', hex: '#D8C8B1', textContrast: '#171717', frontImageUrl: '/custom/beige-front.png', backImageUrl: '/custom/beige-back.png', isActive: true },
-      { id: 'red', name: 'Signal Red', hex: '#E6321C', textContrast: '#FFFFFF', frontImageUrl: '/custom/red-front.png', backImageUrl: '/custom/red-back.png', isActive: true },
-    ],
-  },
-  hoodie: {
-    id: 'hoodie',
-    name: 'Drop Shoulder Hoodie (430gsm)',
-    price: 799,
-    compareAtPrice: 1799,
-    description: '430 GSM Heavyweight Brushed Fleece · Structured Streetwear Pullover Hoodie',
-    isActive: true,
-    sizes: ['S', 'M', 'L', 'XL', 'XXL'],
-    activeSizes: ['S', 'M', 'L', 'XL', 'XXL'],
-    sizeMeasurements: {
-      in: [
-        { size: 'S', chest: '42', height: '25' },
-        { size: 'M', chest: '44', height: '26' },
-        { size: 'L', chest: '46', height: '27' },
-        { size: 'XL', chest: '48', height: '28' },
-        { size: 'XXL', chest: '50', height: '29' },
-      ],
-      cm: [
-        { size: 'S', chest: '107', height: '64' },
-        { size: 'M', chest: '112', height: '66' },
-        { size: 'L', chest: '117', height: '69' },
-        { size: 'XL', chest: '122', height: '71' },
-        { size: 'XXL', chest: '127', height: '74' },
-      ],
-    },
-    colors: [
-      { id: 'black', name: 'Obsidian Black', hex: '#171717', textContrast: '#FFFFFF', frontImageUrl: '/custom/hoodie-black-front.png', backImageUrl: '/custom/hoodie-black-back.png', isActive: true },
-      { id: 'white', name: 'Pure White', hex: '#FFFFFF', textContrast: '#171717', frontImageUrl: '/custom/hoodie-white-front.png', backImageUrl: '/custom/hoodie-white-back.png', isActive: true },
-      { id: 'beige', name: 'Washed Beige', hex: '#D8C8B1', textContrast: '#171717', frontImageUrl: '/custom/beige-front.png', backImageUrl: '/custom/beige-back.png', isActive: true },
-      { id: 'red', name: 'Signal Red', hex: '#E6321C', textContrast: '#FFFFFF', frontImageUrl: '/custom/red-front.png', backImageUrl: '/custom/red-back.png', isActive: true },
-    ],
-  },
-};
-
 export function CustomizerPage() {
   const [searchParams] = useSearchParams();
   const { toast } = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // ─── STATE ────────────────────────────────────────────────────────────────
-  const [garmentsConfig, setGarmentsConfig] = useState<Record<GarmentType, GarmentConfig>>(DEFAULT_GARMENTS);
-  const [selectedFit, setSelectedFit] = useState<GarmentType>('oversized');
-  const [selectedColorId, setSelectedColorId] = useState<string>('black');
-  const [selectedSize, setSelectedSize] = useState<string>('L');
+  // Garments, colours, photos, sizes and prices all come from the admin studio.
+  const [garments, setGarments] = useState<GarmentConfig[]>([]);
+  const [studioState, setStudioState] = useState<'loading' | 'ready' | 'error'>('loading');
+  const [selectedFit, setSelectedFit] = useState<string>('');
+  const [selectedColorId, setSelectedColorId] = useState<string>('');
+  const [selectedSize, setSelectedSize] = useState<string>('');
+  const [brokenImage, setBrokenImage] = useState<string | null>(null);
   const [currentView, setCurrentView] = useState<GarmentView>('FRONT');
   const [activePlacement, setActivePlacement] = useState<DesignPlacement>('center');
   const [artworks, setArtworks] = useState<Record<DesignPlacement, UploadedArtwork | null>>({
@@ -184,90 +89,65 @@ export function CustomizerPage() {
   const [sizeUnit, setSizeUnit] = useState<'in' | 'cm'>('in');
   const [quoteSuccessModal, setQuoteSuccessModal] = useState<boolean>(false);
 
-  // ─── SYNC WITH ADMIN PANEL VIA BACKEND ────────────────────────────────────
+  // ─── LOAD THE STUDIO CATALOGUE ─────────────────────────────────────────────
   useEffect(() => {
     let mounted = true;
     api
-      .get<{ garments?: any[] }>('/customizations/studio/config')
+      .get<{ garments?: GarmentConfig[] }>('/customizations/studio/config')
       .then((res) => {
-        if (!mounted || !res || !Array.isArray(res.garments)) return;
-        const updated = { ...DEFAULT_GARMENTS };
-        res.garments.forEach((g: any) => {
-          if (g.id === 'oversized' || g.id === 'polo' || g.id === 'hoodie') {
-            const key = g.id as GarmentType;
-            updated[key] = {
-              ...updated[key],
-              ...g,
-              price: Number(g.price) || updated[key].price,
-              compareAtPrice: Number(g.compareAtPrice) || updated[key].compareAtPrice,
-            };
-          }
-        });
-        setGarmentsConfig(updated);
+        if (!mounted) return;
+        // Only garments a customer can actually configure: live, with a colour and sizes.
+        const usable = (Array.isArray(res?.garments) ? res.garments : []).filter(
+          (g) =>
+            g.isActive !== false &&
+            (g.colors || []).some((c) => c.isActive !== false) &&
+            (g.activeSizes?.length ? g.activeSizes : g.sizes || []).length > 0,
+        );
+        setGarments(usable);
+        setStudioState('ready');
       })
       .catch(() => {
-        // Fall back gracefully to canonical defaults
+        if (mounted) setStudioState('error');
       });
-
     return () => {
       mounted = false;
     };
   }, []);
 
-  // Handle URL param ?fit=polo or ?fit=hoodie (adjusted during render)
+  // ?fit=<garment id or style> preselects a garment once the catalogue has loaded (adjusted during render)
   const fitParam = searchParams.get('fit')?.toLowerCase() || '';
-  const [syncedFitParam, setSyncedFitParam] = useState('');
-  if (fitParam !== syncedFitParam) {
-    setSyncedFitParam(fitParam);
-    if (fitParam === 'polo' || fitParam === 'hoodie' || fitParam === 'oversized') {
-      setSelectedFit(fitParam as GarmentType);
-      if (fitParam === 'polo') setSelectedSize('40');
-    }
+  const fitKey = `${fitParam}|${garments.length}`;
+  const [syncedFitKey, setSyncedFitKey] = useState('');
+  if (fitKey !== syncedFitKey) {
+    setSyncedFitKey(fitKey);
+    const match =
+      garments.find((g) => g.id === fitParam) ||
+      garments.find((g) => g.style === fitParam || (fitParam === 'oversized' && g.style === 'tshirt'));
+    if (match) setSelectedFit(match.id);
   }
 
-  // Ensure selected size matches current fit's available sizes
-  const fitGarment = garmentsConfig[selectedFit] || DEFAULT_GARMENTS[selectedFit];
-  const fitSizes = fitGarment.activeSizes?.length ? fitGarment.activeSizes : fitGarment.sizes;
-  const fallbackSize = fitSizes[0] || (selectedFit === 'polo' ? '40' : 'L');
-  if (!fitSizes.includes(selectedSize) && selectedSize !== fallbackSize) {
-    setSelectedSize(fallbackSize);
-  }
+  // Current garment (undefined only while loading or when nothing is set up)
+  const currentGarment: GarmentConfig | undefined = garments.find((g) => g.id === selectedFit) || garments[0];
+  const isHoodie = currentGarment?.style === 'hoodie';
 
-  // Current garment config
-  const currentGarment = useMemo(() => {
-    return garmentsConfig[selectedFit] || DEFAULT_GARMENTS[selectedFit];
-  }, [garmentsConfig, selectedFit]);
+  // Ensure the selected size is one this garment offers
+  const garmentSizes = currentGarment ? (currentGarment.activeSizes?.length ? currentGarment.activeSizes : currentGarment.sizes) : [];
+  if (garmentSizes.length > 0 && !garmentSizes.includes(selectedSize)) {
+    setSelectedSize(garmentSizes[0]);
+  }
 
   // Active colors (only show active ones)
-  const availableColors = useMemo(() => {
-    const cols = currentGarment.colors.filter((c) => c.isActive !== false);
-    return cols.length > 0 ? cols : DEFAULT_GARMENTS[selectedFit].colors;
-  }, [currentGarment, selectedFit]);
+  const availableColors = useMemo(
+    () => (currentGarment ? currentGarment.colors.filter((c) => c.isActive !== false) : []),
+    [currentGarment],
+  );
 
   // Selected color object
-  const activeColor = useMemo(() => {
-    return availableColors.find((c) => c.id === selectedColorId) || availableColors[0] || DEFAULT_GARMENTS[selectedFit].colors[0];
-  }, [availableColors, selectedColorId, selectedFit]);
+  const activeColor: GarmentColor | undefined = availableColors.find((c) => c.id === selectedColorId) || availableColors[0];
 
-  // Mockup image URL based on fit, color, and view
-  const mockupImageUrl = useMemo(() => {
-    if (selectedFit === 'hoodie') {
-      if (activeColor.id === 'black') {
-        return currentView === 'FRONT' ? '/custom/hoodie-black-front.png' : '/custom/hoodie-black-back.png';
-      }
-      if (activeColor.id === 'white') {
-        return currentView === 'FRONT' ? '/custom/hoodie-white-front.png' : '/custom/hoodie-white-back.png';
-      }
-      // Fallback for beige/red hoodie: use high-contrast base
-      return currentView === 'FRONT' ? '/custom/hoodie-black-front.png' : '/custom/hoodie-black-back.png';
-    }
-
-    // Oversized & Polo
-    if (currentView === 'FRONT') {
-      return activeColor.frontImageUrl || `/custom/${activeColor.id}-front.png`;
-    }
-    return activeColor.backImageUrl || `/custom/${activeColor.id}-back.png`;
-  }, [selectedFit, activeColor, currentView]);
+  // Photo for the current colour and side, as uploaded in the admin studio ('' = none yet)
+  const mockupImageUrl = (currentView === 'FRONT' ? activeColor?.frontImageUrl : activeColor?.backImageUrl) || '';
+  const showPhoto = Boolean(mockupImageUrl) && brokenImage !== mockupImageUrl;
 
   // ─── FILE UPLOAD HANDLER (PNG ONLY) ───────────────────────────────────────
   const handleFileUpload = (files: FileList | null) => {
@@ -350,6 +230,7 @@ export function CustomizerPage() {
 
   // ─── WHATSAPP QUOTATION GENERATOR ─────────────────────────────────────────
   const handleWhatsAppQuote = () => {
+    if (!currentGarment || !activeColor) return;
     const garmentName = currentGarment.name;
     const price = currentGarment.price;
     const colorName = activeColor.name;
@@ -396,6 +277,70 @@ export function CustomizerPage() {
     return Object.values(artworks).filter(Boolean).length;
   }, [artworks]);
 
+  if (studioState === 'loading') {
+    return (
+      <div className="min-h-screen bg-[#F7EEDB] flex items-center justify-center px-6">
+        <SEO title="Custom Studio · Bingooo" description="Design your own custom garment with Bingooo." />
+        <div className="flex flex-col items-center gap-3 text-[#171717]">
+          <span className="w-10 h-10 border-[3px] border-[#171717] border-t-[#E6321C] rounded-full animate-spin" />
+          <span className="text-xs font-mono font-bold uppercase tracking-widest">Loading studio…</span>
+        </div>
+      </div>
+    );
+  }
+
+  if (!currentGarment || !activeColor) {
+    const failed = studioState === 'error';
+    return (
+      <div className="min-h-screen bg-[#F7EEDB] text-[#171717] flex items-center justify-center px-4 py-24">
+        <SEO title="Custom Studio · Bingooo" description="Design your own custom garment with Bingooo." />
+        <div className="max-w-[520px] w-full bg-white border-[3px] border-[#171717] shadow-[8px_8px_0px_#171717] p-8 sm:p-10 text-center">
+          <Shirt size={40} className="mx-auto text-[#E6321C]" />
+          <h1 className="mt-4 text-2xl sm:text-3xl font-black uppercase tracking-tight">
+            {failed ? 'Studio unavailable' : 'Custom studio opening soon'}
+          </h1>
+          <p className="mt-3 text-sm text-[#171717]/70 leading-relaxed">
+            {failed
+              ? 'We could not load the custom studio right now. Please try again in a moment.'
+              : 'We are adding our garments for custom printing. Want something made now? Message us on WhatsApp with your design.'}
+          </p>
+          <div className="mt-6 flex flex-col sm:flex-row gap-2.5 justify-center">
+            {failed && (
+              <button
+                type="button"
+                onClick={() => window.location.reload()}
+                className="px-5 py-3 border-2 border-[#171717] text-xs font-bold uppercase tracking-wider hover:bg-black/5"
+              >
+                Try again
+              </button>
+            )}
+            <a
+              href={`https://wa.me/${BINGOOO_PHONE_RAW}?text=${encodeURIComponent('Hi Bingooo, I would like to order a custom printed garment.')}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="px-5 py-3 bg-[#171717] text-white text-xs font-bold uppercase tracking-wider inline-flex items-center justify-center gap-2 hover:bg-[#E6321C] transition-colors no-underline"
+            >
+              <MessageCircle size={14} />
+              Chat on WhatsApp
+            </a>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  const chartRows = ((sizeUnit === 'cm' ? currentGarment.sizeMeasurements?.cm : currentGarment.sizeMeasurements?.in) || [])
+    .filter((r) => garmentSizes.includes(r.size));
+  const chartColumns = (
+    [
+      { key: 'chest', label: 'CHEST' },
+      { key: 'length', label: 'LENGTH' },
+      { key: 'height', label: 'HEIGHT' },
+      { key: 'shoulder', label: 'SHOULDER' },
+      { key: 'sleeve', label: 'SLEEVE' },
+    ] as const
+  ).filter((col) => chartRows.some((r) => r[col.key]));
+
   return (
     <>
       <SEO
@@ -436,29 +381,37 @@ export function CustomizerPage() {
             <div className="relative z-10 flex-1 flex items-center justify-center my-6">
               <div className="relative w-full max-w-[400px] sm:max-w-[460px] aspect-square flex items-center justify-center">
                 
-                {/* Realistic Garment Base Mockup */}
-                <img
-                  src={mockupImageUrl}
-                  alt={`${currentGarment.name} - ${activeColor.name}`}
-                  className="w-full h-full object-contain filter drop-shadow-[0_24px_38px_rgba(0,0,0,0.45)] transition-all duration-300 pointer-events-none"
-                  onError={(e) => {
-                    // Fallback if specific color mockup fails
-                    (e.target as HTMLImageElement).src = '/custom/black-front.png';
-                  }}
-                />
+                {/* Garment photo uploaded in the admin studio */}
+                {showPhoto ? (
+                  <img
+                    src={mockupImageUrl}
+                    alt={`${currentGarment.name} - ${activeColor.name} (${currentView === 'FRONT' ? 'front' : 'back'})`}
+                    className="w-full h-full object-contain filter drop-shadow-[0_24px_38px_rgba(0,0,0,0.45)] transition-all duration-300 pointer-events-none"
+                    onError={() => setBrokenImage(mockupImageUrl)}
+                  />
+                ) : (
+                  <div className="w-[78%] aspect-square bg-[#F7EEDB] border-[3px] border-[#171717] shadow-[6px_6px_0px_rgba(0,0,0,0.35)] flex flex-col items-center justify-center gap-3 text-center px-6">
+                    <span className="w-12 h-12 rounded-full border-2 border-[#171717]" style={{ backgroundColor: activeColor.hex }} />
+                    <Shirt size={30} className="text-[#171717]/60" />
+                    <span className="text-xs font-mono font-bold uppercase tracking-widest text-[#171717]">
+                      {currentView === 'FRONT' ? 'Front' : 'Back'} photo coming soon
+                    </span>
+                    <span className="text-[11px] text-[#171717]/60">{currentGarment.name} · {activeColor.name}</span>
+                  </div>
+                )}
 
                 {/* ─── FRONT VIEW PROJECTION ─────────────────────────────── */}
-                {currentView === 'FRONT' && (
+                {showPhoto && currentView === 'FRONT' && (
                   <>
                     {/* CENTER / FRONT ARTWORK */}
                     <div
                       className="absolute z-20 pointer-events-none flex items-center justify-center text-center overflow-hidden transition-all duration-200"
                       style={{
-                        top: selectedFit === 'hoodie' ? '42%' : '38%',
+                        top: isHoodie ? '42%' : '38%',
                         left: '50%',
                         transform: `translate(-50%, -50%) translateY(${artworks.center?.offsetY || 0}px)`,
-                        width: `${(artworks.center?.scale || 1.0) * (selectedFit === 'hoodie' ? 140 : 160)}px`,
-                        height: `${(artworks.center?.scale || 1.0) * (selectedFit === 'hoodie' ? 150 : 170)}px`,
+                        width: `${(artworks.center?.scale || 1.0) * (isHoodie ? 140 : 160)}px`,
+                        height: `${(artworks.center?.scale || 1.0) * (isHoodie ? 150 : 170)}px`,
                       }}
                     >
                       {artworks.center ? (
@@ -490,7 +443,7 @@ export function CustomizerPage() {
                       <div
                         className="absolute z-20 pointer-events-none flex items-center justify-center overflow-hidden"
                         style={{
-                          top: selectedFit === 'hoodie' ? '34%' : '32%',
+                          top: isHoodie ? '34%' : '32%',
                           left: '60%', // Garment's wearer left side (viewer right)
                           width: `${(artworks.left_chest.scale || 1.0) * 58}px`,
                           height: `${(artworks.left_chest.scale || 1.0) * 58}px`,
@@ -507,15 +460,15 @@ export function CustomizerPage() {
                 )}
 
                 {/* ─── BACK VIEW PROJECTION ──────────────────────────────── */}
-                {currentView === 'BACK' && (
+                {showPhoto && currentView === 'BACK' && (
                   <div
                     className="absolute z-20 pointer-events-none flex items-center justify-center text-center overflow-hidden transition-all duration-200"
                     style={{
-                      top: selectedFit === 'hoodie' ? '44%' : '40%',
+                      top: isHoodie ? '44%' : '40%',
                       left: '50%',
                       transform: `translate(-50%, -50%) translateY(${artworks.back?.offsetY || 0}px)`,
-                      width: `${(artworks.back?.scale || 1.0) * (selectedFit === 'hoodie' ? 150 : 170)}px`,
-                      height: `${(artworks.back?.scale || 1.0) * (selectedFit === 'hoodie' ? 160 : 180)}px`,
+                      width: `${(artworks.back?.scale || 1.0) * (isHoodie ? 150 : 170)}px`,
+                      height: `${(artworks.back?.scale || 1.0) * (isHoodie ? 160 : 180)}px`,
                     }}
                   >
                     {artworks.back ? (
@@ -607,40 +560,32 @@ export function CustomizerPage() {
                   </span>
                 </div>
 
-                <div className="grid grid-cols-3 gap-2.5">
-                  {(['oversized', 'polo', 'hoodie'] as GarmentType[]).map((fitKey) => {
-                    const g = garmentsConfig[fitKey];
-                    const isSelected = selectedFit === fitKey;
-                    const fitLabel =
-                      fitKey === 'oversized'
-                        ? 'OVERSIZED'
-                        : fitKey === 'polo'
-                        ? 'POLO SHIRT'
-                        : 'HOODIE';
-
+                <div className={`grid gap-2.5 ${garments.length === 1 ? 'grid-cols-1' : garments.length === 2 ? 'grid-cols-2' : 'grid-cols-3'}`}>
+                  {garments.map((g) => {
+                    const isSelected = currentGarment.id === g.id;
                     return (
                       <button
-                        key={fitKey}
+                        key={g.id}
                         type="button"
-                        onClick={() => setSelectedFit(fitKey)}
+                        onClick={() => setSelectedFit(g.id)}
                         className={`py-3 px-2 border-2 border-[#171717] text-center transition-all ${
                           isSelected
                             ? 'bg-[#171717] text-white shadow-[3px_3px_0px_#171717]'
                             : 'bg-white text-[#171717] hover:bg-black/5 hover:translate-y-[-1px]'
                         }`}
                       >
-                        <div className="font-extrabold text-xs sm:text-sm tracking-wider uppercase">
-                          {fitLabel}
+                        <div className="font-extrabold text-xs sm:text-sm tracking-wider uppercase truncate">
+                          {g.shortName || g.name}
                         </div>
                         <div
                           className={`text-[11px] font-mono mt-0.5 flex items-center justify-center gap-1.5 ${
                             isSelected ? 'text-[#E6321C] font-bold' : 'text-[#171717]/70'
                           }`}
                         >
-                          <span>₹{g?.price || DEFAULT_GARMENTS[fitKey].price}</span>
-                          {(g?.compareAtPrice || DEFAULT_GARMENTS[fitKey].compareAtPrice) && (
+                          <span>₹{g.price}</span>
+                          {g.compareAtPrice && g.compareAtPrice > g.price && (
                             <span className={`line-through text-[10px] ${isSelected ? 'text-white/60' : 'text-[#171717]/40'}`}>
-                              ₹{g?.compareAtPrice || DEFAULT_GARMENTS[fitKey].compareAtPrice}
+                              ₹{g.compareAtPrice}
                             </span>
                           )}
                         </div>
@@ -979,18 +924,20 @@ export function CustomizerPage() {
                 <thead>
                   <tr className="bg-[#171717] text-white font-mono uppercase">
                     <th className="p-3 border-r border-white/20">SIZE</th>
-                    <th className="p-3 border-r border-white/20">CHEST</th>
-                    {selectedFit !== 'hoodie' && <th className="p-3 border-r border-white/20">LENGTH</th>}
-                    {selectedFit === 'hoodie' && <th className="p-3 border-r border-white/20">HEIGHT</th>}
-                    {selectedFit !== 'hoodie' && <th className="p-3 border-r border-white/20">SHOULDER</th>}
-                    {selectedFit !== 'hoodie' && <th className="p-3">SLEEVE</th>}
+                    {chartColumns.map((col) => (
+                      <th key={col.key} className="p-3 border-r border-white/20 last:border-r-0">{col.label}</th>
+                    ))}
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-black/10 font-medium">
-                  {(sizeUnit === 'cm' && currentGarment.sizeMeasurements?.cm
-                    ? currentGarment.sizeMeasurements.cm
-                    : currentGarment.sizeMeasurements?.in || []
-                  ).map((row) => {
+                  {chartRows.length === 0 && (
+                    <tr>
+                      <td colSpan={chartColumns.length + 1} className="p-4 text-center text-[#171717]/60">
+                        Measurements coming soon. Message us on WhatsApp for exact sizing.
+                      </td>
+                    </tr>
+                  )}
+                  {chartRows.map((row) => {
                     const isSelected = selectedSize === row.size;
                     return (
                       <tr
@@ -1003,11 +950,11 @@ export function CustomizerPage() {
                           {isSelected && <span className="w-2 h-2 rounded-full bg-[#E6321C]" />}
                           {row.size}
                         </td>
-                        <td className="p-3 border-r border-black/10 font-mono">{row.chest}</td>
-                        {row.length && <td className="p-3 border-r border-black/10 font-mono">{row.length}</td>}
-                        {row.height && <td className="p-3 border-r border-black/10 font-mono">{row.height}</td>}
-                        {row.shoulder && <td className="p-3 border-r border-black/10 font-mono">{row.shoulder}</td>}
-                        {row.sleeve && <td className="p-3 font-mono">{row.sleeve}</td>}
+                        {chartColumns.map((col) => (
+                          <td key={col.key} className="p-3 border-r border-black/10 last:border-r-0 font-mono">
+                            {(row as unknown as Record<string, string | undefined>)[col.key] || '—'}
+                          </td>
+                        ))}
                       </tr>
                     );
                   })}

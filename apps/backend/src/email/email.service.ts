@@ -14,7 +14,8 @@ const BRAND = {
   charcoal: '#171717',
   red: '#E6321C',
   url: process.env.FRONTEND_URL || 'https://bingooo.co.in',
-  supportEmail: 'support@bingooo.co.in',
+  // bingooo.co.in has no mailbox (no MX record), so replies must go to an inbox that exists.
+  supportEmail: process.env.SUPPORT_EMAIL || 'bingooo.sklm@gmail.com',
   logoText: 'BINGOOO<span style="color:#E6321C">.</span>',
 };
 
@@ -428,4 +429,62 @@ export class EmailService {
     }
     return result;
   }
+  // ── 4. Review Request (a few days after delivery) ───────────────
+  async sendReviewRequestEmail(params: {
+    to: string;
+    recipientName: string;
+    orderNumber: string;
+    items: Array<{ title: string; url: string; imageUrl?: string }>;
+  }): Promise<{ ok: boolean; id?: string; error?: string }> {
+    const firstName = escapeHtml(params.recipientName?.split(' ')[0] || 'there');
+    const single = params.items.length === 1;
+
+    const itemRows = params.items
+      .map(
+        (item) => `
+        <tr>
+          <td style="padding:14px 0;border-bottom:1px solid rgba(23,23,23,0.06);width:72px;vertical-align:middle;">
+            ${
+              item.imageUrl && /^https:\/\//.test(item.imageUrl)
+                ? `<img src="${escapeHtml(item.imageUrl)}" alt="" width="60" height="72" style="display:block;width:60px;height:72px;object-fit:cover;border-radius:6px;border:1px solid rgba(23,23,23,0.08);" />`
+                : `<div style="width:60px;height:72px;border-radius:6px;background-color:rgba(23,23,23,0.06);"></div>`
+            }
+          </td>
+          <td style="padding:14px 12px;border-bottom:1px solid rgba(23,23,23,0.06);vertical-align:middle;">
+            <p style="margin:0;font-size:14px;font-weight:700;color:${BRAND.charcoal};">${escapeHtml(item.title)}</p>
+          </td>
+          <td style="padding:14px 0;border-bottom:1px solid rgba(23,23,23,0.06);text-align:right;vertical-align:middle;white-space:nowrap;">
+            <a href="${escapeHtml(item.url)}" style="display:inline-block;background-color:${BRAND.red};color:${BRAND.cream};text-decoration:none;font-weight:700;font-size:13px;padding:10px 16px;border-radius:6px;">Write a review</a>
+          </td>
+        </tr>`,
+      )
+      .join('');
+
+    const body = `
+      <h1 style="margin:0 0 8px;font-size:22px;font-weight:800;color:${BRAND.charcoal};letter-spacing:-0.5px;">How are you finding ${single ? 'it' : 'them'}?</h1>
+      <p style="margin:0 0 20px;font-size:15px;line-height:1.6;color:${BRAND.charcoal};">
+        Hi ${firstName}, your order <strong>${escapeHtml(params.orderNumber)}</strong> arrived a few days ago. If you have a minute,
+        tell other shoppers how the fit, fabric and quality feel. Honest reviews, good or bad, help us make better pieces.
+      </p>
+      <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:24px;">${itemRows}</table>
+      <p style="margin:0;font-size:13px;line-height:1.6;color:#6B6356;">
+        Something not right with your order? Just reply to this email and we'll sort it out.
+      </p>
+    `;
+
+    const result = await sendViaResend({
+      from: this.fromAddress,
+      to: params.to,
+      subject: single ? `How is your ${params.items[0].title}?` : `How is your Bingooo order?`,
+      html: emailShell('Share your thoughts — BINGOOO.', 'Tell other shoppers how your order fits and feels.', body),
+      replyTo: BRAND.supportEmail,
+    });
+    if (result.ok) {
+      this.logger.log(`[Email] Review request sent for ${params.orderNumber}`);
+    } else {
+      this.logger.warn(`[Email] Failed to send review request for ${params.orderNumber}: ${result.error}`);
+    }
+    return result;
+  }
+
 }

@@ -300,6 +300,8 @@ export class OrdersService implements OnModuleInit, OnModuleDestroy {
       this.releaseOrderInventory(order, 'order cancelled by staff');
     }
     order.status = status;
+    // When it arrived drives the review request a few days later (ReviewRequestService).
+    if (status === 'delivered' && !order.delivered_at) order.delivered_at = new Date().toISOString();
     if (paymentStatus) order.payment_status = paymentStatus;
     if (trackingNumber) order.tracking_number = trackingNumber;
     if (carrier) order.carrier = carrier;

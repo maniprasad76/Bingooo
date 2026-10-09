@@ -10,6 +10,7 @@ import {
   Lock,
 } from 'lucide-react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { Link, useLocation } from 'react-router-dom';
 import { api } from '../../lib/api/client';
 import { useToast } from '../ui/Toast';
 import { triggerHaptic } from '../../lib/native/capacitorBridge';
@@ -79,6 +80,10 @@ function compressImage(file: File, maxWidth = 1000, quality = 0.82): Promise<str
 export function ProductReviews({ productId, productTitle, productThumbnail }: ProductReviewsProps) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const location = useLocation();
+  const sectionRef = useRef<HTMLElement>(null);
+  // Links from the post-delivery review email carry ?review=1.
+  const reviewRequested = new URLSearchParams(location.search).get('review') === '1';
 
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [lightboxImage, setLightboxImage] = useState<string | null>(null);
@@ -112,15 +117,21 @@ export function ProductReviews({ productId, productTitle, productThumbnail }: Pr
   } = useQuery({
     queryKey: ['reviews-eligibility', productId],
     queryFn: async () => {
-      return await api.get<{
-        eligible: boolean;
-        hasPurchased: boolean;
-        hasReviewedAlready?: boolean;
-        orderId?: string;
-        reason?: string;
-      }>('/reviews/eligibility', {
-        params: { productId },
-      });
+      try {
+        return await api.get<{
+          eligible: boolean;
+          hasPurchased: boolean;
+          hasReviewedAlready?: boolean;
+          orderId?: string;
+          reason?: string;
+        }>('/reviews/eligibility', {
+          params: { productId },
+        });
+      } catch (err: any) {
+        // Signed-out visitors (e.g. arriving from the review email) get the sign-in prompt, not the form.
+        if (err?.status === 401) return { eligible: false, hasPurchased: false, reason: 'AUTHENTICATION_REQUIRED' };
+        throw err;
+      }
     },
     enabled: isDrawerOpen,
   });
@@ -179,6 +190,19 @@ export function ProductReviews({ productId, productTitle, productThumbnail }: Pr
     checkEligibility();
   };
 
+  // Arriving from the review email: bring the reviews into view and open the form.
+  // Delayed so it runs after the page's own scroll-to-top on navigation.
+  const autoOpened = useRef(false);
+  useEffect(() => {
+    if (!reviewRequested || !productId || autoOpened.current) return;
+    autoOpened.current = true;
+    const timer = setTimeout(() => {
+      sectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      setIsDrawerOpen(true);
+    }, 600);
+    return () => clearTimeout(timer);
+  }, [reviewRequested, productId]);
+
   const handleImageSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -231,7 +255,7 @@ export function ProductReviews({ productId, productTitle, productThumbnail }: Pr
   }, []);
 
   return (
-    <section className="py-[65px] sm:py-[100px] border-t border-[#ddd3c5]" id="reviews">
+    <section ref={sectionRef} className="py-[65px] sm:py-[100px] border-t border-[#ddd3c5]" id="reviews">
       <div className="container-bingooo">
         {/* Header */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-5 mb-[45px]">
@@ -523,12 +547,13 @@ export function ProductReviews({ productId, productTitle, productThumbnail }: Pr
                         : 'Our platform strictly displays 100% authentic buyer reviews. Only customers who have placed an order for this piece can submit a review.'}
                     </p>
                     {eligibility.reason === 'AUTHENTICATION_REQUIRED' && (
-                      <a
-                        href="/account"
-                        className="inline-block mt-2 px-4 py-2 bg-[#171717] text-white text-[10px] font-bold uppercase tracking-wider rounded-[2px]"
+                      <Link
+                        to="/login"
+                        state={{ from: { pathname: location.pathname, search: '?review=1' } }}
+                        className="inline-block mt-2 px-4 py-2 bg-[#171717] text-white text-[10px] font-bold uppercase tracking-wider rounded-[2px] no-underline"
                       >
-                        Sign In To My Account →
-                      </a>
+                        Sign In To Review →
+                      </Link>
                     )}
                   </div>
                 ) : (

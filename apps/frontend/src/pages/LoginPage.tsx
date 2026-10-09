@@ -31,8 +31,8 @@ export function LoginPage() {
   const { toast } = useToast();
 
   // If user was bounced from protected page, return there
-  const redirectTo =
-    (location.state as { from?: { pathname?: string; search?: string } })?.from?.pathname || '/account';
+  const from = (location.state as { from?: { pathname?: string; search?: string } })?.from;
+  const redirectTo = from?.pathname ? `${from.pathname}${from.search || ''}` : '/account';
 
   const {
     register,

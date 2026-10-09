@@ -83,12 +83,20 @@ try {
     localStorage.setItem('bingooo_recent_searches', JSON.stringify(['oversized tee']));
   });
   await ctx.route(/\/api\/v1\//, (route) =>
-    route.fulfill({
-      status: 200,
-      contentType: 'application/json',
-      headers: { 'access-control-allow-origin': BASE, 'access-control-allow-credentials': 'true' },
-      body: JSON.stringify({ success: true, data: apiData(route.request().url()), timestamp: new Date().toISOString(), requestId: 'e2e' }),
-    }),
+    // Signed-out visitor: endpoints behind AuthGuard answer 401.
+    /\/reviews\/eligibility/.test(route.request().url())
+      ? route.fulfill({
+          status: 401,
+          contentType: 'application/json',
+          headers: { 'access-control-allow-origin': BASE, 'access-control-allow-credentials': 'true' },
+          body: JSON.stringify({ success: false, error: { code: 'AUTH_REQUIRED', message: 'Authentication required.' } }),
+        })
+      : route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          headers: { 'access-control-allow-origin': BASE, 'access-control-allow-credentials': 'true' },
+          body: JSON.stringify({ success: true, data: apiData(route.request().url()), timestamp: new Date().toISOString(), requestId: 'e2e' }),
+        }),
   );
   const page = await ctx.newPage();
   const errors = [];
@@ -118,6 +126,11 @@ try {
   await navigateClientSide('/product/big-hoodie'); await settle(1800);
   const hoodie1 = await mainText();
   check(/COLOR:\s*GREY/i.test(hoodie1) && /size XL\b/i.test(hoodie1), 'another product resets colour and size to valid options');
+
+  console.log('-- review link from the post-delivery email');
+  await page.goto(`${BASE}/product/heavy-tee?review=1`, { waitUntil: 'load' }); await settle(2500);
+  check(await page.getByText(/Sign In To Review/i).first().isVisible().catch(() => false), 'review link opens the review form and asks a signed-out visitor to sign in');
+  await page.keyboard.press('Escape'); await settle(400);
 
   console.log('-- customizer');
   for (const fit of ['polo', 'hoodie']) {

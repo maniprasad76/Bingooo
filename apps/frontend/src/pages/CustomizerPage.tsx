@@ -6,12 +6,14 @@ import {
   Ruler,
   Check,
   MessageCircle,
-  Shirt,
 } from 'lucide-react';
 import { api } from '../lib/api/client';
 import { useToast } from '../components/ui/Toast';
 import { BINGOOO_PHONE_RAW } from '../components/ui/SocialIcons';
 import { SEO } from '../components/common/SEO';
+import { resolveImageUrl } from '../lib/utils';
+import { GarmentStage } from '../components/studio/GarmentStage';
+import { DEFAULT_PRINT_AREAS, type PrintAreas } from '../components/studio/printAreas';
 
 // ─── TYPES ──────────────────────────────────────────────────────────────────
 /** Set per garment in the admin studio; drives print placement and size-chart columns. */
@@ -54,6 +56,8 @@ export interface GarmentConfig {
     cm?: MeasurementRow[];
   };
   colors: GarmentColor[];
+  /** Where prints sit on this garment's photos (set in the admin studio). */
+  printAreas?: PrintAreas;
 }
 
 export interface UploadedArtwork {
@@ -64,6 +68,9 @@ export interface UploadedArtwork {
   scale: number; // 0.6 to 1.4, default 1.0
   offsetY: number; // -30 to 30 px offset
 }
+
+const stageArtwork = (art: UploadedArtwork | null) =>
+  art ? { previewUrl: art.previewUrl, scale: art.scale, offsetY: (art.offsetY * 100) / 460 } : null;
 
 export function CustomizerPage() {
   const [searchParams] = useSearchParams();
@@ -77,7 +84,6 @@ export function CustomizerPage() {
   const [selectedFit, setSelectedFit] = useState<string>('');
   const [selectedColorId, setSelectedColorId] = useState<string>('');
   const [selectedSize, setSelectedSize] = useState<string>('');
-  const [brokenImage, setBrokenImage] = useState<string | null>(null);
   const [currentView, setCurrentView] = useState<GarmentView>('FRONT');
   const [activePlacement, setActivePlacement] = useState<DesignPlacement>('center');
   const [artworks, setArtworks] = useState<Record<DesignPlacement, UploadedArtwork | null>>({
@@ -96,12 +102,9 @@ export function CustomizerPage() {
       .get<{ garments?: GarmentConfig[] }>('/customizations/studio/config')
       .then((res) => {
         if (!mounted) return;
-        // Only garments a customer can actually configure: live, with a colour and sizes.
+        // Accept all active garments configured in the Atelier Admin Studio
         const usable = (Array.isArray(res?.garments) ? res.garments : []).filter(
-          (g) =>
-            g.isActive !== false &&
-            (g.colors || []).some((c) => c.isActive !== false) &&
-            (g.activeSizes?.length ? g.activeSizes : g.sizes || []).length > 0,
+          (g) => g.isActive !== false && (g.activeSizes?.length ? g.activeSizes : g.sizes || []).length > 0,
         );
         setGarments(usable);
         setStudioState('ready');
@@ -128,7 +131,6 @@ export function CustomizerPage() {
 
   // Current garment (undefined only while loading or when nothing is set up)
   const currentGarment: GarmentConfig | undefined = garments.find((g) => g.id === selectedFit) || garments[0];
-  const isHoodie = currentGarment?.style === 'hoodie';
 
   // Ensure the selected size is one this garment offers
   const garmentSizes = currentGarment ? (currentGarment.activeSizes?.length ? currentGarment.activeSizes : currentGarment.sizes) : [];
@@ -136,18 +138,28 @@ export function CustomizerPage() {
     setSelectedSize(garmentSizes[0]);
   }
 
-  // Active colors (only show active ones)
+  // Colours on offer: all active colorways configured by admin for this garment
   const availableColors = useMemo(
-    () => (currentGarment ? currentGarment.colors.filter((c) => c.isActive !== false) : []),
+    () => (currentGarment ? (currentGarment.colors || []).filter((c) => c.isActive !== false) : []),
     [currentGarment],
   );
 
   // Selected color object
-  const activeColor: GarmentColor | undefined = availableColors.find((c) => c.id === selectedColorId) || availableColors[0];
+  const activeColor: GarmentColor | undefined =
+    availableColors.find((c) => c.id === selectedColorId) || availableColors[0];
 
   // Photo for the current colour and side, as uploaded in the admin studio ('' = none yet)
-  const mockupImageUrl = (currentView === 'FRONT' ? activeColor?.frontImageUrl : activeColor?.backImageUrl) || '';
-  const showPhoto = Boolean(mockupImageUrl) && brokenImage !== mockupImageUrl;
+  const rawMockupUrl = (currentView === 'FRONT' ? activeColor?.frontImageUrl : activeColor?.backImageUrl) || '';
+  const mockupImageUrl = rawMockupUrl ? resolveImageUrl(rawMockupUrl) : '';
+
+  // Warm the browser cache with this garment's other photos so switching colour or side is instant.
+  useEffect(() => {
+    const urls = availableColors.flatMap((c) => [c.frontImageUrl, c.backImageUrl || '']).filter(Boolean);
+    const timer = window.setTimeout(() => {
+      for (const url of urls) new Image().src = resolveImageUrl(url);
+    }, 600);
+    return () => window.clearTimeout(timer);
+  }, [availableColors]);
 
   // ─── FILE UPLOAD HANDLER (PNG ONLY) ───────────────────────────────────────
   const handleFileUpload = (files: FileList | null) => {
@@ -295,7 +307,9 @@ export function CustomizerPage() {
       <div className="min-h-screen bg-[#F7EEDB] text-[#171717] flex items-center justify-center px-4 py-24">
         <SEO title="Custom Studio · Bingooo" description="Design your own custom garment with Bingooo." />
         <div className="max-w-[520px] w-full bg-white border-[3px] border-[#171717] shadow-[8px_8px_0px_#171717] p-8 sm:p-10 text-center">
-          <Shirt size={40} className="mx-auto text-[#E6321C]" />
+          <div className="w-12 h-12 mx-auto rounded-full bg-[#E6321C]/10 text-[#E6321C] flex items-center justify-center font-mono font-black text-lg mb-2 border border-[#E6321C]/20">
+            B.
+          </div>
           <h1 className="mt-4 text-2xl sm:text-3xl font-black uppercase tracking-tight">
             {failed ? 'Studio unavailable' : 'Custom studio opening soon'}
           </h1>
@@ -381,119 +395,16 @@ export function CustomizerPage() {
             <div className="relative z-10 flex-1 flex items-center justify-center my-6">
               <div className="relative w-full max-w-[400px] sm:max-w-[460px] aspect-square flex items-center justify-center">
                 
-                {/* Garment photo uploaded in the admin studio */}
-                {showPhoto ? (
-                  <img
-                    src={mockupImageUrl}
-                    alt={`${currentGarment.name} - ${activeColor.name} (${currentView === 'FRONT' ? 'front' : 'back'})`}
-                    className="w-full h-full object-contain filter drop-shadow-[0_24px_38px_rgba(0,0,0,0.45)] transition-all duration-300 pointer-events-none"
-                    onError={() => setBrokenImage(mockupImageUrl)}
-                  />
-                ) : (
-                  <div className="w-[78%] aspect-square bg-[#F7EEDB] border-[3px] border-[#171717] shadow-[6px_6px_0px_rgba(0,0,0,0.35)] flex flex-col items-center justify-center gap-3 text-center px-6">
-                    <span className="w-12 h-12 rounded-full border-2 border-[#171717]" style={{ backgroundColor: activeColor.hex }} />
-                    <Shirt size={30} className="text-[#171717]/60" />
-                    <span className="text-xs font-mono font-bold uppercase tracking-widest text-[#171717]">
-                      {currentView === 'FRONT' ? 'Front' : 'Back'} photo coming soon
-                    </span>
-                    <span className="text-[11px] text-[#171717]/60">{currentGarment.name} · {activeColor.name}</span>
-                  </div>
-                )}
-
-                {/* ─── FRONT VIEW PROJECTION ─────────────────────────────── */}
-                {showPhoto && currentView === 'FRONT' && (
-                  <>
-                    {/* CENTER / FRONT ARTWORK */}
-                    <div
-                      className="absolute z-20 pointer-events-none flex items-center justify-center text-center overflow-hidden transition-all duration-200"
-                      style={{
-                        top: isHoodie ? '42%' : '38%',
-                        left: '50%',
-                        transform: `translate(-50%, -50%) translateY(${artworks.center?.offsetY || 0}px)`,
-                        width: `${(artworks.center?.scale || 1.0) * (isHoodie ? 140 : 160)}px`,
-                        height: `${(artworks.center?.scale || 1.0) * (isHoodie ? 150 : 170)}px`,
-                      }}
-                    >
-                      {artworks.center ? (
-                        <img
-                          src={artworks.center.previewUrl}
-                          alt="Front Design"
-                          className="max-w-full max-h-full object-contain filter drop-shadow-[0_2px_8px_rgba(0,0,0,0.5)]"
-                        />
-                      ) : (
-                        // Default Placeholder matching the Bauhaus Reference Image: "YOUR LINE HERE"
-                        <div className="flex flex-col items-center justify-center text-center select-none opacity-90 px-2">
-                          <span
-                            className="font-extrabold tracking-widest uppercase text-base sm:text-lg leading-tight"
-                            style={{
-                              color: activeColor.textContrast,
-                              textShadow: '0 2px 4px rgba(0,0,0,0.4)',
-                            }}
-                          >
-                            YOUR
-                            <br />
-                            LINE HERE
-                          </span>
-                        </div>
-                      )}
-                    </div>
-
-                    {/* LEFT CHEST ARTWORK (if uploaded) */}
-                    {artworks.left_chest && (
-                      <div
-                        className="absolute z-20 pointer-events-none flex items-center justify-center overflow-hidden"
-                        style={{
-                          top: isHoodie ? '34%' : '32%',
-                          left: '60%', // Garment's wearer left side (viewer right)
-                          width: `${(artworks.left_chest.scale || 1.0) * 58}px`,
-                          height: `${(artworks.left_chest.scale || 1.0) * 58}px`,
-                        }}
-                      >
-                        <img
-                          src={artworks.left_chest.previewUrl}
-                          alt="Left Chest Design"
-                          className="max-w-full max-h-full object-contain filter drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)]"
-                        />
-                      </div>
-                    )}
-                  </>
-                )}
-
-                {/* ─── BACK VIEW PROJECTION ──────────────────────────────── */}
-                {showPhoto && currentView === 'BACK' && (
-                  <div
-                    className="absolute z-20 pointer-events-none flex items-center justify-center text-center overflow-hidden transition-all duration-200"
-                    style={{
-                      top: isHoodie ? '44%' : '40%',
-                      left: '50%',
-                      transform: `translate(-50%, -50%) translateY(${artworks.back?.offsetY || 0}px)`,
-                      width: `${(artworks.back?.scale || 1.0) * (isHoodie ? 150 : 170)}px`,
-                      height: `${(artworks.back?.scale || 1.0) * (isHoodie ? 160 : 180)}px`,
-                    }}
-                  >
-                    {artworks.back ? (
-                      <img
-                        src={artworks.back.previewUrl}
-                        alt="Back Design"
-                        className="max-w-full max-h-full object-contain filter drop-shadow-[0_2px_8px_rgba(0,0,0,0.5)]"
-                      />
-                    ) : (
-                      <div className="flex flex-col items-center justify-center text-center select-none opacity-80 px-2">
-                        <span
-                          className="font-extrabold tracking-widest uppercase text-sm sm:text-base leading-tight border-2 border-dashed p-3 rounded"
-                          style={{
-                            color: activeColor.textContrast,
-                            borderColor: activeColor.textContrast === '#FFFFFF' ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.3)',
-                          }}
-                        >
-                          BACK PRINT
-                          <br />
-                          ARTWORK
-                        </span>
-                      </div>
-                    )}
-                  </div>
-                )}
+                <GarmentStage
+                  photoUrl={mockupImageUrl}
+                  alt={`${currentGarment.name} - ${activeColor.name} (${currentView === 'FRONT' ? 'front' : 'back'})`}
+                  side={currentView}
+                  printAreas={currentGarment.printAreas || DEFAULT_PRINT_AREAS[currentGarment.style] || DEFAULT_PRINT_AREAS.tshirt}
+                  inkColor={activeColor.textContrast}
+                  front={stageArtwork(artworks.center)}
+                  chest={stageArtwork(artworks.left_chest)}
+                  back={stageArtwork(artworks.back)}
+                />
               </div>
             </div>
 
@@ -621,7 +532,7 @@ export function CustomizerPage() {
                 </div>
 
                 {/* Color Swatches */}
-                <div className="flex items-center gap-4 mb-4">
+                <div className="flex flex-wrap items-center gap-x-4 gap-y-3 mb-4">
                   {availableColors.map((color) => {
                     const isSelected = activeColor.id === color.id;
                     return (

@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
+import { m, AnimatePresence } from 'framer-motion';
 import {
   ShoppingBag,
   Trash2,
@@ -69,7 +69,7 @@ function RecentlyViewedCard({
 
   if (viewMode === 'list') {
     return (
-      <motion.div
+      <m.div
         layout
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
@@ -168,12 +168,12 @@ function RecentlyViewedCard({
             <Trash2 size={16} />
           </button>
         </div>
-      </motion.div>
+      </m.div>
     );
   }
 
   return (
-    <motion.div
+    <m.div
       layout
       initial={{ opacity: 0, scale: 0.95 }}
       animate={{ opacity: 1, scale: 1 }}
@@ -224,7 +224,7 @@ function RecentlyViewedCard({
 
             {/* Top-Right Action Controls (Remove from history + Wishlist) */}
             <div className="absolute top-2.5 right-2.5 flex flex-col gap-1.5 z-10">
-              <motion.button
+              <m.button
                 type="button"
                 whileHover={{ scale: 1.15 }}
                 whileTap={{ scale: 0.85 }}
@@ -234,9 +234,9 @@ function RecentlyViewedCard({
                 aria-label={`Remove ${item.title} from history`}
               >
                 <X size={14} />
-              </motion.button>
+              </m.button>
 
-              <motion.button
+              <m.button
                 type="button"
                 whileHover={{ scale: 1.15 }}
                 whileTap={{ scale: 0.85 }}
@@ -246,7 +246,7 @@ function RecentlyViewedCard({
                 aria-label={inWishlist ? 'Remove from wishlist' : 'Add to wishlist'}
               >
                 <Heart size={14} className={inWishlist ? 'fill-[#E6321C] text-[#E6321C]' : ''} />
-              </motion.button>
+              </m.button>
             </div>
 
             {/* Bottom Time Stamp Pill */}
@@ -289,7 +289,7 @@ function RecentlyViewedCard({
 
             {/* Action Buttons */}
             <div className="mt-4 pt-3 border-t border-[#DDD3C5]/60 flex items-center gap-2">
-              <motion.button
+              <m.button
                 type="button"
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.96 }}
@@ -298,12 +298,12 @@ function RecentlyViewedCard({
               >
                 <ShoppingBag size={13} />
                 <span>ADD TO BAG</span>
-              </motion.button>
+              </m.button>
             </div>
           </div>
         </div>
       </InteractiveTilt>
-    </motion.div>
+    </m.div>
   );
 }
 
@@ -598,7 +598,7 @@ export function RecentlyViewedPage() {
       <AnimatePresence>
         {isClearModalOpen && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs">
-            <motion.div
+            <m.div
               initial={{ opacity: 0, scale: 0.95, y: 10 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 10 }}
@@ -634,7 +634,7 @@ export function RecentlyViewedPage() {
                   Clear All
                 </button>
               </div>
-            </motion.div>
+            </m.div>
           </div>
         )}
       </AnimatePresence>

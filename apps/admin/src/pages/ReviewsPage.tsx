@@ -108,21 +108,21 @@ export function ReviewsPage() {
   return (
     <div className="space-y-6">
       {/* Editorial Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b-2 border-[#171717] pb-4">
         <div>
           <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5">
-            <span className="text-[10px] font-mono font-bold uppercase tracking-[0.2em] text-brand-red whitespace-nowrap">
+            <span className="text-[10px] font-mono font-bold uppercase tracking-[0.2em] bg-[#171717] text-white px-2 py-0.5">
               PATRON FEEDBACK
             </span>
-            <span className="text-muted/40 font-mono">•</span>
-            <span className="text-[10px] font-mono font-bold uppercase tracking-widest text-muted whitespace-nowrap">
+            <span className="text-[#171717]/40 font-mono">•</span>
+            <span className="text-[10px] font-mono font-bold uppercase tracking-widest text-[#171717]/70">
               {reviews.length} TOTAL TESTIMONIALS
             </span>
           </div>
-          <h1 className="text-2xl font-black uppercase tracking-tight text-ink font-sans mt-0.5">
+          <h1 className="text-2xl font-black uppercase tracking-tight text-[#171717] font-sans mt-1">
             Reviews Moderation
           </h1>
-          <p className="text-xs text-muted mt-0.5">
+          <p className="text-xs text-[#171717]/70 mt-0.5 font-medium">
             Moderate buyer feedback, verify purchases, and showcase verified customer testimonials.
           </p>
         </div>
@@ -138,69 +138,69 @@ export function ReviewsPage() {
         </button>
       </div>
 
-      {/* Bento Metrics Row */}
+      {/* Bauhaus Bento Metrics Row */}
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
-        <div className="stat-card">
+        <div className="bg-white border-2 border-[#171717] p-4 shadow-[4px_4px_0px_#171717]">
           <div className="flex items-center justify-between">
-            <span className="stat-label">Store Score</span>
-            <div className="w-9 h-9 rounded-xl bg-amber-50 border border-amber-200 flex items-center justify-center text-amber-500">
+            <span className="text-[11px] font-mono font-bold uppercase text-[#171717]/70 tracking-wider">Store Score</span>
+            <div className="w-8 h-8 border-2 border-[#171717] bg-amber-100 flex items-center justify-center text-amber-700 shadow-[2px_2px_0px_#171717]">
               <Star size={16} className="fill-amber-500" />
             </div>
           </div>
-          <p className="stat-value">{avgRating} <span className="text-sm font-normal text-muted">/ 5.0</span></p>
-          <span className="text-[10px] font-mono text-muted mt-1 block">Customer satisfaction index</span>
+          <p className="text-2xl font-black font-mono text-[#171717] mt-2">{avgRating} <span className="text-sm font-normal text-[#171717]/50">/ 5.0</span></p>
+          <span className="text-[10px] font-mono text-[#171717]/60 mt-1 block uppercase">Customer satisfaction index</span>
         </div>
 
-        <div className="stat-card">
+        <div className="bg-white border-2 border-[#171717] p-4 shadow-[4px_4px_0px_#171717]">
           <div className="flex items-center justify-between">
-            <span className="stat-label">Total Submissions</span>
-            <div className="w-9 h-9 rounded-xl bg-beige/60 border border-border/60 flex items-center justify-center text-ink">
+            <span className="text-[11px] font-mono font-bold uppercase text-[#171717]/70 tracking-wider">Submissions</span>
+            <div className="w-8 h-8 border-2 border-[#171717] bg-[#F7EEDB] flex items-center justify-center text-[#171717] shadow-[2px_2px_0px_#171717]">
               <MessageSquare size={16} />
             </div>
           </div>
-          <p className="stat-value">{reviews.length}</p>
-          <span className="text-[10px] font-mono text-muted mt-1 block">Submitted garment ratings</span>
+          <p className="text-2xl font-black font-mono text-[#171717] mt-2">{reviews.length}</p>
+          <span className="text-[10px] font-mono text-[#171717]/60 mt-1 block uppercase">Submitted garment ratings</span>
         </div>
 
-        <div className="stat-card">
+        <div className="bg-white border-2 border-[#171717] p-4 shadow-[4px_4px_0px_#171717]">
           <div className="flex items-center justify-between">
-            <span className="stat-label">Approved & Public</span>
-            <div className="w-9 h-9 rounded-xl bg-emerald-50 border border-emerald-200 flex items-center justify-center text-emerald-700">
+            <span className="text-[11px] font-mono font-bold uppercase text-[#171717]/70 tracking-wider">Approved & Public</span>
+            <div className="w-8 h-8 border-2 border-[#171717] bg-emerald-100 flex items-center justify-center text-emerald-900 shadow-[2px_2px_0px_#171717]">
               <CheckCircle2 size={16} />
             </div>
           </div>
-          <p className="stat-value text-emerald-700">
+          <p className="text-2xl font-black font-mono text-emerald-800 mt-2">
             {reviews.filter((r) => r.status === 'approved').length}
           </p>
-          <span className="text-[10px] font-mono text-emerald-700 mt-1 block">Visible on product pages</span>
+          <span className="text-[10px] font-mono text-emerald-800 font-bold mt-1 block uppercase">Visible on product pages</span>
         </div>
 
-        <div className="stat-card">
+        <div className="bg-white border-2 border-[#171717] p-4 shadow-[4px_4px_0px_#171717]">
           <div className="flex items-center justify-between">
-            <span className="stat-label">Verified Buyers</span>
-            <div className="w-9 h-9 rounded-xl bg-sky-50 border border-sky-200 flex items-center justify-center text-sky-700">
+            <span className="text-[11px] font-mono font-bold uppercase text-[#171717]/70 tracking-wider">Verified Buyers</span>
+            <div className="w-8 h-8 border-2 border-[#171717] bg-sky-100 flex items-center justify-center text-sky-900 shadow-[2px_2px_0px_#171717]">
               <ShieldCheck size={16} />
             </div>
           </div>
-          <p className="stat-value text-sky-700">
+          <p className="text-2xl font-black font-mono text-sky-800 mt-2">
             {reviews.filter((r) => r.verifiedBuyer).length}
           </p>
-          <span className="text-[10px] font-mono text-sky-700 mt-1 block">Verified order transactions</span>
+          <span className="text-[10px] font-mono text-sky-800 font-bold mt-1 block uppercase">Verified order transactions</span>
         </div>
       </div>
 
-      {/* Filter Tabs & Search */}
-      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 bg-white p-3.5 rounded-2xl border border-border/80 shadow-card">
-        <div className="flex flex-wrap items-center gap-1.5">
-          <div className="flex gap-1 bg-beige/40 p-1 rounded-xl border border-border/60">
+      {/* Bauhaus Filter Tabs & Search */}
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 bg-white p-3 border-2 border-[#171717] shadow-[3px_3px_0px_#171717]">
+        <div className="flex flex-wrap items-center gap-2">
+          <div className="flex gap-1">
             {STATUS_FILTERS.map((s) => (
               <button
                 key={s}
                 onClick={() => setStatusFilter(s)}
-                className={`px-3 py-1 rounded-lg text-[10px] font-mono font-bold uppercase tracking-wider transition-all ${
+                className={`px-3 py-1.5 text-[10px] font-mono font-bold uppercase tracking-wider border-2 border-[#171717] transition-all ${
                   statusFilter === s
-                    ? 'bg-ink text-white shadow-2xs'
-                    : 'text-muted hover:text-ink hover:bg-white/60'
+                    ? 'bg-[#171717] text-white shadow-[2px_2px_0px_#E6321C]'
+                    : 'bg-white text-[#171717] hover:bg-[#F7EEDB]'
                 }`}
               >
                 {s}
@@ -208,15 +208,15 @@ export function ReviewsPage() {
             ))}
           </div>
 
-          <div className="flex gap-1 items-center ml-2">
+          <div className="flex gap-1 items-center ml-1">
             {[5, 4, 3, 2, 1].map((stars) => (
               <button
                 key={stars}
                 onClick={() => setRatingFilter(ratingFilter === stars ? null : stars)}
-                className={`px-2 py-1 rounded-lg text-[10px] font-mono font-bold flex items-center gap-1 transition-all ${
+                className={`px-2 py-1 text-[10px] font-mono font-bold border-2 border-[#171717] flex items-center gap-0.5 transition-all ${
                   ratingFilter === stars
-                    ? 'bg-amber-500 text-black font-extrabold shadow-2xs'
-                    : 'bg-beige/40 text-muted hover:text-ink border border-border/60'
+                    ? 'bg-amber-400 text-[#171717] font-black shadow-[2px_2px_0px_#171717]'
+                    : 'bg-white text-[#171717] hover:bg-[#F7EEDB]'
                 }`}
               >
                 <span>{stars}★</span>
@@ -225,7 +225,7 @@ export function ReviewsPage() {
             {ratingFilter !== null && (
               <button
                 onClick={() => setRatingFilter(null)}
-                className="text-[10px] font-mono text-muted underline hover:text-brand-red ml-1 uppercase"
+                className="text-[10px] font-mono text-[#E6321C] font-bold underline hover:opacity-80 ml-1 uppercase"
               >
                 Reset
               </button>
@@ -235,54 +235,54 @@ export function ReviewsPage() {
 
         <form onSubmit={handleSearch} className="flex gap-2">
           <div className="relative">
-            <Search size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted" />
+            <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#171717]/60" />
             <input
               type="text"
               placeholder="Search reviewer or product..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="admin-input pl-10 w-full sm:w-[240px] py-1.5 text-xs"
+              className="admin-input pl-9 w-full sm:w-[240px] py-1.5 text-xs font-mono font-semibold"
             />
           </div>
         </form>
       </div>
 
-      {/* Reviews List */}
-      <div className="space-y-3">
+      {/* Bauhaus Reviews List */}
+      <div className="space-y-4">
         {loading ? (
-          <div className="admin-card p-16 text-center text-muted text-xs">
-            <RefreshCw size={20} className="animate-spin mx-auto text-brand-red mb-2" />
-            <span className="font-mono uppercase tracking-widest">Loading Reviews…</span>
+          <div className="bg-white border-2 border-[#171717] p-16 text-center text-[#171717]/60 text-xs shadow-[4px_4px_0px_#171717]">
+            <RefreshCw size={22} className="animate-spin mx-auto text-[#E6321C] mb-2" />
+            <span className="font-mono uppercase tracking-widest font-bold">Loading Reviews…</span>
           </div>
         ) : filtered.length === 0 ? (
-          <div className="admin-card p-16 text-center text-muted text-xs">
-            <MessageSquare size={28} className="mx-auto text-muted/40 mb-2" />
-            <span className="font-bold text-ink text-sm block">No reviews match your filters</span>
-            <p className="text-muted mt-0.5">Try clearing rating filters or searching a different keyword.</p>
+          <div className="bg-white border-2 border-[#171717] p-16 text-center text-[#171717]/60 text-xs shadow-[4px_4px_0px_#171717]">
+            <MessageSquare size={32} className="mx-auto text-[#171717]/40 mb-2" />
+            <span className="font-bold text-[#171717] text-sm block font-mono uppercase">No reviews match your filters</span>
+            <p className="text-[#171717]/70 mt-0.5">Try clearing rating filters or searching a different keyword.</p>
           </div>
         ) : (
           filtered.map((r) => (
             <div
               key={r.id}
-              className="admin-card p-5 space-y-3 hover:border-ink/30 transition-all shadow-card"
+              className="bg-white border-2 border-[#171717] p-5 space-y-3 shadow-[4px_4px_0px_#171717] hover:shadow-[6px_6px_0px_#171717] transition-all"
             >
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-border/60 pb-3">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b-2 border-[#171717] pb-3">
                 <div className="flex items-center gap-3">
-                  <div className="w-9 h-9 rounded-xl bg-ink text-white text-xs font-black grid place-items-center font-mono shadow-2xs">
+                  <div className="w-8 h-8 border-2 border-[#171717] bg-[#171717] text-white text-xs font-black grid place-items-center font-mono shadow-[2px_2px_0px_#171717]">
                     {r.customerName.slice(0, 1).toUpperCase()}
                   </div>
                   <div>
                     <div className="flex items-center gap-2">
-                      <strong className="text-xs font-bold text-ink">{r.customerName}</strong>
+                      <strong className="text-xs font-black uppercase text-[#171717]">{r.customerName}</strong>
                       {r.verifiedBuyer && (
-                        <span className="inline-flex items-center gap-0.5 px-2 py-0.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 text-[9px] font-mono font-bold uppercase">
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 border border-[#171717] bg-emerald-100 text-emerald-900 text-[9px] font-mono font-bold uppercase shadow-[1px_1px_0px_#171717]">
                           <ShieldCheck size={10} /> Verified Buyer
                         </span>
                       )}
                     </div>
-                    <span className="text-[11px] text-muted">
+                    <span className="text-[11px] text-[#171717]/70 font-medium">
                       Garment:{' '}
-                      <span className="font-semibold text-ink">{r.productTitle}</span>
+                      <span className="font-black text-[#171717] uppercase">{r.productTitle}</span>
                     </span>
                   </div>
                 </div>
@@ -293,25 +293,25 @@ export function ReviewsPage() {
                       <Star
                         key={i}
                         size={13}
-                        className={i < r.rating ? 'fill-amber-500' : 'text-border'}
+                        className={i < r.rating ? 'fill-amber-500' : 'text-[#DDD3C5]'}
                       />
                     ))}
                   </div>
 
                   <span
-                    className={`badge ${
+                    className={`inline-flex items-center gap-1 px-2 py-0.5 border border-[#171717] text-[10px] font-mono font-bold uppercase shadow-[1px_1px_0px_#171717] ${
                       r.status === 'approved'
-                        ? 'badge-success'
+                        ? 'bg-emerald-100 text-emerald-900'
                         : r.status === 'rejected'
-                        ? 'badge-danger'
-                        : 'badge-warning'
+                        ? 'bg-[#E6321C] text-white'
+                        : 'bg-amber-300 text-[#171717]'
                     }`}
                   >
-                    <span className="w-1.5 h-1.5 rounded-full bg-current" />
+                    <span className="w-1.5 h-1.5 bg-current" />
                     {r.status}
                   </span>
 
-                  <span className="text-[10px] text-muted font-mono">
+                  <span className="text-[10px] text-[#171717]/60 font-mono font-bold">
                     {new Date(r.created_at).toLocaleDateString('en-IN', {
                       day: 'numeric',
                       month: 'short',
@@ -323,23 +323,23 @@ export function ReviewsPage() {
               {/* Review Body */}
               <div className="space-y-1">
                 {r.title && (
-                  <h4 className="text-xs font-black uppercase text-ink tracking-tight font-sans">
+                  <h4 className="text-xs font-black uppercase text-[#171717] tracking-tight font-sans">
                     {r.title}
                   </h4>
                 )}
-                <p className="text-xs text-muted leading-relaxed font-sans">{r.body}</p>
+                <p className="text-xs text-[#171717]/80 leading-relaxed font-sans">{r.body}</p>
               </div>
 
               {/* Action Buttons */}
-              <div className="flex items-center justify-between pt-1 border-t border-border/40">
-                <span className="text-[10px] text-muted font-mono">REF: {r.id.slice(0, 8)}</span>
+              <div className="flex items-center justify-between pt-2 border-t-2 border-[#171717]">
+                <span className="text-[10px] text-[#171717]/60 font-mono font-bold">REF: {r.id.slice(0, 8)}</span>
 
                 <div className="flex items-center gap-2">
                   {r.status !== 'approved' && (
                     <button
                       onClick={() => handleUpdateStatus(r.id, 'approved')}
                       disabled={processingId === r.id}
-                      className="px-3 py-1 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-[10px] font-mono font-bold uppercase tracking-wider flex items-center gap-1.5 transition-all shadow-2xs"
+                      className="px-3 py-1 border-2 border-[#171717] bg-emerald-600 hover:bg-emerald-700 text-white text-[10px] font-mono font-bold uppercase tracking-wider flex items-center gap-1.5 shadow-[2px_2px_0px_#171717] active:translate-x-[1px] active:translate-y-[1px]"
                     >
                       <ThumbsUp size={12} />
                       Approve
@@ -350,7 +350,7 @@ export function ReviewsPage() {
                     <button
                       onClick={() => handleUpdateStatus(r.id, 'rejected')}
                       disabled={processingId === r.id}
-                      className="px-3 py-1 rounded-xl bg-beige/60 hover:bg-beige text-ink text-[10px] font-mono font-bold uppercase tracking-wider flex items-center gap-1.5 transition-all border border-border/60"
+                      className="px-3 py-1 border-2 border-[#171717] bg-[#F7EEDB] hover:bg-white text-[#171717] text-[10px] font-mono font-bold uppercase tracking-wider flex items-center gap-1.5 shadow-[2px_2px_0px_#171717] active:translate-x-[1px] active:translate-y-[1px]"
                     >
                       <ThumbsDown size={12} />
                       Reject
@@ -360,10 +360,10 @@ export function ReviewsPage() {
                   <button
                     onClick={() => setReviewToDelete(r.id)}
                     disabled={processingId === r.id}
-                    className="p-1.5 rounded-lg text-muted hover:text-rose-600 hover:bg-rose-50 transition-colors"
+                    className="p-1 border-2 border-[#171717] bg-white hover:bg-[#E6321C] hover:text-white text-[#171717] shadow-[2px_2px_0px_#171717] active:translate-x-[1px] active:translate-y-[1px]"
                     title="Delete Review"
                   >
-                    <Trash2 size={14} />
+                    <Trash2 size={13} />
                   </button>
                 </div>
               </div>

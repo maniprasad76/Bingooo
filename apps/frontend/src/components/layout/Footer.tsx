@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowUpRight, ChevronRight } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { m, AnimatePresence } from 'framer-motion';
 import { cn } from '../../lib/utils';
 import { triggerHaptic } from '../../lib/native/capacitorBridge';
 import {
@@ -238,7 +238,7 @@ export function Footer() {
                 {/* Mobile: Animated Dropdown Sub-links List */}
                 <AnimatePresence initial={false}>
                   {isOpen && (
-                    <motion.div
+                    <m.div
                       key={`mobile-dropdown-${section.id}`}
                       initial={{ height: 0, opacity: 0 }}
                       animate={{ height: 'auto', opacity: 1 }}
@@ -280,7 +280,7 @@ export function Footer() {
                           );
                         })}
                       </div>
-                    </motion.div>
+                    </m.div>
                   )}
                 </AnimatePresence>
 

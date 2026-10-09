@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { motion, useReducedMotion } from 'framer-motion';
+import { m, useReducedMotion } from 'framer-motion';
 import { Truck, RotateCcw, XCircle, Shield, FileText, Ruler, ArrowRight } from 'lucide-react';
 import { SEO } from '../components/common/SEO';
 
@@ -75,7 +75,7 @@ export function PoliciesPage() {
           {POLICY_CARDS.map((card, idx) => {
             const Icon = card.icon;
             return (
-              <motion.div
+              <m.div
                 key={card.to}
                 initial={shouldReduceMotion ? false : { opacity: 0, y: 12 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -104,7 +104,7 @@ export function PoliciesPage() {
                     <ArrowRight className="w-4 h-4 transform group-hover:translate-x-1 transition-transform" aria-hidden="true" />
                   </div>
                 </Link>
-              </motion.div>
+              </m.div>
             );
           })}
         </div>
@@ -117,22 +117,22 @@ export function PoliciesPage() {
           </div>
 
           <div className="flex items-center gap-3">
-            <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
+            <m.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
               <Link
                 to="/faq"
                 className="inline-block px-4 py-2.5 rounded-[2px] bg-white hover:bg-[#F7EEDB] text-[#171717] border-2 border-[#171717] text-xs font-black font-heading uppercase tracking-wider transition-all shadow-[2px_2px_0px_#171717] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none"
               >
                 Browse FAQ
               </Link>
-            </motion.div>
-            <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
+            </m.div>
+            <m.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
               <Link
                 to="/contact"
                 className="inline-block px-4 py-2.5 rounded-[2px] bg-[#E6321C] hover:bg-[#B91F12] text-white text-xs font-black font-heading uppercase tracking-wider transition-all border-2 border-[#171717] shadow-[2px_2px_0px_#171717] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none"
               >
                 Contact Desk
               </Link>
-            </motion.div>
+            </m.div>
           </div>
         </div>
 

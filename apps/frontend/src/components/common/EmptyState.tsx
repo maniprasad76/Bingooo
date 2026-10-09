@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import { m } from 'framer-motion';
 import { ShoppingBag, Search, Heart, Shirt, Package, Sparkles, ArrowRight, Compass } from 'lucide-react';
 import { useProducts } from '../../hooks/useProducts';
 
@@ -53,7 +53,7 @@ export function EmptyState({
   return (
     <div className={`w-full max-w-4xl mx-auto px-4 py-12 sm:py-16 text-center ${className}`}>
       {/* Animated Atelier Badge Container */}
-      <motion.div
+      <m.div
         initial={{ opacity: 0, scale: 0.88, y: 16 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
         transition={{ duration: 0.4, ease: 'easeOut' }}
@@ -63,7 +63,7 @@ export function EmptyState({
           <Sparkles size={13} />
         </div>
         <IconComponent size={44} className="text-[#171717]" />
-      </motion.div>
+      </m.div>
 
       {/* Subtitle tag */}
       {subtitle && (

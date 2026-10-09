@@ -14,6 +14,33 @@
       ]
     },
     {
+      "source": "/img/v1/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
+        }
+      ]
+    },
+    {
+      "source": "/fonts/v1/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
+        }
+      ]
+    },
+    {
+      "source": "/:file([^/]+\\.(?:jpg|jpeg|png|webp|avif|svg|ico))",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=86400, stale-while-revalidate=604800"
+        }
+      ]
+    },
+    {
       "source": "/(.*)",
       "headers": [
         {
@@ -38,7 +65,7 @@
         },
         {
           "key": "Content-Security-Policy-Report-Only",
-          "value": "default-src 'self'; object-src 'none'; base-uri 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://vercel.live; font-src 'self' data: https://fonts.gstatic.com https://vercel.live https://assets.vercel.com; img-src 'self' data: blob: https:; worker-src 'self' blob:; manifest-src 'self'; script-src 'self' 'unsafe-inline' https://checkout.razorpay.com https://cdn.razorpay.com https://va.vercel-scripts.com https://vercel.live; connect-src 'self' https://api.bingooo.co.in https://zqmrmgwxhrdscippanuv.supabase.co wss://zqmrmgwxhrdscippanuv.supabase.co https://*.razorpay.com https://*.vercel-insights.com https://vercel.live wss://ws-us3.pusher.com; frame-src https://api.razorpay.com https://checkout.razorpay.com https://*.razorpay.com https://www.youtube.com https://www.youtube-nocookie.com https://www.google.com https://maps.google.com https://vercel.live; form-action 'self' https://*.razorpay.com; frame-ancestors 'self'"
+          "value": "default-src 'self'; object-src 'none'; base-uri 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://vercel.live; font-src 'self' data: https://fonts.gstatic.com https://vercel.live https://assets.vercel.com; img-src 'self' data: blob: https:; worker-src 'self' blob:; manifest-src 'self'; script-src 'self' 'unsafe-inline' https://checkout.razorpay.com https://cdn.razorpay.com https://va.vercel-scripts.com https://vercel.live https://www.googletagmanager.com; connect-src 'self' https://api.bingooo.co.in https://www.googletagmanager.com https://*.google-analytics.com https://*.analytics.google.com https://zqmrmgwxhrdscippanuv.supabase.co wss://zqmrmgwxhrdscippanuv.supabase.co https://*.razorpay.com https://*.vercel-insights.com https://vercel.live wss://ws-us3.pusher.com; frame-src https://api.razorpay.com https://checkout.razorpay.com https://*.razorpay.com https://www.youtube.com https://www.youtube-nocookie.com https://www.google.com https://maps.google.com https://vercel.live; form-action 'self' https://*.razorpay.com; frame-ancestors 'self'"
         }
       ]
     }

@@ -1,6 +1,8 @@
 import { useMemo } from 'react';
+import { Picture } from '../components/ui/Picture';
+import { IMAGES } from '../lib/images';
 import { Link, useNavigate } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
+import { m, AnimatePresence } from 'framer-motion';
 import {
   Heart,
   ShoppingBag,
@@ -140,8 +142,9 @@ export function WishlistPage() {
           <div className="my-auto py-8 sm:py-12 text-center space-y-6">
             {/* Hand-crafted bag with heart artwork */}
             <div className="relative inline-block max-w-[320px] sm:max-w-[380px] mx-auto border-2 border-[#171717] bg-white p-4 shadow-[4px_4px_0px_#171717]">
-              <img
-                src="/wishlist-bag-heart.png"
+              <Picture
+                image={IMAGES.wishlistBagHeart}
+                loading="eager"
                 alt="Your Wishlist is Empty — Bingooo"
                 className="w-full h-auto object-contain mx-auto"
               />
@@ -372,8 +375,9 @@ export function WishlistPage() {
 
         {/* Editorial Artwork Shot */}
         <div className="h-[300px] sm:h-[380px] lg:h-auto overflow-hidden relative flex items-center justify-center bg-white p-6 sm:p-10 border-t-2 lg:border-t-0 lg:border-l-2 border-[#171717]">
-          <img
-            src="/empty-wishlist-art.png"
+          <Picture
+            image={IMAGES.emptyWishlistArt}
+            sizes="(min-width: 1024px) 50vw, 100vw"
             alt="Bingooo curated wishlist archive"
             className="w-full h-full object-contain max-h-[420px]"
           />
@@ -466,10 +470,10 @@ export function WishlistPage() {
             )}
           </div>
 
-          <motion.div layout className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
+          <m.div layout className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
             <AnimatePresence>
               {items.map((item) => (
-                <motion.article
+                <m.article
                   key={item.id}
                   layout
                   initial={{ opacity: 0, y: 10 }}
@@ -550,10 +554,10 @@ export function WishlistPage() {
                       <Trash2 size={13} />
                     </button>
                   </div>
-                </motion.article>
+                </m.article>
               ))}
             </AnimatePresence>
-          </motion.div>
+          </m.div>
         </div>
       </section>
 

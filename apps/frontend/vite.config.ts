@@ -33,7 +33,6 @@ export default defineConfig({
          *  - vendor        → React + ReactDOM (always cached, rarely changes)
          *  - router        → react-router-dom (rarely changes)
          *  - query         → @tanstack/react-query (rarely changes)
-         *  - motion        → framer-motion (animation, heavy, defer where possible)
          *  - ui            → lucide icons + class utilities
          *  - app           → everything else (changes most often)
          */
@@ -50,10 +49,8 @@ export default defineConfig({
           if (id.includes('node_modules/@tanstack/')) {
             return 'query';
           }
-          // Animation (largest single dep — split so homepage doesn't pay for it)
-          if (id.includes('node_modules/framer-motion')) {
-            return 'motion';
-          }
+          // framer-motion is left to automatic splitting: the app uses its small `m`
+          // components up front and lazy-loads the animation engine (src/lib/motion).
           // Icon library
           if (id.includes('node_modules/lucide-react')) {
             return 'ui';

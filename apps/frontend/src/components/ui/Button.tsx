@@ -1,5 +1,5 @@
 import { forwardRef, type ReactNode } from 'react';
-import { motion, type HTMLMotionProps } from 'framer-motion';
+import { m, type HTMLMotionProps } from 'framer-motion';
 import { cn } from '../../lib/utils';
 import { triggerHaptic } from '../../lib/native/capacitorBridge';
 
@@ -53,7 +53,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     ref,
   ) => {
     return (
-      <motion.button
+      <m.button
         ref={ref}
         whileHover={
           disabled || loading || !animateInteraction
@@ -102,7 +102,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
           </svg>
         )}
         {children}
-      </motion.button>
+      </m.button>
     );
   },
 );

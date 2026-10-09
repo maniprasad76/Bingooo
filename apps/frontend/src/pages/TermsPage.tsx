@@ -1,4 +1,6 @@
 import { Link } from 'react-router-dom';
+import { Picture } from '../components/ui/Picture';
+import { IMAGES } from '../lib/images';
 import { SEO } from '../components/common/SEO';
 import { triggerHaptic } from '../lib/native/capacitorBridge';
 
@@ -43,8 +45,10 @@ export function TermsPage() {
         </div>
 
         <div className="h-[400px] sm:h-[500px] lg:h-auto overflow-hidden bg-[#ede0cc]">
-          <img
-            src="/terms-hero.jpg"
+          <Picture
+            image={IMAGES.termsHero}
+            sizes="(min-width: 1024px) 55vw, 100vw"
+            loading="eager"
             alt="Bingooo Terms & Conditions"
             className="w-full h-full object-cover object-center"
           />
@@ -139,8 +143,9 @@ export function TermsPage() {
       ======================================================= */}
       <section className="grid grid-cols-1 lg:grid-cols-[55%_45%] min-h-[550px] lg:min-h-[600px]">
         <div className="min-h-[380px] lg:min-h-full overflow-hidden">
-          <img
-            src="/custom-studio.jpg"
+          <Picture
+            image={IMAGES.customStudio}
+            sizes="(min-width: 1024px) 55vw, 100vw"
             alt="Bingooo Custom Studio workshop"
             className="w-full h-full object-cover object-center"
           />

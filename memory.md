@@ -1,9 +1,9 @@
 # 🧠 BINGOOO — Persistent System Memory & Agent Context (`memory.md`)
 
-> **Document Version:** 1.0.0  
+> **Document Version:** 1.2.0  
 > **Type:** Single Source of Truth (SSOT) Persistent Memory & Runbook  
 > **Status:** Active / Authoritative  
-> **Last Synchronized:** September 2026  
+> **Last Synchronized:** October 10, 2026  
 > **Primary Consumer:** AI Pair Programmers, Code Reviewers, Core Maintainers
 
 ---
@@ -22,9 +22,9 @@
 The entire Bingooo monorepo is indexed by **Graphify** (`graphifyy`), establishing a deterministic graph memory of the codebase.
 
 ### Graph Memory Telemetry:
-- **Total Indexed Nodes:** 7,333+ symbols (classes, functions, interfaces, routes, variables)
-- **Total Edges:** 9,922+ relationships (`calls`, `imports`, `inherits`, `references`, `renders`)
-- **Community Clusters:** 646 modular architectural domains
+- **Total Indexed Nodes:** 9,164+ symbols (classes, functions, interfaces, routes, variables)
+- **Total Edges:** 12,824+ relationships (`calls`, `imports`, `inherits`, `references`, `renders`)
+- **Community Clusters:** 797 modular architectural domains
 
 ### Persistent Graph Artifacts:
 - [`graphify-out/graph.json`](file:///c:/Users/manip/Desktop/bingooo/graphify-out/graph.json): Raw directed multigraph used for instant programmatic querying.
@@ -69,7 +69,7 @@ python -m graphify update .
 ### 🚨 Invariant 2: Authoritative Server-Side Pricing
 - **Issue:** Client-submitted shopping bags can be tampered with in DevTools to submit orders with ₹1 prices.
 - **Strict Rule:** The frontend is treated as completely untrusted. The client submits only `productId`, `variantId`, `quantity`, and `customizationSpecs`.
-- **Solution:** `CheckoutService` fetches the genuine product price from the database store, validates variant stock, applies all-inclusive pricing (no extra tax surcharges), applies validated coupon rules, and calculates shipping thresholds (free above ₹999).
+- **Solution:** `CheckoutService` fetches the genuine product price from the database store, validates variant stock, applies all-inclusive pricing (no extra tax surcharges), applies validated coupon rules, and applies 100% universal free delivery Pan-India (₹0 shipping fee across all orders) with 100% secure prepaid checkout (COD removed).
 
 ---
 
@@ -127,6 +127,18 @@ python -m graphify update .
     }
   }
   ```
+
+---
+
+### 🚨 Invariant 7: Customizer Transparent Photography Pipeline & Zero Mockup Clipart
+- **Strict Rule:** No cartoon vector icons, generic clipart shirts, or placeholder text overlays (`YOUR LINE HERE`, `BACK PRINT ARTWORK`) in the customer-facing customizer or homepage.
+- **Solution:** The Admin Panel Customizer Studio (`/customizer`) is the single authority for uploaded garment transparent PNGs. The customizer renders real photography with alpha transparency, allowing customers to preview their artwork directly on authentic apparel fabric.
+
+---
+
+### 🚨 Invariant 8: Production Database Integrity & Real Customer Orders
+- **Strict Rule:** `store.json` contains only authentic orders, official catalog products, real staff accounts, and verified coupons.
+- **Solution:** Synthetic bot users and fake dummy orders are permanently purged. All orders placed through the storefront write directly to `store.json` and appear instantly in the Admin Orders queue with automated WhatsApp dispatch notifications.
 
 ---
 
@@ -215,3 +227,17 @@ python -m graphify update .   # Keep graph.json and GRAPH_REPORT.md updated
   - Indexed 7,333+ symbols into persistent Graphify knowledge graph.
 - **2026-09-21: Core Documentation Suite Deployment**
   - Created canonical `prd.md`, `architecture.md`, `memory.md`, `rules.md`, and `task.md` root artifacts.
+- **2026-10-01: Phase 3 Real-Time 3D Garment Mockup Studio (Three.js)**
+  - Built procedural Three.js 3D garment geometries with cotton weave bump mapping and real-time texture projection.
+- **2026-10-03: Permanent Removal of Cash on Delivery (COD)**
+  - Transitioned platform to 100% secure prepaid checkout (Razorpay UPI, Cards, NetBanking) with 5% instant discount.
+- **2026-10-05: Universal Free Shipping Pan-India & Admin UI Refinements**
+  - Standardized store policy to 100% universal free delivery across all orders; stripped redundant shipping fee calculators.
+- **2026-10-10: Atelier Customizer Image Pipeline & Admin-Driven Dynamic Garments**
+  - Purged fake mockup clipart, cartoon shirt icons, and text overlays in customizer & homepage; Admin Customizer Studio is the single authority for uploaded garment PNGs with transparent layer preservation.
+- **2026-10-10: Admin Panel Layout Overhaul & Responsive Viewport Engineering**
+  - Permanent document-flow desktop sidebar and mobile off-canvas drawer; eliminated table squishing across all 15 routes.
+- **2026-10-10: Production Database Sanitization & Test Data Purge**
+  - Purged 180+ automated bot users, 50 synthetic test orders, and duplicate demo products; preserved official catalog apparel, real admin accounts, and promotional coupons.
+- **2026-10-10: End-to-End Promotional Coupon Engine & Real-Time Checkout Recalculation**
+  - Linked coupon management between Admin Panel, NestJS backend `CouponsService`, and Storefront checkout (`BINGOOO10`, `WELCOME20`, `FREESHIP`).

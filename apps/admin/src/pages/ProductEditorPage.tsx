@@ -552,11 +552,11 @@ export function ProductEditorPage() {
       {/* ─────────────────────────────────────────────────────────
           STICKY TOP ACTION BAR
       ───────────────────────────────────────────────────────── */}
-      <div className="sticky top-0 z-30 flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-paper/95 backdrop-blur-md py-3 border-b border-border">
+      <div className="sticky top-0 z-30 flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-paper/95 backdrop-blur-md py-3 border-b-2 border-[#171717]">
         <div className="flex items-center gap-3 min-w-0 flex-1">
           <Link
             to="/products"
-            className="w-8 h-8 shrink-0 rounded-lg border border-border flex items-center justify-center text-muted hover:text-ink hover:bg-beige transition-colors"
+            className="w-8 h-8 shrink-0 rounded-lg border-2 border-[#171717] flex items-center justify-center text-muted hover:text-ink hover:bg-beige transition-colors"
             title="Back to products"
           >
             <ArrowLeft size={16} />
@@ -567,7 +567,7 @@ export function ProductEditorPage() {
                 Studio / {isEditing ? 'Edit' : 'Create'}
               </span>
               <span
-                className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold uppercase ${
+                className={`inline-flex items-center px-2 py-0.5 rounded-sm text-[10px] font-bold uppercase ${
                   status === 'active'
                     ? 'bg-emerald-100 text-emerald-800'
                     : status === 'draft'
@@ -578,12 +578,12 @@ export function ProductEditorPage() {
                 {status}
               </span>
               {isBestseller && (
-                <span className="inline-flex items-center gap-0.5 px-2 py-0.5 rounded-full text-[9px] font-black uppercase bg-[#171717] text-white">
+                <span className="inline-flex items-center gap-0.5 px-2 py-0.5 rounded-sm text-[9px] font-black uppercase bg-[#171717] text-white">
                   <Flame size={10} /> Bestseller
                 </span>
               )}
               {isSale && (
-                <span className="inline-flex items-center gap-0.5 px-2 py-0.5 rounded-full text-[9px] font-black uppercase bg-brand-red text-white">
+                <span className="inline-flex items-center gap-0.5 px-2 py-0.5 rounded-sm text-[9px] font-black uppercase bg-brand-red text-white">
                   <Percent size={10} /> Sale Tag Active
                 </span>
               )}
@@ -653,7 +653,7 @@ export function ProductEditorPage() {
         <div className="lg:col-span-7 space-y-6">
           {/* 1. BASIC INFORMATION */}
           <div className="admin-card p-5 space-y-4">
-            <div className="flex items-center justify-between border-b border-border pb-3">
+            <div className="flex items-center justify-between border-b-2 border-[#171717] pb-3">
               <div className="flex items-center gap-2">
                 <span className="w-2.5 h-2.5 rounded-full bg-brand-red" />
                 <h3 className="text-xs font-bold uppercase tracking-wider text-ink">1. Basic Information</h3>
@@ -693,7 +693,7 @@ export function ProductEditorPage() {
                   </button>
                 </div>
                 <div className="flex items-center">
-                  <span className="inline-flex items-center px-2.5 h-9 rounded-l-md border border-r-0 border-border bg-beige text-xs text-muted font-mono">
+                  <span className="inline-flex items-center px-2.5 h-9 border-2 border-r-0 border-[#171717] bg-beige text-xs text-muted font-mono">
                     /product/
                   </span>
                   <input
@@ -739,7 +739,7 @@ export function ProductEditorPage() {
 
           {/* 2. 5 PRODUCT IMAGES (EXPLICIT SLOTS) */}
           <div className="admin-card p-5 space-y-4">
-            <div className="flex items-center justify-between border-b border-border pb-3">
+            <div className="flex items-center justify-between border-b-2 border-[#171717] pb-3">
               <div className="flex items-center gap-2">
                 <span className="w-2.5 h-2.5 rounded-full bg-brand-red" />
                 <h3 className="text-xs font-bold uppercase tracking-wider text-ink">
@@ -772,7 +772,7 @@ export function ProductEditorPage() {
                   >
                     {/* Thumbnail + Slot Title */}
                     <div className="flex items-center gap-3">
-                      <div className="relative w-14 h-14 rounded-md overflow-hidden bg-[#EDE0CC] border border-border shrink-0 flex items-center justify-center">
+                      <div className="relative w-14 h-14 rounded-md overflow-hidden bg-[#EDE0CC] border-2 border-[#171717] shrink-0 flex items-center justify-center">
                         {currentImg ? (
                           <img
                             src={resolveImageUrl(currentImg)}
@@ -854,14 +854,14 @@ export function ProductEditorPage() {
 
           {/* 3. PRICING, SALE TAG & MERCHANDISING BADGES */}
           <div className="admin-card p-5 space-y-4">
-            <div className="flex items-center justify-between border-b border-border pb-3">
+            <div className="flex items-center justify-between border-b-2 border-[#171717] pb-3">
               <div className="flex items-center gap-2">
                 <span className="w-2.5 h-2.5 rounded-full bg-brand-red" />
                 <h3 className="text-xs font-bold uppercase tracking-wider text-ink">
                   3. Pricing & Merchandising Tags
                 </h3>
               </div>
-              <span className="text-[10px] text-muted">Sale tags, Bestseller tags & 3D Atelier</span>
+              <span className="text-[10px] text-muted">Sale, bestseller and customizable tags</span>
             </div>
 
             {/* Prices */}
@@ -904,7 +904,7 @@ export function ProductEditorPage() {
             </div>
 
             {/* Badges & Tags Matrix */}
-            <div className="p-3.5 rounded-lg border border-border bg-beige/20 space-y-3">
+            <div className="p-3.5 rounded-lg border-2 border-[#171717] bg-beige/20 space-y-3">
               <p className="text-xs font-bold text-ink">Storefront Badges & Flags</p>
 
               {/* Sale Tag Controls */}
@@ -972,8 +972,8 @@ export function ProductEditorPage() {
                     className="rounded border-border text-brand-red focus:ring-brand-red"
                   />
                   <div>
-                    <span className="text-xs font-bold text-ink block">3D Customizer / Atelier</span>
-                    <span className="text-[10px] text-muted">Customers can customize in 3D studio</span>
+                    <span className="text-xs font-bold text-ink block">Customizable</span>
+                    <span className="text-[10px] text-muted">Shows the Studio tag on the storefront</span>
                   </div>
                 </label>
 
@@ -995,7 +995,7 @@ export function ProductEditorPage() {
 
           {/* 4. GARMENT & FABRIC SPECIFICATIONS (DIRECTLY FEEDS "THE DETAILS") */}
           <div className="admin-card p-5 space-y-4">
-            <div className="flex items-center justify-between border-b border-border pb-3">
+            <div className="flex items-center justify-between border-b-2 border-[#171717] pb-3">
               <div className="flex items-center gap-2">
                 <span className="w-2.5 h-2.5 rounded-full bg-brand-red" />
                 <h3 className="text-xs font-bold uppercase tracking-wider text-ink">
@@ -1091,7 +1091,7 @@ export function ProductEditorPage() {
 
           {/* 5. COLORS WHAT WE HAVE */}
           <div className="admin-card p-5 space-y-4">
-            <div className="flex items-center justify-between border-b border-border pb-3">
+            <div className="flex items-center justify-between border-b-2 border-[#171717] pb-3">
               <div className="flex items-center gap-2">
                 <span className="w-2.5 h-2.5 rounded-full bg-brand-red" />
                 <h3 className="text-xs font-bold uppercase tracking-wider text-ink">
@@ -1109,9 +1109,9 @@ export function ProductEditorPage() {
                     key={c.name}
                     type="button"
                     onClick={() => toggleColorPreset(c)}
-                    className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold border transition-all ${
+                    className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-sm text-xs font-semibold border-2 transition-all ${
                       isSelected
-                        ? 'border-brand-red bg-brand-red/5 text-ink shadow-2xs'
+                        ? 'border-brand-red bg-brand-red/5 text-ink shadow-[3px_3px_0px_#171717]'
                         : 'border-border bg-white text-muted hover:border-ink'
                     }`}
                   >
@@ -1132,7 +1132,7 @@ export function ProductEditorPage() {
                 type="color"
                 value={customColorHex}
                 onChange={(e) => setCustomColorHex(e.target.value)}
-                className="w-8 h-8 rounded border border-border cursor-pointer p-0.5 bg-white"
+                className="w-8 h-8 rounded border-2 border-[#171717] cursor-pointer p-0.5 bg-white"
                 title="Choose custom hex"
               />
               <input
@@ -1155,7 +1155,7 @@ export function ProductEditorPage() {
 
           {/* 6. SIZES WHAT WE HAVE */}
           <div className="admin-card p-5 space-y-4">
-            <div className="flex items-center justify-between border-b border-border pb-3">
+            <div className="flex items-center justify-between border-b-2 border-[#171717] pb-3">
               <div className="flex items-center gap-2">
                 <span className="w-2.5 h-2.5 rounded-full bg-brand-red" />
                 <h3 className="text-xs font-bold uppercase tracking-wider text-ink">
@@ -1188,7 +1188,7 @@ export function ProductEditorPage() {
 
           {/* 7. VARIANT MATRIX TABLE & STOCK MANAGEMENT */}
           <div className="admin-card p-5 space-y-4">
-            <div className="flex items-center justify-between border-b border-border pb-3">
+            <div className="flex items-center justify-between border-b-2 border-[#171717] pb-3">
               <div className="flex items-center gap-2">
                 <span className="w-2.5 h-2.5 rounded-full bg-brand-red" />
                 <h3 className="text-xs font-bold uppercase tracking-wider text-ink">
@@ -1199,7 +1199,7 @@ export function ProductEditorPage() {
             </div>
 
             {/* Matrix generator & Bulk Stock toolbar */}
-            <div className="flex flex-wrap items-center justify-between gap-3 bg-beige/40 p-3 rounded-lg border border-border">
+            <div className="flex flex-wrap items-center justify-between gap-3 bg-beige/40 p-3 rounded-lg border-2 border-[#171717]">
               <button
                 type="button"
                 onClick={generateVariantMatrix}
@@ -1220,7 +1220,7 @@ export function ProductEditorPage() {
                 <button
                   type="button"
                   onClick={applyBulkStock}
-                  className="btn-ghost text-xs py-1 px-2.5 border border-border"
+                  className="btn-ghost text-xs py-1 px-2.5 border-2 border-[#171717]"
                 >
                   Apply All
                 </button>
@@ -1229,7 +1229,7 @@ export function ProductEditorPage() {
 
             {/* Table */}
             {variants.length > 0 && (
-              <div className="overflow-x-auto border border-border rounded-lg max-h-80 overflow-y-auto">
+              <div className="overflow-x-auto border-2 border-[#171717] rounded-lg max-h-80 overflow-y-auto">
                 <table className="admin-table text-xs">
                   <thead className="sticky top-0 bg-beige/95 backdrop-blur-xs z-10">
                     <tr>
@@ -1305,7 +1305,7 @@ export function ProductEditorPage() {
 
           {/* 8. CATALOG TAGS & SEO */}
           <div className="admin-card p-5 space-y-4">
-            <div className="flex items-center justify-between border-b border-border pb-3">
+            <div className="flex items-center justify-between border-b-2 border-[#171717] pb-3">
               <div className="flex items-center gap-2">
                 <span className="w-2.5 h-2.5 rounded-full bg-brand-red" />
                 <h3 className="text-xs font-bold uppercase tracking-wider text-ink">8. Search Tags & Google SEO</h3>
@@ -1315,11 +1315,11 @@ export function ProductEditorPage() {
 
             <div>
               <label className="admin-label">Search Tags (Press Enter or Comma)</label>
-              <div className="flex flex-wrap items-center gap-1.5 p-2 rounded-lg border border-border bg-white min-h-[42px]">
+              <div className="flex flex-wrap items-center gap-1.5 p-2 rounded-lg border-2 border-[#171717] bg-white min-h-[42px]">
                 {tags.map((t) => (
                   <span
                     key={t}
-                    className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-beige text-xs font-medium text-ink"
+                    className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-sm bg-beige border border-[#171717] font-mono text-xs font-medium text-ink"
                   >
                     #{t}
                     <button
@@ -1366,7 +1366,7 @@ export function ProductEditorPage() {
             </div>
 
             {/* Google SERP card */}
-            <div className="p-3 rounded-lg border border-border bg-white space-y-1">
+            <div className="p-3 rounded-lg border-2 border-[#171717] bg-white space-y-1">
               <span className="text-[10px] font-mono text-muted uppercase tracking-wider">Search Engine Snippet</span>
               <p className="text-xs text-blue-700 font-medium hover:underline cursor-pointer truncate">
                 {seoTitle || `${(title || 'Product Title').toUpperCase()} — BINGOOO`}
@@ -1386,13 +1386,13 @@ export function ProductEditorPage() {
         ======================================================= */}
         <div className="lg:col-span-5 sticky top-20 space-y-4">
           {/* Tab Selector */}
-          <div className="flex items-center justify-between bg-beige/60 p-1 rounded-lg border border-border">
+          <div className="flex items-center justify-between bg-beige/60 p-1 rounded-lg border-2 border-[#171717]">
             <div className="flex items-center gap-1">
               <button
                 type="button"
                 onClick={() => setPreviewTab('card')}
                 className={`px-3 py-1 text-xs font-bold rounded-md transition-all ${
-                  previewTab === 'card' ? 'bg-white text-ink shadow-2xs' : 'text-muted hover:text-ink'
+                  previewTab === 'card' ? 'bg-white text-ink shadow-[3px_3px_0px_#171717]' : 'text-muted hover:text-ink'
                 }`}
               >
                 Storefront Card
@@ -1401,7 +1401,7 @@ export function ProductEditorPage() {
                 type="button"
                 onClick={() => setPreviewTab('details')}
                 className={`px-3 py-1 text-xs font-bold rounded-md transition-all ${
-                  previewTab === 'details' ? 'bg-white text-ink shadow-2xs' : 'text-muted hover:text-ink'
+                  previewTab === 'details' ? 'bg-white text-ink shadow-[3px_3px_0px_#171717]' : 'text-muted hover:text-ink'
                 }`}
               >
                 Product Page (Full)
@@ -1414,13 +1414,13 @@ export function ProductEditorPage() {
 
           {/* PREVIEW TAB 1: STOREFRONT CATALOG CARD */}
           {previewTab === 'card' && (
-            <div className="bg-[#F7EEDB] border border-[#DDD3C5] rounded-xl p-4 shadow-sm">
+            <div className="bg-[#F7EEDB] border-2 border-[#171717] p-4 shadow-[4px_4px_0px_#171717]">
               <div className="text-[10px] font-bold uppercase tracking-widest text-[#6F6A63] mb-2 flex items-center justify-between">
                 <span>CATALOG GRID CARD PREVIEW</span>
                 <span>/shop</span>
               </div>
 
-              <div className="bg-[#F7EEDB] border border-[#DDD3C5] overflow-hidden rounded-lg max-w-sm mx-auto shadow-2xs">
+              <div className="bg-[#F7EEDB] border-2 border-[#171717] overflow-hidden rounded-lg max-w-sm mx-auto shadow-[3px_3px_0px_#171717]">
                 {/* Image */}
                 <div className="relative aspect-[4/5] bg-[#EDE0CC] overflow-hidden">
                   {validImages[0] ? (
@@ -1459,8 +1459,8 @@ export function ProductEditorPage() {
                   </div>
 
                   {customizationEnabled && (
-                    <span className="absolute bottom-2.5 right-2.5 px-2 py-0.5 bg-white/90 backdrop-blur-xs text-[#171717] text-[8px] font-extrabold uppercase tracking-wider rounded border border-[#DDD3C5]">
-                      3D Customizer
+                    <span className="absolute bottom-2.5 right-2.5 px-2 py-0.5 bg-white/90 backdrop-blur-xs text-[#171717] text-[8px] font-extrabold uppercase tracking-wider border-2 border-[#171717]">
+                      Custom Studio
                     </span>
                   )}
                 </div>
@@ -1507,7 +1507,7 @@ export function ProductEditorPage() {
 
           {/* PREVIEW TAB 2: FULL PRODUCT PAGE (GALLERY + DETAILS) */}
           {previewTab === 'details' && (
-            <div className="bg-[#F7EEDB] border border-[#DDD3C5] rounded-xl p-4 shadow-sm space-y-4 max-h-[82vh] overflow-y-auto">
+            <div className="bg-[#F7EEDB] border-2 border-[#171717] p-4 shadow-[4px_4px_0px_#171717] space-y-4 max-h-[82vh] overflow-y-auto">
               <div className="text-[10px] font-bold uppercase tracking-widest text-[#6F6A63] flex items-center justify-between pb-2 border-b border-[#DDD3C5]">
                 <span>PRODUCT PAGE PREVIEW</span>
                 <span>/product/{slug || 'preview'}</span>
@@ -1536,7 +1536,7 @@ export function ProductEditorPage() {
                   </div>
 
                   {/* Main Preview Image */}
-                  <div className="relative aspect-[4/5] flex-1 bg-[#EDE0CC] rounded-lg overflow-hidden border border-[#DDD3C5]">
+                  <div className="relative aspect-[4/5] flex-1 bg-[#EDE0CC] rounded-lg overflow-hidden border-2 border-[#171717]">
                     {validImages[previewActiveImage] || validImages[0] ? (
                       <img
                         src={validImages[previewActiveImage] || validImages[0]}
@@ -1614,7 +1614,7 @@ export function ProductEditorPage() {
                     {selectedSizes.map((sz) => (
                       <span
                         key={sz}
-                        className="px-2 py-0.5 rounded text-[10px] font-bold border border-[#DDD3C5] bg-white text-[#171717]"
+                        className="px-2 py-0.5 rounded text-[10px] font-bold border-2 border-[#171717] bg-white text-[#171717]"
                       >
                         {sz}
                       </span>
@@ -1633,19 +1633,19 @@ export function ProductEditorPage() {
                 </p>
 
                 <div className="grid grid-cols-2 gap-1.5 text-[10px]">
-                  <div className="p-2 bg-white/80 rounded border border-[#DDD3C5]">
+                  <div className="p-2 bg-white border-2 border-[#171717]">
                     <span className="font-bold text-[9px] uppercase text-[#6F6A63] block">Fabric</span>
                     <span className="font-semibold text-[#171717]">{fabric || '240 GSM Combed Cotton'}</span>
                   </div>
-                  <div className="p-2 bg-white/80 rounded border border-[#DDD3C5]">
+                  <div className="p-2 bg-white border-2 border-[#171717]">
                     <span className="font-bold text-[9px] uppercase text-[#6F6A63] block">Fit</span>
                     <span className="font-semibold text-[#171717]">{fit || 'Boxy Drop Shoulder'}</span>
                   </div>
-                  <div className="p-2 bg-white/80 rounded border border-[#DDD3C5]">
+                  <div className="p-2 bg-white border-2 border-[#171717]">
                     <span className="font-bold text-[9px] uppercase text-[#6F6A63] block">Design</span>
                     <span className="font-semibold text-[#171717]">{designDetails || 'Signature minimal print'}</span>
                   </div>
-                  <div className="p-2 bg-white/80 rounded border border-[#DDD3C5]">
+                  <div className="p-2 bg-white border-2 border-[#171717]">
                     <span className="font-bold text-[9px] uppercase text-[#6F6A63] block">Care</span>
                     <span className="font-semibold text-[#171717]">{careInstructions || 'Machine wash cold'}</span>
                   </div>
@@ -1658,19 +1658,19 @@ export function ProductEditorPage() {
           <div className="admin-card p-4 space-y-2">
             <h4 className="text-xs font-bold uppercase tracking-wider text-ink">Catalog Summary</h4>
             <div className="grid grid-cols-2 gap-2 pt-1 text-xs">
-              <div className="p-2.5 bg-beige/40 rounded-lg">
+              <div className="p-2.5 bg-[#F7EEDB] border-2 border-[#171717]">
                 <span className="text-[10px] text-muted uppercase block">Active Colors</span>
                 <span className="text-sm font-black text-ink">{selectedColors.length} Colors</span>
               </div>
-              <div className="p-2.5 bg-beige/40 rounded-lg">
+              <div className="p-2.5 bg-[#F7EEDB] border-2 border-[#171717]">
                 <span className="text-[10px] text-muted uppercase block">Active Sizes</span>
                 <span className="text-sm font-black text-ink">{selectedSizes.length} Sizes</span>
               </div>
-              <div className="p-2.5 bg-beige/40 rounded-lg">
+              <div className="p-2.5 bg-[#F7EEDB] border-2 border-[#171717]">
                 <span className="text-[10px] text-muted uppercase block">Total SKUs</span>
                 <span className="text-sm font-black text-ink">{variants.length}</span>
               </div>
-              <div className="p-2.5 bg-beige/40 rounded-lg">
+              <div className="p-2.5 bg-[#F7EEDB] border-2 border-[#171717]">
                 <span className="text-[10px] text-muted uppercase block">Total Units</span>
                 <span className="text-sm font-black text-ink">{totalInventory}</span>
               </div>

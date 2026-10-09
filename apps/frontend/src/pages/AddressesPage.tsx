@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
+import { m, AnimatePresence, useReducedMotion } from 'framer-motion';
 import { MapPin, Plus, Trash2, CheckCircle2 } from 'lucide-react';
 import { api } from '../lib/api/client';
 import { Button } from '../components/ui/Button';
@@ -68,7 +68,7 @@ export function AddressesPage() {
 
       <AnimatePresence>
         {showAddForm && (
-          <motion.form
+          <m.form
             initial={shouldReduceMotion ? false : { opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={shouldReduceMotion ? undefined : { opacity: 0, height: 0 }}
@@ -95,7 +95,7 @@ export function AddressesPage() {
                 Save Address
               </Button>
             </div>
-          </motion.form>
+          </m.form>
         )}
       </AnimatePresence>
 
@@ -111,7 +111,7 @@ export function AddressesPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <AnimatePresence>
             {addresses.map((addr: any) => (
-              <motion.div
+              <m.div
                 key={addr.id}
                 layout
                 initial={shouldReduceMotion ? false : { opacity: 0, scale: 0.95 }}
@@ -137,7 +137,7 @@ export function AddressesPage() {
                   </p>
                 </div>
 
-                <motion.button
+                <m.button
                   whileHover={{ scale: 1.1 }}
                   whileTap={{ scale: 0.9 }}
                   onClick={() => deleteAddressMutation.mutate(addr.id)}
@@ -145,8 +145,8 @@ export function AddressesPage() {
                   aria-label="Delete address"
                 >
                   <Trash2 size={16} />
-                </motion.button>
-              </motion.div>
+                </m.button>
+              </m.div>
             ))}
           </AnimatePresence>
         </div>

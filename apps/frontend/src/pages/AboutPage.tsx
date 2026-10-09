@@ -1,4 +1,6 @@
 import { Link } from 'react-router-dom';
+import { Picture } from '../components/ui/Picture';
+import { IMAGES } from '../lib/images';
 import { SEO } from '../components/common/SEO';
 import { triggerHaptic } from '../lib/native/capacitorBridge';
 
@@ -42,8 +44,10 @@ export function AboutPage() {
         </div>
 
         <div className="h-[400px] sm:h-[500px] lg:h-auto overflow-hidden relative">
-          <img
-            src="/about-atelier.jpg"
+          <Picture
+            image={IMAGES.aboutAtelier}
+            sizes="(min-width: 1024px) 55vw, 100vw"
+            loading="eager"
             alt="Bingooo Atelier — Wear What Feels Like You"
             className="w-full h-full object-cover object-center"
           />
@@ -75,8 +79,9 @@ export function AboutPage() {
       <section className="py-[clamp(70px,9vw,120px)]" id="story">
         <div className="container-bingooo grid grid-cols-1 lg:grid-cols-[0.9fr_1.1fr] gap-[clamp(50px,9vw,140px)] items-center">
           <div className="aspect-[4/5] overflow-hidden bg-[#ede0cc] max-w-[600px] mx-auto lg:mx-0 w-full">
-            <img
-              src="/about-atelier.jpg"
+            <Picture
+              image={IMAGES.aboutAtelier}
+              sizes="(min-width: 1024px) 45vw, 100vw"
               alt="Bingooo clothing story"
               className="w-full h-full object-cover"
             />
@@ -230,8 +235,9 @@ export function AboutPage() {
       ======================================================= */}
       <section className="grid grid-cols-1 lg:grid-cols-[55%_45%] min-h-[550px] lg:min-h-[600px]">
         <div className="min-h-[380px] lg:min-h-full overflow-hidden">
-          <img
-            src="/custom-studio.jpg"
+          <Picture
+            image={IMAGES.customStudio}
+            sizes="(min-width: 1024px) 55vw, 100vw"
             alt="Bingooo Custom Studio atelier workshop"
             className="w-full h-full object-cover object-center"
           />
@@ -285,17 +291,12 @@ export function AboutPage() {
           </div>
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
-            {[
-              '/real-fit-1.jpg',
-              '/real-fit-2.jpg',
-              '/real-fit-3.jpg',
-              '/real-fit-4.jpg',
-            ].map((imgSrc, i) => (
+            {[IMAGES.realFit1, IMAGES.realFit2, IMAGES.realFit3, IMAGES.realFit4].map((image, i) => (
               <div key={i} className="aspect-square overflow-hidden bg-[#ede0cc]">
-                <img
-                  src={imgSrc}
+                <Picture
+                  image={image}
+                  sizes="(min-width: 768px) 25vw, 50vw"
                   alt={`Bingooo Community ${i + 1}`}
-                  loading="lazy"
                   className="w-full h-full object-cover hover:scale-[1.04] transition-transform duration-500 ease-out"
                 />
               </div>

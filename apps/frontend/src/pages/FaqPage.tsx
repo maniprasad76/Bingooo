@@ -1,6 +1,8 @@
 import { useState, useMemo } from 'react';
+import { Picture } from '../components/ui/Picture';
+import { IMAGES } from '../lib/images';
 import { Link } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
+import { m, AnimatePresence } from 'framer-motion';
 import { SEO } from '../components/common/SEO';
 import { generateFaqSchema } from '../lib/seo/schema';
 import { triggerHaptic } from '../lib/native/capacitorBridge';
@@ -293,8 +295,10 @@ export function FaqPage() {
           aria-hidden="true"
         >
           <div className="w-full h-full relative overflow-hidden flex items-center justify-center bg-gradient-to-br from-[#d5cfc5] to-[#8d8983]">
-            <img
-              src="/about-atelier.jpg"
+            <Picture
+              image={IMAGES.aboutAtelier}
+              sizes="(min-width: 1024px) 610px, (min-width: 640px) 510px, 390px"
+              loading="eager"
               alt="Bingooo Editorial Menswear"
               className="w-full h-full object-cover object-top grayscale contrast-110 mix-blend-multiply opacity-90"
               onError={(e) => {
@@ -488,7 +492,7 @@ export function FaqPage() {
 
                           <AnimatePresence initial={false}>
                             {isOpen && (
-                              <motion.div
+                              <m.div
                                 id={`answer-${item.id}`}
                                 initial={{ height: 0, opacity: 0 }}
                                 animate={{ height: 'auto', opacity: 1 }}
@@ -499,7 +503,7 @@ export function FaqPage() {
                                 <div className="px-3.5 sm:px-[18px] pr-8 sm:pr-[50px] pb-5 text-[11px] sm:text-[11.5px] leading-[1.75] text-[#6F6A63] border-t border-[#DDD3C5]/30 pt-2 font-normal">
                                   {item.answer}
                                 </div>
-                              </motion.div>
+                              </m.div>
                             )}
                           </AnimatePresence>
                         </div>

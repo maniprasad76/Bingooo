@@ -1,4 +1,6 @@
 import { useState, useMemo } from 'react';
+import { Picture } from '../components/ui/Picture';
+import { IMAGES } from '../lib/images';
 import { Link, useSearchParams } from 'react-router-dom';
 import { Search as SearchIcon, X, Truck, ShieldCheck, RotateCcw, Sparkles } from 'lucide-react';
 import { SEO } from '../components/common/SEO';
@@ -154,10 +156,12 @@ export function SearchPage() {
         </div>
 
         <div className="h-[320px] sm:h-[400px] lg:h-auto overflow-hidden relative">
-          <img
-            src="https://images.unsplash.com/photo-1529139574466-a303027c1d8b?auto=format&fit=crop&w=1600&q=90"
+          <Picture
+            image={IMAGES.hero}
+            sizes="(min-width: 1024px) 50vw, 100vw"
+            loading="eager"
             alt="Bingooo search catalog"
-            className="w-full h-full object-cover grayscale contrast-105"
+            className="w-full h-full object-cover contrast-105"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-[#f7eedb] via-transparent to-transparent lg:hidden" />
         </div>
@@ -330,8 +334,9 @@ export function SearchPage() {
       ======================================================= */}
       <section className="grid grid-cols-1 lg:grid-cols-[55%_45%] min-h-[520px] lg:min-h-[580px]">
         <div className="min-h-[360px] lg:min-h-full overflow-hidden">
-          <img
-            src="/custom-studio.jpg"
+          <Picture
+            image={IMAGES.customStudio}
+            sizes="(min-width: 1024px) 55vw, 100vw"
             alt="Bingooo Custom Studio atelier workshop"
             className="w-full h-full object-cover object-center"
           />

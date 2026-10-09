@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence, m } from 'framer-motion';
 import { MessageCircle, Sparkles, Tag, X } from 'lucide-react';
 import { WhatsAppIcon } from '../ui/SocialIcons';
 import { useUIStore } from '../../store/ui';
@@ -54,10 +54,13 @@ export function CommunityInvitePopup() {
   }, [pathname]);
 
   // Schedule once per page load; re-checks the route and other overlays at fire time.
+  // The countdown starts at the visitor's first scroll, tap or key press: a sheet that
+  // opens on an untouched page interrupts them and becomes the page's Largest
+  // Contentful Paint, which browsers stop measuring at the first interaction.
   useEffect(() => {
     if (!shouldInvite()) return;
     let retries = 0;
-    let timer: ReturnType<typeof setTimeout>;
+    let timer: ReturnType<typeof setTimeout> | undefined;
     const attempt = () => {
       const quiet = QUIET_ROUTES.some((r) => pathRef.current.startsWith(r));
       const ui = useUIStore.getState();
@@ -68,8 +71,16 @@ export function CommunityInvitePopup() {
         timer = setTimeout(attempt, 10000);
       }
     };
-    timer = setTimeout(attempt, SHOW_DELAY_MS);
-    return () => clearTimeout(timer);
+    const events = ['scroll', 'pointerdown', 'keydown'] as const;
+    const start = () => {
+      events.forEach((type) => window.removeEventListener(type, start));
+      timer = setTimeout(attempt, SHOW_DELAY_MS);
+    };
+    events.forEach((type) => window.addEventListener(type, start, { passive: true }));
+    return () => {
+      events.forEach((type) => window.removeEventListener(type, start));
+      clearTimeout(timer);
+    };
   }, [openInvite]);
 
   // Any close that isn't a join (X, backdrop, Esc, Android back) snoozes for a week.
@@ -95,7 +106,7 @@ export function CommunityInvitePopup() {
   return (
     <AnimatePresence>
       {open && (
-        <motion.div
+        <m.div
           className="fixed inset-0 z-[90] flex items-end sm:items-center justify-center sm:p-6"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -109,7 +120,7 @@ export function CommunityInvitePopup() {
           />
 
           {/* Phones: bottom sheet flush with the screen edge. sm+: centered card. */}
-          <motion.div
+          <m.div
             role="dialog"
             aria-modal="true"
             aria-labelledby="community-invite-title"
@@ -178,8 +189,8 @@ export function CommunityInvitePopup() {
               </button>
               <p className="mt-1 mb-0 text-center text-[10px] text-[#6F6A63]/80">Free to join · Leave anytime</p>
             </div>
-          </motion.div>
-        </motion.div>
+          </m.div>
+        </m.div>
       )}
     </AnimatePresence>
   );

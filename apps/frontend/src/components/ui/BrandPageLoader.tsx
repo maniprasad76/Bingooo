@@ -1,4 +1,6 @@
-import { motion } from 'framer-motion';
+import { m } from 'framer-motion';
+import { IMAGES } from '../../lib/images';
+import { Picture } from './Picture';
 
 interface BrandPageLoaderProps {
   /** Optional custom message */
@@ -22,7 +24,7 @@ export function BrandPageLoader({
       {/* Brand Monogram with Luxury Pulse Effect */}
       <div className="relative flex items-center justify-center">
         {/* Glowing Aura Ring */}
-        <motion.div
+        <m.div
           animate={{
             scale: [1, 1.4, 1],
             opacity: [0.35, 0.08, 0.35],
@@ -36,24 +38,24 @@ export function BrandPageLoader({
         />
 
         {/* Outer Rotating Border Accent */}
-        <motion.div
+        <m.div
           animate={{ rotate: 360 }}
           transition={{ duration: 8, repeat: Infinity, ease: 'linear' }}
           className="absolute h-20 w-20 rounded-full border border-dashed border-[#E6321C]/40"
         />
 
         {/* Inner Solid Badge with Official Submark */}
-        <motion.div
+        <m.div
           animate={{ scale: [0.96, 1.04, 0.96] }}
           transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
           className="relative flex h-16 w-16 items-center justify-center rounded-2xl overflow-hidden shadow-2xl border border-[#D6C8AE]"
         >
-          <img src="/submark.png" alt="Bingooo Submark" className="h-full w-full object-cover select-none" />
-        </motion.div>
+          <Picture image={IMAGES.submark} sizes="64px" loading="eager" alt="Bingooo Submark" className="h-full w-full object-cover select-none" />
+        </m.div>
       </div>
 
       {/* Brand Title */}
-      <motion.div
+      <m.div
         initial={{ opacity: 0, y: 8 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.1, duration: 0.4 }}
@@ -65,11 +67,11 @@ export function BrandPageLoader({
         <p className="mt-2 text-sm font-medium text-[#6F6A63] tracking-wide">
           {message}
         </p>
-      </motion.div>
+      </m.div>
 
       {/* Elegant Indeterminate Progress Line */}
       <div className="mt-5 h-[3px] w-44 overflow-hidden rounded-full bg-[#DDD3C5]">
-        <motion.div
+        <m.div
           animate={{
             x: ['-100%', '100%'],
           }}

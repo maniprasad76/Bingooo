@@ -210,17 +210,17 @@ export function OrdersPage() {
         </button>
       </div>
 
-      {/* Filters & Search Toolbar */}
-      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 bg-white p-3.5 rounded-2xl border border-border/80 shadow-card">
-        <div className="flex flex-wrap gap-1 bg-beige/40 p-1 rounded-xl border border-border/60">
+      {/* Modern Filters & Search Toolbar */}
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 bg-white p-3.5 border-1.5 border-[#171717] rounded-xl shadow-[3px_3px_0px_#171717]">
+        <div className="flex flex-wrap gap-1.5 p-1 border-1.5 border-[#171717] bg-[#EDE0CC] rounded-lg">
           {STATUSES.map((s) => (
             <button
               key={s}
               onClick={() => setFilter(s)}
-              className={`px-3 py-1 rounded-lg text-[10px] font-mono font-bold uppercase tracking-wider transition-all ${
+              className={`px-3 py-1.5 border-1.5 border-[#171717] rounded-md text-[10px] font-mono font-black uppercase tracking-wider transition-all cursor-pointer ${
                 filter === s
-                  ? 'bg-ink text-white shadow-2xs'
-                  : 'text-muted hover:text-ink hover:bg-white/60'
+                  ? 'bg-[#E6321C] text-white shadow-[1.5px_1.5px_0px_#171717]'
+                  : 'bg-white text-[#171717] hover:bg-[#F7EEDB]'
               }`}
             >
               {s.replace(/_/g, ' ')}
@@ -230,13 +230,13 @@ export function OrdersPage() {
 
         <form onSubmit={handleSearch} className="flex gap-2">
           <div className="relative">
-            <Search size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted" />
+            <Search size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#171717]" />
             <input
               type="text"
               placeholder="Search Order #, Name, Phone..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="admin-input pl-10 w-full sm:w-[280px] py-1.5 text-xs"
+              className="admin-input pl-10 w-full sm:w-[280px] py-1.5 text-xs font-mono"
             />
           </div>
         </form>
@@ -456,13 +456,13 @@ export function OrdersPage() {
 
       {/* Order Details Inspector Modal */}
       {selectedOrder && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="bg-white rounded-3xl max-w-2xl w-full p-6 sm:p-8 shadow-2xl border border-border/80 space-y-6 max-h-[90vh] overflow-y-auto">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 animate-in fade-in duration-200">
+          <div className="bg-white rounded-[2px] max-w-2xl w-full p-6 sm:p-8 shadow-[6px_6px_0px_#171717] border-2 border-[#171717] space-y-6 max-h-[90vh] overflow-y-auto">
             {/* Modal Header */}
-            <div className="flex items-center justify-between border-b border-border/70 pb-4">
+            <div className="flex items-center justify-between border-b-2 border-[#171717] pb-4">
               <div>
                 <div className="flex items-center gap-2.5">
-                  <h3 className="text-xl font-black uppercase tracking-tight text-ink font-mono">
+                  <h3 className="text-xl font-black uppercase tracking-tight text-[#171717] font-mono">
                     #{selectedOrder.order_number || selectedOrder.orderNumber}
                   </h3>
                   <span
@@ -470,11 +470,10 @@ export function OrdersPage() {
                       STATUS_BADGE[selectedOrder.status] || 'badge-neutral'
                     }`}
                   >
-                    <span className="w-1.5 h-1.5 rounded-full bg-current" />
                     {selectedOrder.status}
                   </span>
                 </div>
-                <span className="text-xs text-muted font-mono mt-0.5 block">
+                <span className="text-xs text-[#6F6A63] font-mono mt-0.5 block">
                   Placed on {formatDate(selectedOrder.created_at || selectedOrder.createdAt)}
                 </span>
               </div>
@@ -489,7 +488,7 @@ export function OrdersPage() {
                 </button>
                 <button
                   onClick={() => setSelectedOrder(null)}
-                  className="w-8 h-8 rounded-full bg-beige/60 hover:bg-beige flex items-center justify-center text-muted hover:text-ink font-bold transition-colors"
+                  className="w-8 h-8 rounded-[2px] bg-white border-2 border-[#171717] hover:bg-[#E6321C] hover:text-white flex items-center justify-center text-[#171717] font-bold transition-colors cursor-pointer shadow-[1.5px_1.5px_0px_#171717]"
                 >
                   <X size={16} />
                 </button>
@@ -498,16 +497,16 @@ export function OrdersPage() {
 
             {/* Tracking Banner if dispatched */}
             {selectedOrder.tracking_number && (
-              <div className="p-4 rounded-2xl bg-sky-50 border border-sky-200 flex items-center justify-between text-xs">
+              <div className="p-4 rounded-[2px] bg-[#BFDBFE] border-2 border-[#171717] shadow-[2px_2px_0px_#171717] flex items-center justify-between text-xs">
                 <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-xl bg-sky-600 text-white flex items-center justify-center">
+                  <div className="w-8 h-8 rounded-[2px] bg-[#171717] text-white flex items-center justify-center border border-[#171717]">
                     <Truck size={16} />
                   </div>
                   <div>
-                    <span className="font-bold text-ink">
+                    <span className="font-bold text-[#171717]">
                       Dispatched via {selectedOrder.carrier || 'courier'}
                     </span>
-                    <span className="text-[11px] text-muted block font-mono">
+                    <span className="text-[11px] text-[#171717]/80 block font-mono">
                       AWB Manifest: {selectedOrder.tracking_number}
                     </span>
                   </div>
@@ -516,7 +515,7 @@ export function OrdersPage() {
                   href={`http://localhost:5173/track-order?awb=${selectedOrder.tracking_number}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-xs font-mono font-bold text-sky-700 underline hover:text-sky-900"
+                  className="text-xs font-mono font-black text-[#171717] underline hover:text-[#E6321C]"
                 >
                   Live Track ↗
                 </a>
@@ -525,10 +524,10 @@ export function OrdersPage() {
 
             {/* Items Ordered */}
             <div className="space-y-3">
-              <h4 className="text-[11px] font-mono font-bold uppercase tracking-wider text-muted">
+              <h4 className="text-[11px] font-mono font-black uppercase tracking-wider text-[#6F6A63]">
                 Manifest Items ({selectedOrder.items?.length || 1})
               </h4>
-              <div className="divide-y divide-border/60 border border-border/80 rounded-2xl p-4 bg-[#FAF7F2]">
+              <div className="divide-y-2 divide-[#171717]/20 border-2 border-[#171717] rounded-[2px] p-4 bg-[#F7EEDB] shadow-[2px_2px_0px_#171717]">
                 {((selectedOrder.items && selectedOrder.items.length > 0 ? selectedOrder.items : [
                   {
                     id: 'it-1',
@@ -635,24 +634,24 @@ export function OrdersPage() {
               </div>
 
               {/* Payment Summary */}
-              <div className="p-4 rounded-2xl border border-border/80 bg-[#FAF7F2] space-y-2">
-                <span className="text-[10px] font-mono uppercase font-bold text-muted block">
+              <div className="p-4 rounded-[2px] border-2 border-[#171717] bg-[#F7EEDB] shadow-[2px_2px_0px_#171717] space-y-2">
+                <span className="text-[10px] font-mono uppercase font-black text-[#6F6A63] block">
                   Payment Ledger
                 </span>
-                <div className="space-y-1.5">
+                <div className="space-y-1.5 text-xs">
                   <div className="flex justify-between">
-                    <span className="text-muted">Method:</span>
-                    <span className="font-mono font-bold text-ink uppercase text-[11px]">
+                    <span className="text-[#6F6A63]">Method:</span>
+                    <span className="font-mono font-bold text-[#171717] uppercase text-[11px]">
                       {selectedOrder.payment_method || selectedOrder.paymentMethod || 'Prepaid Online'}
                     </span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-muted">Status:</span>
-                    <span className="font-mono font-bold text-emerald-700 uppercase text-[11px]">
+                    <span className="text-[#6F6A63]">Status:</span>
+                    <span className="font-mono font-black text-emerald-800 uppercase text-[11px]">
                       {selectedOrder.payment_status || selectedOrder.paymentStatus || 'Captured'}
                     </span>
                   </div>
-                  <div className="flex justify-between pt-2 border-t border-border/80 font-bold text-sm text-ink">
+                  <div className="flex justify-between pt-2 border-t-2 border-[#171717]/20 font-bold text-sm text-[#171717]">
                     <span>Total Amount:</span>
                     <span className="font-mono font-black">{formatCurrency(selectedOrder.total)}</span>
                   </div>
@@ -661,7 +660,7 @@ export function OrdersPage() {
             </div>
 
             {/* Modal Actions */}
-            <div className="flex items-center justify-end gap-3 pt-3 border-t border-border/70">
+            <div className="flex items-center justify-end gap-3 pt-3 border-t-2 border-[#171717]">
               <button onClick={() => setSelectedOrder(null)} className="btn-secondary">
                 Close Inspector
               </button>
@@ -672,21 +671,21 @@ export function OrdersPage() {
 
       {/* Shipping Fulfillment Modal */}
       {shippingOrder && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="bg-white rounded-3xl max-w-md w-full p-6 sm:p-7 shadow-2xl border border-border/80 space-y-5">
-            <div className="flex items-center justify-between border-b border-border/70 pb-3">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 animate-in fade-in duration-200">
+          <div className="bg-white rounded-[2px] max-w-md w-full p-6 sm:p-7 shadow-[6px_6px_0px_#171717] border-2 border-[#171717] space-y-5">
+            <div className="flex items-center justify-between border-b-2 border-[#171717] pb-3 bg-[#EDE0CC] -mx-6 -mt-6 sm:-mx-7 sm:-mt-7 p-5">
               <div>
-                <h3 className="text-base font-black uppercase tracking-wide text-ink flex items-center gap-2 font-sans">
-                  <Truck size={18} className="text-brand-red" />
+                <h3 className="text-base font-black uppercase tracking-wide text-[#171717] flex items-center gap-2 font-mono">
+                  <Truck size={18} className="text-[#E6321C]" />
                   Dispatch Order #{shippingOrder.order_number || shippingOrder.orderNumber}
                 </h3>
-                <span className="text-xs text-muted">
+                <span className="text-xs text-[#6F6A63]">
                   Assign air courier manifest & push live tracking link.
                 </span>
               </div>
               <button
                 onClick={() => setShippingOrder(null)}
-                className="w-7 h-7 rounded-full bg-beige/60 hover:bg-beige flex items-center justify-center text-muted hover:text-ink font-bold"
+                className="w-7 h-7 rounded-[2px] bg-white border-2 border-[#171717] hover:bg-[#E6321C] hover:text-white flex items-center justify-center text-[#171717] font-bold cursor-pointer"
               >
                 <X size={15} />
               </button>
@@ -700,7 +699,7 @@ export function OrdersPage() {
                 <select
                   value={carrier}
                   onChange={(e) => setCarrier(e.target.value)}
-                  className="admin-select w-full text-xs"
+                  className="admin-select w-full text-xs font-mono"
                 >
                   {CARRIERS.map((c) => (
                     <option key={c} value={c}>{c}</option>
@@ -720,12 +719,12 @@ export function OrdersPage() {
                   className="admin-input w-full font-mono text-xs uppercase tracking-wider font-bold"
                   required
                 />
-                <span className="text-[10px] text-muted mt-1 block">
-                  The customer gets this tracking number on WhatsApp and by email.
+                <span className="text-[10px] text-[#6F6A63] mt-1 block font-mono">
+                  The customer receives this tracking number on WhatsApp and by email.
                 </span>
               </div>
 
-              <div className="flex items-center justify-end gap-3 pt-3 border-t border-border/70">
+              <div className="flex items-center justify-end gap-3 pt-3 border-t-2 border-[#171717]">
                 <button
                   type="button"
                   onClick={() => setShippingOrder(null)}

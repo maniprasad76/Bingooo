@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { m, AnimatePresence } from 'framer-motion';
 import { X, ShoppingBag, Check, ShieldCheck, Truck } from 'lucide-react';
 import { Button } from '../ui/Button';
 import { useCart } from '../../hooks/useCart';
@@ -107,7 +107,7 @@ export function QuickViewModal({ product, isOpen, onClose }: QuickViewModalProps
       {isOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 md:p-10">
           {/* Backdrop */}
-          <motion.div
+          <m.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -116,7 +116,7 @@ export function QuickViewModal({ product, isOpen, onClose }: QuickViewModalProps
           />
 
           {/* Modal Container */}
-          <motion.div
+          <m.div
             initial={{ opacity: 0, scale: 0.94, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.94, y: 20 }}
@@ -260,7 +260,7 @@ export function QuickViewModal({ product, isOpen, onClose }: QuickViewModalProps
                 </div>
               </div>
             </div>
-          </motion.div>
+          </m.div>
         </div>
       )}
     </AnimatePresence>

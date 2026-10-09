@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { motion, useReducedMotion } from 'framer-motion';
+import { m, useReducedMotion } from 'framer-motion';
 import { Package, Truck, CheckCircle2, ArrowLeft, Clock } from 'lucide-react';
 import { api } from '../lib/api/client';
 import { Badge } from '../components/ui/Badge';
@@ -107,7 +107,7 @@ export function OrderDetailPage() {
           ].map((step, idx) => {
             const Icon = step.icon;
             return (
-              <motion.div
+              <m.div
                 key={idx}
                 initial={shouldReduceMotion ? false : { opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -118,7 +118,7 @@ export function OrderDetailPage() {
               >
                 <Icon size={20} />
                 <span className="text-caption font-bold text-ink">{step.label}</span>
-              </motion.div>
+              </m.div>
             );
           })}
         </div>

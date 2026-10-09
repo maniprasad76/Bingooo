@@ -27,6 +27,53 @@ export interface StudioColor {
   isActive: boolean;
 }
 
+/**
+ * Where a print sits on the garment photo: centre point and width, each a
+ * percentage of the photo (x and w of its width, y of its height). Uploaded
+ * PNGs are framed differently, so the admin can line these up per garment.
+ */
+export interface PrintSpot {
+  x: number;
+  y: number;
+  w: number;
+}
+
+export interface PrintAreas {
+  front: PrintSpot;
+  chest: PrintSpot;
+  back: PrintSpot;
+}
+
+const PRINT_AREA_KEYS = ['front', 'chest', 'back'] as const;
+
+/** Starting positions for a square, centred garment photo. */
+export const DEFAULT_PRINT_AREAS: Record<GarmentStyle, PrintAreas> = {
+  tshirt: { front: { x: 50, y: 38, w: 35 }, chest: { x: 66, y: 36, w: 13 }, back: { x: 50, y: 40, w: 37 } },
+  polo: { front: { x: 50, y: 40, w: 33 }, chest: { x: 66, y: 36, w: 12 }, back: { x: 50, y: 40, w: 37 } },
+  hoodie: { front: { x: 50, y: 42, w: 30 }, chest: { x: 66, y: 38, w: 12 }, back: { x: 50, y: 44, w: 33 } },
+};
+
+const clampPct = (value: unknown, min: number, max: number, fallback: number) => {
+  const n = typeof value === 'number' || (typeof value === 'string' && value.trim() !== '') ? Number(value) : NaN;
+  if (!Number.isFinite(n)) return fallback;
+  return Math.round(Math.min(max, Math.max(min, n)) * 10) / 10;
+};
+
+/** Saved print areas, filled in from the style's defaults and kept on the photo. */
+export function normalizePrintAreas(raw: any, style: GarmentStyle): PrintAreas {
+  const defaults = DEFAULT_PRINT_AREAS[style];
+  const out = {} as PrintAreas;
+  for (const key of PRINT_AREA_KEYS) {
+    const spot = raw?.[key];
+    out[key] = {
+      x: clampPct(spot?.x, 5, 95, defaults[key].x),
+      y: clampPct(spot?.y, 5, 95, defaults[key].y),
+      w: clampPct(spot?.w, 5, 80, defaults[key].w),
+    };
+  }
+  return out;
+}
+
 export interface StudioGarment {
   id: string;
   name: string;
@@ -40,6 +87,7 @@ export interface StudioGarment {
   activeSizes: string[];
   sizeMeasurements: { in: Record<string, string>[]; cm: Record<string, string>[] };
   colors: StudioColor[];
+  printAreas: PrintAreas;
 }
 
 export interface StudioConfig {
@@ -190,11 +238,12 @@ export function normalizeStudioConfig(raw: any, strict: boolean): StudioConfig {
       ? (garmentIds.add(existingId), existingId)
       : uniqueId(name, garmentIds, 'garment');
 
+    const style = inferStyle(g);
     garments.push({
       id,
       name,
       shortName: text(g?.shortName, 24) || DEFAULT_SHORT_NAMES[id] || name.toUpperCase().slice(0, 24),
-      style: inferStyle(g),
+      style,
       description: text(g?.description, 200),
       price,
       compareAtPrice,
@@ -203,6 +252,7 @@ export function normalizeStudioConfig(raw: any, strict: boolean): StudioConfig {
       activeSizes,
       sizeMeasurements: { in: measurementRows(g?.sizeMeasurements?.in), cm: measurementRows(g?.sizeMeasurements?.cm) },
       colors,
+      printAreas: normalizePrintAreas(g?.printAreas, style),
     });
   }
 

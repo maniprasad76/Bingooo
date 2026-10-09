@@ -1,5 +1,5 @@
 import { useEffect, type ReactNode } from 'react';
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence, m } from 'framer-motion';
 import { X } from 'lucide-react';
 import { cn } from '../../lib/utils';
 
@@ -65,7 +65,7 @@ export function Drawer({
       {isDrawerOpen && (
         <>
           {/* Backdrop */}
-          <motion.div
+          <m.div
             className="fixed inset-0 z-40 bg-ink/40 backdrop-blur-sm"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -76,7 +76,7 @@ export function Drawer({
           />
 
           {/* Drawer panel */}
-          <motion.div
+          <m.div
             className={cn(
               'fixed top-0 z-50 h-full w-full bg-[#F7EEDB] flex flex-col',
               drawerSide === 'right' ? 'right-0 border-l-2 border-[#171717] shadow-[-6px_0px_0px_#171717]' : 'left-0 border-r-2 border-[#171717] shadow-[6px_0px_0px_#171717]',
@@ -107,7 +107,7 @@ export function Drawer({
 
             {/* Content */}
             <div className="flex-1 overflow-y-auto">{children}</div>
-          </motion.div>
+          </m.div>
         </>
       )}
     </AnimatePresence>

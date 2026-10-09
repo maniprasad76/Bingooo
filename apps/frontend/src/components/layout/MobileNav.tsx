@@ -1,6 +1,6 @@
 import { Link, useLocation } from 'react-router-dom';
 import { Home, LayoutGrid, Heart, ShoppingBag, User } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { m, AnimatePresence } from 'framer-motion';
 import { cn } from '../../lib/utils';
 import { useCartStore } from '../../store/cart';
 import { useUIStore } from '../../store/ui';
@@ -88,7 +88,7 @@ export function MobileNav() {
           const Icon = item.icon;
 
           const buttonContent = (
-            <motion.div
+            <m.div
               whileTap={{ scale: 0.86 }}
               className={cn(
                 'relative flex h-11 w-full items-center justify-center rounded-full transition-colors duration-200',
@@ -97,7 +97,7 @@ export function MobileNav() {
             >
               {/* Smooth active sliding capsule pill */}
               {isActive && (
-                <motion.div
+                <m.div
                   layoutId="mobile-nav-active-pill"
                   transition={{ type: 'spring', stiffness: 450, damping: 32 }}
                   className="absolute inset-0 rounded-full bg-white/12 border border-white/15 shadow-inner"
@@ -120,7 +120,7 @@ export function MobileNav() {
                 {item.id === 'bag' && (
                   <AnimatePresence>
                     {typeof item.badge === 'number' && item.badge > 0 && (
-                      <motion.span
+                      <m.span
                         initial={{ scale: 0, opacity: 0 }}
                         animate={{ scale: 1, opacity: 1 }}
                         exit={{ scale: 0, opacity: 0 }}
@@ -128,7 +128,7 @@ export function MobileNav() {
                         className="absolute -top-1.5 -right-2 flex h-[18px] min-w-[18px] px-1 items-center justify-center rounded-full bg-[#E6321C] text-[10px] font-black text-white font-mono shadow-[0_2px_8px_rgba(230,50,28,0.6)]"
                       >
                         {item.badge > 99 ? '99+' : item.badge}
-                      </motion.span>
+                      </m.span>
                     )}
                   </AnimatePresence>
                 )}
@@ -136,13 +136,13 @@ export function MobileNav() {
 
               {/* Active Signal Red Micro-Dot */}
               {isActive && (
-                <motion.span
+                <m.span
                   layoutId="mobile-nav-red-dot"
                   transition={{ type: 'spring', stiffness: 500, damping: 35 }}
                   className="absolute bottom-1 w-1 h-1 rounded-full bg-[#E6321C] shadow-[0_0_6px_#E6321C]"
                 />
               )}
-            </motion.div>
+            </m.div>
           );
 
           if (item.onClick) {

@@ -1,9 +1,9 @@
 # 📋 BINGOOO — Product Requirements Document (PRD)
 
-> **Document Version:** 1.0.0  
-> **Target Release:** v1.0 Production  
+> **Document Version:** 1.2.0  
+> **Target Release:** v1.2 Production  
 > **Status:** Approved / Active Specification  
-> **Last Updated:** September 2026  
+> **Last Updated:** October 10, 2026  
 > **Author:** Bingooo Core Product & Engineering Team  
 > **System Repositories:** `apps/frontend`, `apps/admin`, `apps/backend`, `packages/types`, `packages/config`
 
@@ -56,8 +56,8 @@ Bingooo bridges the gap between mass-market fast fashion and unaffordable bespok
 
 #### 3.1.2 Real-Time Garment Customizer Studio
 - **FR-CUST-001 (Garment Canvas Engine):**
-  - Interactive 2D garment viewport displaying true-to-silhouette base garments with front and back toggles.
-  - Garment Base Color Switcher: Real-time canvas recoloring (Black `#171717`, White `#FFFFFF`, Sand `#D9CBB8`, Stone Grey `#77736D`, Signal Red `#E6321C`).
+  - Interactive 2D garment viewport displaying true-to-silhouette transparent PNG garment photography uploaded via the Admin Customizer Studio with front and back angle toggles (prohibiting cartoon shirt icons, fake clipart, and placeholder text overlays).
+  - Garment Base Color Switcher: Dynamic swatch switching driven by uploaded studio photography layers (e.g., Black, White, Charcoal, Beige, etc.).
 - **FR-CUST-002 (Typography Engine):**
   - Multi-font typographical text tool supporting 14 curated display fonts (Anton, Bebas Neue, Bungee, Caveat, Cinzel, Cormorant Garamond, Major Mono Display, Permanent Marker, Playfair Display, Prata, Righteous, Russo One, Space Grotesk, Syne).
   - Granular controls: Font size, line height, letter spacing, text color palette, rotation, alignment, and curved text arc generator.
@@ -77,13 +77,13 @@ Bingooo bridges the gap between mass-market fast fashion and unaffordable bespok
 #### 3.1.3 Shopping Bag & Checkout Pipeline
 - **FR-CART-001 (Flyout Cart Drawer):**
   - Slide-out cart drawer accessible from any route with live item counter, variant editing, quantity adjustment, and item deletion.
-  - Free Shipping Progress Meter: Dynamic bar indicating remaining amount to unlock complimentary pan-India shipping (₹999 threshold).
-  - Instant Promo Code Field: Validates promotional coupon codes with instant discount deduction.
+  - Free Shipping Guarantee: 100% complimentary Pan-India shipping across all orders with ₹0 delivery charge.
+  - Instant Promo Code Field: Validates promotional coupon codes (`BINGOOO10`, `WELCOME20`, `FREESHIP`) with real-time discount deduction.
 - **FR-CHECK-001 (Multi-Step Checkout Flow):**
-  - Step 1: Customer Contact (Email & Indian Phone Number with SMS order update opt-in).
+  - Step 1: Customer Contact (Email & Indian Phone Number with SMS & WhatsApp order update opt-in).
   - Step 2: Shipping Address with automated Indian 6-digit PIN code lookup (auto-fills State, City, District).
-  - Step 3: Shipping Method Selection (Standard Ground 3–5 days vs. Express Air 1–2 days).
-  - Step 4: Authoritative Payment Selection (Razorpay UPI QR/Intent, Credit/Debit Cards, NetBanking with 5% Instant Prepaid Discount).
+  - Step 3: Shipping Method Selection (Complimentary Standard Express Delivery 3–5 days).
+  - Step 4: Authoritative Payment Selection (Razorpay UPI QR/Intent, Credit/Debit Cards, NetBanking with 5% Instant Prepaid Discount; COD decommissioned).
 - **FR-CHECK-002 (Authoritative Server-Side Pricing):**
   - Absolute enforcement that client cart prices, all-inclusive pricing (₹0 tax surcharge), shipping charges, and discount subtotals are recalculated on the NestJS backend.
 - **FR-CHECK-003 (Order Confirmation & Tracking):**
@@ -99,8 +99,8 @@ The operations portal is structured into 7 core functional divisions spanning 27
 |:---|:---|:---|
 | **1. Overview** | `/dashboard` | Executive KPI telemetry (Gross Revenue, Net Orders, Average Order Value, Conversion Rate), 30-day sales velocity charts, low-stock radar, and recent order stream. |
 | **2. Catalog & Stock** | `/products`, `/products/new`, `/products/:id/edit`, `/categories`, `/inventory` | Product publishing matrix supporting variant SKU generation (Size × Color), GSM weight specs, care tags, taxonomy category reordering, and warehouse stock reconciliation. |
-| **3. Orders & Studio** | `/orders`, `/orders/:id`, `/customizer` | 6-stage order fulfillment state machine (`Placed → Confirmed → Processing → Shipped → Out for Delivery → Delivered`), carrier AWB entry, packing slip generation, and custom print queue with high-res artwork asset downloads. |
-| **4. Marketing & Sales**| `/banners`, `/coupons` | Hero banner slider configuration (desktop 16:9 and mobile 4:5 preview cards), discount coupon creation (percentage vs. flat ₹ discount, usage limits, minimum cart spend). |
+| **3. Orders & Studio** | `/orders`, `/orders/:id`, `/customizer` | Real-time order fulfillment with visual thumbnails, carrier AWB entry, packing slip generation, and Customizer Studio silhouette manager (upload front/back transparent garment photography, set prices, GSM, and swatches). |
+| **4. Marketing & Sales**| `/coupons` | Promotional discount coupon management (percentage vs. flat ₹ discount, usage limits, minimum cart spend; verified codes `BINGOOO10`, `WELCOME20`, `FREESHIP`). |
 | **5. Finance & Media** | `/payments`, `/returns`, `/uploads` (R2) | Razorpay transaction reconciliation ledger, reverse logistics and refund management, and Cloudflare R2 media library with instant CDN URL copying. |
 | **6. Customers & Team** | `/customers`, `/customers/:id`, `/reviews` | Customer profiles with lifetime spend (LTV), order frequency, customer notes, review moderation board with photo validation and star ratings. |
 | **7. Operations & System** | `/settings` | 8-tab system settings: Store Profile, Commerce & Pricing, Shipping Rules & Tiers, Payments & Prepaid Policy, Razorpay Credentials, Notification Webhooks, Cloudflare R2 Keys, and SEO metadata. |

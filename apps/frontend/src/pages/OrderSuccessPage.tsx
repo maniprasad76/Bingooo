@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { useLocation, useParams, Link } from 'react-router-dom';
-import { motion, useReducedMotion } from 'framer-motion';
+import { m, useReducedMotion } from 'framer-motion';
 import {
   Check,
   Copy,
@@ -152,14 +152,14 @@ export function OrderSuccessPage() {
         <section className="flex flex-col items-center text-center">
           {isPaid ? <ConfirmedBadge reduceMotion={Boolean(reduceMotion)} /> : <PendingBadge />}
 
-          <motion.p
+          <m.p
             {...fadeUp(0.35)}
             className="mt-7 mb-0 font-mono text-[11px] font-semibold uppercase tracking-[0.22em] text-[#E6321C]"
           >
             {isPaid ? 'Order confirmed' : 'Awaiting payment'}
-          </motion.p>
+          </m.p>
 
-          <motion.h1
+          <m.h1
             {...fadeUp(0.45)}
             className="m-0 mt-3 text-[clamp(36px,7vw,68px)] font-extrabold leading-[0.95] tracking-[-0.045em]"
           >
@@ -176,18 +176,18 @@ export function OrderSuccessPage() {
             ) : (
               'Almost there.'
             )}
-          </motion.h1>
+          </m.h1>
 
-          <motion.p
+          <m.p
             {...fadeUp(0.55)}
             className="mx-auto mb-0 mt-5 max-w-[540px] text-xs sm:text-sm font-medium leading-relaxed text-[#6F6A63]"
           >
             {isPaid
               ? 'Your payment was received and your order is confirmed. We’re getting your pieces ready for dispatch.'
               : 'We haven’t received the payment for this order yet. If money has left your account, it will be confirmed here automatically within a few minutes.'}
-          </motion.p>
+          </m.p>
 
-          <motion.div {...fadeUp(0.65)} className="mt-7 flex flex-wrap items-center justify-center gap-2.5">
+          <m.div {...fadeUp(0.65)} className="mt-7 flex flex-wrap items-center justify-center gap-2.5">
             <button
               type="button"
               onClick={handleCopy}
@@ -206,10 +206,10 @@ export function OrderSuccessPage() {
               <Clock size={12} />
               {placedDate} · {placedTime}
             </span>
-          </motion.div>
+          </m.div>
 
           {isPaid && maskedPhone && (whatsappStatus === 'sent' || whatsappStatus === 'sending') && (
-            <motion.div
+            <m.div
               {...fadeUp(0.75)}
               className="mt-4 inline-flex items-center gap-2 border-2 border-[#171717] bg-white px-3.5 py-1.5 font-mono text-[11px] font-black uppercase text-[#171717] shadow-[2px_2px_0px_#171717]"
               aria-live="polite"
@@ -222,10 +222,10 @@ export function OrderSuccessPage() {
               ) : (
                 <span className="text-[#6F6A63]">SENDING CONFIRMATION ON WHATSAPP…</span>
               )}
-            </motion.div>
+            </m.div>
           )}
 
-          <motion.div {...fadeUp(0.8)} className="mt-8 flex w-full flex-col items-stretch justify-center gap-3 sm:w-auto sm:flex-row print:hidden">
+          <m.div {...fadeUp(0.8)} className="mt-8 flex w-full flex-col items-stretch justify-center gap-3 sm:w-auto sm:flex-row print:hidden">
             <Link
               to={trackHref}
               className="btn-bauhaus inline-flex items-center justify-center gap-2 bg-[#E6321C] text-white border-2 border-[#171717] px-6 py-3.5 font-mono text-[11px] font-black uppercase tracking-wider shadow-[3px_3px_0px_#171717] hover:bg-[#171717] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all no-underline"
@@ -240,13 +240,13 @@ export function OrderSuccessPage() {
               <span>CONTINUE SHOPPING</span>
               <ArrowRight size={15} />
             </Link>
-          </motion.div>
+          </m.div>
         </section>
 
         {/* ── Details ──────────────────────────────────────────── */}
         <div className="mt-14 grid grid-cols-1 items-start gap-6 sm:mt-16 lg:grid-cols-12 lg:gap-8">
           {/* Receipt */}
-          <motion.section
+          <m.section
             {...fadeUp(0.9)}
             className="relative border-2 border-[#171717] bg-white shadow-[4px_4px_0px_#171717] lg:col-span-7"
             aria-labelledby="order-summary-heading"
@@ -311,20 +311,20 @@ export function OrderSuccessPage() {
                 </dd>
               </div>
             </dl>
-          </motion.section>
+          </m.section>
 
           <div className="space-y-6 lg:col-span-5">
             {/* What happens next */}
-            <motion.section {...fadeUp(1)} className="border-2 border-[#171717] bg-white p-5 sm:p-7 shadow-[4px_4px_0px_#171717]" aria-labelledby="next-heading">
+            <m.section {...fadeUp(1)} className="border-2 border-[#171717] bg-white p-5 sm:p-7 shadow-[4px_4px_0px_#171717]" aria-labelledby="next-heading">
               <h2 id="next-heading" className="m-0 text-base font-black uppercase tracking-tight pb-3 border-b-2 border-[#171717]">
                 WHAT HAPPENS NEXT
               </h2>
               <ProgressTimeline status={String(order.status || '')} paid={isPaid} placedTime={placedTime} />
-            </motion.section>
+            </m.section>
 
             {/* Delivery address */}
             {(address.line1 || address.city) && (
-              <motion.section {...fadeUp(1.1)} className="border-2 border-[#171717] bg-white p-5 sm:p-7 shadow-[4px_4px_0px_#171717]" aria-labelledby="address-heading">
+              <m.section {...fadeUp(1.1)} className="border-2 border-[#171717] bg-white p-5 sm:p-7 shadow-[4px_4px_0px_#171717]" aria-labelledby="address-heading">
                 <h2 id="address-heading" className="m-0 flex items-center gap-2 text-base font-black uppercase tracking-tight pb-3 border-b-2 border-[#171717]">
                   <MapPin size={16} className="text-[#E6321C]" />
                   DELIVERING TO
@@ -339,11 +339,11 @@ export function OrderSuccessPage() {
                   </p>
                   {address.phone && <p className="m-0 mt-1.5 font-mono text-xs font-bold text-[#171717]">{address.phone}</p>}
                 </div>
-              </motion.section>
+              </m.section>
             )}
 
             {/* Help */}
-            <motion.section {...fadeUp(1.2)} className="border-2 border-[#171717] bg-[#171717] p-5 text-white sm:p-7 shadow-[4px_4px_0px_#E6321C] print:hidden">
+            <m.section {...fadeUp(1.2)} className="border-2 border-[#171717] bg-[#171717] p-5 text-white sm:p-7 shadow-[4px_4px_0px_#E6321C] print:hidden">
               <h2 className="m-0 text-base font-black uppercase tracking-tight text-white pb-3 border-b border-white/20">
                 NEED ASSISTANCE?
               </h2>
@@ -377,7 +377,7 @@ export function OrderSuccessPage() {
                   <span>RECEIPT</span>
                 </button>
               </div>
-            </motion.section>
+            </m.section>
           </div>
         </div>
       </div>
@@ -412,7 +412,7 @@ function ConfirmedBadge({ reduceMotion }: { reduceMotion: boolean }) {
     <div className="relative grid place-items-center">
       {!reduceMotion && (
         <>
-          <motion.span
+          <m.span
             aria-hidden
             className="absolute h-24 w-24 rounded-full border-2 border-[#E6321C] print:hidden"
             initial={{ scale: 0.8, opacity: 0.6 }}
@@ -420,7 +420,7 @@ function ConfirmedBadge({ reduceMotion }: { reduceMotion: boolean }) {
             transition={{ duration: 1.4, delay: 0.3, ease: 'easeOut' }}
           />
           {CONFETTI.map((piece, i) => (
-            <motion.span
+            <m.span
               key={i}
               aria-hidden
               className={`absolute print:hidden ${piece.round ? 'rounded-full' : 'rounded-[1px]'}`}
@@ -432,21 +432,21 @@ function ConfirmedBadge({ reduceMotion }: { reduceMotion: boolean }) {
           ))}
         </>
       )}
-      <motion.div
+      <m.div
         className="relative grid h-24 w-24 place-items-center rounded-full bg-[#E6321C] text-white shadow-[0_18px_50px_-14px_rgba(230,50,28,0.75)]"
         initial={reduceMotion ? false : { scale: 0.5, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         transition={{ type: 'spring', stiffness: 260, damping: 17 }}
       >
-        <motion.span
+        <m.span
           className="grid place-items-center"
           initial={reduceMotion ? false : { scale: 0, rotate: -30 }}
           animate={{ scale: 1, rotate: 0 }}
           transition={{ type: 'spring', stiffness: 320, damping: 14, delay: 0.18 }}
         >
           <Check size={44} strokeWidth={3} />
-        </motion.span>
-      </motion.div>
+        </m.span>
+      </m.div>
     </div>
   );
 }

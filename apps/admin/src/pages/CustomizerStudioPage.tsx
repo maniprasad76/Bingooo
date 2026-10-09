@@ -1,6 +1,13 @@
 import { useEffect, useState, useRef } from 'react';
-import { api } from '../lib/api';
+import { api, resolveImageUrl } from '../lib/api';
 import { useToast } from '../components/Toast';
+import {
+  PrintAreaPreview,
+  printAreasFor,
+  checkGarmentPhoto,
+  CHECKERBOARD,
+  type PrintAreas,
+} from '../components/PrintAreaPreview';
 import {
   Palette,
   Plus,
@@ -11,12 +18,13 @@ import {
   LoaderCircle,
   X,
   Eye,
-  Camera,
   DollarSign,
   Ruler,
   Save,
   Shirt,
   AlertTriangle,
+  ImageOff,
+  RotateCcw,
 } from 'lucide-react';
 
 // ─── Types ──────────────────────────────────────────────────────────────────
@@ -57,6 +65,8 @@ export interface GarmentItem {
     in: MeasurementRow[];
   };
   colors: GarmentColor[];
+  /** Where prints sit on this garment's photos; unset = the style's default placement. */
+  printAreas?: PrintAreas;
 }
 
 export interface CustomizerStudioConfig {
@@ -154,8 +164,8 @@ const SIGNATURE_PALETTE = [
 
 function GarmentThumb({ garment }: { garment: GarmentItem }) {
   const photo = garment.colors.find((c) => c.isActive !== false && c.frontImageUrl)?.frontImageUrl;
-  if (photo) return <img src={photo} alt="" className="w-full h-full object-contain" />;
-  return <Shirt size={28} className="text-gray-300" />;
+  if (photo) return <img src={resolveImageUrl(photo)} alt="" className="w-full h-full object-contain" />;
+  return <ImageOff size={18} className="text-[#171717]/40" aria-label="No photo yet" />;
 }
 
 export function CustomizerStudioPage() {
@@ -176,6 +186,7 @@ export function CustomizerStudioPage() {
   const [measureUnit, setMeasureUnit] = useState<'cm' | 'in'>('in');
   const [previewColorIndex, setPreviewColorIndex] = useState<number>(0);
   const [previewSide, setPreviewSide] = useState<'FRONT' | 'BACK'>('FRONT');
+  const [focusSpot, setFocusSpot] = useState<keyof PrintAreas | null>(null);
 
   const [showColorModal, setShowColorModal] = useState<boolean>(false);
   const [editingColorId, setEditingColorId] = useState<string | null>(null);
@@ -394,6 +405,15 @@ export function CustomizerStudioPage() {
       return;
     }
 
+    const check = await checkGarmentPhoto(file);
+    if (check.error) {
+      toast.error('Photo not uploaded', check.error);
+      setUploadingColorId(null);
+      setActiveUploadTarget(null);
+      if (uploadInputRef.current) uploadInputRef.current.value = '';
+      return;
+    }
+
     try {
       // Goes through the API (not a relative URL, which on the deployed admin
       // hits the admin's own domain). No base64 fallback: embedding the image
@@ -404,6 +424,7 @@ export function CustomizerStudioPage() {
       if (colorId === MODAL_UPLOAD) {
         setColorForm((prev) => (side === 'front' ? { ...prev, frontImageUrl: finalUrl } : { ...prev, backImageUrl: finalUrl }));
         toast.success('Photo uploaded', `${side === 'front' ? 'Front' : 'Back'} photo attached.`);
+        check.warnings.forEach((w) => toast.warning('Check this photo', w, 8000));
         return;
       }
 
@@ -418,6 +439,7 @@ export function CustomizerStudioPage() {
       }));
 
       toast.success('Photo Attached', `Updated ${side} photo. Click Publish to make it live.`);
+      check.warnings.forEach((w) => toast.warning('Check this photo', w, 8000));
     } catch (err: any) {
       toast.error('Upload Error', err?.message || 'Could not upload image.');
     } finally {
@@ -521,7 +543,7 @@ export function CustomizerStudioPage() {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] gap-3">
         <LoaderCircle className="w-8 h-8 animate-spin text-[#E6321C]" />
-        <p className="text-sm font-bold text-gray-600">Loading custom studio...</p>
+        <p className="text-sm font-bold text-[#6F6A63]">Loading custom studio...</p>
       </div>
     );
   }
@@ -539,38 +561,45 @@ export function CustomizerStudioPage() {
   const activeColorObj = activeGarment?.colors?.[previewColorIndex] || activeGarment?.colors?.[0];
   const activeImageUrl = previewSide === 'BACK' ? activeColorObj?.backImageUrl : activeColorObj?.frontImageUrl;
 
+  // Print placement is per garment (shared by its colours), as a % of the photo.
+  const setPrintSpot = (key: keyof PrintAreas, axis: 'x' | 'y' | 'w', value: number) =>
+    updateActiveGarment((prev) => {
+      const current = printAreasFor(prev.style, prev.printAreas);
+      return { ...prev, printAreas: { ...current, [key]: { ...current[key], [axis]: value } } };
+    });
+
   return (
     <div className="space-y-6 max-w-7xl mx-auto pb-16">
       <input
         type="file"
         ref={uploadInputRef}
         onChange={handleFileUploadAction}
-        accept="image/png, image/jpeg, image/webp"
+        accept="image/png, image/webp"
         className="hidden"
       />
 
       {/* TOP BANNER & ACTION HEADER */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-white p-5 rounded-3xl border border-gray-200 shadow-sm">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-white p-5 border-2 border-[#171717] shadow-[4px_4px_0px_#171717]">
         <div>
           <div className="flex items-center gap-2 mb-1">
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
-            <h1 className="text-xl sm:text-2xl font-black text-gray-900 uppercase tracking-tight">
-              Custom Studio
+            <span className="w-2.5 h-2.5 bg-[#E6321C] shadow-[1px_1px_0px_#171717]" />
+            <h1 className="text-xl sm:text-2xl font-black text-[#171717] uppercase tracking-tight">
+              Custom Studio Matrix
             </h1>
           </div>
-          <p className="text-xs text-gray-500">
+          <p className="text-xs text-[#171717]/70 font-medium">
             Garments customers can design on /customize: prices, colours with real front and back photos, sizes and size charts.
           </p>
         </div>
 
         <div className="flex items-center gap-2.5">
           <a
-            href="https://bingooo.co.in/customize"
+            href="http://localhost:5173/customize"
             target="_blank"
             rel="noopener noreferrer"
-            className="px-3.5 py-2.5 rounded-xl border border-gray-200 hover:bg-gray-50 text-xs font-bold text-gray-700 flex items-center gap-1.5 transition-colors"
+            className="btn-outline text-xs gap-1.5"
           >
-            <span>View Storefront Studio</span>
+            <span>Live Store Studio</span>
             <ExternalLink size={13} />
           </a>
 
@@ -578,10 +607,10 @@ export function CustomizerStudioPage() {
             type="button"
             onClick={handleSaveAll}
             disabled={saving}
-            className={`px-5 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider flex items-center gap-2 shadow-md transition-all cursor-pointer ${
+            className={`btn-primary text-xs gap-2 ${
               hasUnsavedChanges
-                ? 'bg-[#E6321C] hover:bg-[#c92613] text-white animate-pulse'
-                : 'bg-gray-900 hover:bg-black text-white'
+                ? 'shadow-[4px_4px_0px_#171717] animate-pulse'
+                : ''
             }`}
           >
             {saving ? (
@@ -601,14 +630,14 @@ export function CustomizerStudioPage() {
 
       {statusMessage && (
         <div
-          className={`p-3.5 rounded-2xl text-xs font-semibold flex items-center justify-between shadow-sm ${
+          className={`p-3.5 border-2 border-[#171717] text-xs font-bold flex items-center justify-between shadow-[2px_2px_0px_#171717] ${
             statusMessage.type === 'success'
-              ? 'bg-emerald-50 text-emerald-800 border border-emerald-200'
-              : 'bg-red-50 text-red-800 border border-red-200'
+              ? 'bg-emerald-100 text-emerald-950'
+              : 'bg-rose-100 text-rose-950'
           }`}
         >
           <span>{statusMessage.text}</span>
-          <button type="button" onClick={() => setStatusMessage(null)} className="text-gray-500 hover:text-gray-800">
+          <button type="button" onClick={() => setStatusMessage(null)} className="text-[#171717] hover:text-[#E6321C]">
             <X size={14} />
           </button>
         </div>
@@ -616,10 +645,10 @@ export function CustomizerStudioPage() {
 
       {/* GARMENT CARDS */}
       {config.garments.length === 0 ? (
-        <div className="p-10 rounded-3xl border-2 border-dashed border-gray-300 bg-white text-center space-y-3">
-          <Shirt className="w-10 h-10 mx-auto text-gray-300" />
-          <h2 className="text-base font-black text-gray-900 uppercase">No garments yet</h2>
-          <p className="text-xs text-gray-500 max-w-md mx-auto">
+        <div className="p-10 border-2 border-dashed border-[#171717] bg-white text-center space-y-3 shadow-[4px_4px_0px_#171717]">
+          <Shirt className="w-10 h-10 mx-auto text-[#171717]/40" />
+          <h2 className="text-base font-black text-[#171717] uppercase font-mono">No garments yet</h2>
+          <p className="text-xs text-[#171717]/70 max-w-md mx-auto">
             Add a garment (e.g. Oversized T-shirt), set its price and sizes, then add colours with real front and back photos.
             The storefront custom studio stays hidden until a garment is active.
           </p>
@@ -643,42 +672,44 @@ export function CustomizerStudioPage() {
                   setSelectedGarmentId(garment.id);
                   setPreviewColorIndex(0);
                 }}
-                className={`p-4 rounded-3xl border-2 transition-all cursor-pointer flex flex-col text-left bg-white shadow-sm hover:shadow-md ${
-                  isSelected ? 'border-[#E6321C] ring-2 ring-[#E6321C]/20' : 'border-gray-200 hover:border-gray-300'
+                className={`p-4 border-2 transition-all cursor-pointer flex flex-col text-left ${
+                  isSelected
+                    ? 'border-[#171717] bg-[#F7EEDB] shadow-[5px_5px_0px_#E6321C]'
+                    : 'border-[#171717] bg-white shadow-[3px_3px_0px_#171717] hover:shadow-[5px_5px_0px_#171717]'
                 }`}
               >
                 <div className="flex items-center justify-between gap-2 mb-3 w-full">
                   <span
-                    className={`text-[10px] font-mono font-bold uppercase px-2.5 py-0.5 rounded-full ${
-                      garment.isActive ? 'bg-emerald-100 text-emerald-800' : 'bg-gray-100 text-gray-500'
+                    className={`text-[10px] font-mono font-bold uppercase px-2 py-0.5 border border-[#171717] ${
+                      garment.isActive ? 'bg-emerald-100 text-emerald-950' : 'bg-zinc-200 text-zinc-700'
                     }`}
                   >
                     {garment.isActive ? 'Live' : 'Hidden'}
                   </span>
-                  <span className="text-[10px] font-mono text-gray-400 truncate">{garment.style}</span>
+                  <span className="text-[10px] font-mono font-bold text-[#171717]/60 uppercase truncate">{garment.style}</span>
                 </div>
 
                 <div className="flex items-center gap-3 w-full">
-                  <div className="w-16 h-16 rounded-2xl bg-gray-50 border border-gray-100 flex items-center justify-center p-1.5 flex-shrink-0 overflow-hidden">
+                  <div className="w-16 h-16 border-2 border-[#171717] bg-[#FAF7F2] flex items-center justify-center p-1.5 flex-shrink-0 overflow-hidden shadow-[2px_2px_0px_#171717]">
                     <GarmentThumb garment={garment} />
                   </div>
                   <div className="min-w-0">
-                    <h3 className="text-sm font-black text-gray-900 uppercase tracking-tight truncate">{garment.name}</h3>
+                    <h3 className="text-sm font-black text-[#171717] uppercase tracking-tight truncate">{garment.name}</h3>
                     <div className="flex items-center gap-2 mt-1">
-                      <span className="text-base font-extrabold text-[#E6321C]">₹{garment.price.toLocaleString('en-IN')}</span>
+                      <span className="text-base font-black font-mono text-[#E6321C]">₹{garment.price.toLocaleString('en-IN')}</span>
                       {garment.compareAtPrice && garment.compareAtPrice > garment.price && (
-                        <span className="text-xs font-medium text-gray-400 line-through">₹{garment.compareAtPrice.toLocaleString('en-IN')}</span>
+                        <span className="text-xs font-mono text-[#171717]/50 line-through">₹{garment.compareAtPrice.toLocaleString('en-IN')}</span>
                       )}
                     </div>
                   </div>
                 </div>
 
-                <div className="mt-3 pt-3 border-t border-gray-100 w-full text-[10px] font-mono text-gray-500 flex items-center justify-between gap-2">
+                <div className="mt-3 pt-3 border-t-2 border-[#171717] w-full text-[10px] font-mono font-bold text-[#171717]/70 flex items-center justify-between gap-2 uppercase">
                   <span>{activeColorCount} colour{activeColorCount === 1 ? '' : 's'}</span>
                   <span className="truncate">{(garment.activeSizes || []).join(', ') || 'No sizes'}</span>
                 </div>
                 {warnings.length > 0 && (
-                  <div className="mt-2 w-full text-[10px] font-semibold text-amber-700 flex items-center gap-1">
+                  <div className="mt-2 w-full text-[10px] font-bold text-amber-800 flex items-center gap-1 font-mono uppercase">
                     <AlertTriangle size={11} className="shrink-0" />
                     <span className="truncate">{warnings.join(' · ')}</span>
                   </div>
@@ -689,32 +720,32 @@ export function CustomizerStudioPage() {
           <button
             type="button"
             onClick={handleAddGarment}
-            className="p-4 rounded-3xl border-2 border-dashed border-gray-300 bg-white/60 hover:bg-white hover:border-gray-400 text-gray-500 hover:text-gray-900 flex flex-col items-center justify-center gap-2 min-h-[150px] transition-colors cursor-pointer"
+            className="p-4 border-2 border-dashed border-[#171717] bg-white/70 hover:bg-white text-[#171717] flex flex-col items-center justify-center gap-2 min-h-[150px] transition-colors cursor-pointer shadow-[2px_2px_0px_#171717]"
           >
             <Plus size={20} />
-            <span className="text-xs font-bold uppercase tracking-wider">Add garment</span>
+            <span className="text-xs font-black uppercase font-mono tracking-wider">Add garment</span>
           </button>
         </div>
       )}
 
       {/* SELECTED GARMENT CONTROLS */}
       {activeGarment && (
-        <div className="bg-white rounded-3xl border border-gray-200 shadow-sm overflow-hidden">
-          <div className="p-5 border-b border-gray-100 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-gray-50/50">
+        <div className="bg-white border-2 border-[#171717] shadow-[6px_6px_0px_#171717] overflow-hidden">
+          <div className="p-5 border-b-2 border-[#171717] flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-[#FAF7F2]">
             <div>
               <div className="flex items-center gap-2">
                 <span className="text-xs font-mono font-bold text-[#E6321C] uppercase tracking-wider">
                   Configuring Garment
                 </span>
-                <span className="text-xs text-gray-300">/</span>
-                <span className="text-sm font-black text-gray-900 uppercase">{activeGarment.name}</span>
+                <span className="text-xs text-[#171717]/40">/</span>
+                <span className="text-sm font-black text-[#171717] uppercase">{activeGarment.name}</span>
               </div>
-              <p className="text-xs text-gray-500 mt-0.5">
+              <p className="text-xs text-[#171717]/70 mt-0.5 font-medium">
                 Adjust prices, manage size charts, upload color mockups, or test in the live simulator.
               </p>
             </div>
 
-            <div className="flex p-1 bg-gray-100 rounded-2xl gap-1 max-w-full overflow-x-auto">
+            <div className="flex p-1 bg-[#F7EEDB] border-2 border-[#171717] gap-1 max-w-full overflow-x-auto shadow-[2px_2px_0px_#171717]">
               {[
                 { id: 'pricing' as const, label: 'Pricing & Details', icon: DollarSign },
                 { id: 'colors' as const, label: `Colorways (${activeGarment.colors?.length || 0})`, icon: Palette },
@@ -728,8 +759,8 @@ export function CustomizerStudioPage() {
                     key={tab.id}
                     type="button"
                     onClick={() => setActiveTab(tab.id)}
-                    className={`px-3 py-2 text-xs font-bold rounded-xl transition-all flex shrink-0 items-center gap-1.5 whitespace-nowrap cursor-pointer ${
-                      isCurrent ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-900'
+                    className={`px-3 py-1.5 text-xs font-black uppercase font-mono transition-all flex shrink-0 items-center gap-1.5 whitespace-nowrap cursor-pointer ${
+                      isCurrent ? 'bg-[#171717] text-white shadow-[2px_2px_0px_#E6321C]' : 'text-[#171717] hover:bg-white'
                     }`}
                   >
                     <Icon size={13} />
@@ -745,12 +776,12 @@ export function CustomizerStudioPage() {
             {activeTab === 'pricing' && (
               <div className="space-y-6 max-w-3xl">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div className="p-4 rounded-2xl border border-gray-200 bg-gray-50/50">
-                    <label className="text-[11px] font-bold uppercase tracking-wider text-gray-700 block mb-1.5">
+                  <div className="p-4 border-2 border-[#171717] bg-[#F7EEDB]">
+                    <label className="admin-label">
                       Base Customizer Selling Price (₹)
                     </label>
                     <div className="relative">
-                      <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 font-bold">₹</span>
+                      <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#6F6A63] font-bold">₹</span>
                       <input
                         type="number"
                         min="1"
@@ -759,20 +790,20 @@ export function CustomizerStudioPage() {
                           const val = Math.max(1, parseInt(e.target.value) || 0);
                           updateActiveGarment((prev) => ({ ...prev, price: val }));
                         }}
-                        className="w-full pl-8 pr-3 py-2.5 rounded-xl border border-gray-200 bg-white text-base font-extrabold text-gray-900 focus:outline-none focus:border-[#E6321C]"
+                        className="admin-input pl-8 pr-3 text-base font-extrabold"
                       />
                     </div>
-                    <p className="text-[10px] text-gray-500 mt-1.5">
+                    <p className="text-[10px] text-[#6F6A63] mt-1.5">
                       The live retail price shown on the customizer and added to the bag.
                     </p>
                   </div>
 
-                  <div className="p-4 rounded-2xl border border-gray-200 bg-gray-50/50">
-                    <label className="text-[11px] font-bold uppercase tracking-wider text-gray-700 block mb-1.5">
+                  <div className="p-4 border-2 border-[#171717] bg-[#F7EEDB]">
+                    <label className="admin-label">
                       Original Compare-at Price / MRP (₹)
                     </label>
                     <div className="relative">
-                      <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 font-bold">₹</span>
+                      <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#6F6A63] font-bold">₹</span>
                       <input
                         type="number"
                         min="1"
@@ -782,17 +813,17 @@ export function CustomizerStudioPage() {
                           const val = parseInt(e.target.value);
                           updateActiveGarment((prev) => ({ ...prev, compareAtPrice: Number.isFinite(val) && val > 0 ? val : null }));
                         }}
-                        className="w-full pl-8 pr-3 py-2.5 rounded-xl border border-gray-200 bg-white text-base font-extrabold text-gray-900 focus:outline-none focus:border-[#E6321C]"
+                        className="admin-input pl-8 pr-3 text-base font-extrabold"
                       />
                     </div>
-                    <p className="text-[10px] text-gray-500 mt-1.5">
+                    <p className="text-[10px] text-[#6F6A63] mt-1.5">
                       Optional. Shown crossed out when it is higher than the selling price.
                     </p>
                   </div>
                 </div>
 
                 <div>
-                  <label className="text-[10px] font-bold uppercase tracking-wider text-gray-500 block mb-2">
+                  <label className="admin-label text-[#6F6A63] mb-2">
                     Quick Price Adjustments
                   </label>
                   <div className="flex flex-wrap gap-2">
@@ -814,7 +845,7 @@ export function CustomizerStudioPage() {
                             return { ...prev, price: newPrice };
                           });
                         }}
-                        className="px-3 py-1.5 text-xs font-bold rounded-xl border border-gray-200 bg-white hover:bg-gray-50 text-gray-700 transition-colors"
+                        className="px-3 py-1.5 font-mono text-xs font-bold border-2 border-[#171717] bg-white hover:bg-[#EDE0CC] text-[#171717] shadow-[2px_2px_0px_#171717] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-colors"
                       >
                         {btn.label}
                       </button>
@@ -824,7 +855,7 @@ export function CustomizerStudioPage() {
 
                 <div className="space-y-4 pt-2">
                   <div>
-                    <label className="text-[11px] font-bold uppercase tracking-wider text-gray-700 block mb-1.5">
+                    <label className="admin-label">
                       Garment Name
                     </label>
                     <input
@@ -834,12 +865,12 @@ export function CustomizerStudioPage() {
                         const val = e.target.value;
                         updateActiveGarment((prev) => ({ ...prev, name: val }));
                       }}
-                      className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 bg-white text-sm font-semibold text-gray-900 focus:outline-none focus:border-[#E6321C]"
+                      className="admin-input text-sm"
                     />
                   </div>
 
                   <div>
-                    <label className="text-[11px] font-bold uppercase tracking-wider text-gray-700 block mb-1.5">
+                    <label className="admin-label">
                       Fabric & Details (shown under the name)
                     </label>
                     <input
@@ -849,14 +880,14 @@ export function CustomizerStudioPage() {
                         const val = e.target.value;
                         updateActiveGarment((prev) => ({ ...prev, description: val }));
                       }}
-                      className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 bg-white text-sm font-semibold text-gray-900 focus:outline-none focus:border-[#E6321C]"
+                      className="admin-input text-sm"
                     />
                   </div>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <label className="text-[11px] font-bold uppercase tracking-wider text-gray-700 block mb-1.5">
+                    <label className="admin-label">
                       Button Label (short)
                     </label>
                     <input
@@ -868,34 +899,35 @@ export function CustomizerStudioPage() {
                         updateActiveGarment((prev) => ({ ...prev, shortName: val }));
                       }}
                       placeholder="e.g. OVERSIZED"
-                      className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 bg-white text-sm font-semibold text-gray-900 focus:outline-none focus:border-[#E6321C]"
+                      className="admin-input text-sm"
                     />
-                    <p className="text-[10px] text-gray-500 mt-1">Shown on the garment picker on the storefront.</p>
+                    <p className="text-[10px] text-[#6F6A63] mt-1">Shown on the garment picker on the storefront.</p>
                   </div>
                   <div>
-                    <label className="text-[11px] font-bold uppercase tracking-wider text-gray-700 block mb-1.5">
+                    <label className="admin-label">
                       Garment Style
                     </label>
                     <select
                       value={activeGarment.style}
                       onChange={(e) => {
                         const val = e.target.value as GarmentStyle;
-                        updateActiveGarment((prev) => ({ ...prev, style: val }));
+                        // A new style starts from that style's default print placement.
+                        updateActiveGarment((prev) => ({ ...prev, style: val, printAreas: undefined }));
                       }}
-                      className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 bg-white text-sm font-semibold text-gray-900 focus:outline-none focus:border-[#E6321C]"
+                      className="admin-input text-sm"
                     >
                       {STYLE_OPTIONS.map((o) => (
                         <option key={o.id} value={o.id}>{o.label}</option>
                       ))}
                     </select>
-                    <p className="text-[10px] text-gray-500 mt-1">Sets where designs sit on the photo and the size-chart columns.</p>
+                    <p className="text-[10px] text-[#6F6A63] mt-1">Sets where designs sit on the photo and the size-chart columns.</p>
                   </div>
                 </div>
 
-                <div className="pt-3 border-t border-gray-100 flex items-center justify-between">
+                <div className="pt-3 border-t border-[#171717]/15 flex items-center justify-between">
                   <div>
-                    <div className="text-sm font-bold text-gray-900">Show on storefront</div>
-                    <div className="text-xs text-gray-500">
+                    <div className="text-sm font-bold text-[#171717]">Show on storefront</div>
+                    <div className="text-xs text-[#6F6A63]">
                       Customers only see live garments. Add at least one colour with a front photo and some sizes first.
                     </div>
                   </div>
@@ -913,11 +945,11 @@ export function CustomizerStudioPage() {
                   </label>
                 </div>
 
-                <div className="pt-3 border-t border-gray-100">
+                <div className="pt-3 border-t border-[#171717]/15">
                   <button
                     type="button"
                     onClick={handleDeleteGarment}
-                    className="px-3 py-2 rounded-xl border border-red-200 text-red-700 hover:bg-red-50 text-xs font-bold flex items-center gap-1.5 cursor-pointer"
+                    className="px-3 py-2 border-2 border-[#E6321C] bg-white text-[#E6321C] font-mono text-xs font-bold uppercase tracking-wider hover:bg-[#E6321C] hover:text-white flex items-center gap-1.5 cursor-pointer"
                   >
                     <Trash2 size={13} />
                     <span>Delete this garment</span>
@@ -929,20 +961,20 @@ export function CustomizerStudioPage() {
             {/* TAB 2: COLORS */}
             {activeTab === 'colors' && (
               <div className="space-y-6">
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-4 border-2 border-[#171717] bg-[#FAF7F2] shadow-[3px_3px_0px_#171717]">
                   <div>
-                    <h3 className="text-sm font-black text-gray-900 uppercase">Configured Colorways & Photo Mockups</h3>
-                    <p className="text-xs text-gray-500">
-                      Upload real photos of the blank garment (PNG with transparent background works best, JPG/WEBP also fine, max 10 MB).
+                    <h3 className="text-sm font-black text-[#171717] uppercase tracking-tight">Colorways & Mockup Photos</h3>
+                    <p className="text-xs text-[#171717]/60 font-medium mt-0.5">
+                      Upload real garment photos: transparent PNG (or WebP), square, at least 1200px, garment centred and framed the same front and back. Max 10 MB. Use the red delete button to remove any image.
                     </p>
                   </div>
                   <button
                     type="button"
                     onClick={handleOpenAddColor}
-                    className="px-4 py-2 rounded-xl bg-gray-900 hover:bg-black text-white text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 shadow-sm self-start sm:self-auto cursor-pointer"
+                    className="btn-primary text-xs gap-1.5 self-start sm:self-auto"
                   >
                     <Plus size={14} />
-                    <span>Add New Colorway</span>
+                    <span>Add Colorway</span>
                   </button>
                 </div>
 
@@ -952,159 +984,174 @@ export function CustomizerStudioPage() {
                     const hasBack = !!color.backImageUrl;
                     const isUploadingThis = uploadingColorId === color.id;
 
+                    const deleteImage = (side: 'front' | 'back') => {
+                      if (!confirm(`Delete ${side} mockup photo for "${color.name}"? Click Publish to make it final.`)) return;
+                      updateActiveGarment((prev) => ({
+                        ...prev,
+                        colors: prev.colors.map((c) =>
+                          c.id === color.id
+                            ? { ...c, ...(side === 'front' ? { frontImageUrl: '' } : { backImageUrl: '' }) }
+                            : c
+                        ),
+                      }));
+                      toast.success('Image Removed', `${side === 'front' ? 'Front' : 'Back'} mockup deleted. Click Publish Changes to update the store.`);
+                    };
+
                     return (
                       <div
                         key={color.id}
-                        className={`p-4 rounded-2xl border transition-all flex flex-col justify-between bg-white shadow-sm ${
-                          color.isActive !== false ? 'border-gray-200' : 'border-dashed border-gray-300 opacity-60'
+                        className={`border-2 transition-all flex flex-col bg-white ${
+                          color.isActive !== false
+                            ? 'border-[#171717] shadow-[4px_4px_0px_#171717]'
+                            : 'border-dashed border-[#171717]/40 opacity-60'
                         }`}
                       >
-                        <div>
-                          <div className="flex items-center justify-between mb-3">
-                            <div className="flex items-center gap-2.5">
-                              <div
-                                className="w-7 h-7 rounded-full border border-gray-300 shadow-sm flex items-center justify-center flex-shrink-0"
-                                style={{ backgroundColor: color.hex }}
-                              >
-                                <span className="text-[9px] font-bold" style={{ color: color.textContrast }}>
-                                  Aa
-                                </span>
-                              </div>
-                              <div>
-                                <div className="text-xs font-bold text-gray-900">{color.name}</div>
-                                <div className="text-[10px] font-mono text-gray-400">{color.hex}</div>
-                              </div>
+                        {/* Card Header */}
+                        <div className="flex items-center justify-between px-3 py-2 border-b-2 border-[#171717] bg-[#FAF7F2]">
+                          <div className="flex items-center gap-2">
+                            <div
+                              className="w-5 h-5 border-2 border-[#171717] flex-shrink-0"
+                              style={{ backgroundColor: color.hex }}
+                            />
+                            <div>
+                              <div className="text-[11px] font-black text-[#171717] uppercase tracking-tight">{color.name}</div>
+                              <div className="text-[9px] font-mono text-[#171717]/50">{color.hex}</div>
                             </div>
+                          </div>
+                          <div className="flex items-center gap-1">
+                            <button
+                              type="button"
+                              onClick={() => {
+                                updateActiveGarment((prev) => ({
+                                  ...prev,
+                                  colors: prev.colors.map((c) =>
+                                    c.id === color.id ? { ...c, isActive: !c.isActive } : c
+                                  ),
+                                }));
+                              }}
+                              className={`text-[9px] font-mono font-black uppercase px-2 py-0.5 border-2 border-[#171717] cursor-pointer transition-colors ${
+                                color.isActive !== false
+                                  ? 'bg-emerald-100 text-emerald-900'
+                                  : 'bg-zinc-200 text-zinc-700'
+                              }`}
+                            >
+                              {color.isActive !== false ? 'Live' : 'Off'}
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => handleOpenEditColor(color)}
+                              className="p-1 text-[#171717] hover:bg-[#F7EEDB] border-2 border-transparent hover:border-[#171717] transition-all cursor-pointer"
+                              title="Edit Colorway"
+                            >
+                              <Pencil size={12} />
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => handleDeleteColor(color.id)}
+                              className="p-1 text-[#E6321C] hover:bg-[#E6321C] hover:text-white border-2 border-transparent hover:border-[#171717] transition-all cursor-pointer"
+                              title="Delete entire colorway"
+                            >
+                              <Trash2 size={12} />
+                            </button>
+                          </div>
+                        </div>
 
-                            <div className="flex items-center gap-1">
+                        {/* Image Grid */}
+                        <div className="grid grid-cols-2 divide-x-2 divide-[#171717]">
+                          {/* FRONT IMAGE SLOT */}
+                          <div className="flex flex-col">
+                            <div className="text-[9px] font-mono font-black uppercase text-[#171717]/60 px-2 pt-2 pb-1 tracking-wider">Front</div>
+                            <div className="relative bg-[#F7EEDB] h-32 flex items-center justify-center overflow-hidden" style={hasFront ? CHECKERBOARD : undefined}>
+                              {isUploadingThis ? (
+                                <LoaderCircle className="w-6 h-6 animate-spin text-[#E6321C]" />
+                              ) : hasFront ? (
+                                <img
+                                  src={resolveImageUrl(color.frontImageUrl)}
+                                  alt={`${color.name} Front`}
+                                  className="w-full h-full object-contain p-1"
+                                />
+                              ) : (
+                                <div className="flex flex-col items-center justify-center gap-1 p-2 text-center">
+                                  <ImageOff size={22} className="text-[#171717]/35" />
+                                  <span className="text-[8px] font-mono text-[#171717]/40 uppercase">No Photo</span>
+                                </div>
+                              )}
+                            </div>
+                            {/* Front action buttons */}
+                            <div className="flex border-t-2 border-[#171717]">
                               <button
                                 type="button"
-                                onClick={() => handleOpenEditColor(color)}
-                                className="p-1.5 text-gray-400 hover:text-gray-900 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer"
-                                title="Edit Colorway"
+                                onClick={() => triggerPhotoUpload(color.id, 'front')}
+                                disabled={isUploadingThis}
+                                className="flex-1 flex items-center justify-center gap-1 py-1.5 text-[9px] font-black uppercase font-mono text-[#171717] hover:bg-[#171717] hover:text-white transition-colors cursor-pointer border-r border-[#171717]/20"
                               >
-                                <Pencil size={13} />
+                                <Upload size={9} />
+                                <span>{hasFront ? 'Replace' : 'Upload'}</span>
                               </button>
-                              <button
-                                type="button"
-                                onClick={() => handleDeleteColor(color.id)}
-                                className="p-1.5 text-gray-400 hover:text-red-600 rounded-lg hover:bg-red-50 transition-colors cursor-pointer"
-                                title="Delete Colorway"
-                              >
-                                <Trash2 size={13} />
-                              </button>
+                              {hasFront && (
+                                <button
+                                  type="button"
+                                  onClick={() => deleteImage('front')}
+                                  className="flex items-center justify-center gap-1 px-2 py-1.5 text-[9px] font-black uppercase font-mono bg-[#E6321C] text-white hover:bg-red-800 transition-colors cursor-pointer"
+                                  title="Delete front mockup"
+                                >
+                                  <Trash2 size={9} />
+                                </button>
+                              )}
                             </div>
                           </div>
 
-                          <div className="grid grid-cols-2 gap-2 my-2">
-                            <div className="relative rounded-xl border border-gray-100 bg-gray-50 h-28 flex flex-col items-center justify-center p-2 text-center overflow-hidden">
-                              {hasFront ? (
+                          {/* BACK IMAGE SLOT */}
+                          <div className="flex flex-col">
+                            <div className="text-[9px] font-mono font-black uppercase text-[#171717]/60 px-2 pt-2 pb-1 tracking-wider">Back</div>
+                            <div className="relative bg-[#F7EEDB] h-32 flex items-center justify-center overflow-hidden" style={hasBack ? CHECKERBOARD : undefined}>
+                              {isUploadingThis ? (
+                                <LoaderCircle className="w-6 h-6 animate-spin text-[#E6321C]" />
+                              ) : hasBack ? (
                                 <img
-                                  src={color.frontImageUrl}
-                                  alt={`${color.name} Front`}
-                                  className="w-full h-full object-contain"
-                                />
-                              ) : (
-                                <div className="text-center p-1">
-                                  <Camera size={18} className="mx-auto text-gray-400 mb-1" />
-                                  <span className="text-[9px] font-mono text-gray-500 block">No Front Photo</span>
-                                </div>
-                              )}
-
-                              <div className="absolute inset-x-0 bottom-0 bg-black/60 flex items-center justify-center gap-2 p-1.5">
-                                <button
-                                  type="button"
-                                  onClick={() => triggerPhotoUpload(color.id, 'front')}
-                                  disabled={isUploadingThis}
-                                  className="px-2 py-1 rounded-lg bg-white text-gray-900 text-[9px] font-bold uppercase shadow-sm flex items-center gap-1 cursor-pointer"
-                                >
-                                  <Upload size={10} />
-                                  <span>{hasFront ? 'Replace Front' : 'Upload Front'}</span>
-                                </button>
-                                {hasFront && (
-                                  <button
-                                    type="button"
-                                    onClick={() => {
-                                      updateActiveGarment((prev) => ({
-                                        ...prev,
-                                        colors: prev.colors.map((c) =>
-                                          c.id === color.id ? { ...c, frontImageUrl: '' } : c
-                                        ),
-                                      }));
-                                    }}
-                                    className="text-[8px] text-white hover:underline cursor-pointer"
-                                  >
-                                    Remove Front
-                                  </button>
-                                )}
-                              </div>
-                            </div>
-
-                            <div className="relative rounded-xl border border-gray-100 bg-gray-50 h-28 flex flex-col items-center justify-center p-2 text-center overflow-hidden">
-                              {hasBack ? (
-                                <img
-                                  src={color.backImageUrl}
+                                  src={resolveImageUrl(color.backImageUrl!)}
                                   alt={`${color.name} Back`}
-                                  className="w-full h-full object-contain"
+                                  className="w-full h-full object-contain p-1"
                                 />
                               ) : (
-                                <div className="text-center p-1">
-                                  <Camera size={18} className="mx-auto text-gray-400 mb-1" />
-                                  <span className="text-[9px] font-mono text-gray-500 block">No Back Photo</span>
+                                <div className="flex flex-col items-center justify-center gap-1 p-2 text-center">
+                                  <ImageOff size={22} className="text-[#171717]/35" />
+                                  <span className="text-[8px] font-mono text-[#171717]/40 uppercase">No Photo</span>
                                 </div>
                               )}
-
-                              <div className="absolute inset-x-0 bottom-0 bg-black/60 flex items-center justify-center gap-2 p-1.5">
+                            </div>
+                            {/* Back action buttons */}
+                            <div className="flex border-t-2 border-[#171717]">
+                              <button
+                                type="button"
+                                onClick={() => triggerPhotoUpload(color.id, 'back')}
+                                disabled={isUploadingThis}
+                                className="flex-1 flex items-center justify-center gap-1 py-1.5 text-[9px] font-black uppercase font-mono text-[#171717] hover:bg-[#171717] hover:text-white transition-colors cursor-pointer border-r border-[#171717]/20"
+                              >
+                                <Upload size={9} />
+                                <span>{hasBack ? 'Replace' : 'Upload'}</span>
+                              </button>
+                              {hasBack && (
                                 <button
                                   type="button"
-                                  onClick={() => triggerPhotoUpload(color.id, 'back')}
-                                  disabled={isUploadingThis}
-                                  className="px-2 py-1 rounded-lg bg-white text-gray-900 text-[9px] font-bold uppercase shadow-sm flex items-center gap-1 cursor-pointer"
+                                  onClick={() => deleteImage('back')}
+                                  className="flex items-center justify-center gap-1 px-2 py-1.5 text-[9px] font-black uppercase font-mono bg-[#E6321C] text-white hover:bg-red-800 transition-colors cursor-pointer"
+                                  title="Delete back mockup"
                                 >
-                                  <Upload size={10} />
-                                  <span>{hasBack ? 'Replace Back' : 'Upload Back'}</span>
+                                  <Trash2 size={9} />
                                 </button>
-                                {hasBack && (
-                                  <button
-                                    type="button"
-                                    onClick={() => {
-                                      updateActiveGarment((prev) => ({
-                                        ...prev,
-                                        colors: prev.colors.map((c) =>
-                                          c.id === color.id ? { ...c, backImageUrl: '' } : c
-                                        ),
-                                      }));
-                                    }}
-                                    className="text-[8px] text-white hover:underline cursor-pointer"
-                                  >
-                                    Remove Back
-                                  </button>
-                                )}
-                              </div>
+                              )}
                             </div>
                           </div>
                         </div>
 
-                        <div className="mt-2 pt-2 border-t border-gray-100 flex items-center justify-between text-[10px]">
-                          <span className={hasFront ? 'text-emerald-600 font-bold' : 'text-amber-600'}>
-                            {hasFront ? (hasBack ? 'Front & back photos' : 'Back photo missing') : 'Front photo needed'}
+                        {/* Status bar */}
+                        <div className="px-3 py-1.5 border-t-2 border-[#171717] bg-[#FAF7F2]">
+                          <span className={`text-[9px] font-mono font-bold uppercase ${
+                            hasFront ? (hasBack ? 'text-emerald-700' : 'text-amber-700') : 'text-[#E6321C]'
+                          }`}>
+                            {hasFront ? (hasBack ? '✓ Front & back ready' : '⚠ Back photo missing') : '✗ Front photo required'}
                           </span>
-                          <button
-                            type="button"
-                            onClick={() => {
-                              updateActiveGarment((prev) => ({
-                                ...prev,
-                                colors: prev.colors.map((c) =>
-                                  c.id === color.id ? { ...c, isActive: !c.isActive } : c
-                                ),
-                              }));
-                            }}
-                            className={`px-2 py-0.5 rounded-md font-mono font-bold uppercase cursor-pointer ${
-                              color.isActive !== false ? 'bg-emerald-50 text-emerald-700' : 'bg-gray-100 text-gray-500'
-                            }`}
-                          >
-                            {color.isActive !== false ? 'Active' : 'Disabled'}
-                          </button>
                         </div>
                       </div>
                     );
@@ -1116,25 +1163,25 @@ export function CustomizerStudioPage() {
             {/* TAB 3: SIZES */}
             {activeTab === 'sizes' && (
               <div className="space-y-6">
-                <div className="p-4 rounded-2xl border border-gray-200 bg-gray-50/50 space-y-4">
+                <div className="p-4 border-2 border-[#171717] bg-[#F7EEDB] space-y-4">
                   <div>
-                    <h4 className="text-xs font-bold uppercase tracking-wider text-gray-900">Sizes for {activeGarment.name}</h4>
-                    <p className="text-[11px] text-gray-500">
+                    <h4 className="text-xs font-bold uppercase tracking-wider text-[#171717]">Sizes for {activeGarment.name}</h4>
+                    <p className="text-[11px] text-[#6F6A63]">
                       Add the sizes you sell. Tap a size to switch it on or off for customers; use the x to remove it.
                     </p>
                   </div>
 
                   <div className="flex flex-wrap gap-2">
                     {activeGarment.sizes.length === 0 && (
-                      <span className="text-xs text-gray-500">No sizes yet. Add them below.</span>
+                      <span className="text-xs text-[#6F6A63]">No sizes yet. Add them below.</span>
                     )}
                     {activeGarment.sizes.map((size) => {
                       const isOn = (activeGarment.activeSizes || []).includes(size);
                       return (
                         <span
                           key={size}
-                          className={`inline-flex items-center rounded-xl border overflow-hidden ${
-                            isOn ? 'border-gray-900' : 'border-gray-200'
+                          className={`inline-flex items-center border-2 overflow-hidden ${
+                            isOn ? 'border-[#171717]' : 'border-[#171717]/25'
                           }`}
                         >
                           <button
@@ -1142,7 +1189,7 @@ export function CustomizerStudioPage() {
                             onClick={() => toggleSizeActive(size)}
                             title={isOn ? 'Offered: tap to hide' : 'Hidden: tap to offer'}
                             className={`h-9 px-3 font-mono text-xs font-bold uppercase cursor-pointer ${
-                              isOn ? 'bg-gray-900 text-white' : 'bg-white text-gray-400'
+                              isOn ? 'bg-[#171717] text-white' : 'bg-white text-[#6F6A63]'
                             }`}
                           >
                             {size}
@@ -1151,7 +1198,7 @@ export function CustomizerStudioPage() {
                             type="button"
                             onClick={() => removeSize(size)}
                             aria-label={`Remove size ${size}`}
-                            className={`h-9 px-2 cursor-pointer ${isOn ? 'bg-gray-800 text-white/70 hover:text-white' : 'bg-white text-gray-400 hover:text-red-600'}`}
+                            className={`h-9 px-2 cursor-pointer ${isOn ? 'bg-[#2B2825] text-white/70 hover:text-white' : 'bg-white text-[#6F6A63] hover:text-red-600'}`}
                           >
                             <X size={12} />
                           </button>
@@ -1175,9 +1222,9 @@ export function CustomizerStudioPage() {
                         onChange={(e) => setNewSize(e.target.value)}
                         placeholder="e.g. XL or 42 (comma-separate several)"
                         maxLength={60}
-                        className="w-60 px-3 py-2 rounded-xl border border-gray-200 bg-white text-xs font-semibold focus:outline-none focus:border-[#E6321C]"
+                        className="admin-input w-60 px-3 py-2 text-xs"
                       />
-                      <button type="submit" className="px-3 py-2 rounded-xl bg-gray-900 text-white text-xs font-bold flex items-center gap-1 cursor-pointer">
+                      <button type="submit" className="px-3 py-2 border-2 border-[#171717] bg-[#171717] text-white font-mono text-xs font-bold uppercase tracking-wider shadow-[2px_2px_0px_#E6321C] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none flex items-center gap-1 cursor-pointer">
                         <Plus size={12} />
                         <span>Add size</span>
                       </button>
@@ -1185,14 +1232,14 @@ export function CustomizerStudioPage() {
                     <button
                       type="button"
                       onClick={() => addSizes(LETTER_SIZES)}
-                      className="px-3 py-2 rounded-xl border border-gray-200 bg-white text-xs font-bold text-gray-700 hover:bg-gray-50 cursor-pointer"
+                      className="px-3 py-2 border-2 border-[#171717] bg-white font-mono text-xs font-bold text-[#171717] shadow-[2px_2px_0px_#171717] hover:bg-[#EDE0CC] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none cursor-pointer"
                     >
                       Add XS–3XL
                     </button>
                     <button
                       type="button"
                       onClick={() => addSizes(NUMERIC_SIZES)}
-                      className="px-3 py-2 rounded-xl border border-gray-200 bg-white text-xs font-bold text-gray-700 hover:bg-gray-50 cursor-pointer"
+                      className="px-3 py-2 border-2 border-[#171717] bg-white font-mono text-xs font-bold text-[#171717] shadow-[2px_2px_0px_#171717] hover:bg-[#EDE0CC] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none cursor-pointer"
                     >
                       Add 36–46
                     </button>
@@ -1202,10 +1249,10 @@ export function CustomizerStudioPage() {
                 <div className="space-y-3">
                   <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
                     <div>
-                      <h4 className="text-xs font-bold uppercase tracking-wider text-gray-900">
+                      <h4 className="text-xs font-bold uppercase tracking-wider text-[#171717]">
                         Precision Size Measurement Chart
                       </h4>
-                      <p className="text-[11px] text-gray-500">
+                      <p className="text-[11px] text-[#6F6A63]">
                         Shown in the storefront size chart. Leave a cell empty if you don't measure it.
                       </p>
                     </div>
@@ -1214,17 +1261,17 @@ export function CustomizerStudioPage() {
                       <button
                         type="button"
                         onClick={handleResetMeasurements}
-                        className="text-[10px] font-bold text-gray-500 hover:text-gray-900 px-2 py-1 rounded-lg border border-gray-200 bg-white cursor-pointer"
+                        className="text-[10px] font-mono font-bold text-[#171717] px-2 py-1 border-2 border-[#171717] bg-white hover:bg-[#EDE0CC] cursor-pointer"
                       >
                         Fill typical values
                       </button>
 
-                      <div className="flex p-1 bg-gray-100 rounded-xl">
+                      <div className="flex p-1 bg-[#EDE0CC] border-2 border-[#171717]">
                         <button
                           type="button"
                           onClick={() => setMeasureUnit('in')}
                           className={`px-3 py-1 text-[10px] font-bold uppercase rounded-lg transition-colors cursor-pointer ${
-                            measureUnit === 'in' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500'
+                            measureUnit === 'in' ? 'bg-white text-[#171717] shadow-sm' : 'text-[#6F6A63]'
                           }`}
                         >
                           Inches (&quot;)
@@ -1233,7 +1280,7 @@ export function CustomizerStudioPage() {
                           type="button"
                           onClick={() => setMeasureUnit('cm')}
                           className={`px-3 py-1 text-[10px] font-bold uppercase rounded-lg transition-colors cursor-pointer ${
-                            measureUnit === 'cm' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500'
+                            measureUnit === 'cm' ? 'bg-white text-[#171717] shadow-sm' : 'text-[#6F6A63]'
                           }`}
                         >
                           Centimeters (cm)
@@ -1242,10 +1289,10 @@ export function CustomizerStudioPage() {
                     </div>
                   </div>
 
-                  <div className="overflow-x-auto rounded-2xl border border-gray-200">
+                  <div className="overflow-x-auto border-2 border-[#171717]">
                     <table className="w-full text-left text-xs">
                       <thead>
-                        <tr className="bg-gray-900 text-white font-mono text-[10px] uppercase">
+                        <tr className="bg-[#171717] text-white font-mono text-[10px] uppercase">
                           <th className="p-3">Size</th>
                           <th className="p-3">Status</th>
                           <th className="p-3">Chest (Round)</th>
@@ -1254,10 +1301,10 @@ export function CustomizerStudioPage() {
                           <th className="p-3">Sleeve Length</th>
                         </tr>
                       </thead>
-                      <tbody className="divide-y divide-gray-100 bg-white font-mono">
+                      <tbody className="divide-y divide-[#171717]/10 bg-white font-mono">
                         {activeGarment.sizes.length === 0 && (
                           <tr>
-                            <td colSpan={6} className="p-4 text-center text-xs text-gray-500 font-sans">Add sizes above to fill in the chart.</td>
+                            <td colSpan={6} className="p-4 text-center text-xs text-[#6F6A63] font-sans">Add sizes above to fill in the chart.</td>
                           </tr>
                         )}
                         {activeGarment.sizes.map((size) => {
@@ -1270,12 +1317,12 @@ export function CustomizerStudioPage() {
                           };
                           const isSizeActive = (activeGarment.activeSizes || []).includes(row.size);
                           return (
-                            <tr key={row.size} className={isSizeActive ? 'hover:bg-gray-50/70' : 'bg-gray-50/40 opacity-60'}>
-                              <td className="p-3 font-extrabold text-gray-900 text-sm">{row.size}</td>
+                            <tr key={row.size} className={isSizeActive ? 'hover:bg-[#F7EEDB]' : 'bg-[#EDE0CC]/40 opacity-60'}>
+                              <td className="p-3 font-extrabold text-[#171717] text-sm">{row.size}</td>
                               <td className="p-3">
                                 <span
                                   className={`text-[9px] font-bold px-2 py-0.5 rounded-full ${
-                                    isSizeActive ? 'bg-emerald-100 text-emerald-800' : 'bg-gray-200 text-gray-600'
+                                    isSizeActive ? 'bg-emerald-100 text-emerald-800' : 'bg-gray-200 text-[#6F6A63]'
                                   }`}
                                 >
                                   {isSizeActive ? 'Offered' : 'Disabled'}
@@ -1286,7 +1333,7 @@ export function CustomizerStudioPage() {
                                   type="text"
                                   value={row.chest}
                                   onChange={(e) => handleMeasurementChange(measureUnit, row.size, 'chest', e.target.value)}
-                                  className="w-28 px-2 py-1 rounded-lg border border-gray-200 bg-white text-xs font-semibold focus:outline-none focus:border-[#E6321C]"
+                                  className="admin-input w-28 px-2 py-1 text-xs"
                                 />
                               </td>
                               <td className="p-2">
@@ -1294,7 +1341,7 @@ export function CustomizerStudioPage() {
                                   type="text"
                                   value={row.length}
                                   onChange={(e) => handleMeasurementChange(measureUnit, row.size, 'length', e.target.value)}
-                                  className="w-28 px-2 py-1 rounded-lg border border-gray-200 bg-white text-xs font-semibold focus:outline-none focus:border-[#E6321C]"
+                                  className="admin-input w-28 px-2 py-1 text-xs"
                                 />
                               </td>
                               <td className="p-2">
@@ -1302,7 +1349,7 @@ export function CustomizerStudioPage() {
                                   type="text"
                                   value={row.shoulder}
                                   onChange={(e) => handleMeasurementChange(measureUnit, row.size, 'shoulder', e.target.value)}
-                                  className="w-28 px-2 py-1 rounded-lg border border-gray-200 bg-white text-xs font-semibold focus:outline-none focus:border-[#E6321C]"
+                                  className="admin-input w-28 px-2 py-1 text-xs"
                                 />
                               </td>
                               <td className="p-2">
@@ -1310,7 +1357,7 @@ export function CustomizerStudioPage() {
                                   type="text"
                                   value={row.sleeve}
                                   onChange={(e) => handleMeasurementChange(measureUnit, row.size, 'sleeve', e.target.value)}
-                                  className="w-28 px-2 py-1 rounded-lg border border-gray-200 bg-white text-xs font-semibold focus:outline-none focus:border-[#E6321C]"
+                                  className="admin-input w-28 px-2 py-1 text-xs"
                                 />
                               </td>
                             </tr>
@@ -1326,29 +1373,17 @@ export function CustomizerStudioPage() {
             {/* TAB 4: PREVIEW SIMULATOR */}
             {activeTab === 'preview' && (
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
-                <div className="p-6 rounded-3xl bg-[#ede0cc] border border-[#ddd3c5] flex flex-col items-center justify-center relative min-h-[420px]">
-                  <div className="relative w-full max-w-[340px] aspect-square flex items-center justify-center">
-                    {activeImageUrl ? (
-                      <img
-                        src={activeImageUrl}
-                        alt={`${activeGarment.name} preview`}
-                        className="max-h-[90%] max-w-[90%] object-contain drop-shadow-xl"
-                      />
-                    ) : (
-                      <div className="flex flex-col items-center gap-2 text-gray-500">
-                        <Camera size={28} />
-                        <span className="text-xs font-semibold">No {previewSide === 'BACK' ? 'back' : 'front'} photo for this colour yet</span>
-                      </div>
-                    )}
-
-                    <div className="absolute inset-0 m-auto w-28 h-28 border border-dashed border-[#E6321C]/60 rounded-xl flex items-center justify-center pointer-events-none">
-                      <span className="text-[8px] font-mono font-bold uppercase tracking-widest text-[#E6321C] opacity-75">
-                        DTF Print Zone
-                      </span>
-                    </div>
+                <div className="p-6 bg-[#EDE0CC] border-2 border-[#171717] flex flex-col items-center justify-center relative min-h-[420px]">
+                  <div className="relative w-full max-w-[360px] aspect-square border-2 border-[#171717] shadow-[4px_4px_0px_#171717] mt-8">
+                    <PrintAreaPreview
+                      photoUrl={activeImageUrl ? resolveImageUrl(activeImageUrl) : ''}
+                      side={previewSide}
+                      areas={printAreasFor(activeGarment.style, activeGarment.printAreas)}
+                      focus={focusSpot}
+                    />
                   </div>
 
-                  <div className="absolute top-4 right-4 flex gap-1 bg-white/90 backdrop-blur-sm p-1 rounded-xl border border-[#ddd3c5]">
+                  <div className="absolute top-4 right-4 flex gap-1 bg-white p-1 border-2 border-[#171717] shadow-[2px_2px_0px_#171717]">
                     <button
                       type="button"
                       onClick={() => setPreviewSide('FRONT')}
@@ -1375,14 +1410,14 @@ export function CustomizerStudioPage() {
                     <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-[#E6321C]">
                       Live Customer Experience
                     </span>
-                    <h3 className="text-xl font-black text-gray-900 uppercase mt-0.5">{activeGarment.name}</h3>
-                    <p className="text-xs text-gray-500">{activeGarment.description}</p>
+                    <h3 className="text-xl font-black text-[#171717] uppercase mt-0.5">{activeGarment.name}</h3>
+                    <p className="text-xs text-[#6F6A63]">{activeGarment.description}</p>
                     <div className="flex items-center gap-3 mt-2">
                       <span className="text-2xl font-black text-[#E6321C]">
                         ₹{activeGarment.price.toLocaleString('en-IN')}
                       </span>
                       {activeGarment.compareAtPrice && activeGarment.compareAtPrice > activeGarment.price && (
-                        <span className="text-sm font-semibold text-gray-400 line-through">
+                        <span className="text-sm font-semibold text-[#6F6A63] line-through">
                           ₹{activeGarment.compareAtPrice.toLocaleString('en-IN')}
                         </span>
                       )}
@@ -1390,7 +1425,7 @@ export function CustomizerStudioPage() {
                   </div>
 
                   <div>
-                    <label className="text-[10px] font-bold uppercase tracking-wider text-gray-500 block mb-2">
+                    <label className="admin-label text-[#6F6A63] mb-2">
                       Select Colorway ({activeGarment.colors.length} Available)
                     </label>
                     <div className="flex flex-wrap gap-2">
@@ -1400,7 +1435,7 @@ export function CustomizerStudioPage() {
                           type="button"
                           onClick={() => setPreviewColorIndex(idx)}
                           className={`w-8 h-8 rounded-full border-2 transition-transform cursor-pointer ${
-                            previewColorIndex === idx ? 'ring-2 ring-offset-2 ring-gray-900 scale-110' : 'hover:scale-105'
+                            previewColorIndex === idx ? 'ring-2 ring-offset-2 ring-[#171717] scale-110' : 'hover:scale-105'
                           }`}
                           style={{ backgroundColor: c.hex, borderColor: '#ddd3c5' }}
                           title={c.name}
@@ -1410,14 +1445,14 @@ export function CustomizerStudioPage() {
                   </div>
 
                   <div>
-                    <label className="text-[10px] font-bold uppercase tracking-wider text-gray-500 block mb-2">
+                    <label className="admin-label text-[#6F6A63] mb-2">
                       Available Sizes ({activeGarment.activeSizes?.length || 0} Offered)
                     </label>
                     <div className="flex flex-wrap gap-1.5">
                       {(activeGarment.activeSizes || []).map((sz) => (
                         <span
                           key={sz}
-                          className="px-3 py-1.5 rounded-xl border border-gray-200 bg-white font-mono text-xs font-bold uppercase text-gray-800"
+                          className="px-3 py-1.5 border-2 border-[#171717] bg-white font-mono text-xs font-bold uppercase text-[#171717]"
                         >
                           {sz}
                         </span>
@@ -1425,11 +1460,75 @@ export function CustomizerStudioPage() {
                     </div>
                   </div>
 
-                  <div className="p-4 rounded-2xl bg-gray-50 border border-gray-200 text-xs text-gray-600 space-y-1">
-                    <div className="font-bold text-gray-900">Storefront Status:</div>
-                    <div>• Silhouette: {activeGarment.isActive ? 'Active on /customize' : 'Hidden'}</div>
-                    <div>• Active Color: {activeColorObj?.name || 'Default'} ({activeColorObj?.hex})</div>
-                    <div>• Photo: {activeImageUrl ? 'Uploaded' : 'Missing (customers see a placeholder)'}</div>
+                  <div className="p-4 bg-white border-2 border-[#171717] shadow-[3px_3px_0px_#171717] space-y-4">
+                    <div className="flex items-start justify-between gap-3">
+                      <div>
+                        <div className="admin-label mb-0.5">Print placement</div>
+                        <p className="text-[11px] text-[#6F6A63] leading-snug">
+                          Line the {previewSide === 'FRONT' ? 'front' : 'back'} print areas up with the photo. Applies to every colour of this garment; Publish to save.
+                        </p>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => updateActiveGarment((prev) => ({ ...prev, printAreas: undefined }))}
+                        className="btn-outline shrink-0 text-[10px] px-2.5 py-1.5"
+                        title="Back to this style's default placement"
+                      >
+                        <RotateCcw size={12} />
+                        Reset
+                      </button>
+                    </div>
+                    {(previewSide === 'FRONT' ? (['front', 'chest'] as const) : (['back'] as const)).map((key) => {
+                      const spot = printAreasFor(activeGarment.style, activeGarment.printAreas)[key];
+                      return (
+                        <fieldset
+                          key={key}
+                          className="space-y-1.5"
+                          onPointerEnter={() => setFocusSpot(key)}
+                          onPointerLeave={() => setFocusSpot(null)}
+                          onFocus={() => setFocusSpot(key)}
+                          onBlur={() => setFocusSpot(null)}
+                        >
+                          <legend className="text-[11px] font-mono font-black uppercase tracking-wider text-[#171717] mb-1">
+                            {key === 'front' ? 'Front print' : key === 'chest' ? 'Left chest logo' : 'Back print'}
+                          </legend>
+                          {([
+                            ['x', 'Across', 5, 95],
+                            ['y', 'Down', 5, 95],
+                            ['w', 'Width', 5, 80],
+                          ] as const).map(([axis, label, min, max]) => (
+                            <label key={axis} className="grid grid-cols-[56px_1fr_48px] items-center gap-2 text-[11px] text-[#6F6A63]">
+                              <span>{label}</span>
+                              <input
+                                type="range"
+                                min={min}
+                                max={max}
+                                step={0.5}
+                                value={spot[axis]}
+                                onChange={(e) => setPrintSpot(key, axis, Number(e.target.value))}
+                                className="w-full accent-[#E6321C] cursor-pointer"
+                                aria-label={`${key} print ${label.toLowerCase()}`}
+                              />
+                              <span className="font-mono font-bold text-[#171717] text-right">{spot[axis]}%</span>
+                            </label>
+                          ))}
+                        </fieldset>
+                      );
+                    })}
+                  </div>
+
+                  <div className="p-4 bg-[#F7EEDB] border-2 border-[#171717] text-xs text-[#6F6A63] space-y-1">
+                    <div className="font-bold text-[#171717]">Storefront status</div>
+                    <div>• Garment: {activeGarment.isActive ? 'Live on /customize' : 'Hidden'}</div>
+                    <div>• Colour: {activeColorObj?.name || 'None'}{activeColorObj?.hex ? ` (${activeColorObj.hex})` : ''}</div>
+                    <div>
+                      • {previewSide === 'FRONT' ? 'Front' : 'Back'} photo:{' '}
+                      {activeImageUrl
+                        ? 'Uploaded'
+                        : previewSide === 'FRONT'
+                          ? 'Missing — this colour is hidden from customers until it has one'
+                          : 'Missing — customers see a “back photo coming soon” note'}
+                    </div>
                   </div>
                 </div>
               </div>
@@ -1438,18 +1537,18 @@ export function CustomizerStudioPage() {
         </div>
       )}
 
-      {/* ADD / EDIT COLORWAY MODAL */}
+      {/* BAUHAUS ADD / EDIT COLORWAY MODAL */}
       {showColorModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-          <div className="bg-white rounded-3xl p-6 sm:p-8 max-w-lg w-full shadow-2xl border border-gray-200">
-            <div className="flex justify-between items-center pb-3 border-b border-gray-100 mb-5">
-              <h3 className="text-base font-black uppercase text-gray-900">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-xs animate-in fade-in duration-200">
+          <div className="bg-[#F7EEDB] border-2 border-[#171717] p-6 sm:p-7 max-w-lg w-full shadow-[8px_8px_0px_#171717]">
+            <div className="flex justify-between items-center pb-3 border-b-2 border-[#171717] mb-5">
+              <h3 className="text-base font-black uppercase tracking-wide text-[#171717] font-sans">
                 {editingColorId ? 'Edit Colorway' : 'Add New Colorway'}
               </h3>
               <button
                 type="button"
                 onClick={() => setShowColorModal(false)}
-                className="w-8 h-8 rounded-full border border-gray-200 flex items-center justify-center text-gray-400 hover:text-gray-900 cursor-pointer"
+                className="w-7 h-7 border-2 border-[#171717] bg-white hover:bg-[#E6321C] hover:text-white flex items-center justify-center text-[#171717] font-bold transition-colors shadow-[2px_2px_0px_#171717] cursor-pointer"
               >
                 <X size={15} />
               </button>
@@ -1457,20 +1556,20 @@ export function CustomizerStudioPage() {
 
             <form onSubmit={handleSaveColorForm} className="space-y-4">
               <div>
-                <label className="text-[11px] font-bold uppercase tracking-wider text-gray-700 block mb-1">
-                  Color Name
+                <label className="admin-label">
+                  Color Name *
                 </label>
                 <input
                   type="text"
                   value={colorForm.name}
                   onChange={(e) => setColorForm((prev) => ({ ...prev, name: e.target.value }))}
                   placeholder="e.g. Sage Green, Washed Charcoal"
-                  className="w-full px-3 py-2 rounded-xl border border-gray-200 text-sm font-semibold focus:outline-none focus:border-[#E6321C]"
+                  className="admin-input font-bold text-xs"
                 />
               </div>
 
               <div>
-                <label className="text-[10px] font-bold uppercase tracking-wider text-gray-500 block mb-1.5">
+                <label className="text-[10px] font-mono font-bold uppercase tracking-wider text-[#171717]/70 block mb-1.5">
                   Bingooo Signature Presets
                 </label>
                 <div className="flex flex-wrap gap-1.5">
@@ -1486,9 +1585,9 @@ export function CustomizerStudioPage() {
                           textContrast: item.contrast,
                         }));
                       }}
-                      className="px-2.5 py-1 rounded-lg border border-gray-200 text-[10px] font-bold flex items-center gap-1.5 bg-gray-50 hover:bg-white transition-colors cursor-pointer"
+                      className="px-2.5 py-1 border-2 border-[#171717] text-[10px] font-bold font-mono uppercase flex items-center gap-1.5 bg-white hover:bg-[#F7EEDB] transition-colors cursor-pointer shadow-[2px_2px_0px_#171717] active:translate-x-[1px] active:translate-y-[1px]"
                     >
-                      <span className="w-3 h-3 rounded-full border border-gray-300" style={{ backgroundColor: item.hex }} />
+                      <span className="w-3 h-3 border border-[#171717]" style={{ backgroundColor: item.hex }} />
                       <span>{item.name}</span>
                     </button>
                   ))}
@@ -1497,7 +1596,7 @@ export function CustomizerStudioPage() {
 
               <div className="grid grid-cols-2 gap-3 items-center">
                 <div>
-                  <label className="text-[11px] font-bold uppercase tracking-wider text-gray-700 block mb-1">
+                  <label className="admin-label">
                     Hex Code
                   </label>
                   <div className="flex items-center gap-2">
@@ -1505,29 +1604,29 @@ export function CustomizerStudioPage() {
                       type="color"
                       value={colorForm.hex}
                       onChange={(e) => handleHexChange(e.target.value)}
-                      className="w-9 h-9 rounded-xl border border-gray-200 p-0.5 cursor-pointer flex-shrink-0"
+                      className="w-9 h-9 border-2 border-[#171717] p-0.5 cursor-pointer flex-shrink-0 shadow-[2px_2px_0px_#171717]"
                     />
                     <input
                       type="text"
                       value={colorForm.hex}
                       onChange={(e) => handleHexChange(e.target.value)}
-                      className="w-full px-3 py-2 rounded-xl border border-gray-200 font-mono text-sm font-semibold uppercase"
+                      className="admin-input font-mono text-xs font-bold uppercase"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label className="text-[11px] font-bold uppercase tracking-wider text-gray-700 block mb-1">
+                  <label className="admin-label">
                     Ink Contrast
                   </label>
                   <div className="flex items-center gap-2">
                     <button
                       type="button"
                       onClick={() => setColorForm((p) => ({ ...p, textContrast: '#FFFFFF' }))}
-                      className={`flex-1 py-2 rounded-xl text-xs font-bold border transition-colors cursor-pointer ${
+                      className={`flex-1 py-2 text-xs font-mono font-bold uppercase border-2 border-[#171717] transition-all cursor-pointer ${
                         colorForm.textContrast === '#FFFFFF'
-                          ? 'bg-gray-900 text-white border-gray-900'
-                          : 'bg-white text-gray-700 border-gray-200'
+                          ? 'bg-[#171717] text-white shadow-[2px_2px_0px_#E6321C]'
+                          : 'bg-white text-[#171717] shadow-[2px_2px_0px_#171717]'
                       }`}
                     >
                       Light Ink
@@ -1535,10 +1634,10 @@ export function CustomizerStudioPage() {
                     <button
                       type="button"
                       onClick={() => setColorForm((p) => ({ ...p, textContrast: '#171717' }))}
-                      className={`flex-1 py-2 rounded-xl text-xs font-bold border transition-colors cursor-pointer ${
+                      className={`flex-1 py-2 text-xs font-mono font-bold uppercase border-2 border-[#171717] transition-all cursor-pointer ${
                         colorForm.textContrast === '#171717'
-                          ? 'bg-gray-900 text-white border-gray-900'
-                          : 'bg-white text-gray-700 border-gray-200'
+                          ? 'bg-[#171717] text-white shadow-[2px_2px_0px_#E6321C]'
+                          : 'bg-white text-[#171717] shadow-[2px_2px_0px_#171717]'
                       }`}
                     >
                       Dark Ink
@@ -1547,20 +1646,20 @@ export function CustomizerStudioPage() {
                 </div>
               </div>
 
-              <div className="space-y-2 pt-2 border-t border-gray-100">
+              <div className="space-y-3 pt-3 border-t-2 border-[#171717]">
                 <div>
-                  <label className="text-[10px] font-bold uppercase tracking-wider text-gray-500 block mb-1">
-                    Front Photo
+                  <label className="text-[10px] font-mono font-bold uppercase tracking-wider text-[#171717] block mb-1">
+                    Front Photo *
                   </label>
                   <div className="flex items-center gap-2">
                     {colorForm.frontImageUrl && (
-                      <img src={colorForm.frontImageUrl} alt="" className="w-10 h-10 object-contain rounded-lg border border-gray-200 bg-gray-50" />
+                      <img src={resolveImageUrl(colorForm.frontImageUrl)} alt="" className="w-10 h-10 object-contain border-2 border-[#171717] bg-white shadow-[2px_2px_0px_#171717]" />
                     )}
                     <button
                       type="button"
                       onClick={() => triggerPhotoUpload(MODAL_UPLOAD, 'front')}
                       disabled={uploadingColorId === MODAL_UPLOAD}
-                      className="px-3 py-1.5 rounded-xl bg-gray-900 text-white text-[11px] font-bold flex items-center gap-1 cursor-pointer disabled:opacity-60"
+                      className="btn-secondary py-1 px-3 text-[10px] font-bold"
                     >
                       {uploadingColorId === MODAL_UPLOAD && activeUploadTarget?.side === 'front' ? <LoaderCircle size={12} className="animate-spin" /> : <Upload size={12} />}
                       <span>{colorForm.frontImageUrl ? 'Replace' : 'Upload'}</span>
@@ -1570,24 +1669,24 @@ export function CustomizerStudioPage() {
                       value={colorForm.frontImageUrl}
                       onChange={(e) => setColorForm((prev) => ({ ...prev, frontImageUrl: e.target.value }))}
                       placeholder="or paste an https:// image link"
-                      className="flex-1 min-w-0 px-3 py-1.5 rounded-xl border border-gray-200 text-xs font-mono"
+                      className="admin-input flex-1 min-w-0 text-xs font-mono"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label className="text-[10px] font-bold uppercase tracking-wider text-gray-500 block mb-1">
+                  <label className="text-[10px] font-mono font-bold uppercase tracking-wider text-[#171717] block mb-1">
                     Back Photo
                   </label>
                   <div className="flex items-center gap-2">
                     {colorForm.backImageUrl && (
-                      <img src={colorForm.backImageUrl} alt="" className="w-10 h-10 object-contain rounded-lg border border-gray-200 bg-gray-50" />
+                      <img src={resolveImageUrl(colorForm.backImageUrl)} alt="" className="w-10 h-10 object-contain border-2 border-[#171717] bg-white shadow-[2px_2px_0px_#171717]" />
                     )}
                     <button
                       type="button"
                       onClick={() => triggerPhotoUpload(MODAL_UPLOAD, 'back')}
                       disabled={uploadingColorId === MODAL_UPLOAD}
-                      className="px-3 py-1.5 rounded-xl bg-gray-900 text-white text-[11px] font-bold flex items-center gap-1 cursor-pointer disabled:opacity-60"
+                      className="btn-secondary py-1 px-3 text-[10px] font-bold"
                     >
                       {uploadingColorId === MODAL_UPLOAD && activeUploadTarget?.side === 'back' ? <LoaderCircle size={12} className="animate-spin" /> : <Upload size={12} />}
                       <span>{colorForm.backImageUrl ? 'Replace' : 'Upload'}</span>
@@ -1597,23 +1696,23 @@ export function CustomizerStudioPage() {
                       value={colorForm.backImageUrl}
                       onChange={(e) => setColorForm((prev) => ({ ...prev, backImageUrl: e.target.value }))}
                       placeholder="or paste an https:// image link"
-                      className="flex-1 min-w-0 px-3 py-1.5 rounded-xl border border-gray-200 text-xs font-mono"
+                      className="admin-input flex-1 min-w-0 text-xs font-mono"
                     />
                   </div>
                 </div>
               </div>
 
-              <div className="pt-3 flex gap-2">
+              <div className="pt-3 flex gap-2 border-t-2 border-[#171717]">
                 <button
                   type="button"
                   onClick={() => setShowColorModal(false)}
-                  className="flex-1 py-2.5 rounded-xl border border-gray-200 text-xs font-bold text-gray-700 hover:bg-gray-50 cursor-pointer"
+                  className="btn-outline flex-1"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 py-2.5 rounded-xl bg-[#E6321C] hover:bg-[#c92613] text-white text-xs font-bold uppercase tracking-wider shadow-sm cursor-pointer"
+                  className="btn-primary flex-1"
                 >
                   Save Colorway
                 </button>

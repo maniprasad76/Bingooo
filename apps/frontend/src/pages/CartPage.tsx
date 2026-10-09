@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
+import { m, AnimatePresence } from 'framer-motion';
 import {
   ShieldCheck,
   RotateCcw,
@@ -96,14 +96,16 @@ export function CartPage() {
         code,
         orderSubtotal: subtotal,
       });
-      setAppliedCoupon({ code: res.coupon.code, discount: res.discount });
+      const validCode = res.code || res.coupon?.code || code;
+      const discount = Number(res.discountAmount ?? res.discount ?? 0);
+      setAppliedCoupon({ code: validCode, discount });
       setCouponStatus({
         type: 'success',
-        message: `Coupon "${res.coupon.code}" applied successfully!`,
+        message: `Coupon "${validCode}" applied successfully!`,
       });
       toast({
         title: 'Coupon applied!',
-        description: `You saved ₹${res.discount} with code ${res.coupon.code}`,
+        description: `You saved ₹${discount} with code ${validCode}`,
         variant: 'success',
       });
       triggerHaptic('success');
@@ -296,7 +298,7 @@ export function CartPage() {
                       const attributes = [variantColor, variantSize, gsm].filter(Boolean);
 
                       return (
-                        <motion.article
+                        <m.article
                           key={item.id}
                           layout
                           initial={{ opacity: 0, y: 8 }}
@@ -436,7 +438,7 @@ export function CartPage() {
                           >
                             <span className="font-bold text-sm leading-none">×</span>
                           </button>
-                        </motion.article>
+                        </m.article>
                       );
                     })}
                   </AnimatePresence>

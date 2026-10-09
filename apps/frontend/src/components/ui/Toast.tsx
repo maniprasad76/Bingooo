@@ -1,5 +1,5 @@
 import { useEffect, useState, createContext, useContext, useCallback, type ReactNode } from 'react';
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence, m } from 'framer-motion';
 import { X, CheckCircle, AlertCircle, Info, Undo2 } from 'lucide-react';
 import { cn } from '../../lib/utils';
 
@@ -144,7 +144,7 @@ function ToastItem({ toast, onRemove }: { toast: ToastItemData; onRemove: (id: s
   };
 
   return (
-    <motion.div
+    <m.div
       layout
       initial={{ opacity: 0, y: 16, scale: 0.96 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -198,6 +198,6 @@ function ToastItem({ toast, onRemove }: { toast: ToastItemData; onRemove: (id: s
       >
         <X size={14} />
       </button>
-    </motion.div>
+    </m.div>
   );
 }

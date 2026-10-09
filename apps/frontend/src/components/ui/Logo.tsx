@@ -1,5 +1,7 @@
 import { Link } from 'react-router-dom';
 import { cn } from '../../lib/utils';
+import { IMAGES } from '../../lib/images';
+import { Picture } from './Picture';
 
 export type LogoVariant = 'red' | 'white' | 'dark' | 'icon' | 'icon-white' | 'submark';
 export type LogoSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'custom';
@@ -113,8 +115,9 @@ export function Logo({
       aria-label={alt}
       role="img"
     >
-      <img
-        src="/submark.png"
+      <Picture
+        image={IMAGES.submark}
+        sizes="56px"
         alt={alt}
         className="w-full h-full object-cover select-none"
         loading="eager"

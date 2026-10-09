@@ -31,5 +31,9 @@ export function resolveImageUrl(url?: string | null): string {
       : normalized.replace('https://localhost:3000', '');
   }
 
+  if (normalized.startsWith('/api/')) {
+    return isProd ? `https://api.bingooo.co.in${normalized}` : normalized;
+  }
+
   return normalized;
 }

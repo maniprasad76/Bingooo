@@ -1,4 +1,6 @@
 import { useState } from 'react';
+import { Picture } from '../components/ui/Picture';
+import { IMAGES } from '../lib/images';
 import { Link } from 'react-router-dom';
 import { SEO } from '../components/common/SEO';
 import { triggerHaptic } from '../lib/native/capacitorBridge';
@@ -177,8 +179,10 @@ export function CancellationPolicyPage() {
 
         {/* Right Imagery Banner */}
         <div className="relative min-h-[380px] sm:min-h-[480px] lg:min-h-full overflow-hidden bg-[#171717]">
-          <img
-            src="/custom-studio.jpg"
+          <Picture
+            image={IMAGES.customStudio}
+            sizes="(min-width: 1024px) 52vw, 100vw"
+            loading="eager"
             alt="Bingooo atelier production inspection and pre-dispatch logistics"
             className="w-full h-full object-cover grayscale contrast-125 opacity-85"
           />

@@ -217,7 +217,53 @@
       "group": "Settings"
     }
   ],
-  "coupons": [],
+  "coupons": [
+    {
+      "id": "coup-bingooo10",
+      "code": "BINGOOO10",
+      "discount_type": "percentage",
+      "discount_value": 10,
+      "max_discount_amount": 500,
+      "min_order_amount": 999,
+      "usage_limit": 1000,
+      "usage_count": 0,
+      "is_active": true,
+      "starts_at": "2026-01-01T00:00:00.000Z",
+      "expires_at": "2026-12-31T23:59:59.000Z",
+      "created_at": "2026-10-09T19:21:46.700Z",
+      "updated_at": "2026-10-09T19:21:46.700Z"
+    },
+    {
+      "id": "coup-welcome20",
+      "code": "WELCOME20",
+      "discount_type": "percentage",
+      "discount_value": 20,
+      "max_discount_amount": 800,
+      "min_order_amount": 1499,
+      "usage_limit": 500,
+      "usage_count": 0,
+      "is_active": true,
+      "starts_at": "2026-01-01T00:00:00.000Z",
+      "expires_at": "2026-12-31T23:59:59.000Z",
+      "created_at": "2026-10-09T19:21:46.700Z",
+      "updated_at": "2026-10-09T19:21:46.700Z"
+    },
+    {
+      "id": "coup-freeship",
+      "code": "FREESHIP",
+      "discount_type": "fixed",
+      "discount_value": 100,
+      "max_discount_amount": 100,
+      "min_order_amount": 499,
+      "usage_limit": 5000,
+      "usage_count": 0,
+      "is_active": true,
+      "starts_at": "2026-01-01T00:00:00.000Z",
+      "expires_at": "2026-12-31T23:59:59.000Z",
+      "created_at": "2026-10-09T19:21:46.700Z",
+      "updated_at": "2026-10-09T19:21:46.700Z"
+    }
+  ],
   "banners": [
     {
       "id": "ban-1",
@@ -306,139 +352,386 @@
   "customizer_config": {
     "garments": [
       {
-        "id": "tshirt",
-        "name": "T-SHIRT",
-        "price": 999,
-        "description": "100% Combed Cotton Classic Crewneck",
+        "id": "oversized",
+        "name": "Oversized T-Shirt (240 GSM)",
+        "shortName": "OVERSIZED",
+        "style": "tshirt",
+        "description": "240 GSM Combed Cotton · Drop-Shoulder Relaxed Streetwear Fit",
+        "price": 649,
+        "compareAtPrice": 1499,
         "isActive": true,
+        "sizes": [
+          "S",
+          "M",
+          "L",
+          "XL",
+          "XXL"
+        ],
+        "activeSizes": [
+          "S",
+          "M",
+          "L",
+          "XL",
+          "XXL"
+        ],
+        "sizeMeasurements": {
+          "in": [
+            {
+              "size": "S",
+              "chest": "42",
+              "length": "27.5",
+              "shoulder": "20",
+              "sleeve": "8.5"
+            },
+            {
+              "size": "M",
+              "chest": "44",
+              "length": "28",
+              "shoulder": "21",
+              "sleeve": "9"
+            },
+            {
+              "size": "L",
+              "chest": "46",
+              "length": "28.5",
+              "shoulder": "22",
+              "sleeve": "9.5"
+            },
+            {
+              "size": "XL",
+              "chest": "48",
+              "length": "29",
+              "shoulder": "23",
+              "sleeve": "10"
+            },
+            {
+              "size": "XXL",
+              "chest": "50",
+              "length": "29.5",
+              "shoulder": "24",
+              "sleeve": "10.5"
+            }
+          ],
+          "cm": [
+            {
+              "size": "S",
+              "chest": "107",
+              "length": "70",
+              "shoulder": "51",
+              "sleeve": "22"
+            },
+            {
+              "size": "M",
+              "chest": "112",
+              "length": "71",
+              "shoulder": "53",
+              "sleeve": "23"
+            },
+            {
+              "size": "L",
+              "chest": "117",
+              "length": "72",
+              "shoulder": "56",
+              "sleeve": "24"
+            },
+            {
+              "size": "XL",
+              "chest": "122",
+              "length": "74",
+              "shoulder": "58",
+              "sleeve": "25"
+            },
+            {
+              "size": "XXL",
+              "chest": "127",
+              "length": "75",
+              "shoulder": "61",
+              "sleeve": "27"
+            }
+          ]
+        },
         "colors": [
           {
             "id": "black",
-            "name": "Black",
+            "name": "Obsidian Black",
             "hex": "#171717",
             "textContrast": "#FFFFFF",
-            "frontImageUrl": "/custom/black-front.png",
-            "isActive": true,
-            "backImageUrl": "/custom/black-back.png"
-          },
-          {
-            "id": "white",
-            "name": "White",
-            "hex": "#FFFFFF",
-            "textContrast": "#171717",
-            "frontImageUrl": "/custom/white-front.png",
-            "isActive": true,
-            "backImageUrl": "/custom/white-back.png"
-          },
-          {
-            "id": "beige",
-            "name": "Beige",
-            "hex": "#D8C8B1",
-            "textContrast": "#171717",
-            "frontImageUrl": "/custom/beige-front.png",
-            "backImageUrl": "/custom/beige-back.png",
+            "frontImageUrl": "",
+            "backImageUrl": "",
             "isActive": true
           },
           {
-            "id": "red",
-            "name": "Red",
-            "hex": "#E6321C",
-            "textContrast": "#FFFFFF",
-            "frontImageUrl": "/custom/red-front.png",
-            "backImageUrl": "/custom/red-back.png",
+            "id": "white",
+            "name": "Pure White",
+            "hex": "#FFFFFF",
+            "textContrast": "#171717",
+            "frontImageUrl": "",
+            "backImageUrl": "",
             "isActive": true
           }
         ]
       },
       {
-        "id": "oversized",
-        "name": "OVERSIZED",
-        "price": 1299,
-        "description": "240 GSM Loopknit French Terry Cotton (100% Biowash) Drop-Shoulder Fit",
+        "id": "polo",
+        "name": "Classic Piqué Polo T-Shirt",
+        "shortName": "POLO SHIRT",
+        "style": "polo",
+        "description": "220 GSM Honeycomb Matty · Premium Combed Cotton Tailored Fit",
+        "price": 699,
+        "compareAtPrice": 1499,
         "isActive": true,
+        "sizes": [
+          "36",
+          "38",
+          "40",
+          "42",
+          "44",
+          "46"
+        ],
+        "activeSizes": [
+          "36",
+          "38",
+          "40",
+          "42",
+          "44",
+          "46"
+        ],
+        "sizeMeasurements": {
+          "in": [
+            {
+              "size": "36",
+              "chest": "36",
+              "length": "26",
+              "shoulder": "16",
+              "sleeve": "8"
+            },
+            {
+              "size": "38",
+              "chest": "38",
+              "length": "27",
+              "shoulder": "17",
+              "sleeve": "8.5"
+            },
+            {
+              "size": "40",
+              "chest": "40",
+              "length": "28",
+              "shoulder": "17.5",
+              "sleeve": "9"
+            },
+            {
+              "size": "42",
+              "chest": "42",
+              "length": "29",
+              "shoulder": "18",
+              "sleeve": "9.5"
+            },
+            {
+              "size": "44",
+              "chest": "44",
+              "length": "30",
+              "shoulder": "18.5",
+              "sleeve": "10"
+            },
+            {
+              "size": "46",
+              "chest": "46",
+              "length": "31",
+              "shoulder": "19",
+              "sleeve": "10.5"
+            }
+          ],
+          "cm": [
+            {
+              "size": "36",
+              "chest": "91",
+              "length": "66",
+              "shoulder": "41",
+              "sleeve": "20"
+            },
+            {
+              "size": "38",
+              "chest": "97",
+              "length": "68",
+              "shoulder": "43",
+              "sleeve": "22"
+            },
+            {
+              "size": "40",
+              "chest": "102",
+              "length": "71",
+              "shoulder": "44",
+              "sleeve": "23"
+            },
+            {
+              "size": "42",
+              "chest": "107",
+              "length": "74",
+              "shoulder": "46",
+              "sleeve": "24"
+            },
+            {
+              "size": "44",
+              "chest": "112",
+              "length": "76",
+              "shoulder": "47",
+              "sleeve": "25"
+            },
+            {
+              "size": "46",
+              "chest": "117",
+              "length": "79",
+              "shoulder": "48",
+              "sleeve": "27"
+            }
+          ]
+        },
         "colors": [
           {
             "id": "black",
-            "name": "Black",
+            "name": "Obsidian Black",
             "hex": "#171717",
             "textContrast": "#FFFFFF",
-            "frontImageUrl": "/custom/black-front.png",
-            "isActive": true,
-            "backImageUrl": "/custom/black-back.png"
-          },
-          {
-            "id": "white",
-            "name": "White",
-            "hex": "#FFFFFF",
-            "textContrast": "#171717",
-            "frontImageUrl": "/custom/white-front.png",
-            "isActive": true,
-            "backImageUrl": "/custom/white-back.png"
-          },
-          {
-            "id": "beige",
-            "name": "Beige",
-            "hex": "#D8C8B1",
-            "textContrast": "#171717",
-            "frontImageUrl": "/custom/beige-front.png",
-            "backImageUrl": "/custom/beige-back.png",
+            "frontImageUrl": "",
+            "backImageUrl": "",
             "isActive": true
           },
           {
-            "id": "red",
-            "name": "Red",
-            "hex": "#E6321C",
-            "textContrast": "#FFFFFF",
-            "frontImageUrl": "/custom/red-front.png",
-            "backImageUrl": "/custom/red-back.png",
+            "id": "white",
+            "name": "Pure White",
+            "hex": "#FFFFFF",
+            "textContrast": "#171717",
+            "frontImageUrl": "",
+            "backImageUrl": "",
             "isActive": true
           }
         ]
       },
       {
         "id": "hoodie",
-        "name": "HOODIE",
-        "price": 2499,
-        "description": "430 GSM Heavyweight Drop-Shoulder Fleece Hoodie",
+        "name": "Drop Shoulder Hoodie (430 GSM)",
+        "shortName": "HOODIE",
+        "style": "hoodie",
+        "description": "430 GSM Heavyweight Brushed Fleece Pullover Hoodie",
+        "price": 799,
+        "compareAtPrice": 1799,
         "isActive": true,
+        "sizes": [
+          "S",
+          "M",
+          "L",
+          "XL",
+          "XXL"
+        ],
+        "activeSizes": [
+          "S",
+          "M",
+          "L",
+          "XL",
+          "XXL"
+        ],
+        "sizeMeasurements": {
+          "in": [
+            {
+              "size": "S",
+              "chest": "42",
+              "height": "25"
+            },
+            {
+              "size": "M",
+              "chest": "44",
+              "height": "26"
+            },
+            {
+              "size": "L",
+              "chest": "46",
+              "height": "27"
+            },
+            {
+              "size": "XL",
+              "chest": "48",
+              "height": "28"
+            },
+            {
+              "size": "XXL",
+              "chest": "50",
+              "height": "29"
+            }
+          ],
+          "cm": [
+            {
+              "size": "S",
+              "chest": "107",
+              "height": "64"
+            },
+            {
+              "size": "M",
+              "chest": "112",
+              "height": "66"
+            },
+            {
+              "size": "L",
+              "chest": "117",
+              "height": "69"
+            },
+            {
+              "size": "XL",
+              "chest": "122",
+              "height": "71"
+            },
+            {
+              "size": "XXL",
+              "chest": "127",
+              "height": "74"
+            }
+          ]
+        },
         "colors": [
           {
             "id": "black",
-            "name": "Black",
+            "name": "Obsidian Black",
             "hex": "#171717",
             "textContrast": "#FFFFFF",
-            "frontImageUrl": "/custom/hoodie-black-front.png",
-            "isActive": true,
-            "backImageUrl": "/custom/hoodie-black-back.png"
-          },
-          {
-            "id": "white",
-            "name": "White",
-            "hex": "#FFFFFF",
-            "textContrast": "#171717",
-            "frontImageUrl": "/custom/hoodie-white-front.png",
-            "isActive": true,
-            "backImageUrl": "/custom/hoodie-white-back.png"
-          },
-          {
-            "id": "beige",
-            "name": "Beige",
-            "hex": "#D8C8B1",
-            "textContrast": "#171717",
             "frontImageUrl": "",
+            "backImageUrl": "",
             "isActive": true
           },
           {
-            "id": "red",
-            "name": "Red",
-            "hex": "#E6321C",
-            "textContrast": "#FFFFFF",
+            "id": "white",
+            "name": "Pure White",
+            "hex": "#FFFFFF",
+            "textContrast": "#171717",
             "frontImageUrl": "",
+            "backImageUrl": "",
             "isActive": true
           }
         ]
       }
     ],
-    "updatedAt": "2026-09-15T05:58:00.923Z"
-  }
+    "updatedAt": "2026-10-09T07:25:00.000Z"
+  },
+  "users": [
+    {
+      "id": "admin-super-root",
+      "email": "admin@bingooo.in",
+      "full_name": "Super Admin",
+      "role": "SUPER_ADMIN",
+      "status": "active",
+      "password_hash": "pbkdf2$100000$524485714df3d4732dc7d51e7b64bc06$1aef5a6edafc42b5e6752956a103acf58e06c920ebf73d865dca63de04a74781bbcbd45f60ecf9da83bfc20419e7b76f3aa0e8b64f4f9a74c2631b2bc834d25d",
+      "updated_at": "2026-10-09T13:36:49.591Z",
+      "fullName": "Bingooo Super Admin"
+    },
+    {
+      "id": "a5e27e8a-6f49-4b0a-aaa4-ea436471203f",
+      "email": "basaprasaduu@gmail.com",
+      "full_name": "Mani Prasad",
+      "phone": "",
+      "role": "SUPER_ADMIN",
+      "status": "active",
+      "password_hash": "pbkdf2$100000$524485714df3d4732dc7d51e7b64bc06$1aef5a6edafc42b5e6752956a103acf58e06c920ebf73d865dca63de04a74781bbcbd45f60ecf9da83bfc20419e7b76f3aa0e8b64f4f9a74c2631b2bc834d25d",
+      "created_at": "2026-10-09T02:26:36.067Z",
+      "updated_at": "2026-10-09T13:36:49.593Z",
+      "fullName": "Prasad"
+    }
+  ]
 }

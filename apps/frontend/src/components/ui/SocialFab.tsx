@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { m, AnimatePresence } from 'framer-motion';
 import { Plus, X } from 'lucide-react';
 import { useUIStore } from '../../store/ui';
 import {
@@ -123,7 +123,7 @@ export function SocialFab() {
       {/* ─── Speed Dial Items (Expanded) ─── */}
       <AnimatePresence>
         {isOpen && (
-          <motion.div
+          <m.div
             initial="closed"
             animate="open"
             exit="closed"
@@ -146,7 +146,7 @@ export function SocialFab() {
             {SOCIAL_ITEMS.map((item) => {
               const Icon = item.icon;
               return (
-                <motion.div
+                <m.div
                   key={item.id}
                   variants={{
                     open: { opacity: 1, y: 0, scale: 1 },
@@ -165,10 +165,10 @@ export function SocialFab() {
                   >
                     <Icon className="w-5 h-5 transition-transform group-hover:scale-105" />
                   </a>
-                </motion.div>
+                </m.div>
               );
             })}
-          </motion.div>
+          </m.div>
         )}
       </AnimatePresence>
 
@@ -185,7 +185,7 @@ export function SocialFab() {
               : 'bg-[#E6321C] hover:bg-[#B91F12] text-white shadow-[0_6px_20px_rgba(230,50,28,0.35)] hover:scale-105 active:scale-95'
           }`}
         >
-          <motion.div
+          <m.div
             animate={{ rotate: isOpen ? 90 : 0 }}
             transition={{ type: 'spring', stiffness: 350, damping: 20 }}
             className="flex items-center justify-center"
@@ -195,7 +195,7 @@ export function SocialFab() {
             ) : (
               <Plus className="w-5 h-5 sm:w-6 sm:h-6" strokeWidth={2.4} aria-hidden="true" />
             )}
-          </motion.div>
+          </m.div>
         </button>
       </div>
     </div>

@@ -121,6 +121,19 @@ async function run() {
     assert(rejection(() => service.addColorToGarment('polo', { name: 'Bad', hex: '#000000', frontImageUrl: 'ftp://x/y.png' })).startsWith('400'), 'Added colour with a bad photo link is rejected');
     service.deleteGarmentColor('polo', 'sage-green');
     assert(!service.getStudioConfig().garments.find((g) => g.id === 'polo')!.colors.some((c) => c.id === 'sage-green'), 'Colours can be deleted');
+
+    console.log('📐 5. Print areas line up with each garment photo');
+    const { normalizeStudioConfig, DEFAULT_PRINT_AREAS } = await import('../src/customizations/studio-config');
+    const [tee, hoodie] = normalizeStudioConfig({ garments: [garment(), garment({ name: 'Heavy Hoodie', style: 'hoodie' })] }, true).garments;
+    assert(JSON.stringify(tee.printAreas) === JSON.stringify(DEFAULT_PRINT_AREAS.tshirt), 'A garment without saved print areas gets its style defaults', JSON.stringify(tee.printAreas));
+    assert(JSON.stringify(hoodie.printAreas) === JSON.stringify(DEFAULT_PRINT_AREAS.hoodie), 'Hoodies get hoodie placement by default');
+    const tuned = normalizeStudioConfig(
+      { garments: [garment({ printAreas: { front: { x: 48.04, y: 35, w: 40 }, chest: { x: 200, y: -4, w: 0 }, back: { x: 'left', y: null } } })] },
+      true,
+    ).garments[0].printAreas;
+    assert(tuned.front.x === 48 && tuned.front.y === 35 && tuned.front.w === 40, 'Adjusted print areas are saved (to 0.1%)', JSON.stringify(tuned.front));
+    assert(tuned.chest.x === 95 && tuned.chest.y === 5 && tuned.chest.w === 5, 'Out-of-range values are kept on the photo', JSON.stringify(tuned.chest));
+    assert(JSON.stringify(tuned.back) === JSON.stringify(DEFAULT_PRINT_AREAS.tshirt.back), 'Unreadable values fall back to the defaults', JSON.stringify(tuned.back));
   } finally {
     db.customizer_config = savedConfig;
     // Local disk flushes are async: let any in-flight one land first, or it

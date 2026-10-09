@@ -1,8 +1,8 @@
 # 📋 BINGOOO — Master Task Board, Roadmap & Release Tracker (`task.md`)
 
-> **Document Version:** 1.0.0  
+> **Document Version:** 1.2.0  
 > **Status:** Active Sprint & Backlog Tracker  
-> **Last Updated:** September 2026  
+> **Last Updated:** October 10, 2026  
 > **Live Deployments:**  
 > - 🛍️ **Storefront:** [https://bingooo-frontend.vercel.app](https://bingooo-frontend.vercel.app)  
 > - 🎛️ **Admin Operations:** [https://bingooo-admin.vercel.app](https://bingooo-admin.vercel.app)  
@@ -20,7 +20,7 @@
 | **Admin Operations** | 🟢 27 Routes Active | 7 operational divisions, product editor variant matrix, orders pipeline |
 | **Backend Modules** | 🟢 24 Modules Loaded | NestJS AppModule with in-memory O(1) store and Prisma schemas |
 | **Mobile Native Container** | 🟢 Capacitor 8 Active | Android shell configured with haptics and status bar bridge |
-| **Graph Intelligence** | 🟢 7,333+ Nodes | Graphify knowledge graph fully indexed and synchronized |
+| **Graph Intelligence** | 🟢 9,164+ Nodes | Graphify knowledge graph fully indexed (12,824 edges, 797 clusters) |
 
 ---
 
@@ -29,8 +29,8 @@
 ### Phase 1: Core E-Commerce Foundation (Completed)
 - [x] **Monorepo Architecture Setup:** Configured npm workspaces (`apps/frontend`, `apps/admin`, `apps/backend`, `packages/types`, `packages/config`).
 - [x] **Storefront Catalog & Discovery:** Built `HomePage`, `ShopPage`, `ProductPage` with GSM fabric specs, fit guide modal, and live stock countdown.
-- [x] **Shopping Bag & Flyout Cart:** Persistent slide-out cart drawer with free-shipping meter (₹999 threshold) and real-time coupon calculation.
-- [x] **Checkout & Payment Engine:** Integrated Razorpay checkout modal with UPI intent/QR, Cards, NetBanking, and COD fallback.
+- [x] **Shopping Bag & Flyout Cart:** Persistent slide-out cart drawer with 100% universal free shipping Pan-India and real-time coupon calculation.
+- [x] **Checkout & Payment Engine:** Integrated Razorpay checkout modal with UPI intent/QR, Cards, NetBanking (100% secure prepaid checkout with 5% instant discount).
 - [x] **Authoritative Server Pricing:** Implemented strict backend recalculation of cart totals, all-inclusive pricing (no tax surcharges), discounts, and shipping.
 - [x] **Order Fulfillment State Machine:** 6-stage fulfillment workflow (`Placed → Confirmed → Processing → Shipped → Out for Delivery → Delivered`).
 
@@ -42,8 +42,17 @@
 - [x] **Cloudflare R2 Media Integration:** Direct-to-R2 presigned upload pipeline with UUID asset isolation and MIME whitelisting.
 - [x] **Capacitor 8 Android Mobile Shell:** Packaged frontend as native Android app with tactile haptics and status bar theming.
 - [x] **Design System Audit & Iconography Refactor:** Standardized UI on Lucide React vector icons; established canonical `design.md`.
-- [x] **Circular Dependency Fix & Graphify Indexing:** Decoupled `store.ts` from `db-index.service.ts`; indexed 7,333+ symbols.
+- [x] **Circular Dependency Fix & Graphify Indexing:** Decoupled `store.ts` from `db-index.service.ts`; indexed 9,164+ symbols into persistent knowledge graph.
 - [x] **Core Documentation Deployment:** Created canonical `prd.md`, `architecture.md`, `memory.md`, `rules.md`, and `task.md`.
+
+### Phase 3: Atelier Customizer Overhaul, Admin Polish & Production Hardening (Completed)
+- [x] **Transparent Garment Photography Pipeline:** Eliminated cartoon shirts, mockup clipart, and text overlays in customizer & homepage; Admin Customizer Studio is the single authority for uploaded garment PNGs with transparent layer preservation.
+- [x] **Admin Panel Responsive Layout Overhaul:** Implemented permanent document-flow sidebar on desktop and backdrop slide-out drawer on mobile/tablet; eliminated table squishing and header overlapping across all 15 routes.
+- [x] **Production Database Sanitization:** Purged 180+ automated bot users, 50 synthetic test orders, and duplicate demo products; preserved official catalog apparel, real admin accounts, and promotional coupons.
+- [x] **End-to-End Promotional Coupon Engine:** Connected coupons across Admin, NestJS backend `CouponsService`, and storefront checkout (`BINGOOO10`, `WELCOME20`, `FREESHIP`).
+- [x] **Real-Time 3D Garment Studio:** Built procedural Three.js 3D garment geometries with 360° turntable orbit and dynamic texture projection.
+- [x] **WhatsApp Order & Dispatch Alerts:** Webhook-driven live tracking and order confirmations via `WhatsAppService`.
+- [x] **Universal Free Delivery & 100% Prepaid Policy:** Standardized store policy to free delivery Pan-India and 100% secure prepaid checkout with 5% instant discount.
 
 ---
 

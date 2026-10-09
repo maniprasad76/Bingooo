@@ -1,4 +1,6 @@
 import { useState } from 'react';
+import { Picture } from '../components/ui/Picture';
+import { IMAGES } from '../lib/images';
 import { Link } from 'react-router-dom';
 import { CheckCircle2, PhoneCall, Mail } from 'lucide-react';
 import { SEO } from '../components/common/SEO';
@@ -129,10 +131,12 @@ export function ContactPage() {
           </div>
 
           <div className="h-[380px] sm:h-[480px] lg:h-[570px] overflow-hidden bg-[#ede0cc] relative">
-            <img
-              src="https://images.unsplash.com/photo-1529139574466-a303027c1d8b?auto=format&fit=crop&w=1000&q=85"
+            <Picture
+              image={IMAGES.hero}
+              sizes="(min-width: 1024px) 50vw, 100vw"
+              loading="eager"
               alt="Bingooo fashion support editorial"
-              className="w-full h-full object-cover grayscale"
+              className="w-full h-full object-cover"
             />
             <div className="absolute bottom-5 left-5 bg-white px-[15px] py-3 text-[10px] font-extrabold tracking-[0.1em] uppercase text-[#171717] shadow-sm">
               Bingooo / Support

@@ -127,21 +127,21 @@ export function InventoryPage() {
   return (
     <div className="space-y-6">
       {/* Editorial Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b-2 border-[#171717] pb-4">
         <div>
           <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5">
-            <span className="text-[10px] font-mono font-bold uppercase tracking-[0.2em] text-brand-red whitespace-nowrap">
+            <span className="text-[10px] font-mono font-bold uppercase tracking-[0.2em] text-[#E6321C] bg-[#171717] text-white px-2 py-0.5">
               WAREHOUSE CONTROL
             </span>
-            <span className="text-muted/40 font-mono">•</span>
-            <span className="text-[10px] font-mono font-bold uppercase tracking-widest text-muted whitespace-nowrap">
+            <span className="text-[#171717]/40 font-mono">•</span>
+            <span className="text-[10px] font-mono font-bold uppercase tracking-widest text-[#171717]/70">
               {items.length} SKUS • {totalUnits.toLocaleString('en-IN')} TOTAL UNITS
             </span>
           </div>
-          <h1 className="text-2xl font-black uppercase tracking-tight text-ink font-sans mt-0.5">
+          <h1 className="text-2xl font-black uppercase tracking-tight text-[#171717] font-sans mt-1">
             Inventory & Warehouse Telemetry
           </h1>
-          <p className="text-xs text-muted mt-0.5">
+          <p className="text-xs text-[#171717]/70 mt-0.5 font-medium">
             Real-time stock monitoring across sizes and colors, low-stock threshold alerts, and stock adjustments.
           </p>
         </div>
@@ -157,72 +157,72 @@ export function InventoryPage() {
         </button>
       </div>
 
-      {/* Bento Metrics Row */}
+      {/* Bauhaus Bento Metrics Row */}
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
-        <div className="stat-card">
+        <div className="bg-white border-2 border-[#171717] p-4 shadow-[4px_4px_0px_#171717]">
           <div className="flex items-center justify-between">
-            <span className="stat-label">Total SKUs Tracked</span>
-            <div className="w-9 h-9 rounded-xl bg-beige/60 border border-border/60 flex items-center justify-center text-ink">
+            <span className="text-[11px] font-mono font-bold uppercase text-[#171717]/70 tracking-wider">Total SKUs Tracked</span>
+            <div className="w-8 h-8 border-2 border-[#171717] bg-[#F7EEDB] flex items-center justify-center text-[#171717] shadow-[2px_2px_0px_#171717]">
               <Layers size={16} />
             </div>
           </div>
-          <p className="stat-value">{items.length}</p>
-          <span className="text-[10px] font-mono text-muted mt-1 block">Active garment variants</span>
+          <p className="text-2xl font-black font-mono text-[#171717] mt-2">{items.length}</p>
+          <span className="text-[10px] font-mono text-[#171717]/60 mt-1 block uppercase">Active garment variants</span>
         </div>
 
-        <div className="stat-card">
+        <div className="bg-white border-2 border-[#171717] p-4 shadow-[4px_4px_0px_#171717]">
           <div className="flex items-center justify-between">
-            <span className="stat-label">Physical Warehouse Units</span>
-            <div className="w-9 h-9 rounded-xl bg-emerald-50 border border-emerald-200 flex items-center justify-center text-emerald-700">
+            <span className="text-[11px] font-mono font-bold uppercase text-[#171717]/70 tracking-wider">Physical Units</span>
+            <div className="w-8 h-8 border-2 border-[#171717] bg-emerald-100 flex items-center justify-center text-emerald-900 shadow-[2px_2px_0px_#171717]">
               <Boxes size={16} />
             </div>
           </div>
-          <p className="stat-value">{totalUnits.toLocaleString('en-IN')}</p>
-          <span className="text-[10px] font-mono text-emerald-700 mt-1 block">Units across all racks</span>
+          <p className="text-2xl font-black font-mono text-emerald-800 mt-2">{totalUnits.toLocaleString('en-IN')}</p>
+          <span className="text-[10px] font-mono text-emerald-800 font-bold mt-1 block uppercase">Units across all racks</span>
         </div>
 
-        <div className="stat-card">
+        <div className="bg-white border-2 border-[#171717] p-4 shadow-[4px_4px_0px_#171717]">
           <div className="flex items-center justify-between">
-            <span className="stat-label">Low Stock Warnings</span>
-            <div className="w-9 h-9 rounded-xl bg-amber-50 border border-amber-200 flex items-center justify-center text-amber-700">
+            <span className="text-[11px] font-mono font-bold uppercase text-[#171717]/70 tracking-wider">Low Stock Warnings</span>
+            <div className="w-8 h-8 border-2 border-[#171717] bg-amber-100 flex items-center justify-center text-amber-900 shadow-[2px_2px_0px_#171717]">
               <AlertTriangle size={16} />
             </div>
           </div>
-          <p className="stat-value text-amber-700">{lowStockCount}</p>
-          <span className="text-[10px] font-mono text-amber-700 mt-1 block">&lt; 5 units available</span>
+          <p className="text-2xl font-black font-mono text-amber-700 mt-2">{lowStockCount}</p>
+          <span className="text-[10px] font-mono text-amber-800 font-bold mt-1 block uppercase">&lt; 5 units available</span>
         </div>
 
-        <div className="stat-card">
+        <div className="bg-white border-2 border-[#171717] p-4 shadow-[4px_4px_0px_#171717]">
           <div className="flex items-center justify-between">
-            <span className="stat-label">Depleted / Stockouts</span>
-            <div className="w-9 h-9 rounded-xl bg-rose-50 border border-rose-200 flex items-center justify-center text-rose-700">
+            <span className="text-[11px] font-mono font-bold uppercase text-[#171717]/70 tracking-wider">Depleted / Stockouts</span>
+            <div className="w-8 h-8 border-2 border-[#171717] bg-[#E6321C] flex items-center justify-center text-white shadow-[2px_2px_0px_#171717]">
               <TrendingDown size={16} />
             </div>
           </div>
-          <p className="stat-value text-rose-700">{outOfStockCount}</p>
-          <span className="text-[10px] font-mono text-rose-700 mt-1 block">Needs urgent factory order</span>
+          <p className="text-2xl font-black font-mono text-[#E6321C] mt-2">{outOfStockCount}</p>
+          <span className="text-[10px] font-mono text-[#E6321C] font-bold mt-1 block uppercase">Needs urgent factory reorder</span>
         </div>
       </div>
 
-      {/* Filter & Search Bar */}
-      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 bg-white p-3.5 rounded-2xl border border-border/80 shadow-card">
-        <div className="flex gap-1 bg-beige/40 p-1 rounded-xl border border-border/60">
+      {/* Bauhaus Filter & Search Bar */}
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 bg-white p-3 border-2 border-[#171717] shadow-[3px_3px_0px_#171717]">
+        <div className="flex gap-2">
           <button
             onClick={() => setLowStockOnly(false)}
-            className={`px-3 py-1.5 rounded-lg text-[10px] font-mono font-bold uppercase tracking-wider transition-all ${
+            className={`px-3 py-1.5 text-[10px] font-mono font-bold uppercase tracking-wider border-2 border-[#171717] transition-all ${
               !lowStockOnly
-                ? 'bg-ink text-white shadow-2xs'
-                : 'text-muted hover:text-ink hover:bg-white/60'
+                ? 'bg-[#171717] text-white shadow-[2px_2px_0px_#E6321C]'
+                : 'bg-white text-[#171717] hover:bg-[#F7EEDB]'
             }`}
           >
             All Variants ({items.length})
           </button>
           <button
             onClick={() => setLowStockOnly(true)}
-            className={`px-3 py-1.5 rounded-lg text-[10px] font-mono font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 ${
+            className={`px-3 py-1.5 text-[10px] font-mono font-bold uppercase tracking-wider border-2 border-[#171717] transition-all flex items-center gap-1.5 ${
               lowStockOnly
-                ? 'bg-amber-500 text-black font-extrabold shadow-2xs'
-                : 'text-muted hover:text-ink hover:bg-white/60'
+                ? 'bg-amber-400 text-[#171717] font-black shadow-[2px_2px_0px_#171717]'
+                : 'bg-white text-[#171717] hover:bg-[#F7EEDB]'
             }`}
           >
             <AlertTriangle size={12} />
@@ -232,19 +232,19 @@ export function InventoryPage() {
 
         <form onSubmit={handleSearch} className="flex gap-2">
           <div className="relative">
-            <Search size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted" />
+            <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#171717]/60" />
             <input
               type="text"
-              placeholder="Search by SKU, Product or Size..."
+              placeholder="Search SKU, Product, Size..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="admin-input pl-10 w-full sm:w-[280px] py-1.5 text-xs"
+              className="admin-input pl-9 w-full sm:w-[280px] py-1.5 text-xs font-mono font-semibold"
             />
           </div>
         </form>
       </div>
 
-      {/* Inventory Table */}
+      {/* Bauhaus Inventory Table */}
       <div className="admin-table-container">
         <div className="overflow-x-auto">
           <table className="admin-table">
@@ -263,10 +263,10 @@ export function InventoryPage() {
             <tbody>
               {loading ? (
                 <tr>
-                  <td colSpan={8} className="text-center py-16 text-muted">
+                  <td colSpan={8} className="text-center py-16 text-[#171717]/60">
                     <div className="flex flex-col items-center justify-center gap-2">
-                      <RefreshCw size={20} className="animate-spin text-brand-red" />
-                      <span className="font-mono text-xs uppercase tracking-widest">
+                      <RefreshCw size={22} className="animate-spin text-[#E6321C]" />
+                      <span className="font-mono text-xs uppercase tracking-widest font-bold">
                         Loading Inventory Racks…
                       </span>
                     </div>
@@ -274,11 +274,11 @@ export function InventoryPage() {
                 </tr>
               ) : items.length === 0 ? (
                 <tr>
-                  <td colSpan={8} className="text-center py-16 text-muted">
+                  <td colSpan={8} className="text-center py-16 text-[#171717]/60">
                     <div className="flex flex-col items-center justify-center gap-2">
-                      <Boxes size={28} className="text-muted/50" />
-                      <span className="font-bold text-ink text-sm">No inventory records found</span>
-                      <p className="text-xs text-muted max-w-sm">
+                      <Boxes size={32} className="text-[#171717]/40" />
+                      <span className="font-bold text-[#171717] text-sm uppercase font-mono">No inventory records found</span>
+                      <p className="text-xs text-[#171717]/70 max-w-sm">
                         Create products and variants in Products Studio to start tracking stock.
                       </p>
                     </div>
@@ -286,20 +286,20 @@ export function InventoryPage() {
                 </tr>
               ) : (
                 items.map((item) => (
-                  <tr key={item.id} className="group">
+                  <tr key={item.id} className="hover:bg-[#FAF7F2] transition-colors">
                     <td>
                       <div>
-                        <strong className="text-xs font-bold text-ink block">
+                        <strong className="text-xs font-black uppercase text-[#171717] block">
                           {item.product?.title || 'Garment Variant'}
                         </strong>
-                        <span className="font-mono text-[10px] text-muted">{item.sku}</span>
+                        <span className="font-mono text-[10px] text-[#171717]/60 font-semibold">{item.sku}</span>
                       </div>
                     </td>
 
                     <td>
                       <div className="flex items-center gap-2">
                         <span
-                          className="w-4 h-4 rounded-full border border-black/10 shrink-0 shadow-2xs"
+                          className="w-4 h-4 border-2 border-[#171717] shrink-0 shadow-[1px_1px_0px_#171717]"
                           style={{
                             backgroundColor:
                               item.color?.startsWith('#')
@@ -313,21 +313,21 @@ export function InventoryPage() {
                                 : '#171717',
                           }}
                         />
-                        <span className="text-xs font-semibold text-ink">{item.color || 'Standard'}</span>
+                        <span className="text-xs font-bold text-[#171717]">{item.color || 'Standard'}</span>
                       </div>
                     </td>
 
                     <td>
-                      <span className="px-2.5 py-0.5 rounded-lg bg-beige/60 border border-border/60 text-[10px] font-bold text-ink font-mono">
+                      <span className="px-2 py-0.5 border border-[#171717] bg-[#F7EEDB] text-[10px] font-black text-[#171717] font-mono shadow-[1px_1px_0px_#171717]">
                         {item.size}
                       </span>
                     </td>
 
-                    <td className="font-mono text-xs font-bold text-ink">
+                    <td className="font-mono text-xs font-bold text-[#171717]">
                       {item.stockQuantity} pcs
                     </td>
 
-                    <td className="font-mono text-xs text-muted">
+                    <td className="font-mono text-xs text-[#171717]/60 font-semibold">
                       {item.reservedQuantity} pcs
                     </td>
 
@@ -335,10 +335,10 @@ export function InventoryPage() {
                       <span
                         className={
                           item.availableStock <= 0
-                            ? 'text-rose-600'
+                            ? 'text-[#E6321C]'
                             : item.availableStock < 10
-                            ? 'text-amber-600'
-                            : 'text-emerald-600'
+                            ? 'text-amber-700'
+                            : 'text-emerald-700'
                         }
                       >
                         {item.availableStock} pcs
@@ -347,18 +347,18 @@ export function InventoryPage() {
 
                     <td>
                       {item.availableStock <= 0 ? (
-                        <span className="badge badge-danger">
-                          <span className="w-1.5 h-1.5 rounded-full bg-current" />
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 border border-[#171717] bg-[#E6321C] text-white text-[10px] font-mono font-bold uppercase shadow-[1px_1px_0px_#171717]">
+                          <span className="w-1.5 h-1.5 bg-white" />
                           Out of Stock
                         </span>
                       ) : item.availableStock < 10 ? (
-                        <span className="badge badge-warning">
-                          <span className="w-1.5 h-1.5 rounded-full bg-current" />
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 border border-[#171717] bg-amber-300 text-[#171717] text-[10px] font-mono font-bold uppercase shadow-[1px_1px_0px_#171717]">
+                          <span className="w-1.5 h-1.5 bg-[#171717]" />
                           Low ({item.availableStock})
                         </span>
                       ) : (
-                        <span className="badge badge-success">
-                          <span className="w-1.5 h-1.5 rounded-full bg-current" />
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 border border-[#171717] bg-emerald-100 text-emerald-900 text-[10px] font-mono font-bold uppercase shadow-[1px_1px_0px_#171717]">
+                          <span className="w-1.5 h-1.5 bg-emerald-700" />
                           Healthy
                         </span>
                       )}
@@ -368,14 +368,14 @@ export function InventoryPage() {
                       <div className="flex items-center justify-end gap-1.5">
                         <button
                           onClick={() => openHistory(item)}
-                          className="btn-ghost p-1.5 rounded-lg text-muted hover:text-ink hover:bg-beige"
+                          className="p-1.5 border-2 border-[#171717] bg-white hover:bg-[#F7EEDB] text-[#171717] shadow-[2px_2px_0px_#171717] active:translate-x-[1px] active:translate-y-[1px]"
                           title="View Stock Movement Audit Logs"
                         >
-                          <History size={15} />
+                          <History size={14} />
                         </button>
                         <button
                           onClick={() => openAdjust(item)}
-                          className="btn-secondary py-1.5 px-3 text-[10px] font-bold gap-1 rounded-lg"
+                          className="btn-secondary py-1 px-2.5 text-[10px] font-bold gap-1"
                         >
                           <Sliders size={12} />
                           Adjust
@@ -390,41 +390,41 @@ export function InventoryPage() {
         </div>
       </div>
 
-      {/* Stock Adjustment Modal */}
+      {/* Bauhaus Stock Adjustment Modal */}
       {adjustItem && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="bg-white rounded-3xl max-w-md w-full p-6 sm:p-7 shadow-2xl border border-border/80 space-y-5">
-            <div className="flex items-center justify-between border-b border-border/70 pb-3">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-xs animate-in fade-in duration-200">
+          <div className="bg-[#F7EEDB] border-2 border-[#171717] max-w-md w-full p-6 shadow-[8px_8px_0px_#171717] space-y-5">
+            <div className="flex items-center justify-between border-b-2 border-[#171717] pb-3">
               <div>
-                <h3 className="text-base font-black uppercase tracking-wide text-ink font-sans">
+                <h3 className="text-base font-black uppercase tracking-wide text-[#171717] font-sans">
                   Adjust Physical Stock
                 </h3>
-                <span className="text-xs text-muted font-mono">{adjustItem.sku}</span>
+                <span className="text-xs text-[#171717]/70 font-mono font-bold">{adjustItem.sku}</span>
               </div>
               <button
                 onClick={() => setAdjustItem(null)}
-                className="w-7 h-7 rounded-full bg-beige/60 hover:bg-beige flex items-center justify-center text-muted hover:text-ink font-bold"
+                className="w-7 h-7 border-2 border-[#171717] bg-white hover:bg-[#E6321C] hover:text-white flex items-center justify-center text-[#171717] font-bold transition-colors shadow-[2px_2px_0px_#171717]"
               >
                 <X size={15} />
               </button>
             </div>
 
-            <div className="p-4 bg-[#FAF7F2] rounded-2xl border border-border/80 space-y-1.5 text-xs">
+            <div className="p-4 bg-white border-2 border-[#171717] shadow-[3px_3px_0px_#171717] space-y-1.5 text-xs">
               <div className="flex justify-between">
-                <span className="text-muted">Garment Title:</span>
-                <span className="font-bold text-ink truncate max-w-[200px]">{adjustItem.product?.title}</span>
+                <span className="text-[#171717]/70 font-bold">Garment Title:</span>
+                <span className="font-black text-[#171717] truncate max-w-[200px]">{adjustItem.product?.title}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-muted">Color & Size:</span>
-                <span className="font-bold text-ink">{adjustItem.color} / {adjustItem.size}</span>
+                <span className="text-[#171717]/70 font-bold">Color & Size:</span>
+                <span className="font-bold text-[#171717]">{adjustItem.color} / {adjustItem.size}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-muted">Current Physical Stock:</span>
-                <span className="font-mono font-bold text-ink">{adjustItem.stockQuantity} units</span>
+                <span className="text-[#171717]/70 font-bold">Current Physical Stock:</span>
+                <span className="font-mono font-black text-[#171717]">{adjustItem.stockQuantity} units</span>
               </div>
-              <div className="flex justify-between pt-2 border-t border-border/80">
-                <span className="text-muted font-semibold">Resulting Stock:</span>
-                <span className="font-mono font-black text-brand-red text-sm">
+              <div className="flex justify-between pt-2 border-t-2 border-[#171717]">
+                <span className="text-[#171717] font-black uppercase">Resulting Stock:</span>
+                <span className="font-mono font-black text-[#E6321C] text-sm">
                   {adjustItem.stockQuantity + Number(adjustDelta || 0)} units
                 </span>
               </div>
@@ -439,7 +439,7 @@ export function InventoryPage() {
                   <button
                     type="button"
                     onClick={() => setAdjustDelta((prev) => prev - 5)}
-                    className="p-2.5 rounded-xl border border-border bg-beige/40 hover:bg-beige text-ink transition-colors"
+                    className="p-2 border-2 border-[#171717] bg-white hover:bg-[#FAF7F2] text-[#171717] shadow-[2px_2px_0px_#171717] active:translate-x-[1px] active:translate-y-[1px]"
                   >
                     <Minus size={14} />
                   </button>
@@ -453,12 +453,12 @@ export function InventoryPage() {
                   <button
                     type="button"
                     onClick={() => setAdjustDelta((prev) => prev + 5)}
-                    className="p-2.5 rounded-xl border border-border bg-beige/40 hover:bg-beige text-ink transition-colors"
+                    className="p-2 border-2 border-[#171717] bg-white hover:bg-[#FAF7F2] text-[#171717] shadow-[2px_2px_0px_#171717] active:translate-x-[1px] active:translate-y-[1px]"
                   >
                     <Plus size={14} />
                   </button>
                 </div>
-                <span className="text-[10px] text-muted mt-1 block font-mono">
+                <span className="text-[10px] text-[#171717]/70 mt-1 block font-mono font-bold">
                   Enter positive (+) to restock, or negative (-) to write off.
                 </span>
               </div>
@@ -470,7 +470,7 @@ export function InventoryPage() {
                 <select
                   value={adjustReason}
                   onChange={(e) => setAdjustReason(e.target.value)}
-                  className="admin-select w-full text-xs"
+                  className="admin-select w-full text-xs font-mono font-semibold"
                 >
                   <option value="Restock Batch">Restock Batch / Atelier Factory Delivery</option>
                   <option value="Inventory Audit Count">Physical Inventory Audit Count Correction</option>
@@ -480,7 +480,7 @@ export function InventoryPage() {
                 </select>
               </div>
 
-              <div className="flex items-center justify-end gap-3 pt-3 border-t border-border/70">
+              <div className="flex items-center justify-end gap-3 pt-3 border-t-2 border-[#171717]">
                 <button
                   type="button"
                   onClick={() => setAdjustItem(null)}
@@ -498,47 +498,47 @@ export function InventoryPage() {
         </div>
       )}
 
-      {/* Stock History Drawer */}
+      {/* Bauhaus Stock History Modal */}
       {historyItem && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-7 shadow-2xl border border-border/80 space-y-4">
-            <div className="flex items-center justify-between border-b border-border/70 pb-3">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-xs animate-in fade-in duration-200">
+          <div className="bg-[#F7EEDB] border-2 border-[#171717] max-w-lg w-full p-6 shadow-[8px_8px_0px_#171717] space-y-4">
+            <div className="flex items-center justify-between border-b-2 border-[#171717] pb-3">
               <div>
-                <h3 className="text-base font-black uppercase tracking-wide text-ink font-sans">
+                <h3 className="text-base font-black uppercase tracking-wide text-[#171717] font-sans">
                   Stock Movement Logs
                 </h3>
-                <span className="text-xs text-muted font-mono">{historyItem.sku}</span>
+                <span className="text-xs text-[#171717]/70 font-mono font-bold">{historyItem.sku}</span>
               </div>
               <button
                 onClick={() => setHistoryItem(null)}
-                className="w-7 h-7 rounded-full bg-beige/60 hover:bg-beige flex items-center justify-center text-muted hover:text-ink font-bold"
+                className="w-7 h-7 border-2 border-[#171717] bg-white hover:bg-[#E6321C] hover:text-white flex items-center justify-center text-[#171717] font-bold transition-colors shadow-[2px_2px_0px_#171717]"
               >
                 <X size={15} />
               </button>
             </div>
 
-            <div className="max-h-[350px] overflow-y-auto space-y-2">
+            <div className="max-h-[350px] overflow-y-auto space-y-2 pr-1">
               {loadingHistory ? (
-                <p className="text-center py-8 text-xs text-muted">Loading audit movements...</p>
+                <p className="text-center py-8 text-xs text-[#171717]/60 font-mono">Loading audit movements...</p>
               ) : historyLogs.length === 0 ? (
-                <p className="text-center py-8 text-xs text-muted">No historical adjustments recorded for this variant.</p>
+                <p className="text-center py-8 text-xs text-[#171717]/60 font-mono">No historical adjustments recorded for this variant.</p>
               ) : (
                 historyLogs.map((log) => (
                   <div
                     key={log.id}
-                    className="p-3.5 rounded-2xl bg-[#FAF7F2] border border-border/80 flex items-center justify-between text-xs"
+                    className="p-3 bg-white border-2 border-[#171717] shadow-[2px_2px_0px_#171717] flex items-center justify-between text-xs"
                   >
                     <div className="space-y-0.5">
-                      <strong className="text-ink block font-bold">
+                      <strong className="text-[#171717] block font-black uppercase text-[11px]">
                         {log.reference_type || 'Stock Adjustment'}
                       </strong>
-                      <span className="text-[10px] text-muted font-mono">
+                      <span className="text-[10px] text-[#171717]/60 font-mono font-bold">
                         {new Date(log.created_at).toLocaleString('en-IN')}
                       </span>
                     </div>
                     <span
-                      className={`font-mono font-bold flex items-center gap-0.5 ${
-                        log.quantity > 0 ? 'text-emerald-600' : 'text-rose-600'
+                      className={`font-mono font-black flex items-center gap-0.5 px-2 py-0.5 border border-[#171717] ${
+                        log.quantity > 0 ? 'bg-emerald-100 text-emerald-900' : 'bg-rose-100 text-[#E6321C]'
                       }`}
                     >
                       {log.quantity > 0 ? (
@@ -553,7 +553,7 @@ export function InventoryPage() {
               )}
             </div>
 
-            <div className="pt-3 text-right border-t border-border/70">
+            <div className="pt-3 text-right border-t-2 border-[#171717]">
               <button onClick={() => setHistoryItem(null)} className="btn-secondary text-xs">
                 Close
               </button>

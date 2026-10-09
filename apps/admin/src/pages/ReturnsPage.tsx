@@ -120,21 +120,21 @@ export function ReturnsPage() {
   return (
     <div className="space-y-6">
       {/* Editorial Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b-2 border-[#171717] pb-4">
         <div>
           <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5">
-            <span className="text-[10px] font-mono font-bold uppercase tracking-[0.2em] text-brand-red whitespace-nowrap">
+            <span className="text-[10px] font-mono font-bold uppercase tracking-[0.2em] bg-[#171717] text-white px-2 py-0.5">
               POST-PURCHASE OPS
             </span>
-            <span className="text-muted/40 font-mono">•</span>
-            <span className="text-[10px] font-mono font-bold uppercase tracking-widest text-muted whitespace-nowrap">
+            <span className="text-[#171717]/40 font-mono">•</span>
+            <span className="text-[10px] font-mono font-bold uppercase tracking-widest text-[#171717]/70">
               {returns.length} REVERSE LOGISTICS TICKETS
             </span>
           </div>
-          <h1 className="text-2xl font-black uppercase tracking-tight text-ink font-sans mt-0.5">
+          <h1 className="text-2xl font-black uppercase tracking-tight text-[#171717] font-sans mt-1">
             Returns & Exchanges Desk
           </h1>
-          <p className="text-xs text-muted mt-0.5">
+          <p className="text-xs text-[#171717]/70 mt-0.5 font-medium">
             Inspect customer return requests, quality issues, approve pick-ups, and process store refunds.
           </p>
         </div>
@@ -150,70 +150,70 @@ export function ReturnsPage() {
         </button>
       </div>
 
-      {/* Bento Metrics Row */}
+      {/* Bauhaus Bento Metrics Row */}
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
-        <div className="stat-card">
+        <div className="bg-white border-2 border-[#171717] p-4 shadow-[4px_4px_0px_#171717]">
           <div className="flex items-center justify-between">
-            <span className="stat-label">Total Return Tickets</span>
-            <div className="w-9 h-9 rounded-xl bg-beige/60 border border-border/60 flex items-center justify-center text-ink">
+            <span className="text-[11px] font-mono font-bold uppercase text-[#171717]/70 tracking-wider">Total Return Tickets</span>
+            <div className="w-8 h-8 border-2 border-[#171717] bg-[#F7EEDB] flex items-center justify-center text-[#171717] shadow-[2px_2px_0px_#171717]">
               <RotateCcw size={16} />
             </div>
           </div>
-          <p className="stat-value">{returns.length}</p>
-          <span className="text-[10px] font-mono text-muted mt-1 block">Lifetime customer tickets</span>
+          <p className="text-2xl font-black font-mono text-[#171717] mt-2">{returns.length}</p>
+          <span className="text-[10px] font-mono text-[#171717]/60 mt-1 block uppercase">Lifetime customer tickets</span>
         </div>
 
-        <div className="stat-card">
+        <div className="bg-white border-2 border-[#171717] p-4 shadow-[4px_4px_0px_#171717]">
           <div className="flex items-center justify-between">
-            <span className="stat-label">Awaiting Decision</span>
-            <div className="w-9 h-9 rounded-xl bg-amber-50 border border-amber-200 flex items-center justify-center text-amber-700">
+            <span className="text-[11px] font-mono font-bold uppercase text-[#171717]/70 tracking-wider">Awaiting Decision</span>
+            <div className="w-8 h-8 border-2 border-[#171717] bg-amber-100 flex items-center justify-center text-amber-900 shadow-[2px_2px_0px_#171717]">
               <Clock size={16} />
             </div>
           </div>
-          <p className="stat-value text-amber-700">
+          <p className="text-2xl font-black font-mono text-amber-700 mt-2">
             {returns.filter((r) => r.status === 'requested').length}
           </p>
-          <span className="text-[10px] font-mono text-amber-700 mt-1 block">Pending triage review</span>
+          <span className="text-[10px] font-mono text-amber-800 font-bold mt-1 block uppercase">Pending triage review</span>
         </div>
 
-        <div className="stat-card">
+        <div className="bg-white border-2 border-[#171717] p-4 shadow-[4px_4px_0px_#171717]">
           <div className="flex items-center justify-between">
-            <span className="stat-label">In Transit / Received</span>
-            <div className="w-9 h-9 rounded-xl bg-sky-50 border border-sky-200 flex items-center justify-center text-sky-700">
+            <span className="text-[11px] font-mono font-bold uppercase text-[#171717]/70 tracking-wider">In Transit / Received</span>
+            <div className="w-8 h-8 border-2 border-[#171717] bg-sky-100 flex items-center justify-center text-sky-900 shadow-[2px_2px_0px_#171717]">
               <Package size={16} />
             </div>
           </div>
-          <p className="stat-value text-sky-700">
+          <p className="text-2xl font-black font-mono text-sky-800 mt-2">
             {returns.filter((r) => r.status === 'approved' || r.status === 'received').length}
           </p>
-          <span className="text-[10px] font-mono text-sky-700 mt-1 block">Under inspection at hub</span>
+          <span className="text-[10px] font-mono text-sky-800 font-bold mt-1 block uppercase">Under inspection at hub</span>
         </div>
 
-        <div className="stat-card">
+        <div className="bg-white border-2 border-[#171717] p-4 shadow-[4px_4px_0px_#171717]">
           <div className="flex items-center justify-between">
-            <span className="stat-label">Total Refund Value</span>
-            <div className="w-9 h-9 rounded-xl bg-emerald-50 border border-emerald-200 flex items-center justify-center text-emerald-700">
+            <span className="text-[11px] font-mono font-bold uppercase text-[#171717]/70 tracking-wider">Total Refund Value</span>
+            <div className="w-8 h-8 border-2 border-[#171717] bg-emerald-100 flex items-center justify-center text-emerald-900 shadow-[2px_2px_0px_#171717]">
               <IndianRupee size={16} />
             </div>
           </div>
-          <p className="stat-value text-emerald-700">
+          <p className="text-2xl font-black font-mono text-emerald-800 mt-2">
             ₹{totalRefundValue.toLocaleString('en-IN')}
           </p>
-          <span className="text-[10px] font-mono text-emerald-700 mt-1 block">Processed refunds to date</span>
+          <span className="text-[10px] font-mono text-emerald-800 font-bold mt-1 block uppercase">Processed refunds to date</span>
         </div>
       </div>
 
-      {/* Filter Tabs & Search */}
-      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 bg-white p-3.5 rounded-2xl border border-border/80 shadow-card">
-        <div className="flex flex-wrap items-center gap-1 bg-beige/40 p-1 rounded-xl border border-border/60">
+      {/* Bauhaus Filter Tabs & Search */}
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 bg-white p-3 border-2 border-[#171717] shadow-[3px_3px_0px_#171717]">
+        <div className="flex flex-wrap items-center gap-1.5">
           {STATUS_FILTERS.map((s) => (
             <button
               key={s}
               onClick={() => setFilter(s)}
-              className={`px-3 py-1 rounded-lg text-[10px] font-mono font-bold uppercase tracking-wider transition-all ${
+              className={`px-3 py-1.5 text-[10px] font-mono font-bold uppercase tracking-wider border-2 border-[#171717] transition-all ${
                 filter === s
-                  ? 'bg-ink text-white shadow-2xs'
-                  : 'text-muted hover:text-ink hover:bg-white/60'
+                  ? 'bg-[#171717] text-white shadow-[2px_2px_0px_#E6321C]'
+                  : 'bg-white text-[#171717] hover:bg-[#F7EEDB]'
               }`}
             >
               {s}
@@ -223,19 +223,19 @@ export function ReturnsPage() {
 
         <form onSubmit={handleSearch} className="flex gap-2">
           <div className="relative">
-            <Search size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted" />
+            <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#171717]/60" />
             <input
               type="text"
               placeholder="Search by Order # or Customer..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="admin-input pl-10 w-full sm:w-[260px] py-1.5 text-xs"
+              className="admin-input pl-9 w-full sm:w-[260px] py-1.5 text-xs font-mono font-semibold"
             />
           </div>
         </form>
       </div>
 
-      {/* Returns Table */}
+      {/* Bauhaus Returns Table */}
       <div className="admin-table-container">
         <div className="overflow-x-auto">
           <table className="admin-table">
@@ -254,10 +254,10 @@ export function ReturnsPage() {
             <tbody>
               {loading ? (
                 <tr>
-                  <td colSpan={8} className="text-center py-16 text-muted">
+                  <td colSpan={8} className="text-center py-16 text-[#171717]/60">
                     <div className="flex flex-col items-center justify-center gap-2">
-                      <RefreshCw size={20} className="animate-spin text-brand-red" />
-                      <span className="font-mono text-xs uppercase tracking-widest">
+                      <RefreshCw size={22} className="animate-spin text-[#E6321C]" />
+                      <span className="font-mono text-xs uppercase tracking-widest font-bold">
                         Loading Return Tickets…
                       </span>
                     </div>
@@ -265,11 +265,11 @@ export function ReturnsPage() {
                 </tr>
               ) : returns.length === 0 ? (
                 <tr>
-                  <td colSpan={8} className="text-center py-16 text-muted">
+                  <td colSpan={8} className="text-center py-16 text-[#171717]/60">
                     <div className="flex flex-col items-center justify-center gap-2">
-                      <RotateCcw size={28} className="text-muted/50" />
-                      <span className="font-bold text-ink text-sm">No return requests found</span>
-                      <p className="text-xs text-muted max-w-sm">
+                      <RotateCcw size={32} className="text-[#171717]/40" />
+                      <span className="font-bold text-[#171717] text-sm uppercase font-mono">No return requests found</span>
+                      <p className="text-xs text-[#171717]/70 max-w-sm">
                         Customer return submissions and exchange claims will populate here.
                       </p>
                     </div>
@@ -277,20 +277,20 @@ export function ReturnsPage() {
                 </tr>
               ) : (
                 returns.map((ret) => (
-                  <tr key={ret.id} className="group">
+                  <tr key={ret.id} className="hover:bg-[#FAF7F2] transition-colors">
                     <td>
-                      <span className="font-mono text-xs font-bold text-ink bg-beige/60 px-2 py-0.5 rounded border border-border/60">
+                      <span className="font-mono text-xs font-bold text-[#171717] bg-[#F7EEDB] px-2 py-0.5 border border-[#171717] shadow-[1px_1px_0px_#171717]">
                         #{ret.order_number}
                       </span>
                     </td>
 
                     <td>
                       <div>
-                        <strong className="text-xs font-bold text-ink block">
+                        <strong className="text-xs font-black uppercase text-[#171717] block">
                           {ret.customer_name}
                         </strong>
                         {ret.customer_phone && (
-                          <span className="text-[10px] text-muted font-mono">
+                          <span className="text-[10px] text-[#171717]/60 font-mono font-semibold">
                             {ret.customer_phone}
                           </span>
                         )}
@@ -299,10 +299,10 @@ export function ReturnsPage() {
 
                     <td>
                       <div className="text-xs space-y-0.5">
-                        <strong className="font-semibold text-ink block">
+                        <strong className="font-bold text-[#171717] uppercase block">
                           {ret.garment_title}
                         </strong>
-                        <span className="text-[10px] font-mono text-muted">
+                        <span className="text-[10px] font-mono text-[#171717]/60 font-bold">
                           Size: {ret.size}
                         </span>
                       </div>
@@ -310,11 +310,11 @@ export function ReturnsPage() {
 
                     <td>
                       <div>
-                        <span className="text-[11px] font-bold text-ink block">
+                        <span className="text-[11px] font-bold text-[#171717] block">
                           {REASON_LABELS[ret.reason] || ret.reason}
                         </span>
                         {ret.comments && (
-                          <p className="text-[10px] text-muted line-clamp-1 italic max-w-xs">
+                          <p className="text-[10px] text-[#171717]/70 line-clamp-1 italic max-w-xs">
                             "{ret.comments}"
                           </p>
                         )}
@@ -322,19 +322,29 @@ export function ReturnsPage() {
                     </td>
 
                     <td>
-                      <span className="font-mono text-xs font-black text-ink">
+                      <span className="font-mono text-xs font-black text-[#171717]">
                         ₹{Number(ret.refund_amount || 0).toLocaleString('en-IN')}
                       </span>
                     </td>
 
                     <td>
-                      <span className={`badge ${STATUS_BADGES[ret.status] || 'badge-neutral'}`}>
-                        <span className="w-1.5 h-1.5 rounded-full bg-current" />
+                      <span
+                        className={`inline-flex items-center gap-1 px-2 py-0.5 border border-[#171717] text-[10px] font-mono font-bold uppercase shadow-[1px_1px_0px_#171717] ${
+                          ret.status === 'refunded'
+                            ? 'bg-emerald-100 text-emerald-900'
+                            : ret.status === 'rejected'
+                            ? 'bg-[#E6321C] text-white'
+                            : ret.status === 'approved'
+                            ? 'bg-sky-100 text-sky-900'
+                            : 'bg-amber-300 text-[#171717]'
+                        }`}
+                      >
+                        <span className="w-1.5 h-1.5 bg-current" />
                         {ret.status}
                       </span>
                     </td>
 
-                    <td className="text-[11px] text-muted whitespace-nowrap font-mono">
+                    <td className="text-[11px] text-[#171717]/70 whitespace-nowrap font-mono font-semibold">
                       {new Date(ret.created_at).toLocaleDateString('en-IN', {
                         day: 'numeric',
                         month: 'short',
@@ -344,7 +354,7 @@ export function ReturnsPage() {
                     <td className="text-right">
                       <button
                         onClick={() => openStatusModal(ret)}
-                        className="btn-secondary py-1 px-2.5 text-[10px] font-bold gap-1 rounded-lg"
+                        className="btn-secondary py-1 px-2.5 text-[10px] font-bold gap-1"
                       >
                         <Sliders size={12} />
                         Update
@@ -358,43 +368,43 @@ export function ReturnsPage() {
         </div>
       </div>
 
-      {/* Status Update Modal */}
+      {/* Bauhaus Status Update Modal */}
       {selectedReturn && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="bg-white rounded-3xl max-w-md w-full p-6 sm:p-7 shadow-2xl border border-border/80 space-y-5">
-            <div className="flex items-center justify-between border-b border-border/70 pb-3">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-xs animate-in fade-in duration-200">
+          <div className="bg-[#F7EEDB] border-2 border-[#171717] max-w-md w-full p-6 shadow-[8px_8px_0px_#171717] space-y-5">
+            <div className="flex items-center justify-between border-b-2 border-[#171717] pb-3">
               <div>
-                <h3 className="text-base font-black uppercase tracking-wide text-ink font-sans">
+                <h3 className="text-base font-black uppercase tracking-wide text-[#171717] font-sans">
                   Manage Return Ticket
                 </h3>
-                <span className="text-xs text-muted font-mono">
+                <span className="text-xs text-[#171717]/70 font-mono font-bold">
                   Order #{selectedReturn.order_number}
                 </span>
               </div>
               <button
                 onClick={() => setSelectedReturn(null)}
-                className="w-7 h-7 rounded-full bg-beige/60 hover:bg-beige flex items-center justify-center text-muted hover:text-ink font-bold"
+                className="w-7 h-7 border-2 border-[#171717] bg-white hover:bg-[#E6321C] hover:text-white flex items-center justify-center text-[#171717] font-bold transition-colors shadow-[2px_2px_0px_#171717]"
               >
                 <X size={15} />
               </button>
             </div>
 
-            <div className="p-4 bg-[#FAF7F2] rounded-2xl border border-border/80 space-y-1.5 text-xs">
+            <div className="p-4 bg-white border-2 border-[#171717] shadow-[3px_3px_0px_#171717] space-y-1.5 text-xs">
               <div className="flex justify-between">
-                <span className="text-muted">Item:</span>
-                <span className="font-bold text-ink">{selectedReturn.garment_title} ({selectedReturn.size})</span>
+                <span className="text-[#171717]/70 font-bold">Item:</span>
+                <span className="font-black text-[#171717]">{selectedReturn.garment_title} ({selectedReturn.size})</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-muted">Customer:</span>
-                <span className="font-bold text-ink">{selectedReturn.customer_name}</span>
+                <span className="text-[#171717]/70 font-bold">Customer:</span>
+                <span className="font-bold text-[#171717]">{selectedReturn.customer_name}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-muted">Reason:</span>
-                <span className="font-semibold text-ink">{REASON_LABELS[selectedReturn.reason] || selectedReturn.reason}</span>
+                <span className="text-[#171717]/70 font-bold">Reason:</span>
+                <span className="font-bold text-[#171717]">{REASON_LABELS[selectedReturn.reason] || selectedReturn.reason}</span>
               </div>
-              <div className="flex justify-between pt-1 border-t border-border/80 font-bold">
-                <span className="text-muted">Refund Amount:</span>
-                <span className="font-mono text-brand-red">₹{Number(selectedReturn.refund_amount || 0).toLocaleString('en-IN')}</span>
+              <div className="flex justify-between pt-1 border-t-2 border-[#171717] font-bold">
+                <span className="text-[#171717] font-black uppercase">Refund Amount:</span>
+                <span className="font-mono font-black text-[#E6321C]">₹{Number(selectedReturn.refund_amount || 0).toLocaleString('en-IN')}</span>
               </div>
             </div>
 
@@ -404,7 +414,7 @@ export function ReturnsPage() {
                 <select
                   value={newStatus}
                   onChange={(e) => setNewStatus(e.target.value)}
-                  className="admin-select w-full text-xs"
+                  className="admin-select w-full text-xs font-mono font-semibold"
                 >
                   <option value="requested">Requested (Under Review)</option>
                   <option value="approved">Approved (Courier Pick-up Scheduled)</option>
@@ -421,11 +431,11 @@ export function ReturnsPage() {
                   value={adminNotes}
                   onChange={(e) => setAdminNotes(e.target.value)}
                   placeholder="e.g. Courier reverse AWB #781920 generated. Verified fabric tag intact."
-                  className="admin-input w-full text-xs"
+                  className="admin-input w-full text-xs font-mono"
                 />
               </div>
 
-              <div className="flex items-center justify-end gap-2.5 pt-3 border-t border-border/70">
+              <div className="flex items-center justify-end gap-2.5 pt-3 border-t-2 border-[#171717]">
                 <button
                   type="button"
                   onClick={() => setSelectedReturn(null)}

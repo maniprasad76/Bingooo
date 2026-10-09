@@ -1,6 +1,6 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { Minus, Plus, X } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { m, AnimatePresence } from 'framer-motion';
 import { Drawer } from '../ui/Drawer';
 import { useCartStore } from '../../store/cart';
 import { useCart } from '../../hooks/useCart';
@@ -115,7 +115,7 @@ export function CartDrawer() {
                 const attributes = [variantColor, variantSize, gsm].filter(Boolean);
 
                 return (
-                  <motion.div
+                  <m.div
                     key={item.id}
                     layout
                     initial={{ opacity: 0, height: 0 }}
@@ -249,7 +249,7 @@ export function CartDrawer() {
                         </div>
                       </div>
                     </div>
-                  </motion.div>
+                  </m.div>
                 );
               })}
             </AnimatePresence>

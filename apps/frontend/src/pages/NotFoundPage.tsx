@@ -1,4 +1,6 @@
 import { useState } from 'react';
+import { Picture } from '../components/ui/Picture';
+import { IMAGES } from '../lib/images';
 import { Link, useNavigate } from 'react-router-dom';
 import {
   Search,
@@ -136,8 +138,10 @@ export function NotFoundPage() {
 
         {/* Right Imagery Banner */}
         <div className="relative min-h-[360px] sm:min-h-[460px] lg:min-h-full overflow-hidden bg-[#171717]">
-          <img
-            src="/real-fit-5.jpg"
+          <Picture
+            image={IMAGES.realFit5}
+            sizes="(min-width: 1024px) 52vw, 100vw"
+            loading="eager"
             alt="Bingooo atelier streetwear archive"
             className="w-full h-full object-cover grayscale contrast-125 opacity-85"
           />

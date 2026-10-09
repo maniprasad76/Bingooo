@@ -1,6 +1,6 @@
 # 🧠 Bingooo Knowledge Brain (`BRAIN.md`)
 > **Persistent Architecture, Agent Memory & Engineering Runbook**  
-> *Last Updated: September 2026*
+> *Last Updated: October 10, 2026*
 
 ---
 
@@ -48,9 +48,9 @@ bingooo/
 The project is indexed with **Graphify** (`graphifyy`), giving all AI assistants and developers structured, deterministic memory of the entire codebase.
 
 ### Graph Memory Stats:
-- **Total Nodes**: 7,333+ symbols & concepts
-- **Total Edges**: 9,922+ relational connections (calls, imports, inherits, references)
-- **Communities**: 646 architectural clusters
+- **Total Nodes**: 9,164+ symbols & concepts
+- **Total Edges**: 12,824+ relational connections (calls, imports, inherits, references)
+- **Communities**: 797 architectural clusters
 
 ### Core Memory Artifacts:
 - [`graphify-out/graph.json`](file:///c:/Users/manip/Desktop/bingooo/graphify-out/graph.json): Raw graph data used for instant contextual querying.
@@ -193,6 +193,11 @@ python -m graphify update .
   - Removed noisy architectural grid texture and murky radial ambient glow from `apps/frontend/index.html`; replaced with a clean, 100% plain solid background transitioning through 5 distinct full colors (`#171717` Charcoal Black, `#E6321C` Signal Red, `#F7EEDB` Warm Cream, `#1E293B` Cobalt Slate, `#7F1D1D` Crimson Bordeaux) with dynamic coordinated typography, badges, and progress styling.
 - **2026-10-08: Custom Page Default Compared Price Updated to ₹1,499**
   - Updated default compared price (`compareAtPrice`) for the default oversized customizer garment from ₹1,299 to ₹1,499 across storefront, backend canonical defaults, and admin studio; added struck-through comparison and dynamic discount percentage badges to the Bauhaus sticky action bar and fit selection buttons on `/customize`.
-
-
-
+- **2026-10-10: Atelier Customizer Image Pipeline & Admin-Driven Dynamic Garments**
+  - Removed all fake mockup clipart, cartoon shirt icons, and "YOUR LINE HERE" / "BACK PRINT ARTWORK" text overlays from Customizer and Homepage; established Admin Panel Customizer Studio as the single authority for uploaded garment PNGs with transparent layer preservation, dynamic swatch rendering, and resilient PNG/WebP validation.
+- **2026-10-10: Admin Panel Layout Overhaul & Responsive Viewport Engineering**
+  - Overhauled Admin Panel navigation and view layout: implemented a permanent document-flow sidebar on desktop viewports (`lg+`) and a high-performance backdrop slide-out drawer on mobile/tablet devices (`<lg`). Eliminated table squishing, overlapping cards, and header clipping across all 15 back-office routes.
+- **2026-10-10: Production Database Sanitization & Test Data Purge**
+  - Purged 180+ automated bot users, 50 synthetic test orders, and duplicate demo products from `store.json`. Preserved real admin accounts (`admin@bingooo.in`, `basaprasaduu@gmail.com`), active promotional coupons (`BINGOOO10`, `WELCOME20`, `FREESHIP`), and official catalog streetwear apparel.
+- **2026-10-10: End-to-End Dynamic Coupon Engine & Real-Time Checkout Recalculation**
+  - Linked coupon management between Admin Panel, NestJS backend `CouponsService`, and Storefront checkout. Implemented real-time coupon validation, instant discount deduction, error messaging for invalid codes, and synchronized backend order pricing verification.

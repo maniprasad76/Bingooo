@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { motion, useReducedMotion } from 'framer-motion';
+import { m, useReducedMotion } from 'framer-motion';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -86,7 +86,7 @@ export function LoginPage() {
         description="Sign in to your Bingooo account to manage your profile, view orders, and access saved 240 GSM custom designs."
         noindex={true}
       />
-      <motion.div
+      <m.div
         initial={shouldReduceMotion ? false : { opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ type: 'spring', stiffness: 350, damping: 30 }}
@@ -104,9 +104,9 @@ export function LoginPage() {
         <div className="p-6 sm:p-7">
           {/* Header */}
           <div className="text-center mb-5 flex flex-col items-center">
-            <motion.div whileHover={{ scale: 1.03 }} transition={{ type: 'spring', stiffness: 400 }}>
+            <m.div whileHover={{ scale: 1.03 }} transition={{ type: 'spring', stiffness: 400 }}>
               <Logo variant="red" size="md" withLink className="mb-2.5" />
-            </motion.div>
+            </m.div>
             <h1 className="font-heading text-2xl sm:text-[26px] font-black uppercase tracking-tight text-[#171717] leading-tight">
               Welcome Back
             </h1>
@@ -232,7 +232,7 @@ export function LoginPage() {
             <span>256-bit encrypted secure authentication</span>
           </div>
         </div>
-      </motion.div>
+      </m.div>
     </div>
   );
 }

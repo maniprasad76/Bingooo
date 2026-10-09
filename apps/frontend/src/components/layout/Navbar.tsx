@@ -13,7 +13,7 @@ import {
   Eye,
   Ruler,
 } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { m, AnimatePresence } from 'framer-motion';
 import { cn } from '../../lib/utils';
 import { useCartStore } from '../../store/cart';
 import { useAuthStore } from '../../store/auth';
@@ -230,7 +230,7 @@ export function Navbar() {
             {mobileMenuOpen && (
               <>
                 {/* Backdrop */}
-                <motion.div
+                <m.div
                   key="mobile-nav-backdrop"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
@@ -243,7 +243,7 @@ export function Navbar() {
                 />
 
                 {/* Slide Drawer Panel */}
-                <motion.div
+                <m.div
                   key="mobile-nav-drawer"
                   initial={{ x: '-100%' }}
                   animate={{ x: 0 }}
@@ -449,7 +449,7 @@ export function Navbar() {
                       BINGOOO &bull; WEAR WHAT DEFINES YOU
                     </div>
                   </div>
-                </motion.div>
+                </m.div>
               </>
             )}
           </AnimatePresence>,

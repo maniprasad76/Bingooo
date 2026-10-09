@@ -62,7 +62,13 @@ const studioGarment = (over) => ({
 const studioConfig = {
   updatedAt: '2026-10-09T00:00:00.000Z',
   garments: [
-    studioGarment({ id: 'oversized', name: 'Oversized T-Shirt', shortName: 'OVERSIZED', price: 649, compareAtPrice: 1499 }),
+    studioGarment({
+      id: 'oversized', name: 'Oversized T-Shirt', shortName: 'OVERSIZED', price: 649, compareAtPrice: 1499,
+      colors: [
+        { id: 'black', name: 'Black', hex: '#171717', textContrast: '#FFFFFF', frontImageUrl: img, backImageUrl: '', isActive: true },
+        { id: 'red', name: 'Red', hex: '#B8321F', textContrast: '#FFFFFF', frontImageUrl: '', backImageUrl: '', isActive: true },
+      ],
+    }),
     studioGarment({ id: 'heavy-hoodie', name: 'Heavy Hoodie', shortName: 'HOODIE', style: 'hoodie', price: 799 }),
     studioGarment({ id: 'hidden-tee', name: 'Hidden Tee', shortName: 'HIDDEN', price: 499, isActive: false }),
   ],
@@ -156,6 +162,7 @@ try {
   check(studioButtons.some((t) => t.includes('OVERSIZED')) && studioButtons.some((t) => t.includes('HOODIE')), 'garment picker shows the admin garments');
   check(!studioButtons.some((t) => t.includes('HIDDEN')), 'hidden garments are not offered');
   check(await page.locator('img[alt="Oversized T-Shirt - Black (front)"]').isVisible(), 'uploaded front photo is shown');
+  check((await page.locator('button[title="Red"]').count()) === 0, 'colours without a front photo are not offered (no drawn stand-ins)');
   const sizeButtons = (await page.locator('button').allInnerTexts()).map((t) => t.trim());
   check(sizeButtons.includes('M') && sizeButtons.includes('L') && !sizeButtons.includes('S'), 'only the sizes the admin offers are selectable');
   await page.getByRole('button', { name: 'BACK', exact: true }).first().click(); await settle(500);

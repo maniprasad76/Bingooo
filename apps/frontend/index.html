@@ -46,21 +46,33 @@
     <link rel="manifest" href="/manifest.webmanifest" />
 
     <!-- ── Favicons & App Icons ── -->
-    <link rel="icon" type="image/svg+xml" href="/brand-logo.svg?v=2026.2" id="app-favicon-svg" />
+    <link rel="icon" type="image/svg+xml" href="/brand-logo.svg?v=2026.3" id="app-favicon-svg" />
     <link rel="icon" type="image/png" sizes="32x32" href="/brand-logo-32.png?v=2026.2" id="app-favicon-png" />
     <link rel="icon" type="image/png" sizes="16x16" href="/brand-logo-16.png?v=2026.2" />
     <link rel="shortcut icon" href="/favicon.ico?v=2026.2" />
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png?v=2026.2" />
 
-    <!-- ── Font Preconnects ── -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <!-- ── Fonts: self-hosted (public/fonts/v1), the same latin/latin-ext files and ranges
+         Google Fonts serves, so text no longer waits on a third-party stylesheet. ── -->
+    <link rel="preload" href="/fonts/v1/manrope-latin.woff2" as="font" type="font/woff2" crossorigin />
+    <style>
+      @font-face { font-family: 'Manrope'; font-style: normal; font-weight: 400 800; font-display: swap; src: url(/fonts/v1/manrope-latin-ext.woff2) format('woff2'); unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF; }
+      @font-face { font-family: 'Manrope'; font-style: normal; font-weight: 400 800; font-display: swap; src: url(/fonts/v1/manrope-latin.woff2) format('woff2'); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+      @font-face { font-family: 'IBM Plex Mono'; font-style: normal; font-weight: 400; font-display: swap; src: url(/fonts/v1/plex-mono-400-latin-ext.woff2) format('woff2'); unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF; }
+      @font-face { font-family: 'IBM Plex Mono'; font-style: normal; font-weight: 400; font-display: swap; src: url(/fonts/v1/plex-mono-400-latin.woff2) format('woff2'); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+      @font-face { font-family: 'IBM Plex Mono'; font-style: normal; font-weight: 500; font-display: swap; src: url(/fonts/v1/plex-mono-500-latin-ext.woff2) format('woff2'); unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF; }
+      @font-face { font-family: 'IBM Plex Mono'; font-style: normal; font-weight: 500; font-display: swap; src: url(/fonts/v1/plex-mono-500-latin.woff2) format('woff2'); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+      @font-face { font-family: 'IBM Plex Mono'; font-style: normal; font-weight: 600; font-display: swap; src: url(/fonts/v1/plex-mono-600-latin-ext.woff2) format('woff2'); unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF; }
+      @font-face { font-family: 'IBM Plex Mono'; font-style: normal; font-weight: 600; font-display: swap; src: url(/fonts/v1/plex-mono-600-latin.woff2) format('woff2'); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+    </style>
 
-    <!-- ── Fonts with display=swap to eliminate FOIT (render-blocking) ── -->
-    <link
-      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Manrope:wght@400;500;600;700;800&display=swap"
-      rel="stylesheet"
-    />
+    <!-- ── The brand intro plays once per browser session ── -->
+    <style>html.intro-seen #bingooo-brand-intro { display: none; }</style>
+    <script>
+      try {
+        if (sessionStorage.getItem('bingooo_intro_seen')) document.documentElement.classList.add('intro-seen');
+      } catch (e) {}
+    </script>
 
     <title>Bingooo® — Oversized T-Shirts for Men (240 GSM) &amp; Luxury Streetwear India</title>
 
@@ -169,20 +181,29 @@
     }
     </script>
 
-    <script>
-      try {
-        var fv = document.getElementById('app-favicon-svg');
-        if (fv) fv.href = '/brand-logo.svg?t=' + Date.now();
-      } catch (e) {}
-    </script>
-
     <!-- ── Google Analytics 4 (GA4) ── -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-N5EGTHS9SG"></script>
+    <!-- Calls queue in dataLayer immediately; the tag script itself loads once the page is
+         idle so it never competes with first paint. Page views are sent by the router
+         (lib/analytics.ts), so the config does not send its own (that double-counted). -->
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
-      gtag('config', 'G-N5EGTHS9SG');
+      gtag('config', 'G-N5EGTHS9SG', { send_page_view: false });
+      (function () {
+        function load() {
+          var s = document.createElement('script');
+          s.async = true;
+          s.src = 'https://www.googletagmanager.com/gtag/js?id=G-N5EGTHS9SG';
+          document.head.appendChild(s);
+        }
+        function whenIdle() {
+          if ('requestIdleCallback' in window) requestIdleCallback(load, { timeout: 4000 });
+          else setTimeout(load, 1500);
+        }
+        if (document.readyState === 'complete') whenIdle();
+        else window.addEventListener('load', whenIdle, { once: true });
+      })();
     </script>
   </head>
   <body>
@@ -483,14 +504,30 @@
         .text-dark { color: #171717; }
         .text-cream { color: #F7EEDB; }
 
+        /* Only transform and opacity animate (compositor-only, no per-frame paint):
+           the glow is drawn once on ::after and faded in and out. */
         .intro-dot {
           display: inline-block;
+          position: relative;
           margin-left: 2px;
           animation: introDotPulse 1.2s ease-in-out infinite;
         }
+        .intro-dot::after {
+          content: '.';
+          position: absolute;
+          inset: 0;
+          background: inherit;
+          filter: drop-shadow(0 0 8px currentColor);
+          opacity: 0;
+          animation: introDotGlow 1.2s ease-in-out infinite;
+        }
         @keyframes introDotPulse {
-          0%, 100% { transform: scale(1); filter: drop-shadow(0 0 0px currentColor); }
-          50% { transform: scale(1.35); filter: drop-shadow(0 0 8px currentColor); }
+          0%, 100% { transform: scale(1); }
+          50% { transform: scale(1.35); }
+        }
+        @keyframes introDotGlow {
+          0%, 100% { opacity: 0; }
+          50% { opacity: 1; }
         }
 
         .intro-tagline {
@@ -532,13 +569,15 @@
           top: 0;
           left: 0;
           height: 100%;
-          width: 0%;
+          width: 100%;
           background: #E6321C;
+          transform: scaleX(0);
+          transform-origin: left;
           animation: introProgressBar 2.1s linear forwards;
         }
         @keyframes introProgressBar {
-          0% { width: 0%; }
-          100% { width: 100%; }
+          0% { transform: scaleX(0); }
+          100% { transform: scaleX(1); }
         }
 
         /* ── Corner Coordinates ── */
@@ -561,9 +600,9 @@
           position: absolute;
           top: 20px;
           right: 20px;
+          /* No backdrop-filter: it sits on flat colour layers, where a blur looks the same
+             but would be re-rendered on every frame of the layer animations. */
           background: rgba(15, 15, 15, 0.65);
-          backdrop-filter: blur(12px);
-          -webkit-backdrop-filter: blur(12px);
           border: 1px solid rgba(255, 255, 255, 0.22);
           color: #F7EEDB;
           font-family: inherit;
@@ -596,6 +635,11 @@
         (function() {
           var introEl = document.getElementById('bingooo-brand-intro');
           if (!introEl) return;
+          if (document.documentElement.classList.contains('intro-seen')) {
+            introEl.parentNode.removeChild(introEl);
+            return;
+          }
+          try { sessionStorage.setItem('bingooo_intro_seen', '1'); } catch (e) {}
           var skipBtn = document.getElementById('intro-skip-btn');
           var isDone = false;
 

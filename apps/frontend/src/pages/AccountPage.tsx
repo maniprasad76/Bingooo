@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
+import { m, AnimatePresence, useReducedMotion } from 'framer-motion';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '../lib/api/client';
 import {
@@ -584,7 +584,7 @@ export function AccountPage() {
           {/* Right Column: Tab Content */}
           <main className="lg:col-span-8 space-y-6">
             <AnimatePresence mode="wait">
-              <motion.div
+              <m.div
                 key={activeTab}
                 initial={shouldReduceMotion ? false : { opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -1239,7 +1239,7 @@ export function AccountPage() {
                     )}
                   </div>
                 )}
-              </motion.div>
+              </m.div>
             </AnimatePresence>
           </main>
         </div>
@@ -1289,13 +1289,13 @@ export function AccountPage() {
       ======================================================= */}
       <AnimatePresence>
         {isEditProfileOpen && (
-          <motion.div
+          <m.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-xs"
           >
-            <motion.div
+            <m.div
               initial={shouldReduceMotion ? false : { scale: 0.98, opacity: 0, y: 10 }}
               animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={shouldReduceMotion ? undefined : { scale: 0.98, opacity: 0, y: 10 }}
@@ -1357,8 +1357,8 @@ export function AccountPage() {
                   </button>
                 </div>
               </form>
-            </motion.div>
-          </motion.div>
+            </m.div>
+          </m.div>
         )}
       </AnimatePresence>
 
@@ -1367,13 +1367,13 @@ export function AccountPage() {
       ======================================================= */}
       <AnimatePresence>
         {isAddAddressOpen && (
-          <motion.div
+          <m.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-xs"
           >
-            <motion.div
+            <m.div
               initial={shouldReduceMotion ? false : { scale: 0.98, opacity: 0, y: 10 }}
               animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={shouldReduceMotion ? undefined : { scale: 0.98, opacity: 0, y: 10 }}
@@ -1489,8 +1489,8 @@ export function AccountPage() {
                   </button>
                 </div>
               </form>
-            </motion.div>
-          </motion.div>
+            </m.div>
+          </m.div>
         )}
       </AnimatePresence>
 
@@ -1499,13 +1499,13 @@ export function AccountPage() {
       ======================================================= */}
       <AnimatePresence>
         {isReturnModalOpen && (
-          <motion.div
+          <m.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-xs"
           >
-            <motion.div
+            <m.div
               initial={shouldReduceMotion ? false : { scale: 0.98, opacity: 0, y: 10 }}
               animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={shouldReduceMotion ? undefined : { scale: 0.98, opacity: 0, y: 10 }}
@@ -1597,8 +1597,8 @@ export function AccountPage() {
                   </button>
                 </div>
               </form>
-            </motion.div>
-          </motion.div>
+            </m.div>
+          </m.div>
         )}
       </AnimatePresence>
 
@@ -1608,7 +1608,7 @@ export function AccountPage() {
       <AnimatePresence>
         {isDeleteAccountModalOpen && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-xs">
-            <motion.div
+            <m.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
@@ -1671,7 +1671,7 @@ export function AccountPage() {
                   )}
                 </button>
               </div>
-            </motion.div>
+            </m.div>
           </div>
         )}
       </AnimatePresence>

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Heart, ShoppingBag, Eye } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { m } from 'framer-motion';
 import { useWishlist, useIsInWishlist } from '../../hooks/useWishlist';
 import { useCart } from '../../hooks/useCart';
 
@@ -158,14 +158,14 @@ export function ProductCard({
 
             {/* Top-Right Quick View & Wishlist Buttons */}
             <div className="absolute top-2 right-2 sm:top-3 sm:right-3 flex flex-col gap-1.5 z-10">
-              <motion.button
+              <m.button
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.9 }}
                 onClick={handleWishlistToggle}
                 aria-label={inWishlist ? 'Remove from wishlist' : 'Save to wishlist'}
                 className="flex h-7 w-7 sm:h-8 sm:w-8 items-center justify-center border-2 border-[#171717] bg-white text-[#171717] hover:bg-[#E6321C] hover:text-white shadow-[2px_2px_0px_#171717] transition-colors"
               >
-                <motion.div
+                <m.div
                   animate={inWishlist ? { scale: [1, 1.35, 1] } : { scale: 1 }}
                   transition={{ duration: 0.3 }}
                 >
@@ -175,10 +175,10 @@ export function ProductCard({
                       inWishlist ? 'fill-[#E6321C] text-[#E6321C]' : 'text-[#171717]'
                     }`}
                   />
-                </motion.div>
-              </motion.button>
+                </m.div>
+              </m.button>
 
-              <motion.button
+              <m.button
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.9 }}
                 onClick={handleQuickView}
@@ -186,12 +186,12 @@ export function ProductCard({
                 className="hidden sm:flex h-8 w-8 items-center justify-center border-2 border-[#171717] bg-white text-[#171717] hover:bg-[#171717] hover:text-white shadow-[2px_2px_0px_#171717] opacity-0 translate-x-2 transition-all duration-200 group-hover:opacity-100 group-hover:translate-x-0"
               >
                 <Eye size={14} />
-              </motion.button>
+              </m.button>
             </div>
 
             {/* Bottom Floating Quick Actions on Hover (Desktop only) */}
             <div className="hidden sm:flex absolute inset-x-3.5 bottom-3.5 z-10 gap-1.5 opacity-0 translate-y-2 transition-all duration-200 ease-out group-hover:opacity-100 group-hover:translate-y-0">
-              <motion.button
+              <m.button
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.97 }}
                 onClick={handleQuickAdd}
@@ -199,7 +199,7 @@ export function ProductCard({
               >
                 <ShoppingBag size={12} />
                 Quick Bag
-              </motion.button>
+              </m.button>
             </div>
           </div>
 
@@ -249,7 +249,7 @@ export function ProductCard({
               {uniqueColors.length > 0 && (
                 <div className="flex items-center gap-1 sm:gap-1.5 shrink-0">
                   {uniqueColors.slice(0, 3).map((c: any, i) => (
-                    <motion.button
+                    <m.button
                       key={i}
                       whileHover={{ scale: 1.25 }}
                       whileTap={{ scale: 0.9 }}

@@ -1,4 +1,6 @@
 import { useState } from 'react';
+import { Picture } from '../components/ui/Picture';
+import { IMAGES } from '../lib/images';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -82,8 +84,9 @@ export function ResetPasswordPage() {
           {/* Editorial Visual Column */}
           <div className="relative hidden lg:flex flex-col justify-between p-10 bg-[#171717] text-white overflow-hidden border-r-2 border-[#171717]">
             <div className="absolute inset-0 opacity-40">
-              <img
-                src="/real-fit-2.jpg"
+              <Picture
+                image={IMAGES.realFit2}
+                sizes="550px"
                 alt="Bingooo Security"
                 className="h-full w-full object-cover grayscale"
               />

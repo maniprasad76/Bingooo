@@ -94,75 +94,72 @@ export function AdminLayout() {
     return 'Management';
   };
 
-  const sidebarW = collapsed ? 'w-[72px]' : 'w-[260px]';
+  const sidebarW = collapsed ? 'w-[76px]' : 'w-[270px]';
 
   return (
-    <div className="flex min-h-screen bg-paper text-ink font-sans selection:bg-brand-red selection:text-white">
-      {/* Mobile overlay */}
+    <div className="flex min-h-screen bg-[#F7EEDB] text-[#171717] font-sans selection:bg-[#E6321C] selection:text-white">
+      {/* Mobile Backdrop Overlay */}
       {mobileOpen && (
         <div
-          className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm lg:hidden transition-opacity"
+          className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm lg:hidden transition-opacity duration-200"
           onClick={() => setMobileOpen(false)}
+          aria-hidden="true"
         />
       )}
 
-      {/* Luxury Dark Obsidian Sidebar */}
+      {/* Atelier Executive Sidebar */}
       <aside
-        className={`fixed inset-y-0 left-0 z-50 flex flex-col bg-[#141414] border-r border-white/10 transition-all duration-300 ease-out shadow-2xl
+        className={`fixed inset-y-0 left-0 z-50 flex flex-col bg-[#F7EEDB] border-r-2 border-[#171717] transition-all duration-200 ease-out shadow-[3px_0px_0px_#171717]
           ${sidebarW}
           ${mobileOpen ? 'translate-x-0' : '-translate-x-full'}
-          lg:translate-x-0 lg:static lg:z-auto
+          lg:translate-x-0 lg:static lg:z-auto shrink-0
         `}
       >
         {/* Brand Crest Header */}
         <div
-          className={`flex items-center h-[68px] border-b border-white/[0.08] px-4 shrink-0 ${
+          className={`flex items-center h-[68px] border-b-2 border-[#171717] bg-[#EDE0CC] px-4 shrink-0 ${
             collapsed ? 'justify-center' : 'justify-between'
           }`}
         >
           {!collapsed ? (
             <div className="flex items-center gap-3">
-              <div className="relative flex items-center justify-center w-9 h-9 rounded-xl overflow-hidden border border-white/20 shadow-md shrink-0 bg-[#F9EEDC]">
+              <div className="relative flex items-center justify-center w-9 h-9 rounded-md overflow-hidden border-2 border-[#171717] shadow-[2px_2px_0px_#171717] shrink-0 bg-white">
                 <img src="/submark.png" alt="Bingooo" className="w-full h-full object-cover select-none" />
-                <span className="absolute -top-0.5 -right-0.5 flex h-2.5 w-2.5">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
-                </span>
               </div>
               <div className="flex flex-col">
                 <div className="flex items-center gap-1.5">
-                  <span className="text-sm font-black uppercase tracking-[0.18em] text-white font-sans">
-                    Bingooo
+                  <span className="text-base font-black uppercase tracking-wider text-[#171717] font-sans">
+                    BINGOOO<span className="text-[#E6321C]">.</span>
                   </span>
-                  <span className="px-1.5 py-0.5 rounded text-[8px] font-mono font-black uppercase tracking-wider bg-white/10 text-white/70">
+                  <span className="px-1.5 py-0.5 rounded text-[8px] font-mono font-black uppercase tracking-wider bg-[#171717] text-white">
                     ATELIER
                   </span>
                 </div>
-                <span className="text-[9px] font-mono text-white/40 tracking-wider">
-                  OS v2.4 • PRODUCTION
+                <span className="text-[9px] font-mono font-bold text-[#6F6A63] tracking-widest uppercase">
+                  OS v2.4 • CONTROL
                 </span>
               </div>
             </div>
           ) : (
-            <div className="flex items-center justify-center w-9 h-9 rounded-xl overflow-hidden border border-white/20 shadow-md shrink-0 bg-[#F9EEDC]">
+            <div className="flex items-center justify-center w-9 h-9 rounded-md overflow-hidden border-2 border-[#171717] shadow-[2px_2px_0px_#171717] shrink-0 bg-white">
               <img src="/submark.png" alt="Bingooo" className="w-full h-full object-cover select-none" />
             </div>
           )}
 
           <button
             onClick={() => setCollapsed(!collapsed)}
-            className="hidden lg:flex items-center justify-center w-7 h-7 rounded-lg text-white/40 hover:text-white hover:bg-white/10 transition-colors"
+            className="hidden lg:flex items-center justify-center w-7 h-7 border-1.5 border-[#171717] rounded-md bg-white text-[#171717] hover:bg-[#171717] hover:text-white transition-colors shadow-[1.5px_1.5px_0px_#171717] cursor-pointer"
             aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
             title={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
           >
             <ChevronLeft
               size={15}
-              className={`transition-transform duration-300 ${collapsed ? 'rotate-180' : ''}`}
+              className={`transition-transform duration-200 ${collapsed ? 'rotate-180' : ''}`}
             />
           </button>
           <button
             onClick={() => setMobileOpen(false)}
-            className="flex lg:hidden items-center justify-center w-8 h-8 rounded-lg text-white/40 hover:text-white hover:bg-white/10"
+            className="flex lg:hidden items-center justify-center w-8 h-8 border-1.5 border-[#171717] rounded-md bg-white text-[#171717] hover:bg-[#E6321C] hover:text-white cursor-pointer"
             aria-label="Close menu"
           >
             <X size={18} />
@@ -170,15 +167,15 @@ export function AdminLayout() {
         </div>
 
         {/* Grouped Navigation */}
-        <nav className="flex-1 py-4 px-3 space-y-5 overflow-y-auto overflow-x-hidden">
+        <nav className="flex-1 py-4 px-3 space-y-4 overflow-y-auto overflow-x-hidden">
           {NAV_GROUPS.map((group) => (
             <div key={group.label} className="space-y-1">
               {!collapsed && (
-                <div className="px-3 pb-1 text-[9px] font-mono font-bold tracking-[0.2em] text-white/30 uppercase">
+                <div className="px-3 pb-1 text-[9px] font-mono font-black tracking-[0.2em] text-[#6F6A63] uppercase border-b border-[#171717]/15">
                   {group.label}
                 </div>
               )}
-              <div className="space-y-0.5">
+              <div className="space-y-1 pt-0.5">
                 {group.items.map((item) => (
                   <NavLink
                     key={item.to}
@@ -186,25 +183,25 @@ export function AdminLayout() {
                     end={item.end}
                     onClick={() => setMobileOpen(false)}
                     className={({ isActive }) =>
-                      `group relative flex items-center gap-3 rounded-xl px-3 py-2.5 text-xs font-bold transition-all duration-150 no-underline
+                      `group relative flex items-center gap-3 rounded-md px-3 py-2 text-xs font-mono font-bold uppercase tracking-wider transition-all duration-150 no-underline
                       ${collapsed ? 'justify-center px-2' : ''}
                       ${
                         isActive
-                          ? 'bg-gradient-to-r from-brand-red to-brand-red-deep text-white shadow-glow-red font-extrabold'
-                          : 'text-white/55 hover:text-white hover:bg-white/[0.06]'
+                          ? 'bg-[#E6321C] text-white border-1.5 border-[#171717] shadow-[2px_2px_0px_#171717] font-black'
+                          : 'text-[#171717] hover:bg-[#EDE0CC] hover:border-1.5 hover:border-[#171717] border-1.5 border-transparent'
                       }`
                     }
                     title={collapsed ? item.label : undefined}
                   >
                     <item.icon
-                      size={17}
+                      size={16}
                       className="shrink-0 transition-transform duration-150 group-hover:scale-110"
                     />
                     {!collapsed && (
-                      <span className="truncate tracking-wide">{item.label}</span>
+                      <span className="truncate">{item.label}</span>
                     )}
                     {!collapsed && item.badge && (
-                      <span className="ml-auto px-1.5 py-0.5 rounded text-[9px] font-mono font-bold bg-white/20 text-white">
+                      <span className="ml-auto px-1.5 py-0.5 rounded text-[8px] font-mono font-black bg-[#171717] text-white border border-[#171717]">
                         {item.badge}
                       </span>
                     )}
@@ -216,19 +213,19 @@ export function AdminLayout() {
         </nav>
 
         {/* User Card & Sign Out Footer */}
-        <div className={`border-t border-white/[0.08] p-3.5 shrink-0 bg-white/[0.02] ${collapsed ? 'px-2' : ''}`}>
+        <div className={`border-t-2 border-[#171717] p-3 shrink-0 bg-[#EDE0CC] ${collapsed ? 'px-2' : ''}`}>
           {!collapsed && user && (
-            <div className="flex items-center gap-3 p-2 rounded-xl bg-white/[0.04] border border-white/[0.06] mb-2.5">
-              <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-brand-red/20 border border-brand-red/30 text-brand-red font-black text-xs shrink-0 font-mono">
+            <div className="flex items-center gap-2.5 p-2 rounded-md bg-white border-1.5 border-[#171717] shadow-[2px_2px_0px_#171717] mb-2.5">
+              <div className="flex items-center justify-center w-7 h-7 rounded bg-[#E6321C] border border-[#171717] text-white font-mono font-black text-xs shrink-0">
                 {user.fullName ? user.fullName.charAt(0).toUpperCase() : 'A'}
               </div>
               <div className="min-w-0 flex-1">
-                <p className="text-xs font-bold text-white truncate leading-tight">
+                <p className="text-xs font-black text-[#171717] truncate leading-tight uppercase font-mono">
                   {user.fullName || user.email}
                 </p>
                 <div className="flex items-center gap-1.5 mt-0.5">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
-                  <span className="text-[9px] font-mono font-bold uppercase tracking-wider text-white/40 truncate">
+                  <span className="w-2 h-2 rounded-full bg-emerald-600 border border-[#171717]"></span>
+                  <span className="text-[9px] font-mono font-bold uppercase tracking-wider text-[#6F6A63] truncate">
                     {user.role?.replace('_', ' ') || 'ADMIN'}
                   </span>
                 </div>
@@ -238,12 +235,12 @@ export function AdminLayout() {
 
           <button
             onClick={handleLogout}
-            className={`flex items-center gap-2.5 w-full rounded-xl px-3 py-2 text-xs font-bold text-white/50 hover:text-rose-400 hover:bg-rose-500/10 transition-all ${
-              collapsed ? 'justify-center px-2' : ''
+            className={`flex items-center gap-2 w-full rounded-md px-3 py-2 font-mono text-xs font-black uppercase tracking-wider text-[#171717] bg-white border-1.5 border-[#171717] shadow-[2px_2px_0px_#171717] hover:bg-[#E6321C] hover:text-white active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all cursor-pointer ${
+              collapsed ? 'justify-center px-1' : ''
             }`}
             title="Sign out of Admin OS"
           >
-            <LogOut size={15} className="shrink-0" />
+            <LogOut size={14} className="shrink-0" />
             {!collapsed && <span>Sign Out</span>}
           </button>
         </div>
@@ -251,23 +248,23 @@ export function AdminLayout() {
 
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col min-w-0">
-        {/* Sticky Glassmorphic Header */}
-        <header className="sticky top-0 z-30 flex items-center justify-between h-[68px] bg-paper/85 backdrop-blur-md border-b border-border/80 px-4 lg:px-8 gap-4 shrink-0 transition-all">
+        {/* Modern Atelier Header */}
+        <header className="sticky top-0 z-30 flex items-center justify-between h-[68px] bg-[#F7EEDB] border-b-2 border-[#171717] px-4 lg:px-8 gap-4 shrink-0 transition-all">
           <div className="flex items-center gap-3">
             <button
               onClick={() => setMobileOpen(true)}
-              className="flex lg:hidden items-center justify-center w-9 h-9 rounded-xl bg-white border border-border text-ink hover:bg-beige transition-colors shadow-2xs"
+              className="flex lg:hidden items-center justify-center w-9 h-9 rounded-md bg-white border-1.5 border-[#171717] text-[#171717] hover:bg-[#EDE0CC] shadow-[2px_2px_0px_#171717] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none cursor-pointer"
               aria-label="Open navigation menu"
             >
               <Menu size={18} />
             </button>
 
             <div className="flex items-center gap-2">
-              <span className="text-[10px] font-mono font-bold uppercase tracking-[0.2em] text-muted">
+              <span className="text-[10px] font-mono font-extrabold uppercase tracking-[0.2em] text-[#6F6A63]">
                 ATELIER OS
               </span>
-              <span className="text-muted/40 font-mono">/</span>
-              <span className="text-xs font-black uppercase tracking-wider text-ink font-sans">
+              <span className="text-[#171717]/40 font-mono font-bold">/</span>
+              <span className="text-xs font-black uppercase tracking-wider text-[#171717] font-mono bg-white px-2.5 py-1 border-1.5 border-[#171717] rounded-md shadow-[1.5px_1.5px_0px_#171717]">
                 {currentRouteName()}
               </span>
             </div>
@@ -275,12 +272,9 @@ export function AdminLayout() {
 
           <div className="flex items-center gap-3">
             {/* Live System Indicator */}
-            <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/70 border border-border/70 shadow-2xs">
-              <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-              </span>
-              <span className="text-[10px] font-mono font-bold tracking-wider text-muted uppercase">
+            <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-md bg-white border-1.5 border-[#171717] shadow-[1.5px_1.5px_0px_#171717]">
+              <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 border border-[#171717] animate-pulse"></span>
+              <span className="text-[10px] font-mono font-black tracking-wider text-[#171717] uppercase">
                 API ONLINE
               </span>
             </div>
@@ -290,17 +284,17 @@ export function AdminLayout() {
               href="http://localhost:5173"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-white border border-border text-xs font-bold uppercase tracking-wider text-ink shadow-2xs hover:border-brand-red hover:text-brand-red hover:shadow-glow-red hover:-translate-y-0.5 transition-all no-underline"
+              className="inline-flex items-center gap-2 px-3.5 py-2 rounded-md bg-[#EDE0CC] border-1.5 border-[#171717] text-xs font-mono font-black uppercase tracking-wider text-[#171717] shadow-[2px_2px_0px_#171717] hover:bg-[#E6321C] hover:text-white hover:border-[#171717] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all no-underline"
             >
-              <Store size={14} className="text-brand-red" />
+              <Store size={14} />
               <span className="hidden xs:inline">Storefront</span>
-              <ExternalLink size={12} className="text-muted" />
+              <ExternalLink size={12} />
             </a>
           </div>
         </header>
 
         {/* Page Canvas */}
-        <main className="flex-1 p-4 sm:p-6 lg:p-8 max-w-[1600px] w-full mx-auto">
+        <main className="flex-1 p-4 sm:p-6 lg:p-8 max-w-[1600px] w-full mx-auto overflow-x-hidden">
           <Outlet />
         </main>
       </div>

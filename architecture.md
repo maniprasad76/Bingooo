@@ -1,8 +1,8 @@
 # 🏛️ BINGOOO — Technical System Architecture (`architecture.md`)
 
-> **Document Version:** 1.0.0  
+> **Document Version:** 1.2.0  
 > **Status:** Active Reference Architecture  
-> **Last Updated:** September 2026  
+> **Last Updated:** October 10, 2026  
 > **Target Audience:** Lead Architects, Backend/Frontend Engineers, AI Agents  
 > **Scope:** Monorepo (`apps/frontend`, `apps/admin`, `apps/backend`, `packages/types`, `packages/config`, `android/`)
 
@@ -183,14 +183,19 @@ When running within Capacitor native mobile containers (Android / iOS):
 ## 4. Admin Operations Architecture (`apps/admin`)
 
 ### 4.1 Route & Layout Hierarchy
-The admin portal provides 27 management routes grouped into 7 functional divisions:
+The admin portal provides responsive management routes grouped into 7 functional divisions:
 1. **Overview:** `/dashboard` (Executive KPI telemetry and sales velocity).
 2. **Catalog & Stock:** `/products`, `/products/new`, `/products/:id/edit`, `/categories`, `/inventory`.
-3. **Orders & Studio:** `/orders`, `/orders/:id`, `/customizer` (Artwork review queue).
-4. **Marketing & Sales:** `/banners`, `/coupons`.
+3. **Orders & Studio:** `/orders`, `/orders/:id`, `/customizer` (Garment Studio silhouette & photography manager).
+4. **Marketing & Sales:** `/coupons`.
 5. **Finance & Media:** `/payments`, `/returns`, `/uploads` (Cloudflare R2 browser).
 6. **Customers & Team:** `/customers`, `/reviews`.
 7. **Operations & System:** `/settings`.
+
+#### Responsive Layout Architecture:
+- **Desktop (`lg+`):** Permanent document-flow sidebar with clean brand badge, route hierarchy, and active indicators. Eliminates horizontal viewport clipping and overlapping headers.
+- **Mobile & Tablet (`<lg`):** Sliding off-canvas navigation drawer with backdrop blur, smooth kinetic slide-in transition, and quick dismiss on backdrop tap or route change.
+- **Dynamic Garment Authority:** `/customizer` serves as the authoritative studio where administrators upload transparent front/back garment photography, configure sizes, GSM, prices, and color swatches rendered live across the customer storefront.
 
 ### 4.2 Product SKU Matrix Generator
 In `ProductEditorPage.tsx`, creating or editing garments triggers an automated variant matrix generator:
@@ -290,7 +295,7 @@ sequenceDiagram
 
     User->>Front: Clicks "Proceed to Payment"
     Front->>API: POST /api/v1/checkout/create-order<br/>Payload: { items: [{productId, variantId, quantity}], shippingAddress, couponCode }
-    Note over API: 1. Fetch live product prices from Store (IGNORE client prices)<br/>2. Verify variant inventory availability<br/>3. Apply all-inclusive pricing (₹0 tax surcharge)<br/>4. Validate coupon code against rules & usage limits<br/>5. Add shipping fee (Free if subtotal >= ₹999)<br/>6. Total = Subtotal - Discount + Shipping
+    Note over API: 1. Fetch live product prices from Store (IGNORE client prices)<br/>2. Verify variant inventory availability<br/>3. Apply all-inclusive pricing (₹0 tax surcharge)<br/>4. Validate coupon code against rules & usage limits<br/>5. Apply 100% universal free delivery Pan-India (₹0 shipping)<br/>6. Total = Subtotal - Discount
     API->>Store: Atomic stock decrement / reservation
     API->>RZP: POST /orders (amount in paise, currency: INR, receipt: orderId)
     RZP-->>API: Returns { id: "order_rzp_123", amount, currency }

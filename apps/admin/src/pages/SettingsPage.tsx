@@ -78,35 +78,35 @@ export function SettingsPage() {
 
   return (
     <div className="space-y-6 max-w-4xl">
-      <div>
-        <h1 className="text-xl font-extrabold uppercase tracking-wide text-ink flex items-center gap-2">
-          <Settings size={22} className="text-brand-red" /> Store Settings
+      <div className="border-b-2 border-[#171717] pb-4">
+        <h1 className="text-2xl font-black uppercase tracking-tight text-[#171717] font-sans flex items-center gap-2">
+          <Settings size={22} className="text-[#E6321C]" /> Store Settings
         </h1>
-        <p className="text-xs text-muted mt-0.5">
+        <p className="text-xs text-[#171717]/70 mt-1 font-medium">
           Configure operations, payment rules, and store policies.
         </p>
       </div>
 
       {success && (
-        <div className="flex items-center gap-2 rounded-lg bg-success-light p-3.5 text-success border border-success/20 text-xs font-semibold">
-          <CheckCircle size={16} />
+        <div className="flex items-center gap-2 bg-emerald-100 p-3.5 text-emerald-950 border-2 border-[#171717] text-xs font-bold shadow-[2px_2px_0px_#171717]">
+          <CheckCircle size={16} className="text-emerald-800" />
           <span>{success}</span>
         </div>
       )}
 
       {error && (
-        <div className="flex items-center gap-2 rounded-lg bg-danger-light p-3.5 text-danger border border-danger/20 text-xs font-semibold">
-          <AlertCircle size={16} />
+        <div className="flex items-center gap-2 bg-rose-100 p-3.5 text-rose-950 border-2 border-[#171717] text-xs font-bold shadow-[2px_2px_0px_#171717]">
+          <AlertCircle size={16} className="text-[#E6321C]" />
           <span>{error}</span>
         </div>
       )}
 
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Store Profile */}
-        <div className="admin-card p-6 space-y-4">
-          <div className="flex items-center gap-2 pb-3 border-b border-border">
-            <Store size={18} className="text-brand-red" />
-            <h2 className="text-sm font-bold uppercase tracking-wider text-ink">General Store Information</h2>
+        <div className="bg-white border-2 border-[#171717] p-6 space-y-4 shadow-[4px_4px_0px_#171717]">
+          <div className="flex items-center gap-2 pb-3 border-b-2 border-[#171717]">
+            <Store size={18} className="text-[#E6321C]" />
+            <h2 className="text-xs font-black uppercase tracking-widest text-[#171717]">General Store Information</h2>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -114,7 +114,7 @@ export function SettingsPage() {
               <label className="admin-label">Store Name</label>
               <input
                 type="text"
-                className="admin-input"
+                className="admin-input font-bold"
                 value={settings.store_name}
                 onChange={(e) => setSettings({ ...settings, store_name: e.target.value })}
                 required
@@ -125,7 +125,7 @@ export function SettingsPage() {
               <label className="admin-label">Currency</label>
               <input
                 type="text"
-                className="admin-input"
+                className="admin-input font-mono font-bold"
                 value={settings.currency}
                 onChange={(e) => setSettings({ ...settings, currency: e.target.value })}
                 required
@@ -136,7 +136,7 @@ export function SettingsPage() {
               <label className="admin-label">Support Email</label>
               <input
                 type="email"
-                className="admin-input"
+                className="admin-input font-mono"
                 value={settings.store_email}
                 onChange={(e) => setSettings({ ...settings, store_email: e.target.value })}
                 required
@@ -147,7 +147,7 @@ export function SettingsPage() {
               <label className="admin-label">Support Phone</label>
               <input
                 type="text"
-                className="admin-input"
+                className="admin-input font-mono"
                 value={settings.store_phone}
                 onChange={(e) => setSettings({ ...settings, store_phone: e.target.value })}
               />
@@ -166,28 +166,28 @@ export function SettingsPage() {
         </div>
 
         {/* Payments & Prepaid Policy */}
-        <div className="admin-card p-6 space-y-4">
-          <div className="flex items-center gap-2 pb-3 border-b border-border">
-            <CreditCard size={18} className="text-brand-red" />
-            <h2 className="text-sm font-bold uppercase tracking-wider text-ink">Payments & Prepaid Policy</h2>
+        <div className="bg-white border-2 border-[#171717] p-6 space-y-4 shadow-[4px_4px_0px_#171717]">
+          <div className="flex items-center gap-2 pb-3 border-b-2 border-[#171717]">
+            <CreditCard size={18} className="text-[#E6321C]" />
+            <h2 className="text-xs font-black uppercase tracking-widest text-[#171717]">Payments & Prepaid Policy</h2>
           </div>
 
-          <div className="p-3.5 rounded-lg border border-border bg-paper/40 text-xs text-muted leading-relaxed">
+          <div className="p-3.5 border-2 border-[#171717] bg-[#F7EEDB] text-xs text-[#171717] font-medium leading-relaxed shadow-[2px_2px_0px_#171717]">
             Bingooo operates exclusively on a 100% secure prepaid architecture (Razorpay UPI, Cards, NetBanking). Cash on Delivery (COD) is permanently disabled across the storefront.
           </div>
 
           <div className="grid grid-cols-1 gap-4">
-            <div className="flex items-center justify-between p-3.5 rounded-lg border border-emerald-200 bg-emerald-50/40">
+            <div className="flex items-center justify-between p-4 border-2 border-[#171717] bg-white shadow-[2px_2px_0px_#171717]">
               <div>
-                <p className="text-xs font-bold text-ink">Prepaid Discount (%)</p>
-                <p className="text-[11px] text-muted">Flat percentage discount for customers who pay online (UPI / Cards)</p>
+                <p className="text-xs font-black uppercase text-[#171717]">Prepaid Discount (%)</p>
+                <p className="text-[11px] text-[#171717]/70 font-medium">Flat percentage discount for customers who pay online (UPI / Cards)</p>
               </div>
               <input
                 type="number"
                 min={0}
                 max={50}
                 step={1}
-                className="admin-input w-20 text-center"
+                className="admin-input w-24 text-center font-mono font-black text-sm"
                 value={settings.prepaid_discount_percentage}
                 onChange={(e) => setSettings({ ...settings, prepaid_discount_percentage: Number(e.target.value) })}
               />
@@ -196,10 +196,10 @@ export function SettingsPage() {
         </div>
 
         {/* Shipping & Logistics */}
-        <div className="admin-card p-6 space-y-4">
-          <div className="flex items-center gap-2 pb-3 border-b border-border">
-            <Truck size={18} className="text-brand-red" />
-            <h2 className="text-sm font-bold uppercase tracking-wider text-ink">Shipping & Fulfillment Policies</h2>
+        <div className="bg-white border-2 border-[#171717] p-6 space-y-4 shadow-[4px_4px_0px_#171717]">
+          <div className="flex items-center gap-2 pb-3 border-b-2 border-[#171717]">
+            <Truck size={18} className="text-[#E6321C]" />
+            <h2 className="text-xs font-black uppercase tracking-widest text-[#171717]">Shipping & Fulfillment Policies</h2>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -208,7 +208,7 @@ export function SettingsPage() {
               <input
                 type="number"
                 min={0}
-                className="admin-input"
+                className="admin-input font-mono font-bold"
                 value={settings.return_window_days}
                 onChange={(e) => setSettings({ ...settings, return_window_days: Number(e.target.value) })}
               />
@@ -219,7 +219,7 @@ export function SettingsPage() {
               <input
                 type="number"
                 min={1}
-                className="admin-input"
+                className="admin-input font-mono font-bold"
                 value={settings.dtg_print_lead_days}
                 onChange={(e) => setSettings({ ...settings, dtg_print_lead_days: Number(e.target.value) })}
               />
@@ -228,7 +228,7 @@ export function SettingsPage() {
         </div>
 
         <div className="flex justify-end pt-2">
-          <button type="submit" disabled={saving} className="btn-primary px-6 py-3">
+          <button type="submit" disabled={saving} className="btn-primary px-6 py-2.5">
             {saving ? (
               <>
                 <LoaderCircle size={16} className="animate-spin" /> Saving…

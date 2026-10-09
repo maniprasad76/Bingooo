@@ -3,13 +3,14 @@ import { PageLayout } from '../components/layout/PageLayout';
 import { RequireAuth } from '../components/common/RequireAuth';
 import { RouteErrorBoundary } from '../components/common/RouteErrorBoundary';
 import { HomePage } from '../pages/HomePage';
-import { LoginPage } from '../pages/LoginPage';
-import { SignupPage } from '../pages/SignupPage';
-import { ForgotPasswordPage } from '../pages/ForgotPasswordPage';
-import { ResetPasswordPage } from '../pages/ResetPasswordPage';
 import { lazyPage } from './lazyPage';
 
 // ─── Lazy-loaded route components (code-splitting for faster first paint) ───
+// Auth pages pull in the form libraries (zod, react-hook-form); keep them out of the first load.
+const LoginPage = lazyPage(() => import('../pages/LoginPage'), 'LoginPage');
+const SignupPage = lazyPage(() => import('../pages/SignupPage'), 'SignupPage');
+const ForgotPasswordPage = lazyPage(() => import('../pages/ForgotPasswordPage'), 'ForgotPasswordPage');
+const ResetPasswordPage = lazyPage(() => import('../pages/ResetPasswordPage'), 'ResetPasswordPage');
 const ShopPage = lazyPage(() => import('../pages/ShopPage'), 'ShopPage');
 const ProductPage = lazyPage(() => import('../pages/ProductPage'), 'ProductPage');
 const CustomizerPage = lazyPage(() => import('../pages/CustomizerPage'), 'CustomizerPage');

@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
-import { Heart, Truck, Package, Sparkles, ShieldCheck, CheckCircle2, Mail, ArrowRight, X, ChevronLeft, ChevronRight, Maximize2, Shirt } from 'lucide-react';
+import { Heart, Truck, Package, Sparkles, ShieldCheck, CheckCircle2, Mail, ArrowRight, X, ChevronLeft, ChevronRight, Maximize2 } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { SEO } from '../components/common/SEO';
 import { generateOrganizationSchema, generateLocalBusinessSchema, generateWebSiteSchema } from '../lib/seo/schema';
@@ -11,6 +11,8 @@ import { prefetchProduct } from '../lib/utils/preloader';
 import { useProducts } from '../hooks/useProducts';
 import { ProductPlaceholder } from '../components/ui/ProductPlaceholder';
 import { resolveImageUrl } from '../lib/utils';
+import { Picture } from '../components/ui/Picture';
+import { IMAGES, HERO_SIZES, type ImageAsset } from '../lib/images';
 
 interface FeaturedProduct {
   id: string;
@@ -27,7 +29,7 @@ const FEATURED_PRODUCTS: FeaturedProduct[] = [];
 
 interface CommunityFit {
   id: string;
-  src: string;
+  image: ImageAsset;
   alt: string;
   badge: string;
   title: string;
@@ -38,7 +40,7 @@ interface CommunityFit {
 const COMMUNITY_FITS: CommunityFit[] = [
   {
     id: 'fit-campaign',
-    src: '/real-fit-3.jpg',
+    image: IMAGES.realFit3,
     alt: 'Bingooo — Wear What Defines You campaign look',
     badge: 'CAMPAIGN',
     title: 'Wear What Defines You',
@@ -47,7 +49,7 @@ const COMMUNITY_FITS: CommunityFit[] = [
   },
   {
     id: 'fit-white-tee',
-    src: '/real-fit-2.jpg',
+    image: IMAGES.realFit2,
     alt: 'Bingooo — Classic Heavyweight Oversized Tee in Off-White',
     badge: 'OVERSIZED TEE',
     title: 'Off-White Heavyweight',
@@ -56,7 +58,7 @@ const COMMUNITY_FITS: CommunityFit[] = [
   },
   {
     id: 'fit-olive-hoodie',
-    src: '/real-fit-1.jpg',
+    image: IMAGES.realFit1,
     alt: 'Bingooo — Heavyweight Fleece Hoodie in Forest Olive',
     badge: 'HOODIE DROP',
     title: 'Fleece Hoodie',
@@ -65,7 +67,7 @@ const COMMUNITY_FITS: CommunityFit[] = [
   },
   {
     id: 'fit-kraft-bag',
-    src: '/real-fit-4.jpg',
+    image: IMAGES.realFit4,
     alt: 'Bingooo — Real You. Real Fit. Signature Kraft Tote & Packaging',
     badge: 'REAL YOU. REAL FIT.',
     title: 'Signature Kraft',
@@ -74,7 +76,7 @@ const COMMUNITY_FITS: CommunityFit[] = [
   },
   {
     id: 'fit-street-walk',
-    src: '/real-fit-5.jpg',
+    image: IMAGES.realFit5,
     alt: 'Bingooo — Street style everyday culture with Bingooo bag',
     badge: 'STREET STYLE',
     title: 'Everyday Culture',
@@ -83,7 +85,7 @@ const COMMUNITY_FITS: CommunityFit[] = [
   },
   {
     id: 'fit-couple-walk',
-    src: '/real-fit-6.jpg',
+    image: IMAGES.realFit6,
     alt: 'Bingooo — Real You. Real Fit. couple streetwear lookbook with shopping bags',
     badge: 'COMMUNITY',
     title: 'Real You. Real Fit.',
@@ -210,10 +212,13 @@ export function HomePage() {
       <section className="relative w-full min-h-[min(680px,calc(100vh-90px))] md:min-h-[min(720px,calc(100vh-104px))] overflow-hidden bg-[#f7eedb] m-0 p-0">
         {/* Full-bleed Hero Campaign Imagery */}
         <div className="absolute inset-0 md:left-[36%] lg:left-[40%] xl:left-[42%] overflow-hidden pointer-events-none z-0">
-          <img
-            src="https://images.unsplash.com/photo-1529139574466-a303027c1d8b?auto=format&fit=crop&w=2200&q=85"
+          <Picture
+            image={IMAGES.hero}
+            sizes={HERO_SIZES}
+            loading="eager"
+            fetchPriority="high"
             alt="Bingooo fashion campaign"
-            className="h-full w-full object-cover object-[center_15%] grayscale contrast-[1.05]"
+            className="h-full w-full object-cover object-[center_15%] contrast-[1.05]"
           />
           {/* Gradient Overlay: Vertical blend on mobile, Horizontal blend on desktop */}
           <div className="absolute inset-0 bg-gradient-to-b from-[#f7eedb] via-[#f7eedb]/80 to-[#f7eedb]/30 md:hidden" />
@@ -324,18 +329,12 @@ export function HomePage() {
             {/* Category: Men */}
             <article className="bg-white border-2 border-[#171717] shadow-[2px_2px_0px_#171717] sm:shadow-[4px_4px_0px_#171717] hover:shadow-[4px_4px_0px_#171717] sm:hover:shadow-[6px_6px_0px_#171717] hover:-translate-x-0.5 hover:-translate-y-0.5 transition-all p-2.5 sm:p-6 flex flex-row items-center gap-2.5 sm:gap-6 group">
               <Link to="/shop?category=men" className="w-14 h-14 xs:w-16 xs:h-16 sm:w-[130px] sm:h-[130px] aspect-square overflow-hidden bg-[#252525] shrink-0 block border-2 border-[#171717]">
-                <picture>
-                  <source srcSet="/men-category.webp" type="image/webp" />
-                  <img
-                    src="/men-category.jpg"
-                    alt="Bingooo Men collection"
-                    width={500}
-                    height={500}
-                    loading="lazy"
-                    decoding="async"
-                    className="h-full w-full object-cover object-center group-hover:scale-105 transition-transform duration-300"
-                  />
-                </picture>
+                <Picture
+                  image={IMAGES.menCategory}
+                  sizes="(min-width: 640px) 130px, 64px"
+                  alt="Bingooo Men collection"
+                  className="h-full w-full object-cover object-center group-hover:scale-105 transition-transform duration-300"
+                />
               </Link>
               <div className="w-full flex-1 min-w-0">
                 <span className="text-[7.5px] xs:text-[9px] sm:text-[10px] font-mono font-bold bg-[#E6321C] text-white px-1 sm:px-2 py-0.5 uppercase tracking-wider inline-block mb-0.5 sm:mb-1.5 border border-[#171717]">
@@ -360,18 +359,12 @@ export function HomePage() {
             {/* Category: Women */}
             <article className="bg-white border-2 border-[#171717] shadow-[2px_2px_0px_#171717] sm:shadow-[4px_4px_0px_#171717] hover:shadow-[4px_4px_0px_#171717] sm:hover:shadow-[6px_6px_0px_#171717] hover:-translate-x-0.5 hover:-translate-y-0.5 transition-all p-2.5 sm:p-6 flex flex-row items-center gap-2.5 sm:gap-6 group">
               <Link to="/shop?category=women" className="w-14 h-14 xs:w-16 xs:h-16 sm:w-[130px] sm:h-[130px] aspect-square overflow-hidden bg-[#252525] shrink-0 block border-2 border-[#171717]">
-                <picture>
-                  <source srcSet="/women-category.webp" type="image/webp" />
-                  <img
-                    src="/women-category.jpg"
-                    alt="Bingooo Women collection"
-                    width={500}
-                    height={500}
-                    loading="lazy"
-                    decoding="async"
-                    className="h-full w-full object-cover object-center group-hover:scale-105 transition-transform duration-300"
-                  />
-                </picture>
+                <Picture
+                  image={IMAGES.womenCategory}
+                  sizes="(min-width: 640px) 130px, 64px"
+                  alt="Bingooo Women collection"
+                  className="h-full w-full object-cover object-center group-hover:scale-105 transition-transform duration-300"
+                />
               </Link>
               <div className="w-full flex-1 min-w-0">
                 <span className="text-[7.5px] xs:text-[9px] sm:text-[10px] font-mono font-bold bg-[#171717] text-white px-1 sm:px-2 py-0.5 uppercase tracking-wider inline-block mb-0.5 sm:mb-1.5 border border-[#171717]">
@@ -516,9 +509,9 @@ export function HomePage() {
       ========================================================= */}
       <section className="py-12 sm:py-16 bg-[#F7EEDB]">
         <div className="container-bingooo">
-          <div className="border-[3px] border-[#171717] shadow-[8px_8px_0px_#171717] bg-white overflow-hidden grid grid-cols-1 lg:grid-cols-12">
+          <div className="border-[3px] border-[#171717] shadow-[8px_8px_0px_#171717] bg-[#F7EEDB] overflow-hidden grid grid-cols-1 lg:grid-cols-2">
             {/* Left Signal Red Visualizer Panel */}
-            <div className="lg:col-span-6 bg-[#E6321C] p-8 sm:p-12 relative flex flex-col justify-between items-center text-center overflow-hidden border-b-[3px] lg:border-b-0 lg:border-r-[3px] border-[#171717] min-h-[380px]">
+            <div className="w-full bg-[#E6321C] p-8 sm:p-12 relative flex flex-col justify-between items-center text-center overflow-hidden border-b-[3px] lg:border-b-0 lg:border-r-[3px] border-[#171717] min-h-[380px]">
               {/* Giant Watermark */}
               <div className="absolute inset-0 flex items-center justify-center pointer-events-none select-none">
                 <span className="text-white/15 font-black text-[120px] sm:text-[190px] leading-none uppercase select-none">
@@ -538,20 +531,17 @@ export function HomePage() {
               <div className="relative z-10 my-6 w-48 sm:w-60 aspect-square flex items-center justify-center">
                 {studioPhoto ? (
                   <img
-                    src={studioPhoto}
+                    src={resolveImageUrl(studioPhoto)}
                     alt="Custom garment ready for your design"
                     className="w-full h-full object-contain filter drop-shadow-[0_20px_32px_rgba(0,0,0,0.5)]"
                   />
                 ) : (
-                  <Shirt className="w-3/4 h-3/4 text-[#171717]" strokeWidth={1.25} fill="#171717" />
+                  <div className="w-full h-full border-2 border-white/20 bg-black/20 backdrop-blur-sm flex flex-col items-center justify-center p-6 text-center shadow-inner">
+                    <span className="text-white/60 font-mono text-[10px] tracking-widest uppercase">BINGOOO ATELIER</span>
+                    <span className="text-white text-base sm:text-lg font-black tracking-wider uppercase mt-1">BESPOKE STUDIO</span>
+                    <span className="text-white/70 text-[10px] font-mono mt-3 uppercase tracking-wider">REAL-TIME DTF & SCREEN PRINTING</span>
+                  </div>
                 )}
-                <div className="absolute z-20 text-center pointer-events-none">
-                  <span className="font-extrabold text-white text-xs sm:text-sm tracking-widest uppercase">
-                    YOUR
-                    <br />
-                    LINE HERE
-                  </span>
-                </div>
               </div>
 
               <div className="relative z-10 text-[10px] sm:text-[11px] font-mono font-bold text-white/90 uppercase tracking-widest">
@@ -560,7 +550,7 @@ export function HomePage() {
             </div>
 
             {/* Right Warm Cream Configuration Panel */}
-            <div className="lg:col-span-6 bg-[#F7EEDB] p-8 sm:p-12 flex flex-col justify-between text-left">
+            <div className="w-full bg-[#F7EEDB] p-8 sm:p-12 flex flex-col justify-between text-left">
               <div>
                 <div className="flex items-center gap-2 mb-3">
                   <span className="w-6 h-6 rounded-full bg-[#171717] text-white font-mono font-bold text-xs flex items-center justify-center">
@@ -732,11 +722,13 @@ export function HomePage() {
                 }}
               >
                 <div className="w-full aspect-[4/5] overflow-hidden relative">
-                  <img
-                    src={fit.src}
+                  <Picture
+                    image={fit.image}
+                    // Tile width: .container-bingooo (100% - 32px, - 48px above 800px, max 1440px)
+                    // split into 2/3/6 columns with 12px gaps, minus the 2px border on each side.
+                    sizes="(min-width: 1488px) 226px, (min-width: 1024px) calc(16.67vw - 22px), (min-width: 640px) calc(33.33vw - 23px), calc(50vw - 26px)"
                     alt={fit.alt}
                     className={`w-full h-full object-cover ${fit.objectPos || 'object-center'} transition-transform duration-500 ease-out group-hover:scale-105`}
-                    loading="lazy"
                   />
                   {/* Subtle hover gradient badge */}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex flex-col justify-between p-2.5">
@@ -831,8 +823,11 @@ export function HomePage() {
             onClick={(e) => e.stopPropagation()}
           >
             <div className="relative max-h-[76vh] flex items-center justify-center overflow-hidden border-2 border-white shadow-2xl">
-              <img
-                src={COMMUNITY_FITS[selectedFitIndex].src}
+              <Picture
+                key={selectedFitIndex}
+                image={COMMUNITY_FITS[selectedFitIndex].image}
+                sizes={`${COMMUNITY_FITS[selectedFitIndex].image.width}px`}
+                loading="eager"
                 alt={COMMUNITY_FITS[selectedFitIndex].alt}
                 className="max-h-[76vh] w-auto max-w-full object-contain"
               />

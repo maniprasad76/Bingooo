@@ -10,6 +10,7 @@ import {
   Loader2,
   Package,
   RefreshCw,
+  ExternalLink,
 } from 'lucide-react';
 import { useToast } from '../components/Toast';
 import { ConfirmModal } from '../components/ConfirmModal';
@@ -96,22 +97,22 @@ export function ProductsPage() {
 
   return (
     <div className="space-y-6">
-      {/* Editorial Header */}
+      {/* Editorial Bauhaus Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5">
-            <span className="text-[10px] font-mono font-bold uppercase tracking-[0.2em] text-brand-red whitespace-nowrap">
+            <span className="text-[10px] font-mono font-black uppercase tracking-[0.2em] text-[#E6321C] whitespace-nowrap">
               CATALOG ATELIER
             </span>
-            <span className="text-muted/40 font-mono">•</span>
-            <span className="text-[10px] font-mono font-bold uppercase tracking-widest text-muted whitespace-nowrap">
+            <span className="text-[#171717]/40 font-mono">•</span>
+            <span className="text-[10px] font-mono font-bold uppercase tracking-widest text-[#6F6A63] whitespace-nowrap">
               {stats.total} TOTAL • {stats.active} LIVE • {stats.customizable} 3D BESPOKE
             </span>
           </div>
-          <h1 className="text-2xl font-black uppercase tracking-tight text-ink font-sans mt-0.5">
-            Products Workshop
+          <h1 className="text-2xl font-black uppercase tracking-tight text-[#171717] font-sans mt-0.5">
+            Products Workshop<span className="text-[#E6321C]">.</span>
           </h1>
-          <p className="text-xs text-muted mt-0.5">
+          <p className="text-xs text-[#6F6A63] mt-0.5">
             Manage heavy-duty tees, hoodies, oversize drops, and bespoke 3D customizer garments.
           </p>
         </div>
@@ -132,33 +133,33 @@ export function ProductsPage() {
         </div>
       </div>
 
-      {/* Filter & Search Bar */}
-      <div className="flex flex-col sm:flex-row items-center justify-between gap-3 bg-white p-3.5 rounded-2xl border border-border/80 shadow-card">
+      {/* Bauhaus Filter & Search Bar */}
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-3 bg-white p-3.5 border-2 border-[#171717] shadow-[4px_4px_0px_#171717]">
         <div className="relative w-full sm:w-96">
-          <Search size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted" />
+          <Search size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#171717]" />
           <input
             type="text"
             placeholder="Search by title, slug, fabric, category…"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="admin-input pl-10 py-2 text-xs"
+            className="admin-input pl-10 py-2 text-xs font-mono"
           />
         </div>
 
         <div className="flex items-center gap-2 w-full sm:w-auto justify-between sm:justify-end">
-          <span className="text-[10px] font-mono font-bold text-muted uppercase tracking-wider flex items-center gap-1">
+          <span className="text-[10px] font-mono font-bold text-[#6F6A63] uppercase tracking-wider flex items-center gap-1">
             <Filter size={12} /> Status:
           </span>
-          <div className="flex gap-1 bg-beige/40 p-1 rounded-xl border border-border/60">
+          <div className="flex gap-1.5 p-1 border-2 border-[#171717] bg-[#EDE0CC]">
             {(['all', 'active', 'draft', 'archived'] as const).map((st) => (
               <button
                 key={st}
                 type="button"
                 onClick={() => setStatusFilter(st)}
-                className={`px-3 py-1 rounded-lg text-[10px] font-mono font-bold uppercase tracking-wider transition-all ${
+                className={`px-3 py-1 border-2 border-[#171717] rounded-[2px] text-[10px] font-mono font-black uppercase tracking-wider transition-all cursor-pointer ${
                   statusFilter === st
-                    ? 'bg-ink text-white shadow-2xs'
-                    : 'text-muted hover:text-ink hover:bg-white/60'
+                    ? 'bg-[#E6321C] text-white shadow-[2px_2px_0px_#171717]'
+                    : 'bg-white text-[#171717] hover:bg-[#F7EEDB]'
                 }`}
               >
                 {st}
@@ -169,7 +170,7 @@ export function ProductsPage() {
       </div>
 
       {/* Products Table */}
-      <div className="admin-table-container">
+      <div className="border-2 border-[#171717] bg-white shadow-[4px_4px_0px_#171717] overflow-hidden">
         <div className="overflow-x-auto">
           <table className="admin-table [&_th]:px-3 [&_td]:px-3">
             <thead>
@@ -217,27 +218,27 @@ export function ProductsPage() {
                   const primaryImg = resolveImageUrl(p.images?.[0]?.url || '');
 
                   return (
-                    <tr key={p.id} className="group">
+                    <tr key={p.id} className="hover:bg-[#F7EEDB]/60">
                       {/* Product details */}
                       <td>
                         <div className="flex items-center gap-3.5">
-                          <div className="w-14 h-14 rounded-xl bg-beige/50 overflow-hidden border border-border/70 shrink-0 relative shadow-2xs group-hover:border-ink/40 transition-colors flex items-center justify-center">
+                          <div className="w-14 h-14 border-2 border-[#171717] bg-[#F7EEDB] overflow-hidden shrink-0 relative shadow-[2px_2px_0px_#171717] flex items-center justify-center">
                             {primaryImg ? (
                               <img
                                 src={primaryImg}
                                 alt={p.title}
-                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
                                 onError={(e) => {
                                   (e.target as HTMLElement).style.display = 'none';
                                 }}
                               />
                             ) : (
-                              <span className="text-[9px] font-mono font-bold text-ink/40 tracking-wider">
+                              <span className="text-[9px] font-mono font-black text-[#171717]/40 tracking-wider">
                                 NO IMG
                               </span>
                             )}
                             {p.customization_enabled && (
-                              <span className="absolute top-1 right-1 px-1 py-0.5 rounded text-[8px] font-mono font-black uppercase bg-brand-red text-white shadow-xs">
+                              <span className="absolute top-0 right-0 px-1 py-0.5 text-[8px] font-mono font-black uppercase bg-[#E6321C] text-white border-b border-l border-[#171717]">
                                 3D
                               </span>
                             )}
@@ -246,17 +247,17 @@ export function ProductsPage() {
                             <div className="flex items-center gap-1.5">
                               <Link
                                 to={`/products/${p.id}/edit`}
-                                className="text-xs font-bold text-ink hover:text-brand-red transition-colors no-underline line-clamp-1"
+                                className="text-xs font-black text-[#171717] hover:text-[#E6321C] transition-colors no-underline line-clamp-1 font-sans"
                               >
                                 {p.title}
                               </Link>
                             </div>
                             <div className="flex items-center gap-2 mt-0.5 whitespace-nowrap">
-                              <span className="text-[10px] text-muted font-mono tracking-tight">
+                              <span className="text-[10px] text-[#6F6A63] font-mono font-semibold tracking-tight">
                                 /{p.slug}
                               </span>
-                              <span className="text-muted/40 text-[10px]">•</span>
-                              <span className="text-[10px] text-muted font-mono">
+                              <span className="text-[#171717]/30 text-[10px]">&bull;</span>
+                              <span className="text-[10px] text-[#6F6A63] font-mono">
                                 {p.variants?.length || 0} variants
                               </span>
                             </div>
@@ -266,7 +267,7 @@ export function ProductsPage() {
 
                       {/* Category */}
                       <td>
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold uppercase tracking-wider bg-beige/70 text-ink border border-border/60 whitespace-nowrap">
+                        <span className="inline-flex items-center px-2 py-0.5 rounded-[2px] text-[10px] font-mono font-black uppercase tracking-wider bg-[#EDE0CC] text-[#171717] border border-[#171717] shadow-[1px_1px_0px_#171717] whitespace-nowrap">
                           {p.category?.name || 'Curated'}
                         </span>
                       </td>
@@ -274,11 +275,11 @@ export function ProductsPage() {
                       {/* Price */}
                       <td>
                         <div className="flex flex-col">
-                          <span className="font-mono font-bold text-ink text-xs">
+                          <span className="font-mono font-black text-[#171717] text-xs">
                             {formatPrice(p.base_price)}
                           </span>
                           {p.compare_at_price && p.compare_at_price > p.base_price && (
-                            <span className="text-[10px] font-mono text-muted line-through">
+                            <span className="text-[10px] font-mono text-[#6F6A63] line-through">
                               {formatPrice(p.compare_at_price)}
                             </span>
                           )}
@@ -288,10 +289,10 @@ export function ProductsPage() {
                       {/* Fabric / Specs */}
                       <td>
                         <div className="text-[11px] space-y-0.5 whitespace-nowrap">
-                          <span className="font-semibold text-ink block">
+                          <span className="font-bold text-[#171717] block font-sans">
                             {p.gsm ? `${p.gsm} GSM Cotton` : 'Heavyweight Cotton'}
                           </span>
-                          <span className="text-[10px] text-muted font-mono">
+                          <span className="text-[10px] text-[#6F6A63] font-mono">
                             {p.fit || 'Oversized Boxy Fit'}
                           </span>
                         </div>
@@ -301,21 +302,21 @@ export function ProductsPage() {
                       <td>
                         <div className="flex items-center gap-2">
                           <span
-                            className={`w-2 h-2 rounded-full shrink-0 ${
+                            className={`w-2.5 h-2.5 border border-[#171717] shrink-0 ${
                               totalStock > 20
                                 ? 'bg-emerald-500'
                                 : totalStock > 0
-                                ? 'bg-amber-500'
-                                : 'bg-rose-500'
+                                ? 'bg-amber-400'
+                                : 'bg-[#E6321C]'
                             }`}
                           />
                           <span
-                            className={`text-xs font-mono font-bold ${
+                            className={`text-xs font-mono font-black ${
                               totalStock > 20
-                                ? 'text-emerald-700'
+                                ? 'text-emerald-800'
                                 : totalStock > 0
-                                ? 'text-amber-700'
-                                : 'text-rose-700'
+                                ? 'text-amber-800'
+                                : 'text-[#E6321C]'
                             }`}
                           >
                             {totalStock} pcs
@@ -334,32 +335,40 @@ export function ProductsPage() {
                               : 'badge-neutral'
                           }`}
                         >
-                          <span className="w-1.5 h-1.5 rounded-full bg-current" />
                           {p.status}
                         </span>
                       </td>
 
                       {/* Actions */}
                       <td className="text-right">
-                        <div className="flex items-center justify-end gap-1">
+                        <div className="flex items-center justify-end gap-1.5">
+                          <a
+                            href={`http://localhost:5173/product/${p.slug}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="btn-outline p-1.5 text-[#171717] hover:bg-[#171717] hover:text-white"
+                            title="Preview live on storefront"
+                          >
+                            <ExternalLink size={13} />
+                          </a>
                           <Link
                             to={`/products/${p.id}/edit`}
-                            className="btn-ghost p-2 text-muted hover:text-ink hover:bg-beige"
+                            className="btn-outline p-1.5 text-[#171717] hover:bg-[#171717] hover:text-white"
                             title="Edit product specs"
                           >
-                            <Pencil size={14} />
+                            <Pencil size={13} />
                           </Link>
                           <button
                             type="button"
                             onClick={() => setProductToDelete({ id: p.id, title: p.title })}
                             disabled={deletingId !== null}
-                            className="btn-ghost p-2 text-rose-500 hover:text-rose-700 hover:bg-rose-50 disabled:opacity-40 disabled:cursor-not-allowed"
+                            className="btn-outline p-1.5 text-rose-600 hover:bg-[#E6321C] hover:text-white disabled:opacity-40 disabled:cursor-not-allowed"
                             title="Delete product"
                           >
                             {deletingId === p.id ? (
-                              <Loader2 size={14} className="animate-spin" />
+                              <Loader2 size={13} className="animate-spin" />
                             ) : (
-                              <Trash2 size={14} />
+                              <Trash2 size={13} />
                             )}
                           </button>
                         </div>

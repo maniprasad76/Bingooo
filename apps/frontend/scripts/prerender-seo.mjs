@@ -37,6 +37,7 @@ import {
   categorySeoDescription,
   categorySchema,
 } from '../src/lib/seo/catalog-seo.mjs';
+import { HERO_SIZES, HERO_WIDTHS } from '../src/lib/hero-image.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const DIST_DIR = path.resolve(__dirname, '../dist');
@@ -399,6 +400,12 @@ const homeHtml = renderPage({
   description: stripHtml(builtHtml.match(/<meta name="description" content="([^"]*)"/)?.[1] || '').replace(/&amp;/g, '&'),
   canonical: `${SITE_URL}/`,
   keepHomeFaq: true,
+  // The hero photo is the homepage's largest paint, but the app only renders it once
+  // its JavaScript has loaded; preloading starts the download straight away. Browsers
+  // without AVIF skip this and fetch the WebP when the page renders.
+  extraHead: [
+    `<link rel="preload" as="image" type="image/avif" fetchpriority="high" imagesrcset="${HERO_WIDTHS.map((w) => `/img/v1/hero-${w}.avif ${w}w`).join(', ')}" imagesizes="${HERO_SIZES}" />`,
+  ],
   bodyHtml: `<h1>Bingooo — Heavyweight Oversized T-Shirts &amp; Streetwear in India</h1><p>240–280 GSM combed cotton oversized t-shirts, hoodies and custom printing, made in Srikakulam, Andhra Pradesh.</p>${policyList()}${catalogOverview(categories, productsByCategory, products)}<p><a href="/shop">Shop all</a> · <a href="/customize">Design your own</a> · <a href="/faq">FAQ</a></p>`,
 });
 fs.writeFileSync(TEMPLATE_PATH, homeHtml, 'utf-8');

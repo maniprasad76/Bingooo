@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { trackBeginCheckout } from '../lib/analytics';
-import { motion, AnimatePresence } from 'framer-motion';
+import { m, AnimatePresence } from 'framer-motion';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -18,6 +18,7 @@ import {
   Zap,
   Check,
   BadgePercent,
+  Tag,
 } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { useCart } from '../hooks/useCart';
@@ -73,7 +74,13 @@ export function CheckoutPage() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [selectedAddressId, setSelectedAddressId] = useState<string>('custom');
   const [isMobileSummaryOpen, setIsMobileSummaryOpen] = useState(false);
-  const couponCode = (location.state as any)?.couponCode;
+  const initialCouponCode = (location.state as any)?.couponCode || '';
+  const initialDiscount = (location.state as any)?.discount || 0;
+  const [activeCoupon, setActiveCoupon] = useState<{ code: string; discount: number } | null>(
+    initialCouponCode ? { code: initialCouponCode, discount: initialDiscount } : null
+  );
+  const [couponInput, setCouponInput] = useState(initialCouponCode);
+  const [isValidatingCoupon, setIsValidatingCoupon] = useState(false);
   const checkoutTracked = useRef(false);
 
   useEffect(() => {
@@ -154,8 +161,45 @@ export function CheckoutPage() {
 
   const subtotal = cart?.subtotal || 0;
   const isPrepaid = true;
-  const prepaidDiscount = Math.round(subtotal * (prepaidDiscountPct / 100));
-  const total = Math.max(0, subtotal - prepaidDiscount);
+  const couponDiscount = activeCoupon?.discount || 0;
+  const subtotalAfterCoupon = Math.max(0, subtotal - couponDiscount);
+  const prepaidDiscount = Math.round(subtotalAfterCoupon * (prepaidDiscountPct / 100));
+  const total = Math.max(0, subtotalAfterCoupon - prepaidDiscount);
+
+  const handleApplyCoupon = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    const code = couponInput.trim().toUpperCase();
+    if (!code) return;
+    setIsValidatingCoupon(true);
+    try {
+      const res = await api.post<any>('/coupons/validate', {
+        code,
+        orderSubtotal: subtotal,
+      });
+      const validCode = res.code || res.coupon?.code || code;
+      const discount = Number(res.discountAmount ?? res.discount ?? 0);
+      setActiveCoupon({ code: validCode, discount });
+      toast({
+        title: 'Coupon applied!',
+        description: `Saved ₹${discount} with code ${validCode}.`,
+        variant: 'success',
+      });
+    } catch (err: any) {
+      toast({
+        title: 'Invalid coupon',
+        description: err.message || 'Coupon code could not be applied.',
+        variant: 'danger',
+      });
+    } finally {
+      setIsValidatingCoupon(false);
+    }
+  };
+
+  const handleRemoveCoupon = () => {
+    setActiveCoupon(null);
+    setCouponInput('');
+    toast({ title: 'Coupon removed', variant: 'info' });
+  };
 
   const hasCustomItems = cart?.items?.some((i: any) => Boolean(i.customization || i.customizationId));
 
@@ -172,7 +216,7 @@ export function CheckoutPage() {
       // 1. Create order on backend (100% prepaid)
       const order = await api.post<any>('/orders', {
         cartId: cart.id,
-        couponCode: couponCode || undefined,
+        couponCode: activeCoupon?.code || undefined,
         paymentMethod: 'prepaid',
         shippingAddress: addressData,
       });
@@ -402,7 +446,7 @@ export function CheckoutPage() {
 
           <AnimatePresence>
             {isMobileSummaryOpen && (
-              <motion.div
+              <m.div
                 initial={{ height: 0, opacity: 0 }}
                 animate={{ height: 'auto', opacity: 1 }}
                 exit={{ height: 0, opacity: 0 }}
@@ -525,7 +569,7 @@ export function CheckoutPage() {
                     </div>
                   </div>
                 </div>
-              </motion.div>
+              </m.div>
             )}
           </AnimatePresence>
         </div>
@@ -933,12 +977,61 @@ export function CheckoutPage() {
                 })}
               </div>
 
+              {/* Promo Code Input Box */}
+              <div className="border-t border-[#171717]/15 pt-3">
+                {activeCoupon ? (
+                  <div className="flex items-center justify-between p-2.5 bg-emerald-50 border border-emerald-300 font-mono text-xs">
+                    <div className="flex items-center gap-2">
+                      <Tag size={14} className="text-emerald-700" />
+                      <span className="font-black text-emerald-900">{activeCoupon.code}</span>
+                      <span className="text-[10px] text-emerald-700">(-₹{activeCoupon.discount})</span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={handleRemoveCoupon}
+                      className="text-[10px] text-red-600 font-bold hover:underline"
+                    >
+                      Remove
+                    </button>
+                  </div>
+                ) : (
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      placeholder="Promo Code (BINGOOO10)"
+                      value={couponInput}
+                      onChange={(e) => setCouponInput(e.target.value)}
+                      className="admin-input py-1.5 px-2.5 text-xs font-mono uppercase flex-1 border border-[#171717]"
+                    />
+                    <button
+                      type="button"
+                      onClick={handleApplyCoupon}
+                      disabled={isValidatingCoupon || !couponInput.trim()}
+                      className="btn-secondary py-1.5 px-3 text-xs font-mono font-bold shrink-0 disabled:opacity-50"
+                    >
+                      {isValidatingCoupon ? 'Checking...' : 'Apply'}
+                    </button>
+                  </div>
+                )}
+              </div>
+
               {/* Calculations Breakdown */}
               <div className="space-y-2 border-t-2 border-[#171717] pt-4 font-mono text-xs">
                 <div className="flex justify-between text-[#6F6A63]">
                   <span>SUBTOTAL</span>
                   <span className="font-black text-[#171717]">₹{subtotal}</span>
                 </div>
+
+                {/* Coupon Discount Line */}
+                {couponDiscount > 0 && (
+                  <div className="flex justify-between text-emerald-800 font-bold bg-emerald-50 p-1 border border-emerald-300">
+                    <span className="flex items-center gap-1">
+                      <Tag size={13} />
+                      VOUCHER DISCOUNT ({activeCoupon?.code})
+                    </span>
+                    <span>−₹{couponDiscount}</span>
+                  </div>
+                )}
 
                 {/* Prepaid Discount Line */}
                 {isPrepaid && prepaidDiscount > 0 && (

@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
-import { motion, useReducedMotion } from 'framer-motion';
+import { m, useReducedMotion } from 'framer-motion';
 import { Sparkles, Palette, ArrowRight } from 'lucide-react';
 import { api } from '../lib/api/client';
 import { Button } from '../components/ui/Button';
@@ -56,7 +56,7 @@ export function SavedDesignsPage() {
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {designs.map((design: any, idx: number) => (
-            <motion.div
+            <m.div
               key={design.id}
               initial={shouldReduceMotion ? false : { opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
@@ -91,7 +91,7 @@ export function SavedDesignsPage() {
                   View Garment <ArrowRight size={14} />
                 </Button>
               </Link>
-            </motion.div>
+            </m.div>
           ))}
         </div>
       )}

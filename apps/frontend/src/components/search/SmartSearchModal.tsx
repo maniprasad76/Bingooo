@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
+import { m, AnimatePresence } from 'framer-motion';
 import {
   Search,
   X,
@@ -220,7 +220,7 @@ export function SmartSearchModal() {
       {searchModalOpen && (
         <div className="fixed inset-0 z-50 flex items-start justify-center p-3 sm:p-6 sm:pt-14 md:pt-20">
           {/* Backdrop */}
-          <motion.div
+          <m.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -231,7 +231,7 @@ export function SmartSearchModal() {
           />
 
           {/* Search Palette Container */}
-          <motion.div
+          <m.div
             initial={{ opacity: 0, scale: 0.97, y: -16 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.97, y: -12 }}
@@ -333,7 +333,7 @@ export function SmartSearchModal() {
                     const gsm = product.fabric_gsm || product.fabric || '240 GSM';
 
                     return (
-                      <motion.div
+                      <m.div
                         key={product.id || product.slug}
                         whileHover={{ scale: 1.008 }}
                         onClick={() => handleSelectProduct(product)}
@@ -397,7 +397,7 @@ export function SmartSearchModal() {
                             className="text-[#6F6A63] group-hover:text-[#E6321C] transition-colors sm:hidden"
                           />
                         </div>
-                      </motion.div>
+                      </m.div>
                     );
                   })}
                 </div>
@@ -553,7 +553,7 @@ export function SmartSearchModal() {
                 </span>
               </div>
             </div>
-          </motion.div>
+          </m.div>
         </div>
       )}
     </AnimatePresence>

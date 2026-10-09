@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react';
-import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
+import { m, useMotionValue, useSpring, useTransform } from 'framer-motion';
 
 interface InteractiveTiltProps {
   children: React.ReactNode;
@@ -40,7 +40,7 @@ export function InteractiveTilt({
   };
 
   return (
-    <motion.div
+    <m.div
       ref={ref}
       onMouseMove={handleMouseMove}
       onMouseEnter={() => setIsHovered(true)}
@@ -56,7 +56,7 @@ export function InteractiveTilt({
 
       {/* Dynamic Specular Light Glare Effect */}
       {glow && isHovered && (
-        <motion.div
+        <m.div
           className="pointer-events-none absolute -inset-px rounded-[inherit] opacity-0 transition-opacity duration-300"
           animate={{ opacity: isHovered ? 0.35 : 0 }}
           style={{
@@ -64,6 +64,6 @@ export function InteractiveTilt({
           }}
         />
       )}
-    </motion.div>
+    </m.div>
   );
 }

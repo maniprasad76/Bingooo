@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { m, AnimatePresence } from 'framer-motion';
 import { Heart, ShoppingBag } from 'lucide-react';
 import { WhatsAppIcon } from '../ui/SocialIcons';
 import { triggerHaptic } from '../../lib/native/capacitorBridge';
@@ -54,7 +54,7 @@ export function StickyMobileActionBar({
   return (
     <AnimatePresence>
       {isVisible && (
-        <motion.div
+        <m.div
           initial={{ y: 80, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           exit={{ y: 80, opacity: 0 }}
@@ -137,7 +137,7 @@ export function StickyMobileActionBar({
               <span>ADD TO BAG</span>
             </button>
           </div>
-        </motion.div>
+        </m.div>
       )}
     </AnimatePresence>
   );

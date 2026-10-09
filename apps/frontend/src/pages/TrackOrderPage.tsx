@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
+import { m, AnimatePresence } from 'framer-motion';
 import { api } from '../lib/api/client';
 import {
   Search,
@@ -213,7 +213,7 @@ export function TrackOrderPage() {
         {/* ─── Tracking Result Card ─── */}
         <AnimatePresence mode="wait">
           {searched && result && (
-            <motion.div
+            <m.div
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -16 }}
@@ -367,7 +367,7 @@ export function TrackOrderPage() {
                 </div>
               </div>
               )}
-            </motion.div>
+            </m.div>
           )}
         </AnimatePresence>
 

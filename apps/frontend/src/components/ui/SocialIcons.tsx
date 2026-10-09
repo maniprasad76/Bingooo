@@ -1,4 +1,6 @@
 import type { SVGProps, ImgHTMLAttributes } from 'react';
+import { Picture } from './Picture';
+import { IMAGES } from '../../lib/images';
 
 export interface SocialIconProps extends ImgHTMLAttributes<HTMLImageElement> {
   size?: number | string;
@@ -31,12 +33,11 @@ export function getEmailUrl(subject?: string, body?: string): string {
 export function WhatsAppIcon({ className = 'w-5 h-5', size, style, ...props }: SocialIconProps) {
   const styleObj = size ? { width: size, height: size, ...style } : style;
   return (
-    <img
-      src="/custom/whatsapp.png"
+    <Picture
+      image={IMAGES.whatsapp}
       alt="WhatsApp"
       className={`max-h-full max-w-full object-contain shrink-0 ${className}`}
       style={styleObj}
-      loading="lazy"
       {...props}
     />
   );
@@ -45,12 +46,11 @@ export function WhatsAppIcon({ className = 'w-5 h-5', size, style, ...props }: S
 export function InstagramIcon({ className = 'w-5 h-5', size, style, ...props }: SocialIconProps) {
   const styleObj = size ? { width: size, height: size, ...style } : style;
   return (
-    <img
-      src="/custom/instagram.png"
+    <Picture
+      image={IMAGES.instagram}
       alt="Instagram"
       className={`max-h-full max-w-full object-contain shrink-0 ${className}`}
       style={styleObj}
-      loading="lazy"
       {...props}
     />
   );
@@ -78,12 +78,11 @@ export function EmailIcon({ className = 'w-5 h-5', ...props }: SVGProps<SVGSVGEl
 export function YouTubeIcon({ className = 'w-5 h-5', size, style, ...props }: SocialIconProps) {
   const styleObj = size ? { width: size, height: size, ...style } : style;
   return (
-    <img
-      src="/custom/youtube.png"
+    <Picture
+      image={IMAGES.youtube}
       alt="YouTube"
       className={`max-h-full max-w-full object-contain shrink-0 ${className}`}
       style={styleObj}
-      loading="lazy"
       {...props}
     />
   );
@@ -106,12 +105,11 @@ export function PinterestIcon({ className = 'w-5 h-5', ...props }: SVGProps<SVGS
 export function XTwitterIcon({ className = 'w-5 h-5', size, style, ...props }: SocialIconProps) {
   const styleObj = size ? { width: size, height: size, ...style } : style;
   return (
-    <img
-      src="/custom/twitter.png"
+    <Picture
+      image={IMAGES.twitter}
       alt="Twitter (X)"
       className={`max-h-full max-w-full object-contain shrink-0 ${className}`}
       style={styleObj}
-      loading="lazy"
       {...props}
     />
   );

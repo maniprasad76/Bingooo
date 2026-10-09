@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { m, AnimatePresence } from 'framer-motion';
 import { WifiOff, Wifi } from 'lucide-react';
 import { useNetworkStatus } from '../../hooks/useNetworkStatus';
 import { useQueryClient } from '@tanstack/react-query';
@@ -23,7 +23,7 @@ export function OfflineBanner() {
   return (
     <AnimatePresence>
       {!isOnline && (
-        <motion.div
+        <m.div
           initial={{ height: 0, opacity: 0 }}
           animate={{ height: 'auto', opacity: 1 }}
           exit={{ height: 0, opacity: 0 }}
@@ -32,11 +32,11 @@ export function OfflineBanner() {
         >
           <WifiOff size={14} className="text-[#E6321C] shrink-0 animate-pulse" />
           <span>You are currently offline. Showing cached atelier collection.</span>
-        </motion.div>
+        </m.div>
       )}
 
       {isOnline && wasOffline && (
-        <motion.div
+        <m.div
           initial={{ height: 0, opacity: 0 }}
           animate={{ height: 'auto', opacity: 1 }}
           exit={{ height: 0, opacity: 0 }}
@@ -45,7 +45,7 @@ export function OfflineBanner() {
         >
           <Wifi size={14} className="shrink-0" />
           <span>Back online! Synchronized with latest releases.</span>
-        </motion.div>
+        </m.div>
       )}
     </AnimatePresence>
   );

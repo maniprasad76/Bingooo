@@ -1,4 +1,6 @@
 import { useState } from 'react';
+import { Picture } from '../components/ui/Picture';
+import { IMAGES } from '../lib/images';
 import { Link } from 'react-router-dom';
 import { SEO } from '../components/common/SEO';
 import { triggerHaptic } from '../lib/native/capacitorBridge';
@@ -182,10 +184,12 @@ export function ReturnsRefundsPage() {
 
         {/* Right Imagery Banner */}
         <div className="relative min-h-[380px] sm:min-h-[480px] lg:min-h-full overflow-hidden bg-[#171717]">
-          <img
-            src="https://images.unsplash.com/photo-1551488831-00ddcb6c6bd3?auto=format&fit=crop&w=1600&q=90"
+          <Picture
+            image={IMAGES.returns}
+            sizes="(min-width: 1024px) 52vw, 100vw"
+            loading="eager"
             alt="Bingooo atelier garment craftsmanship and doorstep returns"
-            className="w-full h-full object-cover grayscale contrast-125 opacity-85"
+            className="w-full h-full object-cover contrast-125 opacity-85"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-[#171717]/80 via-transparent to-black/20" />
           

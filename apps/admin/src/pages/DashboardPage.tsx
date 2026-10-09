@@ -10,6 +10,13 @@ import {
   Boxes,
   Palette,
   ChevronRight,
+  RefreshCw,
+  Radio,
+  ExternalLink,
+  Sparkles,
+  Tag,
+  Sliders,
+  CheckCircle2,
 } from 'lucide-react';
 
 interface DashboardData {
@@ -38,6 +45,17 @@ interface DashboardData {
   }>;
 }
 
+const INITIAL_DATA: DashboardData = {
+  totalRevenue: 0,
+  totalOrders: 0,
+  pendingOrders: 0,
+  totalProducts: 0,
+  totalCustomizations: 0,
+  pendingCustomizations: 0,
+  lowStockVariants: [],
+  recentOrders: [],
+};
+
 const STATUS_BADGE: Record<string, string> = {
   delivered: 'badge-success',
   shipped: 'badge-info',
@@ -51,151 +69,175 @@ function formatCurrency(v: number) {
 }
 
 function formatDate(d: string) {
-  return new Date(d).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+  if (!d) return '-';
+  return new Date(d).toLocaleDateString('en-IN', {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+  });
 }
 
 export function DashboardPage() {
-  const [data, setData] = useState<DashboardData | null>(null);
+  const [data, setData] = useState<DashboardData>(INITIAL_DATA);
   const [loading, setLoading] = useState(true);
+  const [isOfflineMode, setIsOfflineMode] = useState(false);
 
-  useEffect(() => {
+  const fetchTelemetry = () => {
+    setLoading(true);
     api
       .get<DashboardData>('/admin/dashboard')
-      .then(setData)
-      .catch(() => {})
+      .then((res) => {
+        if (res && typeof res.totalRevenue === 'number') {
+          setData(res);
+          setIsOfflineMode(false);
+        }
+      })
+      .catch(() => {
+        setIsOfflineMode(true);
+      })
       .finally(() => setLoading(false));
+  };
+
+  useEffect(() => {
+    fetchTelemetry();
   }, []);
-
-  if (loading) {
-    return (
-      <div className="flex flex-col items-center justify-center min-h-[400px] gap-3">
-        <div className="w-8 h-8 border-2 border-brand-red border-t-transparent rounded-full animate-spin" />
-        <p className="text-xs font-mono font-bold uppercase tracking-widest text-muted">
-          Loading Atelier Telemetry…
-        </p>
-      </div>
-    );
-  }
-
-  if (!data) {
-    return (
-      <div className="admin-card p-12 text-center">
-        <AlertTriangle size={32} className="mx-auto text-amber-500 mb-3" />
-        <h3 className="text-base font-bold text-ink">Failed to Synchronize Telemetry</h3>
-        <p className="text-xs text-muted mt-1">
-          Could not establish connection to the admin dashboard service.
-        </p>
-        <button
-          onClick={() => window.location.reload()}
-          className="btn-outline mt-4"
-        >
-          Retry Connection
-        </button>
-      </div>
-    );
-  }
 
   const statCards = [
     {
       label: 'Gross Revenue',
       value: formatCurrency(data.totalRevenue),
-      subtext: 'Lifetime fulfilled & processing',
+      subtext: `${data.totalOrders} total orders processed`,
       icon: DollarSign,
-      gradient: 'from-brand-red/10 via-brand-red/5 to-transparent',
-      iconBg: 'bg-brand-red/10 text-brand-red border-brand-red/20',
-      badge: 'LIVE',
+      badge: 'LIVE SALES',
+      highlight: true,
     },
     {
       label: 'Total Orders',
       value: data.totalOrders,
-      subtext: `${data.pendingOrders} pending fulfillment`,
+      subtext: `${data.pendingOrders} awaiting fulfillment`,
       icon: ShoppingBag,
-      gradient: 'from-sky-500/10 via-sky-500/5 to-transparent',
-      iconBg: 'bg-sky-50 text-sky-600 border-sky-200',
-      badge: `${data.pendingOrders} QUEUED`,
+      badge: data.pendingOrders > 0 ? `${data.pendingOrders} PENDING` : 'ALL CLEAR',
+      highlight: false,
     },
     {
       label: 'Catalog Products',
       value: data.totalProducts,
-      subtext: `${data.totalCustomizations || 0} 3D bespoke models`,
+      subtext: 'Active live storefront styles',
       icon: Package,
-      gradient: 'from-emerald-500/10 via-emerald-500/5 to-transparent',
-      iconBg: 'bg-emerald-50 text-emerald-600 border-emerald-200',
-      badge: 'ACTIVE',
+      badge: 'CATALOGUE',
+      highlight: false,
     },
     {
       label: 'Customizer Jobs',
       value: data.totalCustomizations,
-      subtext: `${data.pendingCustomizations || 0} awaiting production`,
+      subtext: `${data.pendingCustomizations} in production queue`,
       icon: Palette,
-      gradient: 'from-purple-500/10 via-purple-500/5 to-transparent',
-      iconBg: 'bg-purple-50 text-purple-600 border-purple-200',
-      badge: '3D ATELIER',
+      badge: 'ATELIER',
+      highlight: false,
     },
   ];
 
   return (
-    <div className="space-y-8">
-      {/* Editorial Header Banner */}
-      <div className="relative overflow-hidden rounded-3xl bg-[#141414] p-6 sm:p-8 text-white shadow-elevated border border-white/10">
-        <div className="absolute right-0 top-0 -mt-12 -mr-12 w-96 h-96 rounded-full bg-brand-red/15 blur-3xl pointer-events-none" />
-        <div className="relative z-10 flex flex-col md:flex-row md:items-center md:justify-between gap-6">
-          <div className="space-y-1.5">
-            <div className="flex items-center gap-2">
-              <span className="px-2.5 py-1 rounded-full text-[9px] font-mono font-bold uppercase tracking-widest bg-brand-red text-white">
-                EXECUTIVE OVERVIEW
+    <div className="space-y-6">
+      {/* Offline API Sync Notice */}
+      {isOfflineMode && (
+        <div className="bg-[#FEF08A] border-1.5 border-[#171717] p-3.5 rounded-lg shadow-[2px_2px_0px_#171717] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div className="flex items-center gap-2.5">
+            <div className="w-7 h-7 bg-[#171717] text-[#FEF08A] rounded flex items-center justify-center font-mono font-black text-xs shrink-0">
+              !
+            </div>
+            <div>
+              <p className="font-mono text-xs font-black uppercase tracking-wider text-[#171717]">
+                Live Store Telemetry Syncing
+              </p>
+              <p className="font-sans text-xs text-[#171717]/80">
+                Connecting to backend API at port 3000 to stream live purchases from bingooo.co.in.
+              </p>
+            </div>
+          </div>
+          <button
+            onClick={fetchTelemetry}
+            className="btn-outline text-[11px] py-1.5 px-3 self-start sm:self-auto shrink-0 cursor-pointer"
+          >
+            <RefreshCw size={13} className={loading ? 'animate-spin' : ''} /> Refresh Stream
+          </button>
+        </div>
+      )}
+
+      {/* Executive Header Banner */}
+      <div className="border-1.5 border-[#171717] bg-[#171717] text-white p-6 sm:p-7 rounded-xl shadow-[3px_3px_0px_#171717]">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+          <div className="space-y-2">
+            <div className="flex items-center gap-2 flex-wrap">
+              <span className="bg-[#E6321C] text-white px-2.5 py-0.5 rounded font-mono text-[9px] font-black uppercase tracking-widest">
+                CENTRAL CONTROL
               </span>
-              <span className="text-[10px] font-mono text-white/50 tracking-wider">
-                BINGOOO ATELIER CORE
+              <span className="text-[10px] font-mono text-[#EDE0CC]/70 tracking-widest uppercase">
+                BINGOOO ATELIER &bull; LIVE DISPATCH
               </span>
             </div>
-            <h1 className="text-2xl sm:text-3xl font-black uppercase tracking-tight text-white font-sans">
-              Store Command Center
-            </h1>
-            <p className="text-xs text-white/60 max-w-xl">
-              Real-time telemetry across heavyweight catalog, incoming bespoke garment orders, and warehouse inventory.
-            </p>
+
+            <div className="space-y-1">
+              <h1 className="text-xl sm:text-2xl lg:text-3xl font-black uppercase tracking-tight font-sans text-white">
+                Operations &amp; Sales Dispatch
+              </h1>
+              <p className="text-xs sm:text-sm text-[#EDE0CC]/80 font-medium max-w-2xl">
+                Real-time monitor for customizer orders, standard catalogue apparel, inventory reserves, and storefront promotions.
+              </p>
+            </div>
           </div>
 
-          <div className="flex items-center gap-3">
-            <Link
-              to="/products/new"
-              className="btn-primary"
+          <div className="flex items-center gap-2.5 flex-wrap shrink-0">
+            <button
+              onClick={fetchTelemetry}
+              disabled={loading}
+              className="btn-outline bg-white/10 text-white border-white/20 hover:bg-white hover:text-[#171717] text-xs py-2 px-3"
             >
-              <Package size={14} /> New Product
-            </Link>
+              <RefreshCw size={13} className={loading ? 'animate-spin' : ''} /> Sync
+            </button>
             <Link
               to="/orders"
-              className="inline-flex items-center gap-2 rounded-xl bg-white/10 border border-white/15 px-4 py-2.5 text-xs font-bold uppercase tracking-wider text-white hover:bg-white/20 transition-all"
+              className="btn-primary text-xs py-2 px-4 shadow-[2px_2px_0px_#FFFFFF]"
             >
-              View Orders <ArrowUpRight size={14} />
+              Orders <ArrowUpRight size={14} />
             </Link>
+            <a
+              href="http://localhost:5173"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn-secondary text-xs py-2 px-4"
+            >
+              <Radio size={14} className="text-[#E6321C]" /> Live Store <ExternalLink size={12} />
+            </a>
           </div>
         </div>
       </div>
 
       {/* Bento Stat Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 sm:gap-5">
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
         {statCards.map((s) => (
           <div
             key={s.label}
-            className="stat-card group"
+            className="border-1.5 border-[#171717] p-5 rounded-xl bg-white shadow-[2.5px_2.5px_0px_#171717] transition-all hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[4px_4px_0px_#171717]"
           >
-            <div className={`absolute inset-0 bg-gradient-to-br ${s.gradient} opacity-50 pointer-events-none transition-opacity group-hover:opacity-100`} />
-            <div className="relative z-10 flex flex-col justify-between h-full space-y-4">
-              <div className="flex items-center justify-between">
-                <div className="space-y-0.5">
-                  <span className="stat-label">{s.label}</span>
-                  <p className="stat-value">{s.value}</p>
+            <div className="flex flex-col justify-between h-full space-y-4">
+              <div className="flex items-start justify-between">
+                <div className="space-y-1">
+                  <span className="font-mono text-[10px] font-black uppercase tracking-widest text-[#6F6A63]">
+                    {s.label}
+                  </span>
+                  <p className="text-2xl sm:text-3xl font-black text-[#171717] tracking-tight font-sans">
+                    {s.value}
+                  </p>
                 </div>
-                <div className={`flex items-center justify-center w-11 h-11 rounded-2xl border ${s.iconBg} shadow-2xs`}>
-                  <s.icon size={20} />
+                <div className="w-10 h-10 border-1.5 border-[#171717] bg-[#F7EEDB] rounded-lg flex items-center justify-center text-[#171717] shadow-[1.5px_1.5px_0px_#171717] shrink-0">
+                  <s.icon size={18} />
                 </div>
               </div>
 
-              <div className="flex items-center justify-between pt-2 border-t border-border/40 text-[11px]">
-                <span className="text-muted font-medium truncate">{s.subtext}</span>
-                <span className="font-mono text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-beige/60 text-ink">
+              <div className="flex items-center justify-between pt-3 border-t border-[#171717]/10 text-[11px]">
+                <span className="text-[#6F6A63] font-medium truncate font-sans">{s.subtext}</span>
+                <span className="font-mono text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded border border-[#171717] bg-[#EDE0CC] text-[#171717]">
                   {s.badge}
                 </span>
               </div>
@@ -207,161 +249,239 @@ export function DashboardPage() {
       {/* Main Grid: Recent Orders & Stock Alerts */}
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
         {/* Recent Orders Stream */}
-        <div className="xl:col-span-2 admin-card overflow-hidden">
-          <div className="flex items-center justify-between px-6 py-4 border-b border-border/70 bg-[#FAF7F2]">
+        <div className="xl:col-span-2 border-1.5 border-[#171717] bg-white rounded-xl shadow-[3px_3px_0px_#171717] overflow-hidden flex flex-col">
+          <div className="flex items-center justify-between px-5 py-4 border-b border-[#171717]/15 bg-[#EDE0CC]">
             <div className="flex items-center gap-2.5">
-              <div className="flex items-center justify-center w-7 h-7 rounded-lg bg-ink text-white">
+              <div className="w-7 h-7 border border-[#171717] bg-[#171717] text-white rounded flex items-center justify-center shadow-[1px_1px_0px_#171717]">
                 <ShoppingBag size={14} />
               </div>
               <div>
-                <h2 className="text-xs font-black uppercase tracking-wider text-ink font-sans">
-                  Recent Orders Stream
+                <h2 className="text-xs font-black uppercase tracking-wider text-[#171717] font-mono">
+                  Live Orders Stream
                 </h2>
-                <p className="text-[10px] text-muted">Latest purchases across web & mobile storefront</p>
+                <p className="text-[10px] text-[#6F6A63]">Customer purchases across web and mobile storefront</p>
               </div>
             </div>
 
             <Link
               to="/orders"
-              className="text-[11px] font-mono font-bold text-brand-red hover:underline flex items-center gap-1 uppercase tracking-wider whitespace-nowrap shrink-0"
+              className="font-mono text-[11px] font-black text-[#E6321C] hover:underline flex items-center gap-1 uppercase tracking-wider whitespace-nowrap shrink-0"
             >
               All Orders <ChevronRight size={13} />
             </Link>
           </div>
 
-          <div className="overflow-x-auto">
-            <table className="admin-table">
-              <thead>
-                <tr>
-                  <th>Order Ref</th>
-                  <th>Total Amount</th>
-                  <th>Status</th>
-                  <th>Date Placed</th>
-                  <th className="text-right">Action</th>
-                </tr>
-              </thead>
-              <tbody>
-                {data.recentOrders.length === 0 ? (
-                  <tr>
-                    <td colSpan={5} className="text-center py-12 text-muted">
-                      No customer orders recorded yet.
-                    </td>
-                  </tr>
-                ) : (
-                  data.recentOrders.map((o) => (
-                    <tr key={o.id} className="group">
-                      <td>
-                        <div className="flex items-center gap-2 whitespace-nowrap">
-                          <span className="w-2 h-2 shrink-0 rounded-full bg-brand-red/60" />
-                          <span className="font-mono text-xs font-bold text-ink group-hover:text-brand-red transition-colors">
-                            {o.orderNumber}
-                          </span>
-                        </div>
-                      </td>
-                      <td>
-                        <span className="font-bold text-ink font-mono text-xs">
-                          {formatCurrency(o.total)}
-                        </span>
-                      </td>
-                      <td>
-                        <span className={`badge ${STATUS_BADGE[o.status] || 'badge-neutral'}`}>
-                          <span className="w-1.5 h-1.5 rounded-full bg-current" />
-                          {o.status.replace(/_/g, ' ')}
-                        </span>
-                      </td>
-                      <td>
-                        <span className="text-muted text-[11px] font-mono">
-                          {formatDate(o.createdAt)}
-                        </span>
-                      </td>
-                      <td className="text-right">
-                        <Link
-                          to={`/orders?view=${o.id}`}
-                          className="btn-ghost text-[10px] uppercase tracking-wider font-mono py-1 px-2.5"
-                        >
-                          View
-                        </Link>
-                      </td>
+          <div className="flex-1">
+            {data.recentOrders.length === 0 ? (
+              <div className="p-8 sm:p-12 text-center flex flex-col items-center justify-center space-y-4">
+                <div className="w-14 h-14 rounded-full bg-[#F7EEDB] border-1.5 border-[#171717] flex items-center justify-center text-[#E6321C] shadow-[2px_2px_0px_#171717]">
+                  <ShoppingBag size={24} />
+                </div>
+                <div className="max-w-md space-y-1.5">
+                  <h3 className="text-base font-black uppercase tracking-wider text-[#171717] font-sans">
+                    Awaiting Customer Orders
+                  </h3>
+                  <p className="text-xs text-[#6F6A63] leading-relaxed">
+                    Test and dummy data have been completely purged. When customers purchase products or submit custom designs on <span className="font-bold text-[#171717]">bingooo.co.in</span>, their genuine orders will stream directly into this table.
+                  </p>
+                </div>
+                <div className="flex items-center gap-3 pt-2 flex-wrap justify-center">
+                  <a
+                    href="http://localhost:5173"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="btn-primary text-xs py-2 px-4 shadow-[2px_2px_0px_#171717]"
+                  >
+                    Open Live Storefront <ExternalLink size={12} />
+                  </a>
+                  <Link
+                    to="/customizer"
+                    className="btn-outline text-xs py-2 px-4"
+                  >
+                    <Palette size={13} /> Custom Studio
+                  </Link>
+                  <Link
+                    to="/coupons"
+                    className="btn-secondary text-xs py-2 px-4"
+                  >
+                    <Tag size={13} /> Manage Coupons
+                  </Link>
+                </div>
+              </div>
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="admin-table">
+                  <thead>
+                    <tr>
+                      <th className="w-[180px]">Order Ref</th>
+                      <th className="w-[120px]">Total</th>
+                      <th className="w-[130px]">Status</th>
+                      <th className="w-[130px]">Placed On</th>
+                      <th className="w-[80px] text-right">Action</th>
                     </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
+                  </thead>
+                  <tbody>
+                    {data.recentOrders.map((o) => (
+                      <tr key={o.id} className="hover:bg-[#FDFBF7]">
+                        <td>
+                          <div className="flex items-center gap-2 whitespace-nowrap">
+                            <span className="w-2 h-2 rounded-full shrink-0 bg-[#E6321C] border border-[#171717]" />
+                            <span className="font-mono text-xs font-black text-[#171717]">
+                              {o.orderNumber}
+                            </span>
+                          </div>
+                        </td>
+                        <td>
+                          <span className="font-black text-[#171717] font-mono text-xs">
+                            {formatCurrency(o.total)}
+                          </span>
+                        </td>
+                        <td>
+                          <span className={`badge ${STATUS_BADGE[o.status] || 'badge-neutral'}`}>
+                            {o.status.replace(/_/g, ' ')}
+                          </span>
+                        </td>
+                        <td>
+                          <span className="text-[#6F6A63] text-[11px] font-mono">
+                            {formatDate(o.createdAt)}
+                          </span>
+                        </td>
+                        <td className="text-right">
+                          <Link
+                            to={`/orders?view=${o.id}`}
+                            className="btn-outline text-[10px] uppercase tracking-wider font-mono py-1 px-2.5 rounded"
+                          >
+                            View
+                          </Link>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
           </div>
         </div>
 
-        {/* Warehouse Low Stock Alerts */}
-        <div className="admin-card overflow-hidden flex flex-col">
-          <div className="flex items-center justify-between px-6 py-4 border-b border-border/70 bg-[#FAF7F2]">
-            <div className="flex items-center gap-2.5">
-              <div className="flex items-center justify-center w-7 h-7 rounded-lg bg-amber-500 text-white">
-                <AlertTriangle size={14} />
-              </div>
-              <div>
-                <h2 className="text-xs font-black uppercase tracking-wider text-ink font-sans">
-                  Stock Depletion
+        {/* Quick Operations & Inventory Alerts */}
+        <div className="space-y-6">
+          {/* Quick Management Shortcuts */}
+          <div className="border-1.5 border-[#171717] bg-white rounded-xl shadow-[3px_3px_0px_#171717] overflow-hidden">
+            <div className="px-5 py-3.5 border-b border-[#171717]/15 bg-[#EDE0CC]">
+              <h2 className="text-xs font-black uppercase tracking-wider text-[#171717] font-mono">
+                Storefront Core Control
+              </h2>
+            </div>
+            <div className="p-3 divide-y divide-[#171717]/10">
+              <Link
+                to="/customizer"
+                className="flex items-center justify-between p-3 rounded-lg hover:bg-[#F7EEDB] transition-colors group no-underline"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded bg-[#171717] text-white flex items-center justify-center shrink-0">
+                    <Palette size={16} />
+                  </div>
+                  <div>
+                    <p className="text-xs font-bold text-[#171717] group-hover:text-[#E6321C] transition-colors">
+                      Custom Studio Matrix
+                    </p>
+                    <p className="text-[11px] text-[#6F6A63]">Garments, colours, sizes, prices &amp; mockups</p>
+                  </div>
+                </div>
+                <ChevronRight size={15} className="text-[#6F6A63] group-hover:translate-x-0.5 transition-transform" />
+              </Link>
+
+              <Link
+                to="/coupons"
+                className="flex items-center justify-between p-3 rounded-lg hover:bg-[#F7EEDB] transition-colors group no-underline"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded bg-[#E6321C] text-white flex items-center justify-center shrink-0">
+                    <Tag size={16} />
+                  </div>
+                  <div>
+                    <p className="text-xs font-bold text-[#171717] group-hover:text-[#E6321C] transition-colors">
+                      Coupons &amp; Discounts
+                    </p>
+                    <p className="text-[11px] text-[#6F6A63]">Promo codes (BINGOOO10, WELCOME20)</p>
+                  </div>
+                </div>
+                <ChevronRight size={15} className="text-[#6F6A63] group-hover:translate-x-0.5 transition-transform" />
+              </Link>
+
+              <Link
+                to="/products"
+                className="flex items-center justify-between p-3 rounded-lg hover:bg-[#F7EEDB] transition-colors group no-underline"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded bg-[#171717] text-white flex items-center justify-center shrink-0">
+                    <Package size={16} />
+                  </div>
+                  <div>
+                    <p className="text-xs font-bold text-[#171717] group-hover:text-[#E6321C] transition-colors">
+                      Product Catalogue
+                    </p>
+                    <p className="text-[11px] text-[#6F6A63]">Manage apparel drops, pricing &amp; variants</p>
+                  </div>
+                </div>
+                <ChevronRight size={15} className="text-[#6F6A63] group-hover:translate-x-0.5 transition-transform" />
+              </Link>
+            </div>
+          </div>
+
+          {/* Warehouse Low Stock Alerts */}
+          <div className="border-1.5 border-[#171717] bg-white rounded-xl shadow-[3px_3px_0px_#171717] overflow-hidden flex flex-col">
+            <div className="flex items-center justify-between px-5 py-3.5 border-b border-[#171717]/15 bg-[#EDE0CC]">
+              <div className="flex items-center gap-2">
+                <Boxes size={14} className="text-[#171717]" />
+                <h2 className="text-xs font-black uppercase tracking-wider text-[#171717] font-mono">
+                  Inventory Health
                 </h2>
-                <p className="text-[10px] text-muted">Garments requiring replenishment</p>
               </div>
+              <Link
+                to="/inventory"
+                className="font-mono text-[10px] font-black text-[#E6321C] hover:underline uppercase"
+              >
+                Adjust &rarr;
+              </Link>
             </div>
 
-            <Link
-              to="/inventory"
-              className="text-[11px] font-mono font-bold text-brand-red hover:underline flex items-center gap-1 uppercase tracking-wider whitespace-nowrap shrink-0"
-            >
-              Inventory <ChevronRight size={13} />
-            </Link>
-          </div>
-
-          <div className="p-4 space-y-2.5 flex-1 overflow-y-auto max-h-[380px]">
-            {data.lowStockVariants.length === 0 ? (
-              <div className="flex flex-col items-center justify-center py-10 text-center">
-                <div className="w-10 h-10 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center mb-2">
-                  <Boxes size={20} />
-                </div>
-                <p className="text-xs font-bold text-ink">Healthy Inventory Levels</p>
-                <p className="text-[10px] text-muted mt-0.5">All product variants are sufficiently stocked.</p>
-              </div>
-            ) : (
-              data.lowStockVariants.map((v) => (
-                <div
-                  key={v.id}
-                  className="flex items-center justify-between p-3 rounded-xl border border-border/60 bg-[#FAF7F2]/50 hover:bg-[#FAF7F2] transition-colors"
-                >
-                  <div className="min-w-0 pr-3">
-                    <p className="text-xs font-bold text-ink truncate leading-snug">
-                      {v.productTitle}
+            <div className="p-4">
+              {data.lowStockVariants.length === 0 ? (
+                <div className="flex items-center gap-3 p-3 rounded-lg bg-emerald-50 border border-emerald-200">
+                  <CheckCircle2 size={18} className="text-emerald-600 shrink-0" />
+                  <div>
+                    <p className="text-xs font-bold text-emerald-950 font-sans">
+                      All Inventory Stocked
                     </p>
-                    <div className="flex items-center gap-1.5 mt-1 text-[10px] text-muted">
-                      <span className="font-mono bg-white px-1.5 py-0.5 rounded border border-border/60">
-                        {v.size}
-                      </span>
-                      <span>•</span>
-                      <span>{v.color}</span>
-                      <span>•</span>
-                      <span className="font-mono text-muted/70">{v.sku}</span>
-                    </div>
+                    <p className="text-[11px] text-emerald-800">
+                      No garments currently below the low stock safety threshold.
+                    </p>
                   </div>
-
-                  <span
-                    className={`shrink-0 badge ${
-                      v.availableStock <= 0 ? 'badge-danger' : 'badge-warning'
-                    }`}
-                  >
-                    {v.availableStock <= 0 ? 'OUT OF STOCK' : `${v.availableStock} LEFT`}
-                  </span>
                 </div>
-              ))
-            )}
-          </div>
-
-          <div className="p-3 border-t border-border/60 bg-[#FAF7F2]/40 text-center">
-            <Link
-              to="/inventory"
-              className="text-[10px] font-mono font-bold uppercase tracking-widest text-muted hover:text-ink transition-colors"
-            >
-              Open Bulk Stock Adjuster →
-            </Link>
+              ) : (
+                <div className="space-y-2 max-h-[220px] overflow-y-auto">
+                  {data.lowStockVariants.map((v) => (
+                    <div
+                      key={v.id}
+                      className="p-2.5 rounded-lg border border-[#171717]/20 bg-[#F7EEDB] flex items-center justify-between"
+                    >
+                      <div className="min-w-0 pr-2">
+                        <p className="text-xs font-bold text-[#171717] truncate">
+                          {v.productTitle}
+                        </p>
+                        <p className="text-[10px] text-[#6F6A63] font-mono">
+                          {v.size} &bull; {v.color}
+                        </p>
+                      </div>
+                      <span className="badge badge-warning text-[10px] shrink-0">
+                        {v.availableStock} LEFT
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </div>

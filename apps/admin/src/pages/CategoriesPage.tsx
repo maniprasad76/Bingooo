@@ -210,16 +210,16 @@ export function CategoriesPage() {
         </div>
       </div>
 
-      {/* Tabs & Stats */}
-      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 bg-white p-3.5 rounded-2xl border border-border/80 shadow-card">
-        <div className="flex gap-1 bg-beige/40 p-1 rounded-xl border border-border/60">
+      {/* Bauhaus Tabs & Stats */}
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 bg-white p-3.5 border-2 border-[#171717] shadow-[4px_4px_0px_#171717]">
+        <div className="flex gap-1.5 p-1 border-2 border-[#171717] bg-[#EDE0CC]">
           <button
             type="button"
             onClick={() => setActiveTab('categories')}
-            className={`px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-2 ${
+            className={`px-4 py-2 rounded-[2px] font-mono text-xs font-black uppercase tracking-wider transition-all flex items-center gap-2 cursor-pointer ${
               activeTab === 'categories'
-                ? 'bg-ink text-white shadow-2xs'
-                : 'text-muted hover:text-ink hover:bg-white/60'
+                ? 'bg-[#E6321C] text-white border-2 border-[#171717] shadow-[2px_2px_0px_#171717]'
+                : 'bg-white text-[#171717] hover:bg-[#F7EEDB] border-2 border-transparent'
             }`}
           >
             <FolderTree size={14} />
@@ -228,10 +228,10 @@ export function CategoriesPage() {
           <button
             type="button"
             onClick={() => setActiveTab('collections')}
-            className={`px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-2 ${
+            className={`px-4 py-2 rounded-[2px] font-mono text-xs font-black uppercase tracking-wider transition-all flex items-center gap-2 cursor-pointer ${
               activeTab === 'collections'
-                ? 'bg-ink text-white shadow-2xs'
-                : 'text-muted hover:text-ink hover:bg-white/60'
+                ? 'bg-[#E6321C] text-white border-2 border-[#171717] shadow-[2px_2px_0px_#171717]'
+                : 'bg-white text-[#171717] hover:bg-[#F7EEDB] border-2 border-transparent'
             }`}
           >
             <Sparkles size={14} />
@@ -240,13 +240,13 @@ export function CategoriesPage() {
         </div>
 
         <div className="relative w-full sm:w-72">
-          <Search size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted" />
+          <Search size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#171717]" />
           <input
             type="text"
             placeholder={`Search ${activeTab}...`}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="admin-input pl-10 py-2 text-xs"
+            className="admin-input pl-10 py-2 text-xs font-mono"
           />
         </div>
       </div>
@@ -296,7 +296,7 @@ export function CategoriesPage() {
       </div>
 
       {/* Table */}
-      <div className="admin-table-container">
+      <div className="border-2 border-[#171717] bg-white shadow-[4px_4px_0px_#171717] overflow-hidden">
         <div className="overflow-x-auto">
           <table className="admin-table">
             <thead>
@@ -312,10 +312,10 @@ export function CategoriesPage() {
             <tbody>
               {loading ? (
                 <tr>
-                  <td colSpan={6} className="text-center py-16 text-muted">
+                  <td colSpan={6} className="text-center py-16 text-[#6F6A63]">
                     <div className="flex flex-col items-center justify-center gap-2">
-                      <RefreshCw size={20} className="animate-spin text-brand-red" />
-                      <span className="font-mono text-xs uppercase tracking-widest">
+                      <RefreshCw size={20} className="animate-spin text-[#E6321C]" />
+                      <span className="font-mono text-xs uppercase tracking-widest font-bold">
                         Loading Taxonomy…
                       </span>
                     </div>
@@ -323,11 +323,11 @@ export function CategoriesPage() {
                 </tr>
               ) : filtered.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="text-center py-16 text-muted">
+                  <td colSpan={6} className="text-center py-16 text-[#6F6A63]">
                     <div className="flex flex-col items-center justify-center gap-2">
-                      <Layers size={28} className="text-muted/50" />
-                      <span className="font-bold text-ink text-sm">No items found</span>
-                      <p className="text-xs text-muted max-w-sm">
+                      <Layers size={28} className="text-[#6F6A63]/50" />
+                      <span className="font-mono font-black text-[#171717] text-sm uppercase">No items found</span>
+                      <p className="text-xs text-[#6F6A63] max-w-sm">
                         Create your first {activeTab === 'categories' ? 'category' : 'collection'} to organize your products.
                       </p>
                     </div>
@@ -335,15 +335,15 @@ export function CategoriesPage() {
                 </tr>
               ) : (
                 filtered.map((cat) => (
-                  <tr key={cat.id} className="group">
+                  <tr key={cat.id} className="hover:bg-[#F7EEDB]/60">
                     <td>
                       <div className="flex items-center gap-3.5">
-                        <div className="w-9 h-9 rounded-xl bg-ink text-white font-black text-xs flex items-center justify-center uppercase font-mono shadow-2xs">
+                        <div className="w-9 h-9 border-2 border-[#171717] rounded-[2px] bg-[#171717] text-white font-black text-xs flex items-center justify-center uppercase font-mono shadow-[1.5px_1.5px_0px_#171717]">
                           {cat.name.slice(0, 2)}
                         </div>
                         <div>
-                          <strong className="text-xs font-bold text-ink block">{cat.name}</strong>
-                          <span className="text-[10px] text-muted font-mono">
+                          <strong className="text-xs font-black text-[#171717] block font-sans">{cat.name}</strong>
+                          <span className="text-[10px] text-[#6F6A63] font-mono">
                             ID: {cat.id.slice(0, 8)}...
                           </span>
                         </div>
@@ -351,7 +351,7 @@ export function CategoriesPage() {
                     </td>
 
                     <td>
-                      <span className="font-mono text-xs text-muted bg-beige/60 px-2.5 py-1 rounded-lg border border-border/60">
+                      <span className="font-mono text-xs text-[#171717] bg-[#EDE0CC] px-2.5 py-1 border border-[#171717] rounded-[2px] shadow-[1px_1px_0px_#171717]">
                         /{cat.slug}
                       </span>
                     </td>
@@ -359,25 +359,23 @@ export function CategoriesPage() {
                     <td>
                       {cat.is_active ? (
                         <span className="badge badge-success">
-                          <span className="w-1.5 h-1.5 rounded-full bg-current" />
                           Active
                         </span>
                       ) : (
                         <span className="badge badge-neutral">
-                          <span className="w-1.5 h-1.5 rounded-full bg-current" />
                           Hidden
                         </span>
                       )}
                     </td>
 
                     <td>
-                      <span className="font-mono font-bold text-xs text-ink flex items-center gap-1.5">
-                        <Package size={13} className="text-muted" />
+                      <span className="font-mono font-black text-xs text-[#171717] flex items-center gap-1.5">
+                        <Package size={13} className="text-[#6F6A63]" />
                         {cat.productCount ?? 0} pcs
                       </span>
                     </td>
 
-                    <td className="text-[11px] text-muted font-mono">
+                    <td className="text-[11px] text-[#6F6A63] font-mono">
                       {new Date(cat.created_at).toLocaleDateString('en-IN', {
                         day: 'numeric',
                         month: 'short',
@@ -386,20 +384,20 @@ export function CategoriesPage() {
                     </td>
 
                     <td className="text-right">
-                      <div className="flex items-center justify-end gap-1">
+                      <div className="flex items-center justify-end gap-1.5">
                         <button
                           onClick={() => openEdit(cat)}
-                          className="btn-ghost p-2 text-muted hover:text-ink hover:bg-beige"
+                          className="btn-outline p-1.5 text-[#171717] hover:bg-[#171717] hover:text-white"
                           title="Edit classification"
                         >
-                          <Edit2 size={14} />
+                          <Edit2 size={13} />
                         </button>
                         <button
                           onClick={() => setItemToDelete({ id: cat.id, name: cat.name })}
-                          className="btn-ghost p-2 text-rose-500 hover:text-rose-700 hover:bg-rose-50"
+                          className="btn-outline p-1.5 text-rose-600 hover:bg-[#E6321C] hover:text-white"
                           title="Delete classification"
                         >
-                          <Trash2 size={14} />
+                          <Trash2 size={13} />
                         </button>
                       </div>
                     </td>
@@ -413,29 +411,29 @@ export function CategoriesPage() {
 
       {/* Create / Edit Modal */}
       {modalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="bg-white rounded-3xl max-w-md w-full p-6 sm:p-7 shadow-2xl border border-border/80 space-y-5">
-            <div className="flex items-center justify-between border-b border-border/70 pb-3">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 animate-in fade-in duration-200">
+          <div className="bg-white rounded-[2px] max-w-md w-full p-6 sm:p-7 shadow-[6px_6px_0px_#171717] border-2 border-[#171717] space-y-5">
+            <div className="flex items-center justify-between border-b-2 border-[#171717] pb-3 bg-[#EDE0CC] -mx-6 -mt-6 sm:-mx-7 sm:-mt-7 p-5">
               <div>
-                <h3 className="text-base font-black uppercase tracking-wide text-ink font-sans">
+                <h3 className="text-base font-black uppercase tracking-wide text-[#171717] font-mono">
                   {editingCat
                     ? `Edit ${activeTab === 'categories' ? 'Category' : 'Collection'}`
                     : `New ${activeTab === 'categories' ? 'Category' : 'Collection'}`}
                 </h3>
-                <span className="text-xs text-muted">
+                <span className="text-xs text-[#6F6A63]">
                   Configure display naming, URL routing slug, and storefront status.
                 </span>
               </div>
               <button
                 onClick={() => setModalOpen(false)}
-                className="w-7 h-7 rounded-full bg-beige/60 hover:bg-beige flex items-center justify-center text-muted hover:text-ink font-bold"
+                className="w-7 h-7 rounded-[2px] bg-white border-2 border-[#171717] hover:bg-[#E6321C] hover:text-white flex items-center justify-center text-[#171717] font-bold cursor-pointer"
               >
                 <X size={15} />
               </button>
             </div>
 
             {error && (
-              <div className="p-3 bg-rose-50 border border-rose-200 rounded-xl text-rose-700 text-xs font-semibold">
+              <div className="p-3 bg-rose-50 border-2 border-rose-600 rounded-[2px] text-rose-700 text-xs font-mono font-bold">
                 {error}
               </div>
             )}
@@ -467,7 +465,7 @@ export function CategoriesPage() {
                   className="admin-input w-full font-mono text-xs"
                   required
                 />
-                <span className="text-[10px] text-muted mt-1 block font-mono">
+                <span className="text-[10px] text-[#6F6A63] mt-1 block font-mono">
                   Store URL: /{activeTab === 'categories' ? 'category' : 'collection'}/{slug || '...'}
                 </span>
               </div>
@@ -479,15 +477,15 @@ export function CategoriesPage() {
                     id="cat-active"
                     checked={isActive}
                     onChange={(e) => setIsActive(e.target.checked)}
-                    className="w-4 h-4 rounded border-border text-brand-red focus:ring-brand-red"
+                    className="w-4 h-4 rounded-[2px] border-2 border-[#171717] text-[#E6321C] focus:ring-0"
                   />
-                  <label htmlFor="cat-active" className="text-xs font-bold text-ink cursor-pointer">
+                  <label htmlFor="cat-active" className="text-xs font-bold text-[#171717] cursor-pointer font-sans">
                     Active & visible in storefront navigation
                   </label>
                 </div>
               )}
 
-              <div className="flex items-center justify-end gap-3 pt-3 border-t border-border/70">
+              <div className="flex items-center justify-end gap-3 pt-3 border-t-2 border-[#171717]">
                 <button
                   type="button"
                   onClick={() => setModalOpen(false)}

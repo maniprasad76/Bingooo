@@ -7,7 +7,6 @@ import { CartDrawer } from '../cart/CartDrawer';
 import { SmartSearchModal } from '../search/SmartSearchModal';
 import { SocialFab } from '../ui/SocialFab';
 
-import { OfflineBanner } from '../common/OfflineBanner';
 import { CommunityInvitePopup } from '../common/CommunityInvitePopup';
 import { ScrollProgressBar } from '../common/ScrollProgressBar';
 import { ScrollToTop } from '../common/ScrollToTop';
@@ -52,8 +51,7 @@ export function PageLayout() {
       {/* ─── Global Scroll Progress Bar ─── */}
       <ScrollProgressBar />
 
-      {/* ─── Connectivity Detection Offline Banner ─── */}
-      <OfflineBanner />
+      {/* The offline banner is rendered once, globally, in App.tsx. */}
 
       {/* ─── Responsive Sticky Header ─── */}
       <Navbar />

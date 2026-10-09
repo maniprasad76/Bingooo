@@ -1,4 +1,6 @@
 import { Link } from 'react-router-dom';
+import { Picture } from '../components/ui/Picture';
+import { IMAGES } from '../lib/images';
 import { SEO } from '../components/common/SEO';
 import { triggerHaptic } from '../lib/native/capacitorBridge';
 
@@ -43,8 +45,10 @@ export function PrivacyPolicyPage() {
         </div>
 
         <div className="h-[400px] sm:h-[500px] lg:h-auto overflow-hidden bg-[#ede0cc]">
-          <img
-            src="/privacy-hero.jpg"
+          <Picture
+            image={IMAGES.privacyHero}
+            sizes="(min-width: 1024px) 55vw, 100vw"
+            loading="eager"
             alt="Bingooo - Your Privacy Matters"
             className="w-full h-full object-cover object-center"
           />
@@ -72,8 +76,9 @@ export function PrivacyPolicyPage() {
       <section className="py-[clamp(70px,9vw,120px)]" id="policy-details">
         <div className="container-bingooo grid grid-cols-1 lg:grid-cols-[0.9fr_1.1fr] gap-[clamp(50px,9vw,140px)] items-center">
           <div className="aspect-[4/5] overflow-hidden bg-[#ede0cc] max-w-[600px] mx-auto lg:mx-0 w-full">
-            <img
-              src="/privacy-hero.jpg"
+            <Picture
+              image={IMAGES.privacyHero}
+              sizes="(min-width: 1024px) 45vw, 100vw"
               alt="Bingooo data ethics"
               className="w-full h-full object-cover grayscale"
             />
@@ -227,8 +232,9 @@ export function PrivacyPolicyPage() {
       ======================================================= */}
       <section className="grid grid-cols-1 lg:grid-cols-[55%_45%] min-h-[550px] lg:min-h-[600px]">
         <div className="min-h-[380px] lg:min-h-full overflow-hidden">
-          <img
-            src="/custom-studio.jpg"
+          <Picture
+            image={IMAGES.customStudio}
+            sizes="(min-width: 1024px) 55vw, 100vw"
             alt="Bingooo Custom Studio atelier"
             className="w-full h-full object-cover object-center"
           />

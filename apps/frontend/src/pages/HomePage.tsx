@@ -99,7 +99,7 @@ export function HomePage() {
   const { data: studioPhoto } = useQuery({
     queryKey: ['studio-teaser-photo'],
     queryFn: async () => {
-      const res = await api.get<{ garments?: any[] }>('/customizations/studio/config');
+      const res = await api.get<{ garments?: any[] }>(`/customizations/studio/config?_t=${Date.now()}`);
       for (const g of res?.garments || []) {
         if (g?.isActive === false) continue;
         const colour = (g.colors || []).find((c: any) => c?.isActive !== false && c?.frontImageUrl);

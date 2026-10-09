@@ -374,7 +374,63 @@ export function CustomizerStudioPage() {
     });
 
     setShowColorModal(false);
-    toast.success('Colorway Saved', `"${newColor.name}" updated. Click Publish Changes to deploy.`);
+    toast.success('Colorway Saved (Draft)', `"${newColor.name}" updated. Click Save to Frontend to make it live.`);
+  };
+
+  const handleSaveColorFormAndPublish = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    if (!colorForm.name.trim()) {
+      toast.error('Validation Error', 'Please enter a colorway name.');
+      return;
+    }
+    if (!activeGarment) return;
+
+    const colorId = editingColorId || colorForm.name.toLowerCase().replace(/[^a-z0-9]/g, '-');
+    const newColor: GarmentColor = {
+      id: colorId,
+      name: colorForm.name.trim(),
+      hex: colorForm.hex,
+      textContrast: colorForm.textContrast,
+      frontImageUrl: colorForm.frontImageUrl.trim(),
+      backImageUrl: colorForm.backImageUrl.trim() || undefined,
+      isActive: colorForm.isActive,
+    };
+
+    const colors = [...activeGarment.colors];
+    if (editingColorId) {
+      const idx = colors.findIndex((c) => c.id === editingColorId);
+      if (idx >= 0) colors[idx] = newColor;
+    } else {
+      const existingIdx = colors.findIndex((c) => c.id === colorId);
+      if (existingIdx >= 0) colors[existingIdx] = newColor;
+      else colors.push(newColor);
+    }
+
+    const updatedGarment = { ...activeGarment, colors };
+    const newGarments = config.garments.map((g) => (g.id === activeGarment.id ? updatedGarment : g));
+
+    setSaving(true);
+    setStatusMessage(null);
+    try {
+      const saved = await api.put<any>('/customizations/studio/config', { garments: newGarments });
+      applyConfig(saved);
+      setHasUnsavedChanges(false);
+      setShowColorModal(false);
+      toast.success('Saved & Published Live!', `"${newColor.name}" is now live on http://localhost:5173/customize`);
+      setStatusMessage({
+        type: 'success',
+        text: `Published! "${newColor.name}" images are now visible on the storefront custom studio.`,
+      });
+      setTimeout(() => setStatusMessage(null), 6000);
+    } catch (err: any) {
+      toast.error('Save Failed', err?.message || 'Could not update studio config.');
+      setStatusMessage({
+        type: 'error',
+        text: err?.message || 'Failed to save changes.',
+      });
+    } finally {
+      setSaving(false);
+    }
   };
 
   const handleDeleteColor = (colorId: string) => {
@@ -438,7 +494,7 @@ export function CustomizerStudioPage() {
         }),
       }));
 
-      toast.success('Photo Attached', `Updated ${side} photo. Click Publish to make it live.`);
+      toast.success('Photo Attached!', `Updated ${side} photo. Click "SAVE TO FRONTEND" to show it live.`);
       check.warnings.forEach((w) => toast.warning('Check this photo', w, 8000));
     } catch (err: any) {
       toast.error('Upload Error', err?.message || 'Could not upload image.');
@@ -597,9 +653,9 @@ export function CustomizerStudioPage() {
             href="http://localhost:5173/customize"
             target="_blank"
             rel="noopener noreferrer"
-            className="btn-outline text-xs gap-1.5"
+            className="btn-outline text-xs gap-1.5 font-bold"
           >
-            <span>Live Store Studio</span>
+            <span>Preview Frontend</span>
             <ExternalLink size={13} />
           </a>
 
@@ -607,21 +663,22 @@ export function CustomizerStudioPage() {
             type="button"
             onClick={handleSaveAll}
             disabled={saving}
-            className={`btn-primary text-xs gap-2 ${
+            className={`text-xs font-black uppercase tracking-wider px-5 py-2.5 border-2 border-[#171717] flex items-center gap-2 cursor-pointer transition-all ${
               hasUnsavedChanges
-                ? 'shadow-[4px_4px_0px_#171717] animate-pulse'
-                : ''
+                ? 'bg-[#E6321C] text-white shadow-[4px_4px_0px_#171717] hover:bg-[#ff3b20] hover:shadow-[6px_6px_0px_#171717] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none animate-pulse'
+                : 'bg-[#171717] text-white shadow-[3px_3px_0px_#171717] hover:bg-black'
             }`}
+            title="Save changes and make them live on the customer customizer"
           >
             {saving ? (
               <>
-                <LoaderCircle size={14} className="animate-spin" />
-                <span>Publishing...</span>
+                <LoaderCircle size={15} className="animate-spin" />
+                <span>SAVING TO FRONTEND...</span>
               </>
             ) : (
               <>
-                <Save size={14} />
-                <span>{hasUnsavedChanges ? 'Publish Changes *' : 'Publish Live'}</span>
+                <Save size={15} />
+                <span>{hasUnsavedChanges ? 'SAVE TO FRONTEND *' : 'SAVED TO FRONTEND ✓'}</span>
               </>
             )}
           </button>
@@ -945,7 +1002,7 @@ export function CustomizerStudioPage() {
                   </label>
                 </div>
 
-                <div className="pt-3 border-t border-[#171717]/15">
+                <div className="pt-4 border-t-2 border-[#171717]/15 flex items-center justify-between gap-3 flex-wrap">
                   <button
                     type="button"
                     onClick={handleDeleteGarment}
@@ -953,6 +1010,16 @@ export function CustomizerStudioPage() {
                   >
                     <Trash2 size={13} />
                     <span>Delete this garment</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={handleSaveAll}
+                    disabled={saving}
+                    className="btn-primary text-xs gap-2 py-2 px-5 font-black uppercase tracking-wider"
+                  >
+                    {saving ? <LoaderCircle size={14} className="animate-spin" /> : <Save size={14} />}
+                    <span>{hasUnsavedChanges ? 'SAVE TO LIVE FRONTEND *' : 'SAVED TO FRONTEND ✓'}</span>
                   </button>
                 </div>
               </div>
@@ -965,17 +1032,33 @@ export function CustomizerStudioPage() {
                   <div>
                     <h3 className="text-sm font-black text-[#171717] uppercase tracking-tight">Colorways & Mockup Photos</h3>
                     <p className="text-xs text-[#171717]/60 font-medium mt-0.5">
-                      Upload real garment photos: transparent PNG (or WebP), square, at least 1200px, garment centred and framed the same front and back. Max 10 MB. Use the red delete button to remove any image.
+                      Upload transparent PNG/WebP garment photos. Click <strong className="text-[#E6321C]">SAVE IMAGES TO FRONTEND</strong> to show your uploads on the live customizer.
                     </p>
                   </div>
-                  <button
-                    type="button"
-                    onClick={handleOpenAddColor}
-                    className="btn-primary text-xs gap-1.5 self-start sm:self-auto"
-                  >
-                    <Plus size={14} />
-                    <span>Add Colorway</span>
-                  </button>
+                  <div className="flex items-center gap-2 self-start sm:self-auto flex-wrap">
+                    <button
+                      type="button"
+                      onClick={handleSaveAll}
+                      disabled={saving}
+                      className={`px-3.5 py-2 text-xs font-black uppercase font-mono border-2 border-[#171717] flex items-center gap-1.5 cursor-pointer transition-all shadow-[2px_2px_0px_#171717] ${
+                        hasUnsavedChanges
+                          ? 'bg-[#E6321C] text-white hover:bg-[#ff3820] animate-pulse'
+                          : 'bg-white text-[#171717] hover:bg-[#F7EEDB]'
+                      }`}
+                      title="Save all mockup images to the live customer studio"
+                    >
+                      {saving ? <LoaderCircle size={13} className="animate-spin" /> : <Save size={13} />}
+                      <span>{hasUnsavedChanges ? 'SAVE IMAGES TO FRONTEND *' : 'ALL IMAGES SAVED ✓'}</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={handleOpenAddColor}
+                      className="btn-primary text-xs gap-1.5"
+                    >
+                      <Plus size={14} />
+                      <span>Add Colorway</span>
+                    </button>
+                  </div>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -1156,6 +1239,36 @@ export function CustomizerStudioPage() {
                       </div>
                     );
                   })}
+                </div>
+
+                {/* Bottom Save Bar for Colors Tab */}
+                <div className="p-4 border-2 border-[#171717] bg-[#F7EEDB] flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 shadow-[3px_3px_0px_#171717]">
+                  <div>
+                    <div className="text-xs font-black uppercase text-[#171717]">
+                      {hasUnsavedChanges ? '⚠️ You have unsaved image or colorway changes' : '✓ All colorways and photos are published'}
+                    </div>
+                    <p className="text-[11px] text-[#6F6A63] mt-0.5">
+                      Save to immediately reflect your front and back mockup images on the customer customizer (http://localhost:5173/customize).
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={handleSaveAll}
+                    disabled={saving}
+                    className="btn-primary text-xs gap-2 py-2.5 px-6 font-black uppercase tracking-wider self-start sm:self-auto cursor-pointer"
+                  >
+                    {saving ? (
+                      <>
+                        <LoaderCircle size={14} className="animate-spin" />
+                        <span>SAVING...</span>
+                      </>
+                    ) : (
+                      <>
+                        <Save size={14} />
+                        <span>SAVE TO LIVE FRONTEND</span>
+                      </>
+                    )}
+                  </button>
                 </div>
               </div>
             )}
@@ -1367,6 +1480,36 @@ export function CustomizerStudioPage() {
                     </table>
                   </div>
                 </div>
+
+                {/* Bottom Save Bar for Sizes Tab */}
+                <div className="p-4 border-2 border-[#171717] bg-[#F7EEDB] flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 shadow-[3px_3px_0px_#171717]">
+                  <div>
+                    <div className="text-xs font-black uppercase text-[#171717]">
+                      {hasUnsavedChanges ? '⚠️ You have unsaved size or measurement changes' : '✓ All sizes and measurements are saved'}
+                    </div>
+                    <p className="text-[11px] text-[#6F6A63] mt-0.5">
+                      Save to update available size selectors and size chart tables on http://localhost:5173/customize.
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={handleSaveAll}
+                    disabled={saving}
+                    className="btn-primary text-xs gap-2 py-2.5 px-6 font-black uppercase tracking-wider self-start sm:self-auto cursor-pointer"
+                  >
+                    {saving ? (
+                      <>
+                        <LoaderCircle size={14} className="animate-spin" />
+                        <span>SAVING...</span>
+                      </>
+                    ) : (
+                      <>
+                        <Save size={14} />
+                        <span>SAVE TO LIVE FRONTEND</span>
+                      </>
+                    )}
+                  </button>
+                </div>
               </div>
             )}
 
@@ -1529,6 +1672,36 @@ export function CustomizerStudioPage() {
                           ? 'Missing — this colour is hidden from customers until it has one'
                           : 'Missing — customers see a “back photo coming soon” note'}
                     </div>
+                  </div>
+
+                  {/* Bottom Save Bar for Preview Tab */}
+                  <div className="p-4 border-2 border-[#171717] bg-[#F7EEDB] flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 shadow-[3px_3px_0px_#171717]">
+                    <div>
+                      <div className="text-xs font-black uppercase text-[#171717]">
+                        {hasUnsavedChanges ? '⚠️ You have unsaved print area or garment changes' : '✓ Custom studio is ready and live'}
+                      </div>
+                      <p className="text-[11px] text-[#6F6A63] mt-0.5">
+                        Save all changes to update the live customer studio on http://localhost:5173/customize.
+                      </p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={handleSaveAll}
+                      disabled={saving}
+                      className="btn-primary text-xs gap-2 py-2.5 px-6 font-black uppercase tracking-wider self-start sm:self-auto cursor-pointer"
+                    >
+                      {saving ? (
+                        <>
+                          <LoaderCircle size={14} className="animate-spin" />
+                          <span>SAVING...</span>
+                        </>
+                      ) : (
+                        <>
+                          <Save size={14} />
+                          <span>SAVE TO LIVE FRONTEND</span>
+                        </>
+                      )}
+                    </button>
                   </div>
                 </div>
               </div>
@@ -1702,22 +1875,70 @@ export function CustomizerStudioPage() {
                 </div>
               </div>
 
-              <div className="pt-3 flex gap-2 border-t-2 border-[#171717]">
+              <div className="pt-3 flex flex-col sm:flex-row gap-2 border-t-2 border-[#171717]">
                 <button
                   type="button"
                   onClick={() => setShowColorModal(false)}
-                  className="btn-outline flex-1"
+                  className="btn-outline flex-1 text-xs"
                 >
                   Cancel
                 </button>
                 <button
-                  type="submit"
-                  className="btn-primary flex-1"
+                  type="button"
+                  onClick={handleSaveColorFormAndPublish}
+                  disabled={saving}
+                  className="flex-1 py-2 px-3 text-xs font-black uppercase tracking-wider bg-[#E6321C] text-white border-2 border-[#171717] shadow-[3px_3px_0px_#171717] hover:bg-[#ff3820] flex items-center justify-center gap-1.5 cursor-pointer active:translate-x-[1px] active:translate-y-[1px]"
+                  title="Save this colorway and push all garments live to the customer storefront immediately"
                 >
-                  Save Colorway
+                  {saving ? <LoaderCircle size={14} className="animate-spin" /> : <Save size={14} />}
+                  <span>Save & Publish Live</span>
+                </button>
+                <button
+                  type="submit"
+                  className="flex-1 py-2 px-3 text-xs font-bold uppercase bg-[#171717] text-white border-2 border-[#171717] hover:bg-black flex items-center justify-center gap-1.5 cursor-pointer shadow-[2px_2px_0px_#171717]"
+                  title="Save changes in local memory; you can publish to frontend later"
+                >
+                  <span>Save Draft</span>
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* STICKY FLOATING ACTION BAR FOR UNSAVED CHANGES */}
+      {hasUnsavedChanges && (
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 w-[min(calc(100%-32px),680px)] bg-[#171717] text-white border-2 border-[#E6321C] shadow-[6px_6px_0px_#E6321C] p-3 sm:p-4 flex items-center justify-between gap-3 animate-in fade-in slide-in-from-bottom-4 duration-200">
+          <div className="flex items-center gap-2.5 min-w-0">
+            <span className="w-3 h-3 rounded-full bg-[#E6321C] animate-ping shrink-0" />
+            <div className="min-w-0">
+              <div className="text-xs font-black uppercase tracking-wider text-white truncate">
+                Unsaved Studio Changes Ready to Publish
+              </div>
+              <div className="text-[10px] text-[#F7EEDB]/80 truncate hidden sm:block">
+                Click Save to immediately display your uploaded images on http://localhost:5173/customize
+              </div>
+            </div>
+          </div>
+          <div className="flex items-center gap-2 shrink-0">
+            <button
+              type="button"
+              onClick={handleSaveAll}
+              disabled={saving}
+              className="px-4 py-2 bg-[#E6321C] text-white font-mono text-xs font-black uppercase tracking-wider border-2 border-white hover:bg-[#ff3b20] active:scale-95 transition-all shadow-[2px_2px_0px_white] flex items-center gap-1.5 cursor-pointer"
+            >
+              {saving ? (
+                <>
+                  <LoaderCircle size={13} className="animate-spin" />
+                  <span>SAVING...</span>
+                </>
+              ) : (
+                <>
+                  <Save size={13} />
+                  <span>SAVE TO FRONTEND NOW</span>
+                </>
+              )}
+            </button>
           </div>
         </div>
       )}

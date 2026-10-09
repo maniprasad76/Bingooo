@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Put, Patch, Delete, Param, Body, Query, Req, UseGuards, ForbiddenException } from '@nestjs/common';
+import { Controller, Get, Post, Put, Patch, Delete, Param, Body, Query, Req, UseGuards, ForbiddenException, Header } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { Throttle } from '@nestjs/throttler';
 import { CustomizationsService } from './customizations.service';
@@ -14,6 +14,7 @@ export class CustomizationsController {
 
   // ── Customizer Studio Configuration ──
   @Get('studio/config')
+  @Header('Cache-Control', 'no-store, no-cache, must-revalidate')
   @ApiOperation({ summary: 'Get customizer studio garments and color mockups' })
   getStudioConfig() {
     return this.customizationsService.getStudioConfig();

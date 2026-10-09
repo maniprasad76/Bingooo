@@ -99,7 +99,7 @@ export function CustomizerPage() {
   useEffect(() => {
     let mounted = true;
     api
-      .get<{ garments?: GarmentConfig[] }>('/customizations/studio/config')
+      .get<{ garments?: GarmentConfig[] }>(`/customizations/studio/config?_t=${Date.now()}`)
       .then((res) => {
         if (!mounted) return;
         // Accept all active garments configured in the Atelier Admin Studio

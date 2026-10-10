@@ -136,7 +136,7 @@ export function QuickViewModal({ product, isOpen, onClose }: QuickViewModalProps
               <div className="md:col-span-7 bg-paper/60 p-8 flex flex-col items-center justify-center relative border-b md:border-b-0 md:border-r border-border">
                 {/* Product Image Showcase */}
                 <div className="w-full max-w-sm aspect-[4/5] flex items-center justify-center p-4">
-                  <img
+                  <img loading="lazy" decoding="async"
                     src={mainImage}
                     alt={product.title}
                     className="h-full w-full object-contain p-2 transition-transform duration-500 hover:scale-105"

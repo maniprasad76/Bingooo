@@ -83,7 +83,7 @@ function RecentlyViewedCard({
             className="relative h-20 w-20 sm:h-24 sm:w-24 rounded-[2px] bg-[#EDE0CC] border border-[#DDD3C5] overflow-hidden shrink-0 flex items-center justify-center group-hover:scale-105 transition-transform"
           >
             {mainImage ? (
-              <img src={mainImage} alt={item.title} className="h-full w-full object-cover" />
+              <img loading="lazy" decoding="async" src={mainImage} alt={item.title} className="h-full w-full object-cover" />
             ) : (
               <Shirt size={32} className="text-[#171717]/40" />
             )}

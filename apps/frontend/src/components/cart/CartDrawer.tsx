@@ -133,14 +133,14 @@ export function CartDrawer() {
                               onClick={closeDrawer}
                               className="block w-full h-full"
                             >
-                              <img
+                              <img loading="lazy" decoding="async"
                                 src={imageUrl}
                                 alt={productTitle}
                                 className="h-full w-full object-cover"
                               />
                             </Link>
                           ) : (
-                            <img
+                            <img loading="lazy" decoding="async"
                               src={imageUrl}
                               alt={productTitle}
                               className="h-full w-full object-cover"

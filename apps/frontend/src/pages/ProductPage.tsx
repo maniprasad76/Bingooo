@@ -1,6 +1,7 @@
 import { useState, useMemo, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import { Heart, Star, Check, Lock, Truck, RotateCcw, ShoppingBag, Zap } from 'lucide-react';
+import { Heart, Star, Check, Lock, Truck, RotateCcw, ShoppingBag, Zap, Sparkles } from 'lucide-react';
+import { SizeAdvisorModal } from '../components/catalog/SizeAdvisorModal';
 import { useProduct } from '../hooks/useProducts';
 import { useCart } from '../hooks/useCart';
 import { useWishlist, useIsInWishlist } from '../hooks/useWishlist';
@@ -238,8 +239,9 @@ export function ProductPage() {
   const [pincode, setPincode] = useState('');
   const [deliveryResult, setDeliveryResult] = useState<{ message: string; ok: boolean } | null>(null);
 
-  // Size modal state
+  // Size modal & fit advisor state
   const [isSizeModalOpen, setIsSizeModalOpen] = useState(false);
+  const [isAdvisorOpen, setIsAdvisorOpen] = useState(false);
 
   // Find authoritative matching variant
   const selectedVariant = useMemo(() => {
@@ -450,6 +452,8 @@ export function ProductPage() {
 
               {images[activeImageIndex] || images[0] ? (
                 <img
+                  fetchPriority="high"
+                  decoding="async"
                   src={images[activeImageIndex] || images[0]}
                   alt={product?.title || 'Product Image'}
                   className="w-full h-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.025]"
@@ -624,13 +628,28 @@ export function ProductPage() {
                 <span className="text-[11px] font-black uppercase tracking-wider text-[#171717]">
                   03 // SELECT SIZE
                 </span>
-                <button
-                  type="button"
-                  onClick={() => setIsSizeModalOpen(true)}
-                  className="p-0 border-0 bg-transparent text-[10px] font-black font-mono underline underline-offset-4 text-[#171717] hover:text-[#E6321C] transition-colors cursor-pointer"
-                >
-                  SIZE CHART →
-                </button>
+                <div className="flex items-center gap-2.5">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      triggerHaptic('light');
+                      setIsAdvisorOpen(true);
+                    }}
+                    className="p-0 border-0 bg-transparent text-[10px] font-black font-mono text-[#E6321C] hover:underline transition-colors cursor-pointer flex items-center gap-1"
+                    title="Interactive fit advisor for 240 GSM tees based on height and weight"
+                  >
+                    <Sparkles size={11} />
+                    FIND YOUR FIT →
+                  </button>
+                  <span className="text-[#171717]/30 text-[10px]">|</span>
+                  <button
+                    type="button"
+                    onClick={() => setIsSizeModalOpen(true)}
+                    className="p-0 border-0 bg-transparent text-[10px] font-black font-mono underline underline-offset-4 text-[#171717] hover:text-[#E6321C] transition-colors cursor-pointer"
+                  >
+                    SIZE CHART →
+                  </button>
+                </div>
               </div>
 
               <div className="grid grid-cols-5 gap-2">
@@ -1071,7 +1090,7 @@ export function ProductPage() {
                 <div className="relative aspect-[4/5] overflow-hidden bg-[#EDE0CC] border-2 border-[#171717]">
                   <Link to={item.link} className="block h-full w-full">
                     {item.image ? (
-                      <img
+                      <img loading="lazy" decoding="async"
                         src={item.image}
                         alt={item.name}
                         className="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.04]"
@@ -1233,6 +1252,17 @@ export function ProductPage() {
           </div>
         </div>
       )}
+
+      {/* =======================================================
+           ATELIER FIT ADVISOR MODAL
+      ======================================================= */}
+      <SizeAdvisorModal
+        isOpen={isAdvisorOpen}
+        onClose={() => setIsAdvisorOpen(false)}
+        onSelectSize={(sz) => setSelectedSize(sz)}
+        initialSize={selectedSize}
+        garmentType={fitGuideCategory}
+      />
 
       {/* =======================================================
            MOBILE IMMERSIVE STICKY ACTION BAR (<768px)

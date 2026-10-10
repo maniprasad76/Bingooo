@@ -513,7 +513,7 @@ export function CheckoutPage() {
                         <div key={item.id} className="pt-2.5 first:pt-0 flex gap-3 text-left">
                           <div className="h-12 w-12 border-2 border-[#171717] bg-[#F7EEDB] flex items-center justify-center shrink-0 overflow-hidden relative shadow-[1px_1px_0px_#171717]">
                             {imageUrl ? (
-                              <img
+                              <img loading="lazy" decoding="async"
                                 src={imageUrl}
                                 alt={title}
                                 className="h-full w-full object-cover"
@@ -939,7 +939,7 @@ export function CheckoutPage() {
                     <div key={item.id} className="pt-3 first:pt-0 flex gap-3 text-left">
                       <div className="h-14 w-14 border-2 border-[#171717] bg-[#F7EEDB] flex items-center justify-center shrink-0 overflow-hidden relative shadow-[1px_1px_0px_#171717]">
                         {imageUrl ? (
-                          <img
+                          <img loading="lazy" decoding="async"
                             src={imageUrl}
                             alt={title}
                             className="h-full w-full object-cover"

@@ -453,7 +453,7 @@ export function HomePage() {
                       className="block h-full w-full"
                     >
                       {prod.image && !failedImages[prod.id] ? (
-                        <img
+                        <img loading="lazy" decoding="async"
                           src={prod.image}
                           alt={prod.name}
                           className="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
@@ -530,7 +530,7 @@ export function HomePage() {
 
               <div className="relative z-10 my-6 w-48 sm:w-60 aspect-square flex items-center justify-center">
                 {studioPhoto ? (
-                  <img
+                  <img loading="lazy" decoding="async"
                     src={resolveImageUrl(studioPhoto)}
                     alt="Custom garment ready for your design"
                     className="w-full h-full object-contain filter drop-shadow-[0_20px_32px_rgba(0,0,0,0.5)]"

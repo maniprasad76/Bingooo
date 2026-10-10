@@ -201,3 +201,8 @@ python -m graphify update .
   - Purged 180+ automated bot users, 50 synthetic test orders, and duplicate demo products from `store.json`. Preserved real admin accounts (`admin@bingooo.in`, `basaprasaduu@gmail.com`), active promotional coupons (`BINGOOO10`, `WELCOME20`, `FREESHIP`), and official catalog streetwear apparel.
 - **2026-10-10: End-to-End Dynamic Coupon Engine & Real-Time Checkout Recalculation**
   - Linked coupon management between Admin Panel, NestJS backend `CouponsService`, and Storefront checkout. Implemented real-time coupon validation, instant discount deduction, error messaging for invalid codes, and synchronized backend order pricing verification.
+- **2026-10-10: Shiprocket Logistics Integration, 4×6 Thermal Label Generator, Orders CSV Export & Fit Advisor Modal**
+  - Integrated Shiprocket API v2 with JWT token caching, courier serviceability checks, adhoc shipment creation, 1-click AWB assignment, live tracking, and status webhook ingestion (with seamless sandbox simulation fallback).
+  - Built 4×6" (100×150mm) thermal shipping label generator with pure SVG Code-128 barcode, consignee/consignor routing blocks, and print CSS layout.
+  - Added single-click Orders & Sales CSV export in Admin Panel (`OrdersPage.tsx`) covering customer, financial, item, and tracking dimensions.
+  - Implemented interactive "Find Your Fit" Size Recommendation Advisor Modal (`SizeAdvisorModal.tsx`) with height/weight sliders, drape preference selection, and single-click size application across Product and Customizer pages.

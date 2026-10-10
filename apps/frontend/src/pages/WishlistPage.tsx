@@ -277,7 +277,7 @@ export function WishlistPage() {
                       <div className="aspect-[4/5] bg-[#ede0cc] overflow-hidden relative rounded-[2px]">
                         <Link to={`/product/${prod.slug}`} className="block w-full h-full">
                           {prod.images?.[0]?.url ? (
-                            <img
+                            <img loading="lazy" decoding="async"
                               src={prod.images[0].url}
                               alt={prod.title}
                               className="w-full h-full object-cover grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-500"
@@ -487,7 +487,7 @@ export function WishlistPage() {
                     <div className="relative aspect-[4/5] border-2 border-[#171717] bg-[#F7EEDB] overflow-hidden shadow-[2px_2px_0px_#171717]">
                       <Link to={`/product/${item.slug}`} className="block w-full h-full">
                         {item.image ? (
-                          <img
+                          <img loading="lazy" decoding="async"
                             src={item.image}
                             alt={item.title}
                             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"

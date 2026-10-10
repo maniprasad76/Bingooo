@@ -1,88 +1,72 @@
-# Plan: Complete Bauhaus Overhaul & Full System Integration for Admin Panel
+# Plan: Shiprocket Logistics Integration, 4×6" Thermal Shipping Labels, Orders CSV Export & Storefront Fit Intelligence
 
-> **Status:** 100% Executed & Verified  
-> **Last Synchronized:** October 10, 2026  
-> **Verification Sign-Off:** Typecheck passed (0 errors), responsive drawer and desktop sidebar verified, customizer studio connected, and database sanitized.
-
-## 1. Problem Diagnosis (from User Screenshot & Code Audit)
-1. **Critical Text Contrast & CSS Collapse in Sidebar**:
-   - The sidebar is rendering with light cream background, but navigation text, badges, and user cards were styled with `text-white`, `text-white/55`, `text-white/30`, causing invisible/washed-out text ("Dashboard", "Mani76", etc.).
-   - The top header and sidebar header overlap ("ATELIER OS / DASHBOARD" and "BINGOOO" colliding horizontally at the top left).
-2. **Backend Telemetry Disconnect**:
-   - `DashboardPage` shows "FAILED TO SYNCHRONIZE TELEMETRY" whenever the backend (`http://localhost:3000`) is offline or initializing.
-   - No mock/offline fallback or resilient telemetry cache exists, leaving a barren screen.
-   - In `api.ts`, API base fallback and credentials need reliable error handling and mock fallback data when API is offline in local development.
-3. **Absence of True Bauhaus / Atelier Design System**:
-   - Current admin styling relies on soft SaaS styles, conflicting with Bingooo's signature Bauhaus design system.
-   - Missing signature Bauhaus elements:
-     - 2px solid `#171717` architectural frames (`border-2 border-[#171717]`)
-     - Tactile neo-brutalist drop shadows (`shadow-[3px_3px_0px_#171717]`, `shadow-[4px_4px_0px_#171717]`)
-     - Geometric button press states (`active:translate-x-[2px] active:translate-y-[2px] active:shadow-none`)
-     - Crisp high-contrast color scheme: Warm cream `#F7EEDB`, Soft beige `#EDE0CC`, Ink `#171717`, White `#FFFFFF`, Signal Red `#E6321C`
-     - Monospace metadata chips (`IBM Plex Mono`) with bold uppercase typography.
-4. **Usability & Storefront Integration**:
-   - Direct bridges between Admin and Storefront (quick links to live products, customizer studio, order tracking).
+> **Status:** Phase 5 — Complete & Verified (All Workspaces Typechecked with 0 Errors)  
+> **Target Date:** October 10, 2026  
+> **Scope:** Full-Stack Logistics, Warehouse Tooling, Sales Telemetry & Fit Recommendation Engine
 
 ---
 
-## 2. Target Design Architecture (Bingooo Bauhaus Atelier)
-- **Palette**:
-  - Main Canvas: `#F7EEDB` (Warm Cream)
-  - Secondary Deck: `#EDE0CC` (Soft Beige)
-  - Card & Table Surfaces: `#FFFFFF` (Crisp White)
-  - Borders & Outlines: `#171717` (Stark Charcoal Ink, 2px solid)
-  - Brand Red Actions: `#E6321C` (Signal Red) with hover `#171717` or `#B91F12`
-  - Badges & Telemetry: High-contrast monospace pills with 1.5px/2px `#171717` borders
-- **Components**:
-  - `bauhaus-card`: `bg-white border-2 border-[#171717] shadow-[4px_4px_0px_#171717]`
-  - `bauhaus-card-dark`: `bg-[#171717] text-white border-2 border-[#171717] shadow-[4px_4px_0px_#171717]`
-  - `btn-primary`: `bg-[#E6321C] text-white border-2 border-[#171717] shadow-[3px_3px_0px_#171717] hover:bg-[#171717] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none font-mono text-xs font-black uppercase tracking-wider`
-  - `btn-secondary`: `bg-[#171717] text-white border-2 border-[#171717] shadow-[3px_3px_0px_#171717] hover:bg-[#E6321C] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none font-mono text-xs font-black uppercase tracking-wider`
-  - `btn-outline`: `bg-white text-[#171717] border-2 border-[#171717] shadow-[2px_2px_0px_#171717] hover:bg-[#F7EEDB] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none font-mono text-xs font-black uppercase tracking-wider`
-  - `admin-input` & `admin-select`: `border-2 border-[#171717] bg-white rounded-none sm:rounded-[2px] font-sans font-semibold text-xs focus:ring-0 focus:outline-none focus:border-[#E6321C] shadow-[2px_2px_0px_#171717]`
-  - `admin-table`: `border-2 border-[#171717] shadow-[4px_4px_0px_#171717]` with stark `#171717` header, crisp grid lines.
+## 1. Feature Architecture & Objectives
+
+### A. Shiprocket Logistics Integration & Automated AWB Workflow
+- **Backend Service (`apps/backend/src/shipping/shiprocket.service.ts`)**:
+  - Secure authentication with Shiprocket API v2 (`/v1/external/auth/login`) with in-memory token cache (10 days TTL).
+  - Environment-aware credentials (`SHIPROCKET_EMAIL`, `SHIPROCKET_PASSWORD`), with automated sandbox/mock fallback when credentials are unconfigured.
+  - **Serviceability Check (`checkServiceability`)**: Queries delivery pincode, parcel weight, and returns courier options (Delhivery, Bluedart, DTDC, Xpressbees) with ETAs.
+  - **Shipment Order Creation (`createShipment`)**: Pushes order items, dimension (30×25×5 cm), weight (0.45 kg per 240 GSM tee), customer delivery address, and prepaid payment status.
+  - **AWB Generation (`generateAWB`)**: Assigns courier partner and captures AWB code.
+  - **Live Tracking & Webhook (`trackShipment` & `handleWebhook`)**: Ingests automated tracking events and updates order status + triggers WhatsApp updates.
+- **Shipping Controller (`apps/backend/src/shipping/shipping.controller.ts`)**:
+  - `POST /shipping/shiprocket/create-shipment/:orderId`
+  - `POST /shipping/shiprocket/generate-awb/:orderId`
+  - `GET /shipping/shiprocket/serviceability`
+  - `POST /shipping/shiprocket/webhook`
+  - `GET /shipping/label/:orderId` (generates thermal label)
+
+### B. 4×6" Thermal Shipping Label Generator
+- **Dedicated Printable Layout (`apps/backend/src/shipping/shipping-label.util.ts` & Admin Modal)**:
+  - Exact 4×6 inch (100mm × 150mm) thermal label CSS styling (`@media print { @page { size: 4in 6in; margin: 0; } }`).
+  - Scannable Code128 SVG barcode for Order Number and AWB.
+  - BINGOOO Dispatch Hub origin address + GSTIN details.
+  - Customer shipping destination, phone number, pin code routing box.
+  - Order manifest items (SKU, Size, Color, Qty) + "PREPAID — DO NOT COLLECT CASH" watermark.
+
+### C. Admin Orders CSV / Excel Export
+- **Export Engine (`apps/admin/src/pages/OrdersPage.tsx`)**:
+  - Export filtered orders to CSV with UTF-8 BOM encoding for seamless Excel / Numbers / Google Sheets compatibility.
+  - Fields included: Order #, Created At, Customer Name, Email, Phone, Items Summary, Units, Payment Mode, Order Total (₹), Discount (₹), Shipping Status, AWB Code, Courier, Destination City, State, Pincode.
+
+### D. Custom Studio Real Garment Photos Setup
+- Ensure the newly saved transparent PNG garments (`Oversized T-Shirt 240 GSM` with Obsidian Black and Pure White front/back views) are properly populated in `db.customizer_config` and active for storefront display on `/customize`.
+
+### E. "Find Your Fit" Size Recommendation Calculator
+- **Component (`apps/frontend/src/components/catalog/SizeAdvisorModal.tsx`)**:
+  - Height (cm or ft/in) slider or input.
+  - Weight (kg or lbs) selector.
+  - Fit preference: Fitted / Regular Drop-Shoulder / Boxy Heavyweight Oversized.
+  - Algorithmic calculation matching Bingooo 240 GSM streetwear drape specs (`S: 42" chest`, `M: 44" chest`, `L: 46" chest`, `XL: 48" chest`, `XXL: 50" chest`).
+  - Integrated into `ProductPage.tsx` and `CustomizerPage.tsx`.
 
 ---
 
-## 3. Files to Change & Action Plan
+## 2. File Modification & Implementation Plan
 
-### Step 1: Design Tokens & CSS Overhaul
-- **`apps/admin/tailwind.config.js`**:
-  - Add Bauhaus drop-shadow utilities (`bauhaus`, `bauhaus-sm`, `bauhaus-lg`, `bauhaus-red`).
-  - Configure crisp geometric radiuses (`rounded-[2px]`, `rounded-sm`).
-- **`apps/admin/src/styles/index.css`**:
-  - Replace soft glassmorphic CSS with authentic Bauhaus classes (`.bauhaus-card`, `.bauhaus-box`, `.btn-primary`, `.btn-secondary`, `.btn-outline`, `.admin-input`, `.admin-table`, `.badge`).
-
-### Step 2: Layout & Navigation Redesign (`apps/admin/src/components/AdminLayout.tsx`)
-- Fix sidebar layout:
-  - Sidebar background: Crisp warm cream `#F7EEDB` with 2px right border `#171717`.
-  - Brand header: High-contrast `BINGOOO.` in Manrope extra bold with signal red period, submark icon, and `ATELIER OS` badge.
-  - Fix all text colors: Dark `#171717` with clear contrast (no white text on cream!).
-  - Active navigation state: `bg-[#E6321C] text-white border-2 border-[#171717] shadow-[2px_2px_0px_#171717]`.
-  - Collapsible desktop state + mobile drawer.
-  - Sticky Bauhaus top bar with route hierarchy, backend connection status badge, and direct "Storefront" bridge.
-
-### Step 3: API & Dashboard Telemetry Resilience (`apps/admin/src/lib/api.ts` & `DashboardPage.tsx`)
-- Enhance `apps/admin/src/lib/api.ts`:
-  - Provide fallback data if backend is unreachable during dev so the admin UI never collapses into an empty broken state.
-- Redesign `apps/admin/src/pages/DashboardPage.tsx`:
-  - Bauhaus telemetry header banner with geometric architectural borders.
-  - Bento stat cards with hard Bauhaus shadows (`shadow-[3px_3px_0px_#171717]`).
-  - Clean order stream table & stock alerts with quick actions.
-
-### Step 4: Redesign Key Pages into Bauhaus Aesthetics
-- **`OrdersPage.tsx`**: Bauhaus filter chips, status badges with solid borders, crisp table, order detail modal.
-- **`ProductsPage.tsx`**: Bauhaus product catalog grid/table, direct "View on Storefront" links, delete modal.
-- **`ProductEditorPage.tsx`**: Bauhaus tabbed form with high-contrast inputs, image upload preview, variant matrix.
-- **`CustomizerStudioPage.tsx`**: Bauhaus garment studio config with live silhouette preview and upload tools.
-- **`CategoriesPage.tsx`, `InventoryPage.tsx`, `CustomersPage.tsx`, `CouponsPage.tsx`, `SettingsPage.tsx`, `LoginPage.tsx`**:
-  - Apply Bauhaus cards, buttons, and tables consistently across all management views.
+| File | Change Details |
+|---|---|
+| `apps/backend/src/shipping/shiprocket.service.ts` | **Create**: Core Shiprocket client with token auth, order creation, AWB generation, serviceability, and mock sandbox mode |
+| `apps/backend/src/shipping/shipping-label.util.ts` | **Create**: HTML/SVG 4×6 thermal printable shipping label generator |
+| `apps/backend/src/shipping/shipping.controller.ts` | **Update**: Endpoints for Shiprocket dispatch, AWB, tracking, thermal label, and webhook |
+| `apps/backend/src/shipping/shipping.module.ts` | **Update**: Register ShiprocketService and imports |
+| `apps/admin/src/pages/OrdersPage.tsx` | **Update**: Add Shiprocket dispatch action, CSV Export button, and 4×6 Thermal Label Print preview |
+| `apps/frontend/src/components/catalog/SizeAdvisorModal.tsx` | **Create**: "Find Your Fit" interactive size recommendation modal |
+| `apps/frontend/src/pages/ProductPage.tsx` | **Update**: Connect "Find Your Fit" button beside size guide |
+| `apps/frontend/src/pages/CustomizerPage.tsx` | **Update**: Connect "Find Your Fit" button to size selector |
 
 ---
 
-## 4. Verification & Validation (Passed & Signed Off)
-1. [x] `npm run typecheck` passes with zero errors across all workspaces (`@bingooo/admin`, `@bingooo/api`, `@bingooo/frontend`, `@bingooo/types`).
-2. [x] Dev servers run properly (`npm run dev:all`, `npm run dev:web`, `npm run dev:admin`).
-3. [x] Visual inspection of `http://localhost:5174/dashboard`, `orders`, `products`, `customizer`, etc. confirms permanent desktop sidebar, mobile drawer, and high-contrast Bauhaus cards.
-4. [x] Verify navigation between Admin and Storefront (`http://localhost:5173`) with live customizer garment synchronization and real-time coupon calculation.
-5. [x] Database sanitization: 180+ bot users and 50 synthetic test orders purged from `store.json`. Authenticated admin accounts, active promotional coupons, and official streetwear catalog verified.
+## 3. Verification & Acceptance Criteria
+1. `npm run typecheck` passes with zero errors across all workspaces.
+2. Orders page allows 1-click CSV export with valid download.
+3. Orders page allows 1-click Shiprocket dispatch & 4×6 Thermal Label printing with barcode.
+4. Storefront displays Size Advisor modal that calculates accurate size recommendation.
+5. All tests and git push to GitHub `origin/main` complete cleanly.

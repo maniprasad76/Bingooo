@@ -12,6 +12,8 @@ import {
   Sparkles,
   Shirt,
   X,
+  Download,
+  FileText,
 } from 'lucide-react';
 
 interface OrderItem {
@@ -177,6 +179,123 @@ export function OrdersPage() {
     }
   };
 
+  const [shippingWithShiprocket, setShippingWithShiprocket] = useState<string | null>(null);
+
+  const handleShipWithShiprocket = async (order: Order) => {
+    setShippingWithShiprocket(order.id);
+    try {
+      const res = await api.post<{ awb_code: string; courier_name: string; isMock?: boolean }>(
+        `/shipping/shiprocket/generate-awb/${order.id}`
+      );
+      toast.success(
+        'Shiprocket Dispatched',
+        `AWB ${res.awb_code} generated via ${res.courier_name}${res.isMock ? ' (Sandbox)' : ''}. Customer notified!`
+      );
+      fetchOrders();
+      if (selectedOrder && selectedOrder.id === order.id) {
+        setSelectedOrder({
+          ...selectedOrder,
+          status: 'shipped',
+          carrier: res.courier_name,
+          tracking_number: res.awb_code,
+        });
+      }
+    } catch (err: any) {
+      toast.error('Shiprocket Error', err?.message || 'Failed to dispatch with Shiprocket.');
+    } finally {
+      setShippingWithShiprocket(null);
+    }
+  };
+
+  const handlePrintThermalLabel = (orderId: string) => {
+    const isProd =
+      typeof window !== 'undefined' &&
+      (window.location.hostname === 'admin.bingooo.co.in' ||
+        window.location.hostname.endsWith('.bingooo.co.in') ||
+        window.location.hostname.includes('vercel.app'));
+    const backendUrl = isProd ? 'https://api.bingooo.co.in' : 'http://localhost:3000';
+    const labelUrl = `${backendUrl}/api/v1/shipping/label/${orderId}`;
+    window.open(labelUrl, '_blank', 'width=500,height=750,menubar=no,toolbar=no,location=no');
+  };
+
+  const handleExportCsv = () => {
+    if (orders.length === 0) {
+      toast.error('No Orders', 'There are no orders to export.');
+      return;
+    }
+
+    const headers = [
+      'Order ID',
+      'Date',
+      'Customer Name',
+      'Customer Phone',
+      'Customer Email',
+      'Items',
+      'Quantity',
+      'Total Amount (INR)',
+      'Payment Status',
+      'Payment Method',
+      'Fulfillment Status',
+      'Carrier',
+      'AWB Tracking',
+      'Delivery Address',
+      'City',
+      'State',
+      'Pincode',
+    ];
+
+    const rows = orders.map((o) => {
+      const orderNum = o.order_number || o.orderNumber || o.id;
+      const dateVal = o.created_at || o.createdAt ? new Date(o.created_at || o.createdAt!).toISOString().slice(0, 10) : '';
+      const addr = o.shipping_address || o.shippingAddress || {};
+      const custName = addr.name || o.user?.fullName || 'Customer';
+      const custPhone = addr.phone || '';
+      const custEmail = o.user?.email || '';
+      const items = (o.items || []).map((it) => `${it.title_snapshot || it.title || 'Item'} (x${it.quantity || 1}, ${it.size || 'M'})`).join('; ') || 'Bingooo Garment';
+      const totalQty = (o.items || []).reduce((sum, it) => sum + (it.quantity || 1), 0) || o.items_count || 1;
+      const totalAmt = o.total || o.total_amount || 0;
+      const payStatus = o.payment_status || o.paymentStatus || 'pending';
+      const payMethod = o.payment_method || o.paymentMethod || 'Prepaid';
+      const status = o.status;
+      const carrier = o.carrier || '';
+      const awb = o.tracking_number || '';
+      const addressLine = [addr.line1, addr.line2, addr.address, addr.street].filter(Boolean).join(' ');
+      const city = addr.city || '';
+      const state = addr.state || '';
+      const pincode = addr.postal_code || addr.postalCode || addr.pincode || '';
+
+      return [
+        orderNum,
+        dateVal,
+        custName,
+        custPhone,
+        custEmail,
+        items,
+        totalQty,
+        totalAmt,
+        payStatus,
+        payMethod,
+        status,
+        carrier,
+        awb,
+        addressLine,
+        city,
+        state,
+        pincode,
+      ].map((val) => `"${String(val).replace(/"/g, '""')}"`).join(',');
+    });
+
+    const csvContent = 'data:text/csv;charset=utf-8,' + [headers.join(','), ...rows].join('\n');
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement('a');
+    link.setAttribute('href', encodedUri);
+    link.setAttribute('download', `bingooo-orders-export-${new Date().toISOString().slice(0, 10)}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    toast.success('Orders Exported', `Downloaded ${orders.length} order records to CSV.`);
+  };
+
   return (
     <div className="space-y-6">
       {/* Editorial Header */}
@@ -199,15 +318,25 @@ export function OrdersPage() {
           </p>
         </div>
 
-        <button
-          onClick={fetchOrders}
-          className="btn-outline gap-2"
-          disabled={loading}
-          title="Refresh orders"
-        >
-          <RefreshCw size={14} className={loading ? 'animate-spin' : ''} />
-          <span>Refresh Orders</span>
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={handleExportCsv}
+            className="btn-outline gap-2 font-mono text-xs"
+            title="Download full orders and sales CSV ledger"
+          >
+            <Download size={14} />
+            <span>Export CSV</span>
+          </button>
+          <button
+            onClick={fetchOrders}
+            className="btn-outline gap-2 font-mono text-xs"
+            disabled={loading}
+            title="Refresh orders"
+          >
+            <RefreshCw size={14} className={loading ? 'animate-spin' : ''} />
+            <span>Refresh Orders</span>
+          </button>
+        </div>
       </div>
 
       {/* Modern Filters & Search Toolbar */}
@@ -437,6 +566,13 @@ export function OrdersPage() {
                             ))}
                           </select>
                           <button
+                            onClick={() => handlePrintThermalLabel(o.id)}
+                            className="btn-ghost p-1.5 rounded-lg text-muted hover:text-ink hover:bg-beige"
+                            title="Print 4×6 Thermal Shipping Label"
+                          >
+                            <FileText size={15} />
+                          </button>
+                          <button
                             onClick={() => setSelectedOrder(o)}
                             className="btn-ghost p-1.5 rounded-lg text-muted hover:text-ink hover:bg-beige"
                             title="Inspect Order Details"
@@ -478,13 +614,32 @@ export function OrdersPage() {
                 </span>
               </div>
 
-              <div className="flex items-center gap-2">
+              <div className="flex flex-wrap items-center gap-2">
+                {selectedOrder.status !== 'shipped' && selectedOrder.status !== 'delivered' && selectedOrder.status !== 'cancelled' && (
+                  <button
+                    onClick={() => handleShipWithShiprocket(selectedOrder)}
+                    disabled={shippingWithShiprocket === selectedOrder.id}
+                    className="bg-[#171717] hover:bg-[#E6321C] text-white py-2 px-3 text-xs gap-1.5 font-mono font-bold flex items-center border border-[#171717] rounded-[2px] transition-colors cursor-pointer"
+                    title="1-Click Dispatch & AWB generation via Shiprocket logistics partner"
+                  >
+                    <Truck size={14} />
+                    <span>{shippingWithShiprocket === selectedOrder.id ? 'Dispatching...' : 'Ship with Shiprocket'}</span>
+                  </button>
+                )}
+                <button
+                  onClick={() => handlePrintThermalLabel(selectedOrder.id)}
+                  className="btn-primary py-2 px-3 text-xs gap-1.5 font-mono"
+                  title="Generate 4x6 Thermal Label with pure SVG barcode"
+                >
+                  <FileText size={14} />
+                  <span>Print 4×6 Label</span>
+                </button>
                 <button
                   onClick={() => window.print()}
-                  className="btn-outline py-2 px-3 text-xs gap-1.5"
+                  className="btn-outline py-2 px-3 text-xs gap-1.5 hidden sm:flex"
                 >
                   <Printer size={14} />
-                  Print Manifest
+                  <span>Manifest</span>
                 </button>
                 <button
                   onClick={() => setSelectedOrder(null)}

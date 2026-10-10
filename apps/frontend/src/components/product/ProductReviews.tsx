@@ -467,7 +467,7 @@ export function ProductReviews({ productId, productTitle, productThumbnail }: Pr
                       className="group relative block w-16 h-16 rounded-[2px] overflow-hidden border border-[#DDD3C5] bg-white cursor-pointer"
                       title="Click to view full photo"
                     >
-                      <img
+                      <img loading="lazy" decoding="async"
                         src={rev.imageUrl}
                         alt="Customer photo"
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform"
@@ -500,7 +500,7 @@ export function ProductReviews({ productId, productTitle, productThumbnail }: Pr
               <div className="p-6 border-b border-[#DDD3C5] flex items-center justify-between bg-white">
                 <div className="flex items-center gap-3">
                   {productThumbnail && (
-                    <img
+                    <img loading="lazy" decoding="async"
                       src={productThumbnail}
                       alt={productTitle}
                       className="w-10 h-10 object-cover rounded-[2px] border border-[#DDD3C5]"

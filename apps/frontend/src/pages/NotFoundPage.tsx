@@ -218,7 +218,7 @@ export function NotFoundPage() {
               <article key={item.id} className="group flex flex-col bg-white border border-[#DDD3C5] rounded-[2px] overflow-hidden shadow-xs hover:border-[#171717] transition-all">
                 <div className="relative aspect-[3/4] overflow-hidden bg-[#EDE0CC]">
                   <Link to={item.link} className="block h-full w-full">
-                    <img
+                    <img loading="lazy" decoding="async"
                       src={item.image}
                       alt={item.name}
                       className="h-full w-full object-cover grayscale contrast-110 group-hover:grayscale-0 group-hover:scale-105 transition-all duration-500 ease-out"

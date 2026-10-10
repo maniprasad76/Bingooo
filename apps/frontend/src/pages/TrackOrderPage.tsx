@@ -343,7 +343,7 @@ export function TrackOrderPage() {
                   {result.items.map((item, i) => (
                     <div key={i} className="py-3.5 first:pt-0 last:pb-0 flex items-center justify-between gap-4">
                       <div className="flex items-center gap-3">
-                        <img
+                        <img loading="lazy" decoding="async"
                           src={item.image}
                           alt={item.title}
                           className="w-14 h-14 rounded-[2px] object-cover bg-[#EDE0CC] border-2 border-[#171717] shadow-[2px_2px_0px_#171717]"

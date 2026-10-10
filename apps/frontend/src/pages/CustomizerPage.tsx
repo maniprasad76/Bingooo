@@ -6,7 +6,9 @@ import {
   Ruler,
   Check,
   MessageCircle,
+  Sparkles,
 } from 'lucide-react';
+import { SizeAdvisorModal } from '../components/catalog/SizeAdvisorModal';
 import { api } from '../lib/api/client';
 import { useToast } from '../components/ui/Toast';
 import { BINGOOO_PHONE_RAW } from '../components/ui/SocialIcons';
@@ -92,6 +94,7 @@ export function CustomizerPage() {
     back: null,
   });
   const [showSizeModal, setShowSizeModal] = useState<boolean>(false);
+  const [showAdvisorModal, setShowAdvisorModal] = useState<boolean>(false);
   const [sizeUnit, setSizeUnit] = useState<'in' | 'cm'>('in');
   const [quoteSuccessModal, setQuoteSuccessModal] = useState<boolean>(false);
 
@@ -520,15 +523,27 @@ export function CustomizerPage() {
                     </span>
                   </div>
                   
-                  {/* Size Guide Trigger */}
-                  <button
-                    type="button"
-                    onClick={() => setShowSizeModal(true)}
-                    className="flex items-center gap-1.5 text-xs font-bold text-[#171717] hover:text-[#E6321C] underline underline-offset-2 transition-colors"
-                  >
-                    <Ruler size={14} />
-                    <span>SIZE CHART</span>
-                  </button>
+                  {/* Size Guide & Fit Advisor Triggers */}
+                  <div className="flex items-center gap-2.5">
+                    <button
+                      type="button"
+                      onClick={() => setShowAdvisorModal(true)}
+                      className="flex items-center gap-1 text-xs font-bold text-[#E6321C] hover:underline transition-colors"
+                      title="Interactive fit advisor for 240 GSM garments based on height & weight"
+                    >
+                      <Sparkles size={13} />
+                      <span>FIND YOUR FIT</span>
+                    </button>
+                    <span className="text-[#171717]/30 text-xs">|</span>
+                    <button
+                      type="button"
+                      onClick={() => setShowSizeModal(true)}
+                      className="flex items-center gap-1.5 text-xs font-bold text-[#171717] hover:text-[#E6321C] underline underline-offset-2 transition-colors"
+                    >
+                      <Ruler size={14} />
+                      <span>SIZE CHART</span>
+                    </button>
+                  </div>
                 </div>
 
                 {/* Color Swatches */}
@@ -899,6 +914,17 @@ export function CustomizerPage() {
           </div>
         </div>
       )}
+
+      {/* ═════════════════════════════════════════════════════════════════════
+          FIND YOUR FIT ADVISOR MODAL
+         ═════════════════════════════════════════════════════════════════════ */}
+      <SizeAdvisorModal
+        isOpen={showAdvisorModal}
+        onClose={() => setShowAdvisorModal(false)}
+        onSelectSize={(sz) => setSelectedSize(sz)}
+        initialSize={selectedSize}
+        garmentType={currentGarment?.style === 'hoodie' ? 'hoodie' : 'oversized'}
+      />
 
       {/* ═════════════════════════════════════════════════════════════════════
           WHATSAPP QUOTE SUCCESS REMINDER MODAL

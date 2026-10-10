@@ -67,7 +67,12 @@
     </style>
 
     <!-- ── The brand intro plays once per browser session ── -->
-    <style>html.intro-seen #bingooo-brand-intro { display: none; }</style>
+    <style>
+      html.intro-seen #bingooo-brand-intro { display: none; }
+      /* Skipped for reduced-motion users, and without JS nothing would ever remove it. */
+      @media (prefers-reduced-motion: reduce) { #bingooo-brand-intro { display: none; } }
+    </style>
+    <noscript><style>#bingooo-brand-intro { display: none; }</style></noscript>
     <script>
       try {
         if (sessionStorage.getItem('bingooo_intro_seen')) document.documentElement.classList.add('intro-seen');
@@ -339,9 +344,12 @@
           will-change: opacity, transform;
         }
 
+        /* Only opacity/transform may appear here: one extra property (pointer-events,
+           previously) drops this full-screen animation off the compositor and makes the
+           browser recalculate styles for the whole intro subtree on every frame. */
         @keyframes introContainerFade {
-          0%, 88% { opacity: 1; transform: scale(1); pointer-events: auto; }
-          100% { opacity: 0; transform: scale(1.02); pointer-events: none; }
+          0%, 88% { opacity: 1; transform: scale(1); }
+          100% { opacity: 0; transform: scale(1.02); }
         }
 
         /* ── Full Bleed Color Layers ── */

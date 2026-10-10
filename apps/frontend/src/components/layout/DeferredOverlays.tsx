@@ -47,7 +47,7 @@ export function DeferredOverlays() {
     <>
       <Suspense fallback={null}>{showCart && <CartDrawer />}</Suspense>
       <Suspense fallback={null}>{showSearch && <SmartSearchModal />}</Suspense>
-      <Suspense fallback={null}>{idle && <CommunityInvitePopup />}</Suspense>
+      <Suspense fallback={null}><CommunityInvitePopup /></Suspense>
     </>
   );
 }

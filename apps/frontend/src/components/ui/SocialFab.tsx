@@ -12,6 +12,7 @@ import {
   BINGOOO_EMAIL_SUPPORT,
   BINGOOO_YOUTUBE_URL,
   BINGOOO_TWITTER_URL,
+  BINGOOO_COMMUNITY_URL,
   getWhatsAppUrl,
 } from './SocialIcons';
 
@@ -25,6 +26,14 @@ interface SocialItem {
 }
 
 const SOCIAL_ITEMS: SocialItem[] = [
+  {
+    id: 'community',
+    name: 'VIP Community',
+    href: BINGOOO_COMMUNITY_URL,
+    icon: WhatsAppIcon,
+    color: '#25D366',
+    bgHover: 'hover:bg-[#25D366] hover:text-white hover:border-[#25D366]',
+  },
   {
     id: 'whatsapp',
     name: 'WhatsApp',

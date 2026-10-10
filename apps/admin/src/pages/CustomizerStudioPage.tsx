@@ -202,9 +202,18 @@ export function CustomizerStudioPage() {
   const uploadInputRef = useRef<HTMLInputElement>(null);
   const [activeUploadTarget, setActiveUploadTarget] = useState<{ colorId: string; side: 'front' | 'back' } | null>(null);
 
+  const GARMENT_ORDER = ['oversized', 'polo', 'hoodie'];
+
   // Everything shown here comes from the backend; there are no built-in garments.
   const applyConfig = (data: any) => {
-    const garments: GarmentItem[] = Array.isArray(data?.garments) ? data.garments : [];
+    const garments: GarmentItem[] = Array.isArray(data?.garments) ? [...data.garments] : [];
+    garments.sort((a, b) => {
+      const indexA = GARMENT_ORDER.indexOf(a.id);
+      const indexB = GARMENT_ORDER.indexOf(b.id);
+      const orderA = indexA === -1 ? 999 : indexA;
+      const orderB = indexB === -1 ? 999 : indexB;
+      return orderA - orderB;
+    });
     setConfig({ garments, updatedAt: data?.updatedAt ?? null });
     setSelectedGarmentId((current) => (garments.some((g) => g.id === current) ? current : garments[0]?.id || ''));
   };
@@ -274,7 +283,14 @@ export function CustomizerStudioPage() {
     setSaving(true);
     setStatusMessage(null);
     try {
-      const saved = await api.put<any>('/customizations/studio/config', { garments: config.garments });
+      const sortedGarments = [...config.garments].sort((a, b) => {
+        const indexA = GARMENT_ORDER.indexOf(a.id);
+        const indexB = GARMENT_ORDER.indexOf(b.id);
+        const orderA = indexA === -1 ? 999 : indexA;
+        const orderB = indexB === -1 ? 999 : indexB;
+        return orderA - orderB;
+      });
+      const saved = await api.put<any>('/customizations/studio/config', { garments: sortedGarments });
       // The server returns the cleaned config (final ids, sizes and photo links).
       applyConfig(saved);
       setHasUnsavedChanges(false);
@@ -736,13 +752,18 @@ export function CustomizerStudioPage() {
                 }`}
               >
                 <div className="flex items-center justify-between gap-2 mb-3 w-full">
-                  <span
-                    className={`text-[10px] font-mono font-bold uppercase px-2 py-0.5 border border-[#171717] ${
-                      garment.isActive ? 'bg-emerald-100 text-emerald-950' : 'bg-zinc-200 text-zinc-700'
-                    }`}
-                  >
-                    {garment.isActive ? 'Live' : 'Hidden'}
-                  </span>
+                  <div className="flex items-center gap-1.5">
+                    <span
+                      className={`text-[10px] font-mono font-bold uppercase px-2 py-0.5 border border-[#171717] ${
+                        garment.isActive ? 'bg-emerald-100 text-emerald-950' : 'bg-zinc-200 text-zinc-700'
+                      }`}
+                    >
+                      {garment.isActive ? 'Live' : 'Hidden'}
+                    </span>
+                    <span className="text-[10px] font-mono font-bold uppercase px-1.5 py-0.5 bg-[#171717] text-white">
+                      {garment.shortName || garment.id}
+                    </span>
+                  </div>
                   <span className="text-[10px] font-mono font-bold text-[#171717]/60 uppercase truncate">{garment.style}</span>
                 </div>
 

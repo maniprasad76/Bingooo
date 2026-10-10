@@ -129,7 +129,7 @@ export function contrastFor(hex: string): '#FFFFFF' | '#171717' {
 export function cleanImageUrl(value: unknown): { url: string; rejected: boolean } {
   const raw = text(value, 2048);
   if (!raw || raw.startsWith('/custom/')) return { url: '', rejected: false };
-  if (raw.startsWith('/api/')) return { url: raw, rejected: false };
+  if (raw.startsWith('/')) return { url: raw, rejected: false };
   try {
     const url = new URL(raw);
     const local = url.hostname === 'localhost' || url.hostname === '127.0.0.1';
@@ -148,7 +148,7 @@ function inferStyle(g: any): GarmentStyle {
   return 'tshirt';
 }
 
-const DEFAULT_SHORT_NAMES: Record<string, string> = { oversized: 'OVERSIZED', polo: 'POLO SHIRT', hoodie: 'HOODIE' };
+const DEFAULT_SHORT_NAMES: Record<string, string> = { oversized: 'OVERSIZED', polo: 'POLO', hoodie: 'HOODIE' };
 
 export function normalizeStudioConfig(raw: any, strict: boolean): StudioConfig {
   const fail = (message: string): never => {
@@ -239,10 +239,15 @@ export function normalizeStudioConfig(raw: any, strict: boolean): StudioConfig {
       : uniqueId(name, garmentIds, 'garment');
 
     const style = inferStyle(g);
+    const resolvedShortName =
+      id === 'polo' && (!g?.shortName || g?.shortName === 'POLO SHIRT')
+        ? 'POLO'
+        : text(g?.shortName, 24) || DEFAULT_SHORT_NAMES[id] || name.toUpperCase().slice(0, 24);
+
     garments.push({
       id,
       name,
-      shortName: text(g?.shortName, 24) || DEFAULT_SHORT_NAMES[id] || name.toUpperCase().slice(0, 24),
+      shortName: resolvedShortName,
       style,
       description: text(g?.description, 200),
       price,
@@ -255,6 +260,15 @@ export function normalizeStudioConfig(raw: any, strict: boolean): StudioConfig {
       printAreas: normalizePrintAreas(g?.printAreas, style),
     });
   }
+
+  const GARMENT_ORDER = ['oversized', 'polo', 'hoodie'];
+  garments.sort((a, b) => {
+    const indexA = GARMENT_ORDER.indexOf(a.id);
+    const indexB = GARMENT_ORDER.indexOf(b.id);
+    const orderA = indexA === -1 ? 999 : indexA;
+    const orderB = indexB === -1 ? 999 : indexB;
+    return orderA - orderB;
+  });
 
   return { garments, updatedAt: typeof raw?.updatedAt === 'string' ? raw.updatedAt : null };
 }

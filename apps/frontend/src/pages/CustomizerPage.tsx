@@ -74,6 +74,8 @@ export interface UploadedArtwork {
 const stageArtwork = (art: UploadedArtwork | null) =>
   art ? { previewUrl: art.previewUrl, scale: art.scale, offsetY: (art.offsetY * 100) / 460 } : null;
 
+const GARMENT_ORDER = ['oversized', 'polo', 'hoodie'];
+
 export function CustomizerPage() {
   const [searchParams] = useSearchParams();
   const { toast } = useToast();
@@ -109,6 +111,13 @@ export function CustomizerPage() {
         const usable = (Array.isArray(res?.garments) ? res.garments : []).filter(
           (g) => g.isActive !== false && (g.activeSizes?.length ? g.activeSizes : g.sizes || []).length > 0,
         );
+        usable.sort((a, b) => {
+          const indexA = GARMENT_ORDER.indexOf(a.id);
+          const indexB = GARMENT_ORDER.indexOf(b.id);
+          const orderA = indexA === -1 ? 999 : indexA;
+          const orderB = indexB === -1 ? 999 : indexB;
+          return orderA - orderB;
+        });
         setGarments(usable);
         setStudioState('ready');
       })
@@ -129,7 +138,11 @@ export function CustomizerPage() {
     const match =
       garments.find((g) => g.id === fitParam) ||
       garments.find((g) => g.style === fitParam || (fitParam === 'oversized' && g.style === 'tshirt'));
-    if (match) setSelectedFit(match.id);
+    if (match) {
+      setSelectedFit(match.id);
+    } else if (!selectedFit && garments[0]) {
+      setSelectedFit(garments[0].id);
+    }
   }
 
   // Current garment (undefined only while loading or when nothing is set up)

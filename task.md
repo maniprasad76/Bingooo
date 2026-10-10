@@ -53,6 +53,7 @@
 - [x] **Real-Time 3D Garment Studio:** Built procedural Three.js 3D garment geometries with 360° turntable orbit and dynamic texture projection.
 - [x] **WhatsApp Order & Dispatch Alerts:** Webhook-driven live tracking and order confirmations via `WhatsAppService`.
 - [x] **Universal Free Delivery & 100% Prepaid Policy:** Standardized store policy to free delivery Pan-India and 100% secure prepaid checkout with 5% instant discount.
+- [x] **Production Launch Readiness & Checklist Hardening:** Seeded ready-to-wear apparel across all advertised categories (T-Shirts, Hoodies, Shirts, Bottoms), normalized category routes, added luxury atelier availability empty-states, wired Google Analytics 4 (`G-N5EGTHS9SG`), and passed 100% typecheck and test suites.
 
 ---
 

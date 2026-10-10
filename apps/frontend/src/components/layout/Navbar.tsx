@@ -35,7 +35,7 @@ const categoryShortcuts = [
   { label: 'T-Shirts', spec: '240+ GSM', sub: 'Oversized & Heavy', href: '/category/t-shirts' },
   { label: 'Hoodies', spec: '400 GSM', sub: 'Boxy Winter Fleece', href: '/category/hoodies' },
   { label: 'Shirts', spec: 'RELAXED', sub: 'Cuban & Atelier Cut', href: '/category/shirts' },
-  { label: 'Bottoms', spec: 'STREET', sub: 'Cargoes & Denims', href: '/category/jeans' },
+  { label: 'Bottoms', spec: 'STREET', sub: 'Cargoes & Denims', href: '/category/bottoms' },
 ];
 
 export function Navbar() {

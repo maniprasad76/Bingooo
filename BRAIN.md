@@ -209,3 +209,10 @@ python -m graphify update .
 - **2026-10-10: Comprehensive Full-Stack E2E Real-Time User Audit (219 Automated Tests Passed)**
   - Executed and validated 219 automated end-to-end tests across 100% of Storefront pages (11 main routes + 11 legal/policy pages), 100% of Admin Console operations (13 management views), and NestJS backend APIs (Security, Checkout, Admin, Media, Durability, Studio).
   - Hardened SizeAdvisorModal with keyboard accessibility (Escape key handler), resolved nested semantic tags, and added defensive response unpacking in Admin ReviewsPage. Zero TypeScript errors and zero runtime exceptions.
+- **2026-10-11: Production Launch Audit & Checklist Hardening**
+  - Seeded ready-to-wear catalog pieces across all 4 core apparel categories (T-Shirts, Hoodies, Shirts, Bottoms) with full variant matrices (XS–XXL, stock counts, SKUs, and pricing).
+  - Normalized Bottoms category shortcut (`/category/bottoms`) with automatic redirect from legacy `/category/jeans`.
+  - Upgraded ShopPage empty state to luxury customer availability notice with direct WhatsApp concierge trigger.
+  - Enabled gender collection tag matching for `/shop?category=men` and `/shop?category=women`.
+  - Injected asynchronous Google Analytics 4 tracking tag (`G-N5EGTHS9SG`) into `index.html`.
+  - Verified 100% test passing across `npm run typecheck`, security test suite (42 tests), and checkout E2E tests (10 tests).

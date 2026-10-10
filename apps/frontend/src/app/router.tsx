@@ -69,6 +69,7 @@ export const router = createBrowserRouter([
 
       // Catalog & Categories
       { path: 'shop', element: <ShopPage /> },
+      { path: 'category/jeans', element: <Navigate to="/category/bottoms" replace /> },
       { path: 'category/:slug', element: <ShopPage /> },
       { path: 'collection/:slug', element: <CollectionRedirect /> },
       { path: 'product/:slug', element: <ProductPage /> },

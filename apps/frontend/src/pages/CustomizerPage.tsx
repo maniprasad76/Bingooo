@@ -141,11 +141,13 @@ export function CustomizerPage() {
     setSelectedSize(garmentSizes[0]);
   }
 
-  // Colours on offer: active colorways configured by admin with an uploaded front photo
-  const availableColors = useMemo(
-    () => (currentGarment ? (currentGarment.colors || []).filter((c) => c.isActive !== false && Boolean(c.frontImageUrl)) : []),
-    [currentGarment],
-  );
+  // Colours on offer: active colorways configured by admin (prioritizes those with uploaded photos)
+  const availableColors = useMemo(() => {
+    if (!currentGarment) return [];
+    const active = (currentGarment.colors || []).filter((c) => c.isActive !== false);
+    const withPhotos = active.filter((c) => Boolean(c.frontImageUrl));
+    return withPhotos.length > 0 ? withPhotos : active;
+  }, [currentGarment]);
 
   // Selected color object
   const activeColor: GarmentColor | undefined =

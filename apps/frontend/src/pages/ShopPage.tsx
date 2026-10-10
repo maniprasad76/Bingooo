@@ -1,9 +1,10 @@
 import { useState, useMemo, useEffect } from 'react';
 import { Link, useSearchParams, useParams } from 'react-router-dom';
-import { Heart, Check, Star, SlidersHorizontal, ArrowUpDown } from 'lucide-react';
+import { Heart, Check, Star, SlidersHorizontal, ArrowUpDown, Sparkles } from 'lucide-react';
 import { SEO } from '../components/common/SEO';
 import { generateItemListSchema } from '../lib/seo/schema';
 import { useProducts, useCategories } from '../hooks/useProducts';
+import { WhatsAppIcon, getWhatsAppUrl } from '../components/ui/SocialIcons';
 import { SITE_URL, categorySeoDescription, categorySeoTitle, categoryUrl } from '../lib/seo/catalog-seo.mjs';
 import { useCart } from '../hooks/useCart';
 import { useWishlist } from '../hooks/useWishlist';
@@ -30,6 +31,7 @@ interface ShopProduct {
   stock?: string;
   colors?: string[];
   sizes: string[];
+  tags?: string[];
   isNew?: boolean;
   isBestseller?: boolean;
 }
@@ -168,6 +170,7 @@ export function ShopPage() {
         badgeType: p.is_sale || p.isSale ? 'red' : p.bestseller ? 'black' : 'light',
         sizes: p.variants?.map((v: any) => v.size) || ['S', 'M', 'L'],
         colors: p.variants?.map((v: any) => v.colorHex || '#171717') || ['#171717'],
+        tags: Array.isArray(p.tags) ? p.tags : [],
       }));
     }
     return DEFAULT_SHOP_PRODUCTS;
@@ -181,7 +184,10 @@ export function ShopPage() {
         return false;
       }
       if (activeTab !== 'all' && activeTab !== 'new-arrivals') {
-        if (product.categorySlug !== activeTab && !product.category.toLowerCase().includes(activeTab.toLowerCase())) {
+        if (activeTab === 'men' || activeTab === 'women') {
+          const matchGender = product.tags?.some((t) => t.toLowerCase() === activeTab);
+          if (!matchGender) return false;
+        } else if (product.categorySlug !== activeTab && !product.category.toLowerCase().includes(activeTab.toLowerCase())) {
           return false;
         }
       }
@@ -631,16 +637,34 @@ export function ShopPage() {
                 ))}
               </div>
             ) : filteredProducts.length === 0 ? (
-              <div className="p-12 text-center bg-white border border-[#ddd3c5]">
-                <h2 className="text-[16px] font-bold uppercase mb-2">No products available</h2>
-                <p className="text-[#6f6a63] text-[11px] mb-5">Products added from the Admin Panel will appear here live.</p>
-                <button
-                  type="button"
-                  onClick={handleClearFilters}
-                  className="px-5 py-2.5 bg-[#171717] text-white text-[10px] font-bold uppercase"
-                >
-                  RESET FILTERS
-                </button>
+              <div className="p-8 sm:p-12 text-center bg-white border-2 border-[#171717] shadow-[4px_4px_0px_#171717]">
+                <div className="w-12 h-12 mx-auto mb-4 border-2 border-[#171717] bg-[#EDE0CC] grid place-items-center shadow-[2px_2px_0px_#171717]">
+                  <Sparkles size={20} className="text-[#E6321C]" />
+                </div>
+                <h2 className="text-[16px] font-black uppercase tracking-tight text-[#171717] mb-2">
+                  LIMITED ATELIER PRODUCTION
+                </h2>
+                <p className="text-[#6F6A63] text-[12px] max-w-md mx-auto mb-6 leading-relaxed">
+                  Garments in this selection are handcrafted in limited batches. Check back soon for the next drop or message our WhatsApp concierge for restock alerts.
+                </p>
+                <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+                  <button
+                    type="button"
+                    onClick={handleClearFilters}
+                    className="w-full sm:w-auto px-6 py-3 bg-[#171717] text-white text-[10px] font-black uppercase tracking-wider border-2 border-[#171717] shadow-[2px_2px_0px_#171717] hover:bg-black active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all cursor-pointer"
+                  >
+                    RESET FILTERS
+                  </button>
+                  <a
+                    href={getWhatsAppUrl(`Hi Bingooo Atelier, I am looking for items in ${categoryLabel || 'the catalog'} — when is the next drop scheduled?`)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 bg-white text-[#171717] text-[10px] font-black uppercase tracking-wider border-2 border-[#171717] shadow-[2px_2px_0px_#171717] hover:bg-[#F7EEDB] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all no-underline"
+                  >
+                    <WhatsAppIcon className="w-3.5 h-3.5" />
+                    <span>WHATSAPP CONCIERGE</span>
+                  </a>
+                </div>
               </div>
             ) : (
               <div className="grid grid-cols-2 md:grid-cols-3 gap-4 lg:gap-6">

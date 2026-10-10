@@ -265,7 +265,7 @@ export function ContactPage() {
                 onClick={() => triggerHaptic('light')}
                 className="mt-4 py-2 text-[#E1306C] text-[11px] font-extrabold tracking-[0.06em] uppercase group-hover:translate-x-1 transition-transform inline-block"
               >
-                Follow @bingooo.co →
+                Follow {BINGOOO_INSTAGRAM_HANDLE} →
               </a>
             </div>
           </div>

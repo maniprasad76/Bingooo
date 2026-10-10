@@ -165,7 +165,6 @@ export function Logo({
           'inline-flex items-center shrink-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#E6321C] rounded-sm group',
           className
         )}
-        aria-label="Bingooo Home"
       >
         {logoContent}
       </Link>

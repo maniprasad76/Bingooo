@@ -320,9 +320,9 @@ export function HomePage() {
             <span className="w-7 h-7 rounded-full bg-[#171717] text-white font-mono font-bold text-xs flex items-center justify-center shrink-0">
               01
             </span>
-            <span className="text-xs uppercase font-mono font-bold tracking-widest text-[#171717]">
+            <h2 className="m-0 text-xs leading-normal uppercase font-mono font-bold tracking-widest text-[#171717]">
               SHOP BY CATEGORY
-            </span>
+            </h2>
           </div>
 
           <div className="grid grid-cols-2 gap-2.5 sm:gap-6">
@@ -423,7 +423,7 @@ export function HomePage() {
               <p className="text-[12px] font-mono uppercase tracking-[0.2em] text-[#6f6a63] mb-3 font-bold">
                 New collection dropping soon
               </p>
-              <p className="text-[11px] text-[#8d8984]">
+              <p className="text-[11px] text-[#6F6A63]">
                 Products added from the Admin Panel will appear here live.
               </p>
             </div>
@@ -537,9 +537,9 @@ export function HomePage() {
                   />
                 ) : (
                   <div className="w-full h-full border-2 border-white/20 bg-black/20 backdrop-blur-sm flex flex-col items-center justify-center p-6 text-center shadow-inner">
-                    <span className="text-white/60 font-mono text-[10px] tracking-widest uppercase">BINGOOO ATELIER</span>
+                    <span className="text-white/90 font-mono text-[10px] tracking-widest uppercase">BINGOOO ATELIER</span>
                     <span className="text-white text-base sm:text-lg font-black tracking-wider uppercase mt-1">BESPOKE STUDIO</span>
-                    <span className="text-white/70 text-[10px] font-mono mt-3 uppercase tracking-wider">REAL-TIME DTF & SCREEN PRINTING</span>
+                    <span className="text-white/90 text-[10px] font-mono mt-3 uppercase tracking-wider">REAL-TIME DTF & SCREEN PRINTING</span>
                   </div>
                 )}
               </div>
@@ -924,7 +924,7 @@ export function HomePage() {
                   )}
                 </button>
               </div>
-              <p className="text-[10px] text-[#8C827A] mt-3 tracking-wide font-mono">
+              <p className="text-[10px] text-[#6F6A63] mt-3 tracking-wide font-mono">
                 No spam. Unsubscribe at any time.
               </p>
             </form>

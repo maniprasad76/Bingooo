@@ -141,9 +141,9 @@ export function CustomizerPage() {
     setSelectedSize(garmentSizes[0]);
   }
 
-  // Colours on offer: all active colorways configured by admin for this garment
+  // Colours on offer: active colorways configured by admin with an uploaded front photo
   const availableColors = useMemo(
-    () => (currentGarment ? (currentGarment.colors || []).filter((c) => c.isActive !== false) : []),
+    () => (currentGarment ? (currentGarment.colors || []).filter((c) => c.isActive !== false && Boolean(c.frontImageUrl)) : []),
     [currentGarment],
   );
 
@@ -498,7 +498,7 @@ export function CustomizerPage() {
                         >
                           <span>₹{g.price}</span>
                           {g.compareAtPrice && g.compareAtPrice > g.price && (
-                            <span className={`line-through text-[10px] ${isSelected ? 'text-white/60' : 'text-[#171717]/40'}`}>
+                            <span className={`line-through text-[10px] ${isSelected ? 'text-white/60' : 'text-[#171717]/60'}`}>
                               ₹{g.compareAtPrice}
                             </span>
                           )}
@@ -764,7 +764,7 @@ export function CustomizerPage() {
                   </span>
                   {currentGarment.compareAtPrice && currentGarment.compareAtPrice > currentGarment.price && (
                     <>
-                      <span className="text-sm font-mono text-white/40 line-through">
+                      <span className="text-sm font-mono text-white/60 line-through">
                         ₹{currentGarment.compareAtPrice}
                       </span>
                       <span className="text-[11px] font-mono font-bold text-[#E6321C] bg-[#E6321C]/15 border border-[#E6321C]/30 px-2 py-0.5">

@@ -407,7 +407,7 @@ export function Footer() {
                 rel="noopener noreferrer"
                 aria-label="Designed by ___mani___76 on Instagram"
                 title="Follow ___mani___76 on Instagram"
-                className="font-medium text-[#f7eedb] hover:text-[#E6321C] transition-colors inline-flex items-center gap-1 group"
+                className="font-medium text-[#f7eedb] hover:text-[#E6321C] transition-colors inline-flex items-center gap-1 py-1.5 group"
               >
                 <span className="hover:underline underline-offset-2">___mani___76</span>
                 <InstagramIcon className="w-3.5 h-3.5 text-[#85827d] group-hover:text-[#E6321C] transition-colors shrink-0" />
@@ -416,13 +416,13 @@ export function Footer() {
           </div>
 
           <div className="flex flex-wrap justify-center sm:justify-end gap-x-5 gap-y-2 text-[11px]">
-            <Link to="/terms" className="hover:text-white transition-colors">
+            <Link to="/terms" className="inline-block py-1.5 hover:text-white transition-colors">
               Terms of Service
             </Link>
-            <Link to="/privacy-policy" className="hover:text-white transition-colors">
+            <Link to="/privacy-policy" className="inline-block py-1.5 hover:text-white transition-colors">
               Privacy Policy
             </Link>
-            <Link to="/cancellation-policy" className="hover:text-white transition-colors">
+            <Link to="/cancellation-policy" className="inline-block py-1.5 hover:text-white transition-colors">
               Refund Policy
             </Link>
           </div>

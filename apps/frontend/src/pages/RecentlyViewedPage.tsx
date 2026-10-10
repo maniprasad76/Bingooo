@@ -386,7 +386,7 @@ export function RecentlyViewedPage() {
       <div className="max-w-[1360px] mx-auto px-4 sm:px-8 py-6 sm:py-8 space-y-8">
         {/* ─── Breadcrumbs ─── */}
         <nav className="flex items-center gap-2 text-xs font-sans text-[#6F6A63]">
-          <Link to="/" className="hover:text-[#E6321C] transition-colors">
+          <Link to="/" className="py-1.5 hover:text-[#E6321C] transition-colors">
             Home
           </Link>
           <span>&gt;</span>

@@ -325,7 +325,7 @@ export function AccountPage() {
       <div className="border-b-2 border-[#171717] bg-[#EDE0CC]/40 px-4 sm:px-8 py-3 text-xs">
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row sm:items-center justify-between gap-2">
           <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-[#6F6A63] text-xs font-medium">
-            <Link to="/" className="hover:text-[#171717] transition-colors">Home</Link>
+            <Link to="/" className="py-1.5 hover:text-[#171717] transition-colors">Home</Link>
             <span className="text-[#DDD3C5]">/</span>
             <span className="text-[#6F6A63]">Account</span>
             <span className="text-[#DDD3C5]">/</span>
@@ -1047,6 +1047,7 @@ export function AccountPage() {
                         </label>
                         <input
                           type="password"
+                          autoComplete="current-password"
                           required
                           value={passwordForm.currentPassword}
                           onChange={(e) => setPasswordForm({ ...passwordForm, currentPassword: e.target.value })}
@@ -1060,6 +1061,7 @@ export function AccountPage() {
                         </label>
                         <input
                           type="password"
+                          autoComplete="new-password"
                           required
                           minLength={6}
                           value={passwordForm.newPassword}
@@ -1074,6 +1076,7 @@ export function AccountPage() {
                         </label>
                         <input
                           type="password"
+                          autoComplete="new-password"
                           required
                           minLength={6}
                           value={passwordForm.confirmPassword}
@@ -1267,6 +1270,7 @@ export function AccountPage() {
           <form onSubmit={handleNewsletter} className="w-full md:w-auto flex items-center gap-2 max-w-md">
             <input
               type="email"
+              autoComplete="email"
               required
               placeholder="Enter your email"
               value={newsletterEmail}
@@ -1401,6 +1405,7 @@ export function AccountPage() {
                     </label>
                     <input
                       type="text"
+                      autoComplete="name"
                       required
                       value={newAddressForm.name}
                       onChange={(e) => setNewAddressForm({ ...newAddressForm, name: e.target.value })}
@@ -1413,6 +1418,7 @@ export function AccountPage() {
                     </label>
                     <input
                       type="tel"
+                      autoComplete="tel"
                       required
                       value={newAddressForm.phone}
                       onChange={(e) => setNewAddressForm({ ...newAddressForm, phone: e.target.value })}
@@ -1426,6 +1432,7 @@ export function AccountPage() {
                   </label>
                   <input
                     type="text"
+                    autoComplete="address-line1"
                     required
                     placeholder="Flat / Building / Road"
                     value={newAddressForm.line1}
@@ -1440,6 +1447,7 @@ export function AccountPage() {
                     </label>
                     <input
                       type="text"
+                      autoComplete="address-level2"
                       required
                       value={newAddressForm.city}
                       onChange={(e) => setNewAddressForm({ ...newAddressForm, city: e.target.value })}
@@ -1452,6 +1460,7 @@ export function AccountPage() {
                     </label>
                     <input
                       type="text"
+                      autoComplete="address-level1"
                       required
                       value={newAddressForm.state}
                       onChange={(e) => setNewAddressForm({ ...newAddressForm, state: e.target.value })}
@@ -1464,6 +1473,8 @@ export function AccountPage() {
                     </label>
                     <input
                       type="text"
+                      autoComplete="postal-code"
+                      inputMode="numeric"
                       required
                       maxLength={6}
                       value={newAddressForm.postalCode}

@@ -56,7 +56,7 @@ export function PoliciesPage() {
         {/* ─── Breadcrumb & Header ─── */}
         <div className="text-center space-y-4 max-w-2xl mx-auto">
           <div className="flex items-center justify-center gap-2 text-xs font-mono text-[#6F6A63] uppercase tracking-wider">
-            <Link to="/" className="hover:text-[#E6321C] transition-colors">Home</Link>
+            <Link to="/" className="py-1.5 hover:text-[#E6321C] transition-colors">Home</Link>
             <span>/</span>
             <span className="text-[#171717] font-bold">Policies & Standards</span>
           </div>

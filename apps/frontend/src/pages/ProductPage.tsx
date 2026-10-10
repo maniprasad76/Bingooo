@@ -382,7 +382,7 @@ export function ProductPage() {
       ======================================================= */}
       <div className="container-bingooo">
         <div className="py-[15px] sm:py-[22px] text-[10px] text-[#6f6a63] font-medium">
-          <Link to="/" className="hover:text-[#171717] transition-colors">Home</Link>
+          <Link to="/" className="py-1.5 hover:text-[#171717] transition-colors">Home</Link>
           <span className="mx-2">/</span>
           <Link to="/shop?category=men" className="hover:text-[#171717] transition-colors">Men</Link>
           <span className="mx-2">/</span>
@@ -423,6 +423,8 @@ export function ProductPage() {
                     <img
                       src={src}
                       alt={`${product?.title || 'Product'} thumbnail ${i + 1}`}
+                      loading="lazy"
+                      decoding="async"
                       className="w-full h-full object-cover"
                     />
                   </button>

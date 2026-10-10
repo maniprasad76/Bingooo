@@ -109,13 +109,13 @@ export function Navbar() {
               href={getWhatsAppUrl('Hi Bingooo, I would like to inquire about a bulk order for custom apparel.')}
               target="_blank"
               rel="noopener noreferrer"
-              className="hover:text-[#25D366] text-[#F7EEDB] transition-colors inline-flex items-center gap-1.5 font-bold"
+              className="hover:text-[#25D366] text-[#F7EEDB] transition-colors inline-flex items-center gap-1.5 font-bold py-1.5"
             >
               <WhatsAppIcon className="w-3 h-3 text-[#25D366]" />
               <span>BULK ORDERS (WHATSAPP)</span>
             </a>
-            <Link to="/track-order" className="hover:text-[#E6321C] transition-colors">TRACK ORDER</Link>
-            <Link to="/faq" className="hover:text-[#E6321C] transition-colors">HELP</Link>
+            <Link to="/track-order" className="py-1.5 hover:text-[#E6321C] transition-colors">TRACK ORDER</Link>
+            <Link to="/faq" className="py-1.5 hover:text-[#E6321C] transition-colors">HELP</Link>
           </div>
         </div>
       </div>
@@ -135,7 +135,7 @@ export function Navbar() {
                   onMouseEnter={() => preloadRouteChunk(link.href)}
                   onTouchStart={() => preloadRouteChunk(link.href)}
                   className={cn(
-                    'text-[11px] font-semibold uppercase transition-colors tracking-normal',
+                    'py-3 text-[11px] font-semibold uppercase transition-colors tracking-normal',
                     isActive ? 'text-[#E6321C]' : 'text-[#171717] hover:text-[#E6321C]'
                   )}
                 >
@@ -161,7 +161,7 @@ export function Navbar() {
                 triggerHaptic('light');
                 openSearchModal();
               }}
-              className="inline-flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-normal text-[#171717] hover:text-[#E6321C] transition-colors cursor-pointer p-2 md:p-0"
+              className="inline-flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-normal text-[#171717] hover:text-[#E6321C] transition-colors cursor-pointer p-2 md:px-0 md:py-3"
               aria-label="Search"
             >
               <Search className="w-5 h-5 md:w-[17px] md:h-[17px] stroke-[1.6]" />
@@ -171,7 +171,7 @@ export function Navbar() {
             <Link
               to={isAuthenticated ? '/account' : '/login'}
               onMouseEnter={() => preloadRouteChunk('/account')}
-              className="hidden md:inline-flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-normal text-[#171717] hover:text-[#E6321C] transition-colors"
+              className="hidden md:inline-flex items-center gap-1.5 py-3 text-[10px] font-semibold uppercase tracking-normal text-[#171717] hover:text-[#E6321C] transition-colors"
               aria-label="Login"
             >
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" className="w-[17px] h-[17px] stroke-[1.5]">
@@ -185,7 +185,7 @@ export function Navbar() {
               to="/account/wishlist"
               onClick={() => triggerHaptic('light')}
               onMouseEnter={() => preloadRouteChunk('/account')}
-              className="inline-flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-normal text-[#171717] hover:text-[#E6321C] transition-colors cursor-pointer p-2 md:p-0"
+              className="inline-flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-normal text-[#171717] hover:text-[#E6321C] transition-colors cursor-pointer p-2 md:px-0 md:py-3"
               aria-label="Wishlist"
             >
               <Heart className="w-5 h-5 md:w-3.5 md:h-3.5 stroke-[1.6]" />
@@ -198,7 +198,7 @@ export function Navbar() {
                 openCartDrawer();
               }}
               onMouseEnter={() => preloadRouteChunk('/cart')}
-              className="hidden md:inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-[#171717] hover:text-[#E6321C] transition-colors cursor-pointer"
+              className="hidden md:inline-flex items-center gap-1.5 py-3 text-[10px] font-bold uppercase tracking-wider text-[#171717] hover:text-[#E6321C] transition-colors cursor-pointer"
               aria-label="Cart"
             >
               <ShoppingBag className="w-4 h-4" />

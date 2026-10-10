@@ -201,7 +201,7 @@ export function CartPage() {
       <div className="container-bingooo">
         {/* Breadcrumb */}
         <div className="pt-5 pb-3 flex items-center gap-2 font-mono text-[10px] font-bold uppercase text-[#6F6A63]">
-          <Link to="/" className="hover:text-[#E6321C] transition-colors">HOME</Link>
+          <Link to="/" className="py-1.5 hover:text-[#E6321C] transition-colors">HOME</Link>
           <span>/</span>
           <span className="text-[#171717] border-b-2 border-[#171717]">BAG ({items.length})</span>
         </div>
@@ -311,10 +311,10 @@ export function CartPage() {
                             {imageUrl ? (
                               productSlug ? (
                                 <Link to={`/product/${productSlug}`} className="block w-full h-full">
-                                  <img src={imageUrl} alt={productTitle} className="w-full h-full object-cover" />
+                                  <img src={imageUrl} alt={productTitle} loading="lazy" decoding="async" className="w-full h-full object-cover" />
                                 </Link>
                               ) : (
-                                <img src={imageUrl} alt={productTitle} className="w-full h-full object-cover" />
+                                <img src={imageUrl} alt={productTitle} loading="lazy" decoding="async" className="w-full h-full object-cover" />
                               )
                             ) : (
                               <div className="h-full w-full flex flex-col items-center justify-center p-2 text-center bg-[#EDE0CC]">
@@ -671,28 +671,28 @@ export function CartPage() {
                   title: 'Core White Tee',
                   slug: 'core-white-tee',
                   base_price: 1199,
-                  imageUrl: '/real-fit-1.jpg',
+                  imageUrl: '/img/v1/real-fit-1-360.webp',
                 },
                 {
                   id: 'rec-2',
                   title: 'Everyday Sweatshirt',
                   slug: 'everyday-sweatshirt',
                   base_price: 1799,
-                  imageUrl: '/real-fit-2.jpg',
+                  imageUrl: '/img/v1/real-fit-2-360.webp',
                 },
                 {
                   id: 'rec-3',
                   title: 'Bingooo Cap',
                   slug: 'bingooo-cap',
                   base_price: 699,
-                  imageUrl: '/real-fit-3.jpg',
+                  imageUrl: '/img/v1/real-fit-3-360.webp',
                 },
                 {
                   id: 'rec-4',
                   title: 'Relaxed Shirt',
                   slug: 'relaxed-shirt',
                   base_price: 1999,
-                  imageUrl: '/real-fit-4.jpg',
+                  imageUrl: '/img/v1/real-fit-4-360.webp',
                 },
               ];
             })()).map((prod: any) => {
@@ -727,9 +727,9 @@ export function CartPage() {
 
                   <div>
                     <Link to={`/product/${prod.slug}`}>
-                      <h4 className="m-0 text-xs font-black uppercase tracking-tight text-[#171717] truncate hover:text-[#E6321C] transition-colors mb-1">
+                      <h3 className="m-0 text-xs font-black uppercase tracking-tight text-[#171717] truncate hover:text-[#E6321C] transition-colors mb-1">
                         {prod.title}
-                      </h4>
+                      </h3>
                     </Link>
                     <div className="font-mono text-xs font-black text-[#171717]">
                       ₹{Number(prod.base_price || 1299).toLocaleString('en-IN')}

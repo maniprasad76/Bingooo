@@ -46,8 +46,8 @@ export function ReviewsPage() {
     if (search) params.search = search;
 
     api
-      .get<Review[]>('/reviews/admin/all', params)
-      .then(setReviews)
+      .get<any>('/reviews/admin/all', params)
+      .then((data) => setReviews(Array.isArray(data) ? data : Array.isArray(data?.reviews) ? data.reviews : []))
       .catch(() => setReviews([]))
       .finally(() => setLoading(false));
   };

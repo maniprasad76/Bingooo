@@ -41,7 +41,7 @@ export function GarmentStage({ photoUrl, alt, side, printAreas, front, chest, ba
     const isBack = side === 'BACK';
     return (
       <Notice
-        title={isBack ? 'Back photo in preparation' : 'Garment photo in preparation'}
+        title={isBack ? 'Back photo coming soon' : 'Garment photo in preparation'}
         body={
           isBack
             ? (back ? 'Your back design is saved and will be printed centred on the back.' : 'You can still add a back print; upload garment photo in Admin Studio to preview.')

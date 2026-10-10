@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
 import { AnimatePresence, m } from 'framer-motion';
-import { MessageCircle, Sparkles, Tag, X } from 'lucide-react';
+import { X } from 'lucide-react';
 import { WhatsAppIcon } from '../ui/SocialIcons';
 import { useUIStore } from '../../store/ui';
 import { useCartStore } from '../../store/cart';
@@ -103,93 +103,47 @@ export function CommunityInvitePopup() {
     closeInvite();
   };
 
+  // A small non-modal card: no full-screen backdrop, the page stays usable behind it.
+  // Below md it sits above the floating MobileNav (12px + 56px tall).
   return (
     <AnimatePresence>
       {open && (
         <m.div
-          className="fixed inset-0 z-[90] flex items-end sm:items-center justify-center sm:p-6"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0, transition: { duration: 0.2 } }}
+          role="dialog"
+          aria-modal="false"
+          aria-labelledby="community-invite-title"
+          className="fixed z-[90] left-3 right-3 bottom-[calc(env(safe-area-inset-bottom,0px)+80px)] md:left-auto md:right-6 md:bottom-6 md:w-[360px] rounded-[2px] border border-[#DDD3C5] bg-[#F7EEDB] text-[#171717] shadow-2xl font-sans"
+          initial={{ y: 32, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          exit={{ y: 24, opacity: 0, transition: { duration: 0.18 } }}
+          transition={{ type: 'spring', stiffness: 340, damping: 32 }}
         >
-          <button
-            type="button"
-            aria-label="Close"
-            className="absolute inset-0 bg-[#171717]/60 backdrop-blur-sm cursor-default"
-            onClick={closeInvite}
-          />
-
-          {/* Phones: bottom sheet flush with the screen edge. sm+: centered card. */}
-          <m.div
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="community-invite-title"
-            className="relative w-full sm:max-w-[420px] max-h-[92dvh] overflow-y-auto rounded-t-3xl sm:rounded-[2px] border-t sm:border border-[#DDD3C5] bg-[#F7EEDB] text-[#171717] shadow-2xl font-sans"
-            initial={{ y: 48, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            exit={{ y: 32, opacity: 0, transition: { duration: 0.18 } }}
-            transition={{ type: 'spring', stiffness: 340, damping: 32 }}
-          >
-            <div className="sm:hidden mx-auto mt-2.5 h-1 w-10 rounded-full bg-[#DDD3C5]" aria-hidden="true" />
-
-            <div className="px-6 pt-5 sm:pt-6 sm:px-7 pb-[max(1.5rem,env(safe-area-inset-bottom))] sm:pb-6">
-              <div className="mb-4 flex items-center justify-between gap-3">
-                <span className="inline-flex items-center gap-1.5 rounded-full border border-[#DDD3C5] bg-[#EDE0CC] px-2.5 py-1 font-mono text-[10px] font-bold uppercase tracking-[0.14em] text-[#E6321C]">
-                  <Sparkles size={11} />
-                  Bingooo. Community
-                </span>
-                <button
-                  type="button"
-                  onClick={closeInvite}
-                  aria-label="Close invitation"
-                  className="-mr-2 grid h-8 w-8 shrink-0 place-items-center rounded-full text-[#6F6A63] hover:bg-[#EDE0CC] hover:text-[#171717] transition-colors"
-                >
-                  <X size={16} />
-                </button>
-              </div>
-
-              <h2 id="community-invite-title" className="m-0 text-[22px] font-extrabold uppercase leading-tight tracking-[-0.03em]">
-                You're invited to our WhatsApp community
-              </h2>
-              <p className="mt-2.5 mb-0 text-[13px] leading-relaxed text-[#6F6A63]">
-                We'd love to have you with us. Members hear about new drops first and get exclusive discounts we don't post anywhere else.
-              </p>
-
-              <ul className="mt-5 mb-0 space-y-3.5 p-0 list-none">
-                <li className="flex items-start gap-3">
-                  <Tag size={16} className="mt-px shrink-0 text-[#E6321C]" aria-hidden="true" />
-                  <span className="text-[12.5px] leading-snug">
-                    <strong className="font-bold">Member-only discounts</strong> and early access to every new drop
-                  </span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <MessageCircle size={16} className="mt-px shrink-0 text-[#171717]" aria-hidden="true" />
-                  <span className="text-[12.5px] leading-snug">
-                    <strong className="font-bold">Talk to our team directly</strong> — if you ever have a question or an issue with an order, just message us there and we'll help you out.
-                  </span>
-                </li>
-              </ul>
-
-              <a
-                href={COMMUNITY_URL}
-                target="_blank"
-                rel="noopener noreferrer"
-                onClick={handleJoin}
-                className="mt-6 flex w-full items-center justify-center gap-2.5 rounded-[2px] bg-[#171717] px-4 py-3.5 text-[12px] font-extrabold uppercase tracking-[0.08em] text-white no-underline transition-colors hover:bg-[#2a2a2a]"
-              >
-                <WhatsAppIcon className="w-5 h-5" />
-                Join the community
-              </a>
-              <button
-                type="button"
-                onClick={closeInvite}
-                className="mt-2 w-full rounded-[2px] px-4 py-2.5 text-[12px] font-semibold text-[#6F6A63] hover:text-[#171717] transition-colors"
-              >
-                Maybe later
-              </button>
-              <p className="mt-1 mb-0 text-center text-[10px] text-[#6F6A63]/80">Free to join · Leave anytime</p>
-            </div>
-          </m.div>
+          <div className="p-4 pr-12">
+            <button
+              type="button"
+              onClick={closeInvite}
+              aria-label="Close invitation"
+              className="absolute right-1 top-1 grid h-11 w-11 place-items-center rounded-full text-[#6F6A63] hover:bg-[#EDE0CC] hover:text-[#171717] transition-colors"
+            >
+              <X size={18} />
+            </button>
+            <h2 id="community-invite-title" className="m-0 text-[15px] font-extrabold uppercase leading-tight tracking-[-0.02em]">
+              Join our WhatsApp community
+            </h2>
+            <p className="mt-1.5 mb-0 text-[13px] leading-snug text-[#5A554E]">
+              New drops first, member-only discounts and direct help with orders.
+            </p>
+            <a
+              href={COMMUNITY_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={handleJoin}
+              className="mt-3 inline-flex min-h-[44px] items-center justify-center gap-2 rounded-[2px] bg-[#171717] px-4 text-[12px] font-extrabold uppercase tracking-[0.08em] text-white no-underline transition-colors hover:bg-[#2a2a2a]"
+            >
+              <WhatsAppIcon className="w-5 h-5" />
+              Join free
+            </a>
+          </div>
         </m.div>
       )}
     </AnimatePresence>

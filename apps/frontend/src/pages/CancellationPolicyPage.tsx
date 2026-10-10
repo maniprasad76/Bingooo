@@ -103,7 +103,7 @@ export function CancellationPolicyPage() {
       <div className="border-b border-[#DDD3C5] bg-[#EDE0CC]/60 px-4 sm:px-8 py-3 text-[11px]">
         <div className="container-bingooo flex flex-col sm:flex-row sm:items-center justify-between gap-2">
           <nav aria-label="Breadcrumb" className="flex items-center gap-2 font-mono uppercase tracking-wider text-[#6F6A63]">
-            <Link to="/" className="hover:text-[#171717] transition-colors">HOME</Link>
+            <Link to="/" className="py-1.5 hover:text-[#171717] transition-colors">HOME</Link>
             <span>/</span>
             <span className="text-[#6F6A63]">POLICIES</span>
             <span>/</span>
@@ -626,7 +626,7 @@ export function CancellationPolicyPage() {
                     </div>
                     <div>
                       <div className="font-bold text-[#171717] uppercase">WhatsApp Support (Fastest)</div>
-                      <div className="text-[#6F6A63] font-mono text-[11px]">+91 79817 87317 • Instant Interception</div>
+                      <div className="text-[#6F6A63] font-mono text-[11px]"><a href="https://wa.me/917981787317" target="_blank" rel="noopener noreferrer" className="underline">+91 79817 87317</a> • Instant Interception</div>
                     </div>
                   </div>
 

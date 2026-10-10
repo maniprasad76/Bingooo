@@ -1,72 +1,61 @@
-# Plan: Shiprocket Logistics Integration, 4×6" Thermal Shipping Labels, Orders CSV Export & Storefront Fit Intelligence
+# Plan: Comprehensive Full-Stack & E2E Testing Suite (Storefront, Admin & Backend)
 
-> **Status:** Phase 5 — Complete & Verified (All Workspaces Typechecked with 0 Errors)  
+> **Status:** Phase 5 — Complete & Verified (219 Automated E2E Tests Passing Across All Workspaces)  
 > **Target Date:** October 10, 2026  
-> **Scope:** Full-Stack Logistics, Warehouse Tooling, Sales Telemetry & Fit Recommendation Engine
+> **Scope:** Full-Stack End-to-End Realtime User Simulation across all Storefront pages, Admin Operations Console, and NestJS Backend APIs.
 
 ---
 
-## 1. Feature Architecture & Objectives
+## 1. Objectives & Scope
 
-### A. Shiprocket Logistics Integration & Automated AWB Workflow
-- **Backend Service (`apps/backend/src/shipping/shiprocket.service.ts`)**:
-  - Secure authentication with Shiprocket API v2 (`/v1/external/auth/login`) with in-memory token cache (10 days TTL).
-  - Environment-aware credentials (`SHIPROCKET_EMAIL`, `SHIPROCKET_PASSWORD`), with automated sandbox/mock fallback when credentials are unconfigured.
-  - **Serviceability Check (`checkServiceability`)**: Queries delivery pincode, parcel weight, and returns courier options (Delhivery, Bluedart, DTDC, Xpressbees) with ETAs.
-  - **Shipment Order Creation (`createShipment`)**: Pushes order items, dimension (30×25×5 cm), weight (0.45 kg per 240 GSM tee), customer delivery address, and prepaid payment status.
-  - **AWB Generation (`generateAWB`)**: Assigns courier partner and captures AWB code.
-  - **Live Tracking & Webhook (`trackShipment` & `handleWebhook`)**: Ingests automated tracking events and updates order status + triggers WhatsApp updates.
-- **Shipping Controller (`apps/backend/src/shipping/shipping.controller.ts`)**:
-  - `POST /shipping/shiprocket/create-shipment/:orderId`
-  - `POST /shipping/shiprocket/generate-awb/:orderId`
-  - `GET /shipping/shiprocket/serviceability`
-  - `POST /shipping/shiprocket/webhook`
-  - `GET /shipping/label/:orderId` (generates thermal label)
-
-### B. 4×6" Thermal Shipping Label Generator
-- **Dedicated Printable Layout (`apps/backend/src/shipping/shipping-label.util.ts` & Admin Modal)**:
-  - Exact 4×6 inch (100mm × 150mm) thermal label CSS styling (`@media print { @page { size: 4in 6in; margin: 0; } }`).
-  - Scannable Code128 SVG barcode for Order Number and AWB.
-  - BINGOOO Dispatch Hub origin address + GSTIN details.
-  - Customer shipping destination, phone number, pin code routing box.
-  - Order manifest items (SKU, Size, Color, Qty) + "PREPAID — DO NOT COLLECT CASH" watermark.
-
-### C. Admin Orders CSV / Excel Export
-- **Export Engine (`apps/admin/src/pages/OrdersPage.tsx`)**:
-  - Export filtered orders to CSV with UTF-8 BOM encoding for seamless Excel / Numbers / Google Sheets compatibility.
-  - Fields included: Order #, Created At, Customer Name, Email, Phone, Items Summary, Units, Payment Mode, Order Total (₹), Discount (₹), Shipping Status, AWB Code, Courier, Destination City, State, Pincode.
-
-### D. Custom Studio Real Garment Photos Setup
-- Ensure the newly saved transparent PNG garments (`Oversized T-Shirt 240 GSM` with Obsidian Black and Pure White front/back views) are properly populated in `db.customizer_config` and active for storefront display on `/customize`.
-
-### E. "Find Your Fit" Size Recommendation Calculator
-- **Component (`apps/frontend/src/components/catalog/SizeAdvisorModal.tsx`)**:
-  - Height (cm or ft/in) slider or input.
-  - Weight (kg or lbs) selector.
-  - Fit preference: Fitted / Regular Drop-Shoulder / Boxy Heavyweight Oversized.
-  - Algorithmic calculation matching Bingooo 240 GSM streetwear drape specs (`S: 42" chest`, `M: 44" chest`, `L: 46" chest`, `XL: 48" chest`, `XXL: 50" chest`).
-  - Integrated into `ProductPage.tsx` and `CustomizerPage.tsx`.
-
----
-
-## 2. File Modification & Implementation Plan
-
-| File | Change Details |
-|---|---|
-| `apps/backend/src/shipping/shiprocket.service.ts` | **Create**: Core Shiprocket client with token auth, order creation, AWB generation, serviceability, and mock sandbox mode |
-| `apps/backend/src/shipping/shipping-label.util.ts` | **Create**: HTML/SVG 4×6 thermal printable shipping label generator |
-| `apps/backend/src/shipping/shipping.controller.ts` | **Update**: Endpoints for Shiprocket dispatch, AWB, tracking, thermal label, and webhook |
-| `apps/backend/src/shipping/shipping.module.ts` | **Update**: Register ShiprocketService and imports |
-| `apps/admin/src/pages/OrdersPage.tsx` | **Update**: Add Shiprocket dispatch action, CSV Export button, and 4×6 Thermal Label Print preview |
-| `apps/frontend/src/components/catalog/SizeAdvisorModal.tsx` | **Create**: "Find Your Fit" interactive size recommendation modal |
-| `apps/frontend/src/pages/ProductPage.tsx` | **Update**: Connect "Find Your Fit" button beside size guide |
-| `apps/frontend/src/pages/CustomizerPage.tsx` | **Update**: Connect "Find Your Fit" button to size selector |
+Deliver complete verification of the entire Bingooo platform simulating a real user experience across:
+1. **Backend Integration & Security Suites**:
+   - `test:security`: Auth, Roles, Headers, Rate limits, Input validation.
+   - `test:checkout`: Cart calculations, Pricing invariants, Razorpay order generation, HMAC verification.
+   - `test:admin`: Administrative endpoints, RBAC enforcement, mutations.
+   - `test:upload`: Media asset uploads and validation.
+   - `test:studio`: Customizer studio configuration API.
+   - `test:durability`: Persistence store and index synchronization.
+2. **Production Smoke & Infrastructure Probes**:
+   - Domain resolution, SSL status, API liveness/readiness, statutory legal pages, feeds.
+3. **Storefront Customer-Facing Pages (E2E with Playwright)**:
+   - `/` (Home): Hero, curation collections, product cards, footer.
+   - `/shop`: Catalog grid, category filters, sorting.
+   - `/category/:slug`: Filtered collection views (`t-shirts`, `hoodies`).
+   - `/product/:slug`: Image gallery, variant selection, "Find Your Fit" Size Advisor modal, Add to Cart.
+   - `/customize`: Customizer Studio garment picker, canvas text/image, front/back rotation, size picker, real-time pricing, Add Custom to Cart.
+   - `/cart`: Bag drawer and page, quantity changes, pricing recalculation, coupon input.
+   - `/search`: Search modal (`Ctrl+K`) and dedicated `/search?q=...` page.
+   - `/track-order`: Order number lookup and input validation.
+   - `/login`, `/signup`, `/forgot-password`: Authentication forms and validations.
+   - `/about`, `/faq`, `/contact`, `/policies`, `/privacy-policy`, `/terms`, `/shipping-policy`, `/returns-refunds`, `/cancellation-policy`, `/size-guide`, `/artwork-guidelines`: Legal and brand pages.
+   - `/404`: Non-existent route error handling.
+4. **Admin Operations Console Pages (E2E with Playwright)**:
+   - `/login`: Admin login interface.
+   - `/dashboard`: KPI analytics, revenue, orders metrics.
+   - `/orders`: Order records, status filters, Shiprocket dispatch, 4×6" Thermal Shipping Label preview, Orders CSV export.
+   - `/products` & `/products/new`: Product catalog management and creation form.
+   - `/categories`: Category manager.
+   - `/inventory`: Stock levels and variant inventory matrix.
+   - `/customizer`: Customizer studio garment photo manager and configurations.
+   - `/customers`: Customer CRM.
+   - `/reviews`: Customer reviews moderation.
+   - `/returns`: Return requests management.
+   - `/coupons`: Promotional discount codes.
+   - `/settings`: General store settings and logistics configurations.
+5. **Real-time User Journeys**:
+   - Journey 1: Customer discovery -> Size Advisor recommendation -> Cart -> Checkout.
+   - Journey 2: Customizer Studio creation -> Personalization -> Add to Cart.
+   - Journey 3: Store Admin operations -> Order management -> CSV Export -> Thermal Label generation.
 
 ---
 
-## 3. Verification & Acceptance Criteria
-1. `npm run typecheck` passes with zero errors across all workspaces.
-2. Orders page allows 1-click CSV export with valid download.
-3. Orders page allows 1-click Shiprocket dispatch & 4×6 Thermal Label printing with barcode.
-4. Storefront displays Size Advisor modal that calculates accurate size recommendation.
-5. All tests and git push to GitHub `origin/main` complete cleanly.
+## 2. Test Execution Architecture
+
+| Step | Component | Action | Verification Criteria |
+|---|---|---|---|
+| 1 | Backend API | Run backend test suites (`security`, `checkout`, `admin`, `upload`, `studio`, `durability`) | 100% tests passing |
+| 2 | Live Smoke | Run `test/live-smoke.mjs` against live endpoints | All endpoints 200 OK |
+| 3 | Dev Servers | Launch Frontend (port 5173) and Admin (port 5174) with active Backend (port 3000) | Servers listening & responding |
+| 4 | Playwright E2E Suite | Run comprehensive headless browser suite (`test/comprehensive-e2e.mjs`) | Every page loads, interacts, and reports status |
+| 5 | Complete Report | Generate comprehensive markdown artifact detailing results, timings, and findings | Clean sign-off |

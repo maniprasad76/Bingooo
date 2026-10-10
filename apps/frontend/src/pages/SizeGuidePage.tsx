@@ -151,7 +151,7 @@ export function SizeGuidePage() {
       <div className="border-b border-[#DDD3C5] bg-[#EDE0CC]/60 px-4 sm:px-8 py-3 text-[11px]">
         <div className="container-bingooo flex flex-col sm:flex-row sm:items-center justify-between gap-2">
           <nav aria-label="Breadcrumb" className="flex items-center gap-2 font-mono uppercase tracking-wider text-[#6F6A63]">
-            <Link to="/" className="hover:text-[#171717] transition-colors">HOME</Link>
+            <Link to="/" className="py-1.5 hover:text-[#171717] transition-colors">HOME</Link>
             <span>/</span>
             <span className="text-[#6F6A63]">SPECIFICATIONS</span>
             <span>/</span>

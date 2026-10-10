@@ -326,7 +326,7 @@ export function FaqPage() {
             aria-label="Breadcrumbs"
             className="py-5 sm:py-[22px] flex items-center gap-[9px] text-[10px] sm:text-[11px] font-medium text-[#6F6A63]"
           >
-            <Link to="/" className="hover:text-[#171717] transition-colors">
+            <Link to="/" className="py-1.5 hover:text-[#171717] transition-colors">
               Home
             </Link>
             <span className="text-[#DDD3C5]">›</span>

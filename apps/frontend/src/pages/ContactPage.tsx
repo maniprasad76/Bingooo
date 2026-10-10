@@ -163,7 +163,7 @@ export function ContactPage() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 border-t border-l border-[#333333]">
             {/* Option 01 - Email */}
             <div className="min-h-[220px] p-7 border-r border-b border-[#333333] flex flex-col hover:bg-[#222222] transition-colors group">
-              <div className="text-[10px] text-[#777777] font-mono font-bold mb-8">
+              <div className="text-[10px] text-[#999999] font-mono font-bold mb-8">
                 01
               </div>
               <div className="w-[38px] h-[38px] border border-[#555555] grid place-items-center mb-5 text-[#e6321c]">
@@ -181,7 +181,7 @@ export function ContactPage() {
               <a
                 href={`mailto:${BINGOOO_EMAIL_SUPPORT}?subject=Inquiry%20from%20Bingooo%20Store`}
                 onClick={() => triggerHaptic('light')}
-                className="mt-6 text-[#e6321c] text-[11px] font-extrabold tracking-[0.06em] uppercase group-hover:translate-x-1 transition-transform inline-block"
+                className="mt-4 py-2 text-[#e6321c] text-[11px] font-extrabold tracking-[0.06em] uppercase group-hover:translate-x-1 transition-transform inline-block"
               >
                 Send Email →
               </a>
@@ -189,7 +189,7 @@ export function ContactPage() {
 
             {/* Option 02 - WhatsApp */}
             <div className="min-h-[220px] p-7 border-r border-b border-[#333333] flex flex-col hover:bg-[#222222] transition-colors group">
-              <div className="text-[10px] text-[#777777] font-mono font-bold mb-8">
+              <div className="text-[10px] text-[#999999] font-mono font-bold mb-8">
                 02
               </div>
               <div className="w-[38px] h-[38px] border border-[#555555] grid place-items-center mb-5 text-[#25D366]">
@@ -198,9 +198,9 @@ export function ContactPage() {
               <h3 className="text-[17px] font-bold uppercase tracking-[-0.02em] mb-1 text-white">
                 WhatsApp Chat
               </h3>
-              <div className="text-[11px] font-mono text-[#25D366] mb-2 select-all">
+              <a href={`https://wa.me/${BINGOOO_PHONE_RAW}`} target="_blank" rel="noopener noreferrer" className="self-start py-1 text-[11px] font-mono text-[#25D366] mb-1">
                 {BINGOOO_PHONE_DISPLAY}
-              </div>
+              </a>
               <p className="text-[#999999] text-[12px] leading-[1.7] mb-auto">
                 Direct WhatsApp assistance for orders, sizing recommendations, and custom design approvals.
               </p>
@@ -209,7 +209,7 @@ export function ContactPage() {
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={() => triggerHaptic('light')}
-                className="mt-6 text-[#25D366] text-[11px] font-extrabold tracking-[0.06em] uppercase group-hover:translate-x-1 transition-transform inline-block"
+                className="mt-4 py-2 text-[#25D366] text-[11px] font-extrabold tracking-[0.06em] uppercase group-hover:translate-x-1 transition-transform inline-block"
               >
                 Chat on WhatsApp →
               </a>
@@ -217,7 +217,7 @@ export function ContactPage() {
 
             {/* Option 03 - Phone Call */}
             <div className="min-h-[220px] p-7 border-r border-b border-[#333333] flex flex-col hover:bg-[#222222] transition-colors group">
-              <div className="text-[10px] text-[#777777] font-mono font-bold mb-8">
+              <div className="text-[10px] text-[#999999] font-mono font-bold mb-8">
                 03
               </div>
               <div className="w-[38px] h-[38px] border border-[#555555] grid place-items-center mb-5 text-[#e6321c]">
@@ -226,16 +226,16 @@ export function ContactPage() {
               <h3 className="text-[17px] font-bold uppercase tracking-[-0.02em] mb-1 text-white">
                 Direct Call
               </h3>
-              <div className="text-[11px] font-mono text-[#d4d1cc] mb-2 select-all">
+              <a href={`tel:+${BINGOOO_PHONE_RAW}`} className="self-start py-1 text-[11px] font-mono text-[#d4d1cc] mb-1">
                 {BINGOOO_PHONE_DISPLAY}
-              </div>
+              </a>
               <p className="text-[#999999] text-[12px] leading-[1.7] mb-auto">
                 Speak directly with our atelier team in Srikakulam (Mon–Sat, 9 AM – 9 PM IST).
               </p>
               <a
                 href={`tel:+${BINGOOO_PHONE_RAW}`}
                 onClick={() => triggerHaptic('light')}
-                className="mt-6 text-[#e6321c] text-[11px] font-extrabold tracking-[0.06em] uppercase group-hover:translate-x-1 transition-transform inline-block"
+                className="mt-4 py-2 text-[#e6321c] text-[11px] font-extrabold tracking-[0.06em] uppercase group-hover:translate-x-1 transition-transform inline-block"
               >
                 Call Concierge →
               </a>
@@ -243,7 +243,7 @@ export function ContactPage() {
 
             {/* Option 04 - Instagram */}
             <div className="min-h-[220px] p-7 border-r border-b border-[#333333] flex flex-col hover:bg-[#222222] transition-colors group">
-              <div className="text-[10px] text-[#777777] font-mono font-bold mb-8">
+              <div className="text-[10px] text-[#999999] font-mono font-bold mb-8">
                 04
               </div>
               <div className="w-[38px] h-[38px] border border-[#555555] grid place-items-center mb-5 text-[#E1306C]">
@@ -263,7 +263,7 @@ export function ContactPage() {
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={() => triggerHaptic('light')}
-                className="mt-6 text-[#E1306C] text-[11px] font-extrabold tracking-[0.06em] uppercase group-hover:translate-x-1 transition-transform inline-block"
+                className="mt-4 py-2 text-[#E1306C] text-[11px] font-extrabold tracking-[0.06em] uppercase group-hover:translate-x-1 transition-transform inline-block"
               >
                 Follow @bingooo.co →
               </a>
@@ -381,6 +381,7 @@ export function ContactPage() {
                   id="name"
                   type="text"
                   placeholder="Your name"
+                  autoComplete="name"
                   value={formData.name}
                   onChange={(e) => {
                     setFormData({ ...formData, name: e.target.value });
@@ -404,6 +405,7 @@ export function ContactPage() {
                   id="email"
                   type="email"
                   placeholder="you@example.com"
+                  autoComplete="email"
                   value={formData.email}
                   onChange={(e) => {
                     setFormData({ ...formData, email: e.target.value });
@@ -427,6 +429,7 @@ export function ContactPage() {
                   id="phone"
                   type="tel"
                   placeholder="+91 XXXXX XXXXX"
+                  autoComplete="tel"
                   value={formData.phone}
                   onChange={(e) => {
                     setFormData({ ...formData, phone: e.target.value });

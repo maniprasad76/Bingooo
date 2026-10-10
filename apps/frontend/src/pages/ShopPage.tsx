@@ -632,7 +632,7 @@ export function ShopPage() {
               </div>
             ) : filteredProducts.length === 0 ? (
               <div className="p-12 text-center bg-white border border-[#ddd3c5]">
-                <h3 className="text-[16px] font-bold uppercase mb-2">No products available</h3>
+                <h2 className="text-[16px] font-bold uppercase mb-2">No products available</h2>
                 <p className="text-[#6f6a63] text-[11px] mb-5">Products added from the Admin Panel will appear here live.</p>
                 <button
                   type="button"

@@ -629,12 +629,15 @@ export function CheckoutPage() {
                 <Input
                   label="Full Name"
                   placeholder="e.g. Aditi Sharma"
+                  autoComplete="name"
                   error={errors.name?.message}
                   {...register('name')}
                 />
                 <Input
                   label="Mobile Phone"
                   placeholder="10-digit number"
+                  type="tel"
+                  autoComplete="tel"
                   error={errors.phone?.message}
                   {...register('phone')}
                 />
@@ -642,6 +645,7 @@ export function CheckoutPage() {
                   <Input
                     label="Street Address / Flat No."
                     placeholder="House number, apartment, street"
+                    autoComplete="address-line1"
                     error={errors.line1?.message}
                     {...register('line1')}
                   />
@@ -650,15 +654,18 @@ export function CheckoutPage() {
                   <Input
                     label="Apartment, suite, landmark (Optional)"
                     placeholder="Landmark or area"
+                    autoComplete="address-line2"
                     error={errors.line2?.message}
                     {...register('line2')}
                   />
                 </div>
-                <Input label="City" placeholder="City" error={errors.city?.message} {...register('city')} />
-                <Input label="State" placeholder="State" error={errors.state?.message} {...register('state')} />
+                <Input label="City" placeholder="City" autoComplete="address-level2" error={errors.city?.message} {...register('city')} />
+                <Input label="State" placeholder="State" autoComplete="address-level1" error={errors.state?.message} {...register('state')} />
                 <Input
                   label="PIN Code"
                   placeholder="6-digit PIN"
+                  inputMode="numeric"
+                  autoComplete="postal-code"
                   maxLength={6}
                   error={errors.postalCode?.message}
                   {...register('postalCode')}

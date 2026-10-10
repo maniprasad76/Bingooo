@@ -67,6 +67,7 @@ export function StickyMobileActionBar({
               <img
                 src={image}
                 alt={title}
+                loading="lazy"
                 className="w-10 h-10 object-cover bg-[#EDE0CC] shrink-0 border-2 border-[#171717] shadow-[2px_2px_0px_#171717]"
               />
             ) : (

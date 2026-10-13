@@ -8,13 +8,15 @@ import {
   EmailIcon,
   YouTubeIcon,
   XTwitterIcon,
+} from './SocialIcons';
+import {
   BINGOOO_INSTAGRAM_URL,
   BINGOOO_EMAIL_SUPPORT,
   BINGOOO_YOUTUBE_URL,
   BINGOOO_TWITTER_URL,
   BINGOOO_COMMUNITY_URL,
   getWhatsAppUrl,
-} from './SocialIcons';
+} from '../../lib/social';
 
 interface SocialItem {
   id: string;

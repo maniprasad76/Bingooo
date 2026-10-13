@@ -15,7 +15,8 @@ import {
 } from 'lucide-react';
 import { SEO } from '../components/common/SEO';
 import { Breadcrumbs } from '../components/common/Breadcrumbs';
-import { getWhatsAppUrl, WhatsAppIcon } from '../components/ui/SocialIcons';
+import { WhatsAppIcon } from '../components/ui/SocialIcons';
+import { getWhatsAppUrl } from '../lib/social';
 
 interface TrackingResult {
   orderNumber: string;

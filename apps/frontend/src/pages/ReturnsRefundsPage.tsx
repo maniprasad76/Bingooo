@@ -4,7 +4,8 @@ import { IMAGES } from '../lib/images';
 import { Link } from 'react-router-dom';
 import { SEO } from '../components/common/SEO';
 import { triggerHaptic } from '../lib/native/capacitorBridge';
-import { WhatsAppIcon, getWhatsAppUrl } from '../components/ui/SocialIcons';
+import { WhatsAppIcon } from '../components/ui/SocialIcons';
+import { getWhatsAppUrl } from '../lib/social';
 import {
   RefreshCw,
   Truck,

@@ -36,6 +36,8 @@ import {
   categorySeoTitle,
   categorySeoDescription,
   categorySchema,
+  localBusinessSchema,
+  GOOGLE_MAPS_STORE_URL,
 } from '../src/lib/seo/catalog-seo.mjs';
 import { ABOUT_HERO_SIZES, ABOUT_HERO_WIDTHS, HERO_SIZES, HERO_WIDTHS } from '../src/lib/hero-image.mjs';
 
@@ -377,17 +379,23 @@ const STATIC_PAGES = [
     routeChunk: 'src/pages/AboutPage.tsx',
     title: formatSeoTitle('About Bingooo — Heavyweight Streetwear from Srikakulam, India'),
     description: 'Bingooo is a streetwear label from Srikakulam, Andhra Pradesh, making heavyweight 240–280 GSM cotton oversized t-shirts and custom apparel that last.',
-    schema: { '@context': 'https://schema.org', '@type': 'AboutPage', name: 'About Bingooo', url: `${SITE_URL}/about` },
+    schema: {
+      '@context': 'https://schema.org',
+      '@type': 'AboutPage',
+      name: 'About Bingooo',
+      url: `${SITE_URL}/about`,
+      mainEntity: localBusinessSchema(),
+    },
     extraHead: [imagePreload('about-atelier', ABOUT_HERO_WIDTHS, ABOUT_HERO_SIZES)],
-    body: '<h1>About Bingooo</h1><p>Bingooo was founded at 7 Roads Junction in Srikakulam, Andhra Pradesh, to make heavyweight garments that outlast fast fashion: 240–280 GSM combed cotton, boxy drop-shoulder fits, and custom printing.</p><p>Address: 7 Roads Junction, Main Road, Srikakulam, Andhra Pradesh 532001 · Phone / WhatsApp: +91 79817 87317</p>',
+    body: `<h1>About Bingooo</h1><p>Bingooo was founded at 7 Roads Junction in Srikakulam, Andhra Pradesh, to make heavyweight garments that outlast fast fashion: 240–280 GSM combed cotton, boxy drop-shoulder fits, and custom printing.</p><p>Address: 7 Roads Junction, Main Road, Srikakulam, Andhra Pradesh 532001 · Phone / WhatsApp: +91 79817 87317 · Open daily 9 AM–9 PM IST</p><p><a href="${GOOGLE_MAPS_STORE_URL}">View Flagship Atelier on Google Maps</a></p>`,
   },
   {
     path: 'contact',
     routeChunk: 'src/pages/ContactPage.tsx',
     title: formatSeoTitle('Contact Bingooo — WhatsApp, Phone & Store Address'),
     description: 'Contact Bingooo on WhatsApp or call +91 79817 87317, email bingooo.sklm@gmail.com, or visit 7 Roads Junction, Srikakulam, Andhra Pradesh. Open daily 9 AM–9 PM.',
-    schema: { '@context': 'https://schema.org', '@type': 'ContactPage', name: 'Contact Bingooo', url: `${SITE_URL}/contact` },
-    body: '<h1>Contact Bingooo</h1><p>Address: 7 Roads Junction, Main Road, Srikakulam, Andhra Pradesh 532001</p><p>WhatsApp / Call: +91 79817 87317</p><p>Email: bingooo.sklm@gmail.com</p><p>Hours: Monday–Sunday, 9:00 AM–9:00 PM IST</p>',
+    schema: localBusinessSchema(),
+    body: `<h1>Contact Bingooo</h1><p>Address: 7 Roads Junction, Main Road, Srikakulam, Andhra Pradesh 532001</p><p>WhatsApp / Call: +91 79817 87317</p><p>Email: bingooo.sklm@gmail.com</p><p>Hours: Monday–Sunday, 9:00 AM–9:00 PM IST</p><p><a href="${GOOGLE_MAPS_STORE_URL}">Get directions on Google Maps</a></p>`,
   },
   {
     path: 'faq',

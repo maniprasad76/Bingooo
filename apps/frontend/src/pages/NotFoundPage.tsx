@@ -13,7 +13,8 @@ import {
   CheckCircle2,
 } from 'lucide-react';
 import { SEO } from '../components/common/SEO';
-import { WhatsAppIcon, getWhatsAppUrl } from '../components/ui/SocialIcons';
+import { WhatsAppIcon } from '../components/ui/SocialIcons';
+import { getWhatsAppUrl } from '../lib/social';
 import { triggerHaptic } from '../lib/native/capacitorBridge';
 import { useProducts } from '../hooks/useProducts';
 import { resolveImageUrl } from '../lib/utils';

@@ -20,8 +20,9 @@ import { SEO } from '../components/common/SEO';
 import { BrandPageLoader } from '../components/ui/BrandPageLoader';
 import { ProductPlaceholder } from '../components/ui/ProductPlaceholder';
 import { api } from '../lib/api/client';
-import { useToast } from '../components/ui/Toast';
-import { getWhatsAppUrl, WhatsAppIcon } from '../components/ui/SocialIcons';
+import { useToast } from '../components/ui/ToastContext';
+import { WhatsAppIcon } from '../components/ui/SocialIcons';
+import { getWhatsAppUrl } from '../lib/social';
 import { triggerHaptic } from '../lib/native/capacitorBridge';
 import { trackPurchase } from '../lib/analytics';
 

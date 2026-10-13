@@ -10,8 +10,8 @@ import {
 } from 'lucide-react';
 import { SizeAdvisorModal } from '../components/catalog/SizeAdvisorModal';
 import { api } from '../lib/api/client';
-import { useToast } from '../components/ui/Toast';
-import { BINGOOO_PHONE_RAW } from '../components/ui/SocialIcons';
+import { useToast } from '../components/ui/ToastContext';
+import { BINGOOO_PHONE_RAW } from '../lib/social';
 import { SEO } from '../components/common/SEO';
 import { resolveImageUrl } from '../lib/utils';
 import { GarmentStage } from '../components/studio/GarmentStage';

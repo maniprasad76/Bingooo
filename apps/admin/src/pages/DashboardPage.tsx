@@ -5,7 +5,6 @@ import {
   DollarSign,
   ShoppingBag,
   Package,
-  AlertTriangle,
   ArrowUpRight,
   Boxes,
   Palette,
@@ -13,9 +12,7 @@ import {
   RefreshCw,
   Radio,
   ExternalLink,
-  Sparkles,
   Tag,
-  Sliders,
   CheckCircle2,
 } from 'lucide-react';
 

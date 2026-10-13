@@ -16,7 +16,8 @@ import {
 } from 'lucide-react';
 import { SEO } from '../components/common/SEO';
 import { triggerHaptic } from '../lib/native/capacitorBridge';
-import { WhatsAppIcon, getWhatsAppUrl } from '../components/ui/SocialIcons';
+import { WhatsAppIcon } from '../components/ui/SocialIcons';
+import { getWhatsAppUrl } from '../lib/social';
 
 type Unit = 'in' | 'cm';
 

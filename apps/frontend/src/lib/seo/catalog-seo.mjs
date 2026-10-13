@@ -241,3 +241,81 @@ export function categorySchema(category, products = []) {
     },
   };
 }
+
+export const GOOGLE_MAPS_STORE_URL =
+  'https://www.google.com/maps/search/?api=1&query=Bingooo+7+Roads+Junction+Main+Road+Srikakulam+Andhra+Pradesh+532001';
+
+export const GOOGLE_MAPS_DIRECTIONS_URL =
+  'https://www.google.com/maps/dir/?api=1&destination=18.2969,83.8968';
+
+export const GOOGLE_MAPS_EMBED_URL =
+  'https://maps.google.com/maps?q=18.2969,83.8968+(Bingooo%20Menswear%20Flagship%20Atelier)&t=&z=16&ie=UTF8&iwloc=B&output=embed';
+
+export const GOOGLE_REVIEW_URL =
+  'https://www.google.com/maps/search/?api=1&query=Bingooo+7+Roads+Junction+Main+Road+Srikakulam+Andhra+Pradesh+532001';
+
+export function localBusinessSchema() {
+  return {
+    '@context': 'https://schema.org',
+    '@type': ['ClothingStore', 'MensClothingStore', 'LocalBusiness'],
+    '@id': `${SITE_URL}/#localbusiness`,
+    name: BRAND_NAME,
+    alternateName: ['Bingooo Men\'s Wear', 'Bingooo Atelier Srikakulam', 'Bingooo Menswear Flagship Store'],
+    url: SITE_URL,
+    image: `${SITE_URL}/brand-logo.png`,
+    logo: `${SITE_URL}/brand-logo.png`,
+    description:
+      'Bingooo is India\'s premier heavyweight menswear brand offering 240–280 GSM oversized t-shirts, drop-shoulder hoodies, and bespoke custom-printed apparel engineered in our 3D Atelier. Located at 7 Roads Junction, Srikakulam, Andhra Pradesh.',
+    keywords:
+      'oversized t-shirts for men, 240 gsm oversized t shirt, heavyweight streetwear, custom t-shirt printing, drop shoulder t-shirt, mens clothing store srikakulam, streetwear andhra pradesh',
+    knowsAbout: [
+      '240 GSM Cotton Fabric',
+      'Oversized T-Shirts for Men',
+      'Streetwear Fashion',
+      'DTF Custom Printing',
+      'Heavyweight Hoodies',
+      'Drop Shoulder Silhouettes',
+      '3D Garment Atelier',
+    ],
+    telephone: '+91-7981787317',
+    email: 'bingooo.sklm@gmail.com',
+    address: {
+      '@type': 'PostalAddress',
+      streetAddress: '7 Roads Junction, Main Road',
+      addressLocality: 'Srikakulam',
+      addressRegion: 'Andhra Pradesh',
+      postalCode: '532001',
+      addressCountry: 'IN',
+    },
+    geo: {
+      '@type': 'GeoCoordinates',
+      latitude: '18.2969',
+      longitude: '83.8968',
+    },
+    hasMap: GOOGLE_MAPS_STORE_URL,
+    areaServed: [
+      { '@type': 'City', name: 'Srikakulam' },
+      { '@type': 'City', name: 'Visakhapatnam' },
+      { '@type': 'AdministrativeArea', name: 'Andhra Pradesh' },
+      { '@type': 'Country', name: 'India' },
+    ],
+    currenciesAccepted: 'INR',
+    paymentAccepted: 'UPI, Credit Card, Debit Card, Net Banking',
+    priceRange: '₹699–₹1,999',
+    openingHoursSpecification: [
+      {
+        '@type': 'OpeningHoursSpecification',
+        dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
+        opens: '09:00',
+        closes: '21:00',
+      },
+    ],
+    sameAs: [
+      'https://www.instagram.com/bingooo.co.in',
+      'https://www.youtube.com/@bingooo_co',
+      'https://twitter.com/bingooo_co',
+      'https://wa.me/917981787317',
+      GOOGLE_MAPS_STORE_URL,
+    ],
+  };
+}

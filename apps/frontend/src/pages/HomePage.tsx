@@ -4,7 +4,8 @@ import { Heart, Truck, Package, Sparkles, ShieldCheck, CheckCircle2, Mail, Arrow
 import { useQuery } from '@tanstack/react-query';
 import { SEO } from '../components/common/SEO';
 import { generateOrganizationSchema, generateLocalBusinessSchema, generateWebSiteSchema } from '../lib/seo/schema';
-import { BINGOOO_INSTAGRAM_URL, BINGOOO_INSTAGRAM_HANDLE, InstagramIcon } from '../components/ui/SocialIcons';
+import { InstagramIcon } from '../components/ui/SocialIcons';
+import { BINGOOO_INSTAGRAM_URL, BINGOOO_INSTAGRAM_HANDLE } from '../lib/social';
 import { triggerHaptic } from '../lib/native/capacitorBridge';
 import { api } from '../lib/api/client';
 import { prefetchProduct } from '../lib/utils/preloader';

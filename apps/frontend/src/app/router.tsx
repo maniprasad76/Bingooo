@@ -1,4 +1,4 @@
-import { createBrowserRouter, Navigate, useParams } from 'react-router-dom';
+import { createBrowserRouter, Navigate } from 'react-router-dom';
 import { PageLayout } from '../components/layout/PageLayout';
 import { RequireAuth } from '../components/common/RequireAuth';
 import { RouteErrorBoundary } from '../components/common/RouteErrorBoundary';
@@ -38,23 +38,7 @@ const ArtworkGuidelinesPage = lazyPage(() => import('../pages/ArtworkGuidelinesP
 const NotFoundPage = lazyPage(() => import('../pages/NotFoundPage'), 'NotFoundPage');
 const AuthCallbackPage = lazyPage(() => import('../pages/AuthCallbackPage'), 'AuthCallbackPage');
 
-// Helper redirect component for legacy/sub-policy slugs to resolve cannibalization and redirect chains
-function PolicyRedirect() {
-  const { slug } = useParams<{ slug: string }>();
-  if (slug === 'size-guide') return <Navigate to="/size-guide" replace />;
-  if (slug?.startsWith('shipping')) return <Navigate to="/shipping-policy" replace />;
-  if (slug?.startsWith('return')) return <Navigate to="/returns-refunds" replace />;
-  if (slug?.startsWith('privacy')) return <Navigate to="/privacy-policy" replace />;
-  if (slug?.startsWith('terms')) return <Navigate to="/terms" replace />;
-  if (slug?.startsWith('cancellation')) return <Navigate to="/cancellation-policy" replace />;
-  return <Navigate to="/policies" replace />;
-}
-
-// Helper redirect component for collection slugs
-function CollectionRedirect() {
-  const { slug } = useParams<{ slug: string }>();
-  return <Navigate to={`/shop?collection=${slug || ''}`} replace />;
-}
+import { PolicyRedirect, CollectionRedirect } from './RouteRedirects';
 
 export const router = createBrowserRouter([
   {

@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { trackBeginCheckout } from '../lib/analytics';
 import { m, AnimatePresence } from 'framer-motion';
@@ -26,7 +26,7 @@ import { Button } from '../components/ui/Button';
 import { Input } from '../components/ui/Input';
 import { Logo } from '../components/ui/Logo';
 import { api } from '../lib/api/client';
-import { useToast } from '../components/ui/Toast';
+import { useToast } from '../components/ui/ToastContext';
 import { useAuthStore } from '../store/auth';
 import { SEO } from '../components/common/SEO';
 import { PhonePeIcon, GooglePayIcon, PaytmIcon, UpiIcon } from '../components/checkout/PaymentAppIcons';
@@ -72,7 +72,7 @@ export function CheckoutPage() {
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethodType>('upi');
   const [selectedUpiApp, setSelectedUpiApp] = useState<UpiAppType>('phonepe');
   const [isProcessing, setIsProcessing] = useState(false);
-  const [selectedAddressId, setSelectedAddressId] = useState<string>('custom');
+  const [userSelectedAddressId, setUserSelectedAddressId] = useState<string | null>(null);
   const [isMobileSummaryOpen, setIsMobileSummaryOpen] = useState(false);
   const initialCouponCode = (location.state as any)?.couponCode || '';
   const initialDiscount = (location.state as any)?.discount || 0;
@@ -108,6 +108,13 @@ export function CheckoutPage() {
     queryFn: () => api.get<any[]>('/users/addresses'),
   });
 
+  const defaultAddress = useMemo(() => {
+    if (!addresses || addresses.length === 0) return null;
+    return addresses.find((a: any) => a.is_default) || addresses[0] || null;
+  }, [addresses]);
+
+  const selectedAddressId = userSelectedAddressId ?? defaultAddress?.id ?? 'custom';
+
   const {
     register,
     handleSubmit,
@@ -127,21 +134,21 @@ export function CheckoutPage() {
     },
   });
 
+  const hasAppliedDefaultAddress = useRef(false);
 
-  // Load default address if available
+  // Sync default address form fields once when addresses become available
   useEffect(() => {
-    if (addresses.length > 0) {
-      const defaultAddr = addresses.find((a: any) => a.is_default) || addresses[0];
-      setSelectedAddressId(defaultAddr.id);
-      setValue('name', defaultAddr.name);
-      setValue('phone', defaultAddr.phone);
-      setValue('line1', defaultAddr.line1);
-      setValue('line2', defaultAddr.line2 || '');
-      setValue('city', defaultAddr.city);
-      setValue('state', defaultAddr.state);
-      setValue('postalCode', defaultAddr.postal_code || defaultAddr.postalCode);
+    if (defaultAddress && !hasAppliedDefaultAddress.current) {
+      hasAppliedDefaultAddress.current = true;
+      setValue('name', defaultAddress.name);
+      setValue('phone', defaultAddress.phone);
+      setValue('line1', defaultAddress.line1);
+      setValue('line2', defaultAddress.line2 || '');
+      setValue('city', defaultAddress.city);
+      setValue('state', defaultAddress.state);
+      setValue('postalCode', defaultAddress.postal_code || defaultAddress.postalCode);
     }
-  }, [addresses, setValue]);
+  }, [defaultAddress, setValue]);
 
   // Load Razorpay script on mount
   useEffect(() => {
@@ -149,7 +156,7 @@ export function CheckoutPage() {
   }, []);
 
   const handleSelectSavedAddress = (addr: any) => {
-    setSelectedAddressId(addr.id);
+    setUserSelectedAddressId(addr.id);
     setValue('name', addr.name);
     setValue('phone', addr.phone);
     setValue('line1', addr.line1);
@@ -602,7 +609,7 @@ export function CheckoutPage() {
                     </div>
                   ))}
                   <div
-                    onClick={() => setSelectedAddressId('custom')}
+                    onClick={() => setUserSelectedAddressId('custom')}
                     className={`p-3 border-2 border-dashed cursor-pointer flex items-center justify-center font-mono text-xs font-black uppercase transition-all ${
                       selectedAddressId === 'custom'
                         ? 'border-[#171717] bg-[#F7EEDB] text-[#E6321C] shadow-[2px_2px_0px_#171717]'

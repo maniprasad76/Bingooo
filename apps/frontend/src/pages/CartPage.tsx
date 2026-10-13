@@ -14,7 +14,7 @@ import {
 } from 'lucide-react';
 import { useCart } from '../hooks/useCart';
 import { useWishlist } from '../hooks/useWishlist';
-import { useToast } from '../components/ui/Toast';
+import { useToast } from '../components/ui/ToastContext';
 import { api } from '../lib/api/client';
 import { useQuery } from '@tanstack/react-query';
 import { SEO } from '../components/common/SEO';

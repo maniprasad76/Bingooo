@@ -216,3 +216,8 @@ python -m graphify update .
   - Enabled gender collection tag matching for `/shop?category=men` and `/shop?category=women`.
   - Injected asynchronous Google Analytics 4 tracking tag (`G-N5EGTHS9SG`) into `index.html`.
   - Verified 100% test passing across `npm run typecheck`, security test suite (42 tests), and checkout E2E tests (10 tests).
+- **2026-10-13: Google My Business (GMB) & Comprehensive SEO Optimization**
+  - Upgraded Google Business Profile and Local SEO infrastructure: enriched Schema.org JSON-LD (`ClothingStore`, `MensClothingStore`, `LocalBusiness`) with exact geo coordinates (18.2969, 83.8968), canonical Google Maps store search link, area served, and opening hours specification across `schema.ts`, `catalog-seo.mjs`, `prerender-seo.mjs`, and `index.html`.
+  - Overhauled `ContactPage.tsx` with an interactive Google Maps embed, "Get Directions" navigation launcher, "Review Us on Google" CTA, "Copy NAP" clipboard action, in-store fabric rail features, and physical atelier visit specs (Landmark: 7 Roads Junction).
+  - Added sitewide Flagship Atelier NAP citation bar to `Footer.tsx` providing consistent local search authority signals on every indexed page. Zero typecheck errors across all workspaces.
+

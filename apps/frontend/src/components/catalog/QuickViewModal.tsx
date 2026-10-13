@@ -3,7 +3,7 @@ import { m, AnimatePresence } from 'framer-motion';
 import { X, ShoppingBag, Check, ShieldCheck, Truck } from 'lucide-react';
 import { Button } from '../ui/Button';
 import { useCart } from '../../hooks/useCart';
-import { useToast } from '../ui/Toast';
+import { useToast } from '../ui/ToastContext';
 import { resolveImageUrl } from '../../lib/utils';
 
 export interface QuickViewProduct {

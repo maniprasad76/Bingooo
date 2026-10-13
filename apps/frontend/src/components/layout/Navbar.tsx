@@ -19,7 +19,8 @@ import { useCartStore } from '../../store/cart';
 import { useAuthStore } from '../../store/auth';
 import { useUIStore } from '../../store/ui';
 import { Logo } from '../ui/Logo';
-import { WhatsAppIcon, getWhatsAppUrl } from '../ui/SocialIcons';
+import { WhatsAppIcon } from '../ui/SocialIcons';
+import { getWhatsAppUrl } from '../../lib/social';
 import { triggerHaptic } from '../../lib/native/capacitorBridge';
 import { preloadRouteChunk } from '../../lib/utils/preloader';
 

@@ -29,7 +29,7 @@ const BASE_URL = SITE_URL;
 /**
  * Ensures title length is optimized for search engines (up to 68 characters, preserving keywords)
  */
-export function formatSeoTitle(rawTitle?: string): string {
+function formatSeoTitle(rawTitle?: string): string {
   if (!rawTitle) return DEFAULT_TITLE;
   const brandSuffix = ' | Bingooo®';
   let formatted = rawTitle.includes('Bingooo') ? rawTitle : `${rawTitle}${brandSuffix}`;
@@ -76,7 +76,7 @@ function setLinkTag(rel: string, href: string, attributes: Record<string, string
   link.setAttribute('href', href);
 }
 
-export function useSEO({
+function useSEO({
   title,
   description = DEFAULT_DESCRIPTION,
   keywords,

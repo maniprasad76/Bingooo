@@ -33,7 +33,7 @@ import {
 } from 'lucide-react';
 import { useAuthStore } from '../store/auth';
 import { useRecentlyViewedStore } from '../store/recentlyViewed';
-import { useToast } from '../components/ui/Toast';
+import { useToast } from '../components/ui/ToastContext';
 import { SEO } from '../components/common/SEO';
 import { triggerHaptic } from '../lib/native/capacitorBridge';
 import { OrderRowSkeleton } from '../components/ui/Skeleton';

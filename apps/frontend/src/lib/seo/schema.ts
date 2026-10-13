@@ -2,9 +2,25 @@
 // Schema.org Structured Data Generators for Bingooo
 // ─────────────────────────────────────────────────────────
 
-import { SITE_URL, BRAND_NAME, productSchema } from './catalog-seo.mjs';
+import {
+  SITE_URL,
+  BRAND_NAME,
+  productSchema,
+  GOOGLE_MAPS_STORE_URL,
+  GOOGLE_MAPS_DIRECTIONS_URL,
+  GOOGLE_MAPS_EMBED_URL,
+  GOOGLE_REVIEW_URL,
+  localBusinessSchema,
+} from './catalog-seo.mjs';
 
-export { SITE_URL, BRAND_NAME };
+export {
+  SITE_URL,
+  BRAND_NAME,
+  GOOGLE_MAPS_STORE_URL,
+  GOOGLE_MAPS_DIRECTIONS_URL,
+  GOOGLE_MAPS_EMBED_URL,
+  GOOGLE_REVIEW_URL,
+};
 
 /**
  * Serialize structured data for an inline <script type="application/ld+json">.
@@ -205,60 +221,7 @@ export function generateCollectionPageSchema(
  * LocalBusiness Schema — richer than ClothingStore alone, boosts Google Maps pack
  */
 export function generateLocalBusinessSchema() {
-  return {
-    '@context': 'https://schema.org',
-    '@type': ['ClothingStore', 'LocalBusiness'],
-    '@id': `${SITE_URL}/#localbusiness`,
-    name: BRAND_NAME,
-    alternateName: ['Bingooo Men\'s Wear', 'Bingooo Atelier Srikakulam'],
-    url: SITE_URL,
-    image: `${SITE_URL}/brand-logo.png`,
-    logo: `${SITE_URL}/brand-logo.png`,
-    description:
-      'Bingooo is India\'s premier heavyweight menswear brand offering 240–280 GSM oversized t-shirts, drop-shoulder hoodies, and bespoke custom-printed apparel engineered in our 3D Atelier. Located in Srikakulam, Andhra Pradesh.',
-    keywords:
-      'oversized t-shirts for men, 240 gsm oversized t shirt, heavyweight streetwear, custom t-shirt printing, drop shoulder t-shirt, mens clothing store srikakulam',
-    knowsAbout: [
-      '240 GSM Cotton Fabric',
-      'Oversized T-Shirts for Men',
-      'Streetwear Fashion',
-      'DTF Custom Printing',
-      'Heavyweight Hoodies',
-      'Drop Shoulder Silhouettes',
-    ],
-    telephone: '+91-7981787317',
-    email: 'bingooo.sklm@gmail.com',
-    address: {
-      '@type': 'PostalAddress',
-      streetAddress: '7 Roads Junction, Main Road',
-      addressLocality: 'Srikakulam',
-      addressRegion: 'Andhra Pradesh',
-      postalCode: '532001',
-      addressCountry: 'IN',
-    },
-    geo: {
-      '@type': 'GeoCoordinates',
-      latitude: '18.2969',
-      longitude: '83.8968',
-    },
-    hasMap: 'https://maps.google.com/?q=Srikakulam+Andhra+Pradesh',
-    currenciesAccepted: 'INR',
-    paymentAccepted: 'UPI, Credit Card, Debit Card, Net Banking',
-    priceRange: '₹699–₹1,999',
-    openingHoursSpecification: [
-      {
-        '@type': 'OpeningHoursSpecification',
-        dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
-        opens: '09:00',
-        closes: '21:00',
-      },
-    ],
-    sameAs: [
-      'https://www.instagram.com/bingooo.co.in',
-      'https://www.youtube.com/@bingooo_co',
-      'https://twitter.com/bingooo_co',
-      'https://wa.me/917981787317',
-    ],
-  };
+  return localBusinessSchema();
 }
+
 

@@ -12,7 +12,7 @@ import {
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Link, useLocation } from 'react-router-dom';
 import { api } from '../../lib/api/client';
-import { useToast } from '../ui/Toast';
+import { useToast } from '../ui/ToastContext';
 import { triggerHaptic } from '../../lib/native/capacitorBridge';
 
 interface Review {

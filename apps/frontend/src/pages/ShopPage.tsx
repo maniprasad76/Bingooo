@@ -4,7 +4,8 @@ import { Heart, Check, Star, SlidersHorizontal, ArrowUpDown, Sparkles } from 'lu
 import { SEO } from '../components/common/SEO';
 import { generateItemListSchema } from '../lib/seo/schema';
 import { useProducts, useCategories } from '../hooks/useProducts';
-import { WhatsAppIcon, getWhatsAppUrl } from '../components/ui/SocialIcons';
+import { WhatsAppIcon } from '../components/ui/SocialIcons';
+import { getWhatsAppUrl } from '../lib/social';
 import { SITE_URL, categorySeoDescription, categorySeoTitle, categoryUrl } from '../lib/seo/catalog-seo.mjs';
 import { useCart } from '../hooks/useCart';
 import { useWishlist } from '../hooks/useWishlist';

@@ -1,26 +1,15 @@
-import { useEffect, useState, createContext, useContext, useCallback, type ReactNode } from 'react';
+import { useEffect, useState, useCallback, type ReactNode } from 'react';
 import { AnimatePresence, m } from 'framer-motion';
 import { X, CheckCircle, AlertCircle, Info, Undo2 } from 'lucide-react';
 import { cn } from '../../lib/utils';
+import {
+  ToastContext,
+  type ToastType,
+  type ToastOptions,
+  type ToastAction,
+} from './ToastContext';
 
-export type ToastType = 'success' | 'error' | 'info' | 'default' | 'danger';
-
-export interface ToastAction {
-  label: string;
-  onClick: () => void;
-}
-
-export interface ToastOptions {
-  title?: string;
-  description?: string;
-  message?: string;
-  variant?: ToastType;
-  type?: ToastType;
-  duration?: number;
-  action?: ToastAction;
-  onUndo?: () => void;
-  undoLabel?: string;
-}
+export type { ToastType, ToastOptions, ToastAction };
 
 interface ToastItemData {
   id: string;
@@ -31,18 +20,6 @@ interface ToastItemData {
   action?: ToastAction;
   onUndo?: () => void;
   undoLabel?: string;
-}
-
-interface ToastContextValue {
-  toast: (optionsOrMessage: string | ToastOptions, type?: ToastType, duration?: number) => void;
-}
-
-const ToastContext = createContext<ToastContextValue | null>(null);
-
-export function useToast() {
-  const ctx = useContext(ToastContext);
-  if (!ctx) throw new Error('useToast must be used within ToastProvider');
-  return ctx;
 }
 
 export function ToastProvider({ children }: { children: ReactNode }) {

@@ -10,7 +10,7 @@ import { Input } from '../components/ui/Input';
 import { Logo } from '../components/ui/Logo';
 import { GoogleIcon, FacebookIcon } from '../components/ui/SocialIcons';
 import { signIn, signInWithProvider } from '../lib/auth/supabase';
-import { useToast } from '../components/ui/Toast';
+import { useToast } from '../components/ui/ToastContext';
 import { SEO } from '../components/common/SEO';
 
 const loginSchema = z.object({

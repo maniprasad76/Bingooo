@@ -22,7 +22,7 @@ import {
 import { useRecentlyViewed, type RecentlyViewedItem } from '../hooks/useRecentlyViewed';
 import { useCart } from '../hooks/useCart';
 import { useWishlist, useIsInWishlist } from '../hooks/useWishlist';
-import { useToast } from '../components/ui/Toast';
+import { useToast } from '../components/ui/ToastContext';
 import { SEO } from '../components/common/SEO';
 import { EmptyState } from '../components/common/EmptyState';
 import { InteractiveTilt } from '../components/ui/InteractiveTilt';

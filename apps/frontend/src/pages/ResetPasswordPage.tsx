@@ -9,7 +9,7 @@ import { CheckCircle2, Eye, EyeOff, ShieldCheck, ArrowRight } from 'lucide-react
 
 import { Logo } from '../components/ui/Logo';
 import { confirmPasswordReset } from '../lib/auth/supabase';
-import { useToast } from '../components/ui/Toast';
+import { useToast } from '../components/ui/ToastContext';
 import { SEO } from '../components/common/SEO';
 import { triggerHaptic } from '../lib/native/capacitorBridge';
 

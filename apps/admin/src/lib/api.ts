@@ -24,7 +24,7 @@ export function resolveImageUrl(url?: string | null): string {
       window.location.hostname.endsWith('.bingooo.co.in') ||
       window.location.hostname.includes('vercel.app'));
 
-  let normalized = url;
+  let normalized = url.trim();
   if (normalized.includes('tshirt-step-3-black.png')) {
     normalized = normalized.replace('tshirt-step-3-black.png', 'black-front.png');
   }
@@ -43,6 +43,10 @@ export function resolveImageUrl(url?: string | null): string {
 
   if (normalized.startsWith('/api/')) {
     return isProd ? `https://api.bingooo.co.in${normalized}` : normalized;
+  }
+
+  if (!normalized.startsWith('http://') && !normalized.startsWith('https://') && !normalized.startsWith('data:') && !normalized.startsWith('/')) {
+    normalized = `/${normalized}`;
   }
 
   return normalized;

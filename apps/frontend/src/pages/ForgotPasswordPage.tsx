@@ -8,7 +8,7 @@ import { z } from 'zod';
 import { ArrowLeft, CheckCircle2, Mail, ShieldCheck, ArrowRight } from 'lucide-react';
 import { Logo } from '../components/ui/Logo';
 import { requestPasswordReset } from '../lib/auth/supabase';
-import { useToast } from '../components/ui/Toast';
+import { useToast } from '../components/ui/ToastContext';
 import { SEO } from '../components/common/SEO';
 import { triggerHaptic } from '../lib/native/capacitorBridge';
 

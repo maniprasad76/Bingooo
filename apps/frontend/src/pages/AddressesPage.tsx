@@ -5,7 +5,7 @@ import { MapPin, Plus, Trash2, CheckCircle2 } from 'lucide-react';
 import { api } from '../lib/api/client';
 import { Button } from '../components/ui/Button';
 import { Input } from '../components/ui/Input';
-import { useToast } from '../components/ui/Toast';
+import { useToast } from '../components/ui/ToastContext';
 import { SEO } from '../components/common/SEO';
 
 export function AddressesPage() {

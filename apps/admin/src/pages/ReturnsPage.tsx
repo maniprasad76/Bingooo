@@ -29,13 +29,6 @@ interface ReturnRequest {
 
 const STATUS_FILTERS = ['all', 'requested', 'approved', 'received', 'refunded', 'rejected'];
 
-const STATUS_BADGES: Record<string, string> = {
-  requested: 'badge-neutral',
-  approved: 'badge-info',
-  received: 'badge-warning',
-  refunded: 'badge-success',
-  rejected: 'badge-danger',
-};
 
 const REASON_LABELS: Record<string, string> = {
   size_fit: 'Size & Fit Issue',

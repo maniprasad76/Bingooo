@@ -12,7 +12,7 @@ import {
 } from 'lucide-react';
 import { SEO } from '../components/common/SEO';
 import { Breadcrumbs } from '../components/common/Breadcrumbs';
-import { getWhatsAppUrl } from '../components/ui/SocialIcons';
+import { getWhatsAppUrl } from '../lib/social';
 
 const PRINT_ZONES = [
   {

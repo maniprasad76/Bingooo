@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '../lib/api/client';
 import { useCartStore } from '../store/cart';
-import { useToast } from '../components/ui/Toast';
+import { useToast } from '../components/ui/ToastContext';
 import { useEffect } from 'react';
 import { triggerHaptic } from '../lib/native/capacitorBridge';
 import { saveCartItemMeta, type CartItemMeta } from '../lib/cartMeta';

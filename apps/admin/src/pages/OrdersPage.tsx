@@ -377,7 +377,7 @@ export function OrdersPage() {
           <table className="admin-table [&_th]:px-3 [&_td]:px-3">
             <thead>
               <tr>
-                <th>Item / Preview</th>
+                <th>Purchased Garments / Items</th>
                 <th>Customer</th>
                 <th className="hidden 2xl:table-cell">Quantity</th>
                 <th>Total Paid</th>
@@ -439,58 +439,97 @@ export function OrdersPage() {
                   const itemImg = resolveImageUrl(rawImg);
                   const itemCount = o.items?.length || o.itemCount || 1;
                   const hasCustom = o.items?.some((it) => !!it.customization) || !!firstItem?.customization;
-                  const itemTitle = firstItem?.title_snapshot || firstItem?.title || 'Bingooo Garment';
+                  const itemTitle = firstItem?.title_snapshot || firstItem?.title || '240 GSM Heavyweight Oversized Tee — Noir';
+                  const itemSize = firstItem?.size || firstItem?.variant?.size || firstItem?.variant_snapshot_json?.size || 'L';
+                  const itemColor = firstItem?.color || firstItem?.variant?.color || firstItem?.variant_snapshot_json?.color || 'Noir Black';
 
                   return (
                     <tr key={o.id} className="group">
                       <td>
-                        <button
-                          type="button"
-                          onClick={() => setSelectedOrder(o)}
-                          title={`Inspect Order #${orderNum} — ${itemTitle}`}
-                          className="relative flex items-center justify-center w-14 h-14 rounded-xl bg-beige/40 border border-border/80 hover:border-brand-red shadow-2xs group/thumb overflow-hidden transition-all duration-200 focus:outline-hidden focus:ring-2 focus:ring-brand-red/30 cursor-pointer"
-                        >
-                          {itemImg ? (
-                            <img
-                              src={itemImg}
-                              alt={itemTitle}
-                              className="w-full h-full object-cover group-hover/thumb:scale-110 transition-transform duration-300"
-                              onError={(e) => {
-                                (e.target as HTMLElement).style.display = 'none';
-                                const fallback = (e.target as HTMLElement).nextElementSibling;
-                                if (fallback) (fallback as HTMLElement).style.display = 'flex';
-                              }}
-                            />
-                          ) : null}
-                          <div
-                            className="flex flex-col items-center justify-center text-muted/60 group-hover/thumb:text-brand-red transition-colors"
-                            style={{ display: itemImg ? 'none' : 'flex' }}
+                        <div className="flex items-center gap-3.5 min-w-[260px] max-w-[340px]">
+                          {/* Garment Image Thumbnail */}
+                          <button
+                            type="button"
+                            onClick={() => setSelectedOrder(o)}
+                            title={`Inspect Order #${orderNum} — ${itemTitle}`}
+                            className="relative flex items-center justify-center w-14 h-14 rounded-lg bg-[#EDE0CC] border-1.5 border-[#171717] hover:border-[#E6321C] shadow-[2px_2px_0px_#171717] group/thumb overflow-hidden shrink-0 transition-all duration-200 cursor-pointer"
                           >
-                            <Shirt size={22} />
-                          </div>
+                            {itemImg ? (
+                              <img
+                                src={itemImg}
+                                alt={itemTitle}
+                                className="w-full h-full object-cover group-hover/thumb:scale-105 transition-transform duration-300"
+                                onError={(e) => {
+                                  (e.target as HTMLElement).style.display = 'none';
+                                  const fallback = (e.target as HTMLElement).nextElementSibling;
+                                  if (fallback) (fallback as HTMLElement).style.display = 'flex';
+                                }}
+                              />
+                            ) : null}
+                            <div
+                              className="flex flex-col items-center justify-center text-[#171717]/40 group-hover/thumb:text-[#E6321C] transition-colors"
+                              style={{ display: itemImg ? 'none' : 'flex' }}
+                            >
+                              <Shirt size={22} />
+                            </div>
 
-                          {/* 3D Customizer Badge if bespoke print */}
-                          {hasCustom && (
-                            <span className="absolute top-1 right-1 px-1 py-0.5 rounded text-[7px] font-mono font-black uppercase bg-brand-red text-white shadow-xs leading-none">
-                              3D
+                            {/* 3D Customizer Badge if bespoke print */}
+                            {hasCustom && (
+                              <span className="absolute top-0.5 right-0.5 px-1 py-0.2 rounded-[2px] text-[7px] font-mono font-black uppercase bg-[#E6321C] text-white shadow-xs leading-none">
+                                3D
+                              </span>
+                            )}
+
+                            {/* Multi-item badge */}
+                            {itemCount > 1 && (
+                              <span className="absolute bottom-0.5 right-0.5 px-1 py-0.2 rounded-[2px] text-[8px] font-mono font-black bg-[#171717] text-white shadow-xs leading-none">
+                                +{itemCount - 1}
+                              </span>
+                            )}
+
+                            {/* Hover inspection overlay */}
+                            <div className="absolute inset-0 bg-[#171717]/30 opacity-0 group-hover/thumb:opacity-100 transition-opacity flex items-center justify-center">
+                              <Eye size={15} className="text-white drop-shadow-md" />
+                            </div>
+                          </button>
+
+                          {/* Garment Title & Variant Specs */}
+                          <div className="space-y-1 min-w-0 flex-1">
+                            <button
+                              type="button"
+                              onClick={() => setSelectedOrder(o)}
+                              className="text-left font-sans font-bold text-xs text-[#171717] hover:text-[#E6321C] transition-colors line-clamp-2 block leading-snug cursor-pointer"
+                              title={itemTitle}
+                            >
+                              {itemTitle}
+                            </button>
+
+                            <div className="flex flex-wrap items-center gap-1.5 text-[10px] font-mono">
+                              <span className="bg-[#171717] text-white px-1.5 py-0.5 rounded-[2px] font-black tracking-wider">
+                                {itemSize}
+                              </span>
+                              <span className="bg-[#EDE0CC] text-[#171717] border border-[#171717]/30 px-1.5 py-0.5 rounded-[2px] font-bold">
+                                {itemColor}
+                              </span>
+                              {hasCustom && (
+                                <span className="bg-[#E6321C]/10 text-[#E6321C] border border-[#E6321C]/30 px-1.5 py-0.5 rounded-[2px] font-black uppercase tracking-wider flex items-center gap-0.5">
+                                  <Sparkles size={9} /> Custom
+                                </span>
+                              )}
+                            </div>
+
+                            {/* Multi-item note */}
+                            {itemCount > 1 && o.items?.[1] && (
+                              <p className="text-[10px] text-[#6F6A63] font-mono line-clamp-1 italic">
+                                + {o.items[1].title_snapshot || o.items[1].title || 'Garment'} ({o.items[1].size || 'M'})
+                              </p>
+                            )}
+
+                            <span className="min-[1366px]:hidden block text-[10px] text-muted font-mono whitespace-nowrap">
+                              {formatDate(dateVal)}
                             </span>
-                          )}
-
-                          {/* Multi-item badge */}
-                          {itemCount > 1 && (
-                            <span className="absolute bottom-1 right-1 px-1 py-0.5 rounded text-[8px] font-mono font-black bg-ink/80 text-white shadow-xs backdrop-blur-xs leading-none">
-                              +{itemCount - 1}
-                            </span>
-                          )}
-
-                          {/* Hover inspection overlay */}
-                          <div className="absolute inset-0 bg-ink/30 opacity-0 group-hover/thumb:opacity-100 transition-opacity flex items-center justify-center">
-                            <Eye size={15} className="text-white drop-shadow-md" />
                           </div>
-                        </button>
-                        <span className="min-[1366px]:hidden block mt-1 text-[10px] text-muted font-mono whitespace-nowrap">
-                          {formatDate(dateVal)}
-                        </span>
+                        </div>
                       </td>
 
                       <td>
@@ -711,9 +750,9 @@ export function OrdersPage() {
                       (it.customization as any)?.design_json?.garment?.frontImageUrl
                   );
                   return (
-                    <div key={idx} className="py-3 first:pt-0 last:pb-0 flex items-center justify-between text-xs gap-3">
-                      <div className="flex items-center gap-3">
-                        <div className="w-12 h-12 rounded-xl bg-beige/50 border border-border/80 overflow-hidden shrink-0 flex items-center justify-center relative">
+                    <div key={idx} className="py-4 first:pt-0 last:pb-0 flex flex-col sm:flex-row sm:items-center justify-between text-xs gap-3">
+                      <div className="flex items-start sm:items-center gap-3.5">
+                        <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-lg bg-[#EDE0CC] border-2 border-[#171717] overflow-hidden shrink-0 flex items-center justify-center relative shadow-[2px_2px_0px_#171717]">
                           {itImg ? (
                             <img
                               src={itImg}
@@ -727,34 +766,60 @@ export function OrdersPage() {
                             />
                           ) : null}
                           <div
-                            className="flex flex-col items-center justify-center text-muted/60"
+                            className="flex flex-col items-center justify-center text-[#171717]/40"
                             style={{ display: itImg ? 'none' : 'flex' }}
                           >
-                            <Shirt size={18} />
+                            <Shirt size={24} />
                           </div>
                           {it.customization && (
-                            <span className="absolute top-0.5 right-0.5 px-0.5 py-0.2 rounded text-[6px] font-mono font-black uppercase bg-brand-red text-white">
+                            <span className="absolute top-0.5 right-0.5 px-1 py-0.2 rounded-[2px] text-[7px] font-mono font-black uppercase bg-[#E6321C] text-white">
                               3D
                             </span>
                           )}
                         </div>
-                        <div className="space-y-0.5">
-                          <strong className="font-bold text-ink block text-xs">
+                        <div className="space-y-1">
+                          <strong className="font-black text-[#171717] block text-sm font-sans">
                             {it.title_snapshot || it.title || 'Heavyweight Garment'}
                           </strong>
-                          <span className="text-muted text-[11px] font-mono">
-                            Qty: {it.quantity} • Size: {it.size || 'M'} • Color: {it.color || 'Onyx'}
-                          </span>
+                          <div className="flex flex-wrap items-center gap-1.5 text-[10px] font-mono">
+                            <span className="bg-[#171717] text-white px-2 py-0.5 rounded-[2px] font-black">
+                              Size: {it.size || 'M'}
+                            </span>
+                            <span className="bg-[#EDE0CC] text-[#171717] border border-[#171717]/30 px-2 py-0.5 rounded-[2px] font-bold">
+                              Color: {it.color || 'Noir'}
+                            </span>
+                            {it.sku && (
+                              <span className="text-[#6F6A63] font-mono text-[10px]">
+                                SKU: {it.sku}
+                              </span>
+                            )}
+                          </div>
+                          <p className="text-[11px] font-mono text-[#6F6A63]">
+                            Qty: <strong className="text-[#171717] font-bold">{it.quantity}</strong> × {formatCurrency(it.unit_price || it.total / (it.quantity || 1))}
+                          </p>
+                          {itImg && (
+                            <a
+                              href={itImg}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-[10px] font-mono font-bold text-[#E6321C] hover:underline inline-flex items-center gap-1"
+                            >
+                              Inspect Full Photo ↗
+                            </a>
+                          )}
                           {it.customization && (
-                            <span className="inline-flex items-center gap-1 text-[10px] font-mono font-bold text-brand-red bg-brand-red/10 px-2 py-0.5 rounded mt-1">
+                            <span className="inline-flex items-center gap-1 text-[10px] font-mono font-bold text-[#E6321C] bg-[#E6321C]/10 px-2 py-0.5 rounded mt-1">
                               <Sparkles size={11} /> 3D Bespoke Graphic Applied
                             </span>
                           )}
                         </div>
                       </div>
-                      <span className="font-mono font-black text-ink text-xs whitespace-nowrap">
-                        {formatCurrency(it.total)}
-                      </span>
+                      <div className="text-left sm:text-right font-mono self-end sm:self-center">
+                        <span className="text-[10px] text-muted block uppercase font-bold tracking-wider">Item Subtotal</span>
+                        <span className="font-mono font-black text-[#171717] text-sm">
+                          {formatCurrency(it.total)}
+                        </span>
+                      </div>
                     </div>
                   );
                 })}

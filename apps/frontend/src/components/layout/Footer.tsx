@@ -1,9 +1,17 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowUpRight, ChevronRight } from 'lucide-react';
+import { ArrowUpRight, ChevronRight, MapPin } from 'lucide-react';
 import { m, AnimatePresence } from 'framer-motion';
 import { cn } from '../../lib/utils';
 import { triggerHaptic } from '../../lib/native/capacitorBridge';
+import { GOOGLE_MAPS_STORE_URL } from '../../lib/seo/schema';
+import {
+  WhatsAppIcon,
+  InstagramIcon,
+  EmailIcon,
+  YouTubeIcon,
+  XTwitterIcon,
+} from '../ui/SocialIcons';
 import {
   getWhatsAppUrl,
   BINGOOO_INSTAGRAM_URL,
@@ -14,12 +22,7 @@ import {
   BINGOOO_YOUTUBE_HANDLE,
   BINGOOO_TWITTER_URL,
   BINGOOO_TWITTER_HANDLE,
-  WhatsAppIcon,
-  InstagramIcon,
-  EmailIcon,
-  YouTubeIcon,
-  XTwitterIcon,
-} from '../ui/SocialIcons';
+} from '../../lib/social';
 import {
   GooglePayIcon,
   PhonePeIcon,
@@ -343,8 +346,32 @@ export function Footer() {
           </div>
         </div>
 
+        {/* ─── Flagship Atelier & Local Presence Citation ─── */}
+        <div className="mt-[36px] pt-[20px] border-t border-white/10 flex flex-col md:flex-row items-center justify-between gap-3 text-[11px] text-[#aaa7a1]">
+          <div className="flex items-center gap-2 text-center md:text-left flex-wrap justify-center md:justify-start">
+            <span className="inline-flex items-center gap-1.5 font-bold text-white uppercase tracking-wider">
+              <MapPin className="w-3.5 h-3.5 text-[#E6321C] shrink-0" />
+              <span>Flagship Atelier:</span>
+            </span>
+            <span>7 Roads Junction, Main Road, Srikakulam, Andhra Pradesh 532001</span>
+            <span className="hidden sm:inline text-white/30">•</span>
+            <span className="text-[#f7eedb] font-mono">Open Daily 9 AM–9 PM IST</span>
+          </div>
+
+          <a
+            href={GOOGLE_MAPS_STORE_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={() => triggerHaptic('light')}
+            className="text-[#E6321C] hover:text-[#ff4e36] font-bold tracking-[0.06em] uppercase inline-flex items-center gap-1 transition-colors whitespace-nowrap"
+          >
+            <span>Directions on Google Maps</span>
+            <ArrowUpRight size={12} />
+          </a>
+        </div>
+
         {/* ─── 100% Secure Payment Gateways Bar ─── */}
-        <div className="mt-[45px] pt-[22px] border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4 text-[#aaa7a1] text-[11px]">
+        <div className="mt-[24px] pt-[20px] border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4 text-[#aaa7a1] text-[11px]">
           <div className="flex items-center gap-2 font-mono uppercase tracking-[0.14em]">
             <span className="w-2 h-2 rounded-full bg-[#238636] animate-pulse" />
             <span>100% Secure Digital Payments • Powered by UPI & Razorpay</span>

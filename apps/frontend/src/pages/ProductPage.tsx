@@ -6,7 +6,7 @@ import { useProduct } from '../hooks/useProducts';
 import { useCart } from '../hooks/useCart';
 import { useWishlist, useIsInWishlist } from '../hooks/useWishlist';
 import { useRecentlyViewed } from '../hooks/useRecentlyViewed';
-import { useToast } from '../components/ui/Toast';
+import { useToast } from '../components/ui/ToastContext';
 import { SEO } from '../components/common/SEO';
 import { generateProductSchema } from '../lib/seo/schema';
 import { SITE_URL, categoryUrl, productImages, productSeoDescription, productSeoTitle, productUrl } from '../lib/seo/catalog-seo.mjs';
@@ -76,6 +76,55 @@ const PRODUCT_SIZE_SPECS: Record<'oversized' | 'acidwash' | 'hoodie', {
   },
 };
 
+const COLOR_KEYWORD_MAP: Record<string, string> = {
+  brown: '#6B4423',
+  black: '#171717',
+  white: '#F5F5F5',
+  cream: '#F7EEDB',
+  vintage: '#EDE0CC',
+  olive: '#556B2F',
+  green: '#2E5A36',
+  sage: '#9CAF88',
+  beige: '#D4C4A8',
+  navy: '#1B2A4A',
+  blue: '#2B4C7E',
+  maroon: '#6B1D2F',
+  terracotta: '#C86446',
+  charcoal: '#2D2D2D',
+  grey: '#777777',
+  gray: '#777777',
+  rust: '#A04218',
+};
+
+function extractColorOptions(product: any): { name: string; hex: string }[] {
+  if (product?.variants && product.variants.length > 0) {
+    const map = new Map<string, string>();
+    product.variants.forEach((v: any) => {
+      if (v.color) {
+        map.set(v.color, v.colorHex || v.color_hex || '#171717');
+      }
+    });
+    if (map.size > 0) {
+      return Array.from(map.entries()).map(([name, hex]) => ({ name, hex }));
+    }
+  }
+  // Infer color from product direct properties
+  const prodColor = (product as any)?.color || (product as any)?.color_name;
+  if (prodColor) {
+    const hex = (product as any)?.color_hex || (product as any)?.colorHex || '#171717';
+    return [{ name: prodColor, hex }];
+  }
+  // Check if title mentions a known color
+  const title = (product?.title || '').toLowerCase();
+  for (const [key, hex] of Object.entries(COLOR_KEYWORD_MAP)) {
+    if (title.includes(key)) {
+      const capitalized = key.charAt(0).toUpperCase() + key.slice(1);
+      return [{ name: capitalized, hex }];
+    }
+  }
+  return [];
+}
+
 export function ProductPage() {
   const { slug } = useParams<{ slug: string }>();
   const navigate = useNavigate();
@@ -123,53 +172,7 @@ export function ProductPage() {
   const [activeImageIndex, setActiveImageIndex] = useState(0);
 
   // Dynamic colors derived from product.variants or product attributes
-  const colorOptions = useMemo(() => {
-    if (product?.variants && product.variants.length > 0) {
-      const map = new Map<string, string>();
-      product.variants.forEach((v: any) => {
-        if (v.color) {
-          map.set(v.color, v.colorHex || v.color_hex || '#171717');
-        }
-      });
-      if (map.size > 0) {
-        return Array.from(map.entries()).map(([name, hex]) => ({ name, hex }));
-      }
-    }
-    // Infer color from product direct properties
-    const prodColor = (product as any)?.color || (product as any)?.color_name;
-    if (prodColor) {
-      const hex = (product as any)?.color_hex || (product as any)?.colorHex || '#171717';
-      return [{ name: prodColor, hex }];
-    }
-    // Check if title mentions a known color
-    const title = (product?.title || '').toLowerCase();
-    const colorKeywordMap: Record<string, string> = {
-      brown: '#6B4423',
-      black: '#171717',
-      white: '#F5F5F5',
-      cream: '#F7EEDB',
-      vintage: '#EDE0CC',
-      olive: '#556B2F',
-      green: '#2E5A36',
-      sage: '#9CAF88',
-      beige: '#D4C4A8',
-      navy: '#1B2A4A',
-      blue: '#2B4C7E',
-      maroon: '#6B1D2F',
-      terracotta: '#C86446',
-      charcoal: '#2D2D2D',
-      grey: '#777777',
-      gray: '#777777',
-      rust: '#A04218',
-    };
-    for (const [key, hex] of Object.entries(colorKeywordMap)) {
-      if (title.includes(key)) {
-        const capitalized = key.charAt(0).toUpperCase() + key.slice(1);
-        return [{ name: capitalized, hex }];
-      }
-    }
-    return [];
-  }, [product]);
+  const colorOptions = extractColorOptions(product);
 
   const [selectedColor, setSelectedColor] = useState('');
 

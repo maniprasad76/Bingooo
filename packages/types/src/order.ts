@@ -24,7 +24,7 @@ export type PaymentStatus =
   | 'partially_refunded';
 
 /** Payment method */
-export type PaymentMethod = 'prepaid';
+export type PaymentMethod = 'prepaid' | 'cod';
 
 export interface Order {
   id: string;
@@ -32,8 +32,11 @@ export interface Order {
   userId: string;
   status: OrderStatus;
   paymentStatus: PaymentStatus;
+  paymentMethod?: PaymentMethod;
   subtotal: number;
   discount: number;
+  prepaidDiscount?: number;
+  shippingFee?: number;
   tax: number;
   total: number;
   currency: string;

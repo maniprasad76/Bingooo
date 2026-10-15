@@ -93,12 +93,13 @@ export class CheckoutService {
 
     const discountedSubtotal = Math.max(0, subtotal - discount);
 
-    // All orders are 100% secure prepaid; apply prepaid discount
+    const isCod = dto.paymentMethod === 'cod';
     const prepaidPct = Number(db.settings.prepaid_discount_percentage) || 5;
-    const prepaidDiscount = Math.round(discountedSubtotal * (prepaidPct / 100));
+    const prepaidDiscount = isCod ? 0 : Math.round(discountedSubtotal * (prepaidPct / 100));
+    const shippingFee = isCod ? 80 : 0;
 
     const tax = 0; // All prices are all-inclusive (no extra GST)
-    const total = Math.max(0, discountedSubtotal - prepaidDiscount);
+    const total = Math.max(0, discountedSubtotal - prepaidDiscount + shippingFee);
 
     return {
       isValid: true,
@@ -107,11 +108,12 @@ export class CheckoutService {
       subtotal,
       discount,
       prepaidDiscount,
+      shippingFee,
       coupon: couponInfo,
       tax,
       total,
-      paymentMethod: 'prepaid' as const,
-      payableNow: total,
+      paymentMethod: dto.paymentMethod,
+      payableNow: isCod ? 0 : total,
       shippingAddress: dto.shippingAddress,
     };
   }

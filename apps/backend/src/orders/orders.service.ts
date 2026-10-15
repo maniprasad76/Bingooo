@@ -134,7 +134,7 @@ export class OrdersService implements OnModuleInit, OnModuleDestroy {
   expireUnpaidOrders(now = Date.now()) {
     let expired = 0;
     for (const order of db.orders) {
-      if (order.status !== 'pending_payment') continue;
+      if (order.status !== 'pending_payment' || order.payment_method === 'cod') continue;
       if (now - Date.parse(order.created_at) < UNPAID_ORDER_TTL_MS) continue;
       order.status = 'cancelled';
       order.payment_status = 'expired';
@@ -154,16 +154,19 @@ export class OrdersService implements OnModuleInit, OnModuleDestroy {
     const randSuffix = Math.floor(1000 + Math.random() * 9000);
     const orderNumber = `BGO-${dateStr}-${randSuffix}`;
 
+    const isCod = dto.paymentMethod === 'cod';
+
     const order = {
       id: orderId,
       order_number: orderNumber,
       user_id: owner.userId,
-      status: 'pending_payment',
+      status: isCod ? 'confirmed' : 'pending_payment',
       payment_status: 'pending',
-      payment_method: 'prepaid',
+      payment_method: dto.paymentMethod,
       subtotal: calculation.subtotal,
       discount: calculation.discount,
       prepaid_discount: calculation.prepaidDiscount || 0,
+      shipping_fee: calculation.shippingFee || 0,
       tax: calculation.tax,
       total: calculation.total,
       currency: 'INR',

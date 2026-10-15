@@ -19,6 +19,7 @@ import {
   Check,
   BadgePercent,
   Tag,
+  Banknote,
 } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { useCart } from '../hooks/useCart';
@@ -45,7 +46,7 @@ const addressSchema = z.object({
 });
 
 type AddressFormData = z.infer<typeof addressSchema>;
-type PaymentMethodType = 'upi' | 'cards';
+type PaymentMethodType = 'upi' | 'cards' | 'cod';
 type UpiAppType = 'phonepe' | 'gpay' | 'paytm' | 'any';
 
 function loadRazorpayScript(): Promise<boolean> {
@@ -167,11 +168,12 @@ export function CheckoutPage() {
   };
 
   const subtotal = cart?.subtotal || 0;
-  const isPrepaid = true;
+  const isPrepaid = paymentMethod !== 'cod';
   const couponDiscount = activeCoupon?.discount || 0;
   const subtotalAfterCoupon = Math.max(0, subtotal - couponDiscount);
-  const prepaidDiscount = Math.round(subtotalAfterCoupon * (prepaidDiscountPct / 100));
-  const total = Math.max(0, subtotalAfterCoupon - prepaidDiscount);
+  const prepaidDiscount = isPrepaid ? Math.round(subtotalAfterCoupon * (prepaidDiscountPct / 100)) : 0;
+  const shippingFee = paymentMethod === 'cod' ? 80 : 0;
+  const total = Math.max(0, subtotalAfterCoupon - prepaidDiscount + shippingFee);
 
   const handleApplyCoupon = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
@@ -220,6 +222,28 @@ export function CheckoutPage() {
     setIsProcessing(true);
 
     try {
+      if (paymentMethod === 'cod') {
+        // 1. Create order on backend (Cash on Delivery)
+        const order = await api.post<any>('/orders', {
+          cartId: cart.id,
+          couponCode: activeCoupon?.code || undefined,
+          paymentMethod: 'cod',
+          shippingAddress: addressData,
+        });
+
+        clearCart();
+        toast({
+          title: 'Order Placed!',
+          description: `Order #${order.order_number} successfully placed via Cash on Delivery.`,
+          variant: 'success',
+        });
+        navigate(`/order-success/${encodeURIComponent(order.order_number)}`, {
+          replace: true,
+          state: { order, paid: false, isCod: true },
+        });
+        return;
+      }
+
       // 1. Create order on backend (100% prepaid)
       const order = await api.post<any>('/orders', {
         cartId: cart.id,
@@ -567,6 +591,12 @@ export function CheckoutPage() {
                       </div>
                     )}
                     <div className="flex justify-between font-mono text-[#6F6A63]">
+                      <span>DELIVERY / SHIPPING</span>
+                      <span className={`font-bold ${shippingFee > 0 ? 'text-[#171717]' : 'text-emerald-700'}`}>
+                        {shippingFee > 0 ? `₹${shippingFee}` : 'FREE'}
+                      </span>
+                    </div>
+                    <div className="flex justify-between font-mono text-[#6F6A63]">
                       <span>TAXES</span>
                       <span className="font-bold text-[#171717]">INCLUSIVE</span>
                     </div>
@@ -880,6 +910,59 @@ export function CheckoutPage() {
                   <CreditCard size={18} className="text-[#6F6A63] shrink-0" />
                 </div>
               </div>
+
+              {/* OPTION 3: CASH ON DELIVERY (COD) */}
+              <div
+                className={`border-2 transition-all ${
+                  paymentMethod === 'cod'
+                    ? 'border-[#171717] bg-[#F7EEDB]/30 shadow-[3px_3px_0px_#171717]'
+                    : 'border-[#171717]/40 bg-white hover:border-[#171717]'
+                } ${hasCustomItems ? 'opacity-60 cursor-not-allowed' : 'cursor-pointer'} p-4`}
+                onClick={() => {
+                  if (!hasCustomItems) {
+                    setPaymentMethod('cod');
+                  }
+                }}
+              >
+                <div className="flex items-start justify-between">
+                  <div className="flex items-start gap-3">
+                    <input
+                      type="radio"
+                      name="paymentMethod"
+                      value="cod"
+                      disabled={hasCustomItems}
+                      checked={paymentMethod === 'cod'}
+                      onChange={() => {
+                        if (!hasCustomItems) {
+                          setPaymentMethod('cod');
+                        }
+                      }}
+                      className="accent-[#E6321C] mt-1"
+                    />
+                    <div>
+                      <div className="flex flex-wrap items-center gap-2">
+                        <span className="text-sm font-black uppercase tracking-tight text-[#171717]">Cash on Delivery (COD)</span>
+                        <span className="border border-[#171717] bg-[#171717] px-1.5 py-0.2 font-mono text-[9px] font-black uppercase text-white shadow-[1px_1px_0px_#171717]">
+                          +₹80 SHIPPING
+                        </span>
+                      </div>
+                      <p className="text-xs text-[#6F6A63] mt-1">
+                        Pay in Cash or UPI to the courier upon doorstep delivery.
+                      </p>
+                      {hasCustomItems ? (
+                        <p className="text-[11px] font-mono font-bold text-[#E6321C] mt-1">
+                          Unavailable for bespoke custom printed items (prepaid only).
+                        </p>
+                      ) : (
+                        <p className="text-[11px] font-mono text-[#6F6A63] mt-1">
+                          Tip: Pay online via UPI or Cards to get <span className="font-bold text-emerald-700">5% Instant Discount</span> and <span className="font-bold text-emerald-700">Free Delivery</span>!
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                  <Banknote size={18} className="text-[#6F6A63] shrink-0" />
+                </div>
+              </div>
             </div>
           </div>
 
@@ -1059,8 +1142,10 @@ export function CheckoutPage() {
                 )}
 
                 <div className="flex justify-between text-[#6F6A63]">
-                  <span>DELIVERY</span>
-                  <span className="font-bold text-[#171717]">FREE</span>
+                  <span>DELIVERY / SHIPPING</span>
+                  <span className={`font-bold ${shippingFee > 0 ? 'text-[#171717]' : 'text-emerald-700'}`}>
+                    {shippingFee > 0 ? `₹${shippingFee}` : 'FREE'}
+                  </span>
                 </div>
 
                 <div className="border-t-2 border-[#171717] pt-3 flex justify-between items-baseline font-mono font-black text-[#171717]">
@@ -1077,6 +1162,8 @@ export function CheckoutPage() {
               >
                 {isProcessing
                   ? 'SECURING ORDER...'
+                  : paymentMethod === 'cod'
+                  ? `PLACE COD ORDER (₹${total})`
                   : paymentMethod === 'upi'
                   ? `PAY ₹${total} VIA ${
                       selectedUpiApp === 'phonepe'

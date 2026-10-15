@@ -220,4 +220,7 @@ python -m graphify update .
   - Upgraded Google Business Profile and Local SEO infrastructure: enriched Schema.org JSON-LD (`ClothingStore`, `MensClothingStore`, `LocalBusiness`) with exact geo coordinates (18.2969, 83.8968), canonical Google Maps store search link, area served, and opening hours specification across `schema.ts`, `catalog-seo.mjs`, `prerender-seo.mjs`, and `index.html`.
   - Overhauled `ContactPage.tsx` with an interactive Google Maps embed, "Get Directions" navigation launcher, "Review Us on Google" CTA, "Copy NAP" clipboard action, in-store fabric rail features, and physical atelier visit specs (Landmark: 7 Roads Junction).
   - Added sitewide Flagship Atelier NAP citation bar to `Footer.tsx` providing consistent local search authority signals on every indexed page. Zero typecheck errors across all workspaces.
+- **2026-10-15: Cash on Delivery (COD), ₹80 COD Shipping Charge & 5% Prepaid Discount**
+  - Implemented Cash on Delivery (COD) checkout option alongside Instant UPI and Cards/NetBanking; configured flat ₹80 shipping fee for COD orders with 100% Free Shipping on Prepaid orders.
+  - Implemented 5% prepaid discount on discounted subtotal for UPI/Card orders (0% discount on COD). Enforced server-side pricing in `checkout.service.ts` and `orders.service.ts` with direct COD order placement and tailored order confirmation flow on `OrderSuccessPage.tsx`.
 

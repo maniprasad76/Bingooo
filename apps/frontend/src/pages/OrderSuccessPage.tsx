@@ -99,7 +99,9 @@ export function OrderSuccessPage() {
     return <OrderUnavailable paymentFailed={isPaymentFailure} orderNumber={orderNumber} />;
   }
 
+  const isCod = order.payment_method === 'cod' || Boolean(navState.isCod);
   const isPaid = PAID_STATUSES.includes(String(order.payment_status)) || (!hasFreshOrder && verifiedAtCheckout);
+  const isConfirmed = isPaid || isCod;
   const address = order.address_snapshot_json || order.shipping_address || {};
   const firstName = String(address.name || '').trim().split(/\s+/)[0];
   const phoneDigits = String(address.phone || '').replace(/\D/g, '');
@@ -137,7 +139,7 @@ export function OrderSuccessPage() {
   return (
     <div className="relative min-h-screen overflow-hidden bg-[#F7EEDB] font-sans text-[#171717] antialiased">
       <SEO
-        title={isPaid ? `Order confirmed · ${order.order_number}` : `Order ${order.order_number}`}
+        title={isConfirmed ? `Order confirmed · ${order.order_number}` : `Order ${order.order_number}`}
         description="Thank you for shopping with Bingooo."
         noindex
       />
@@ -151,20 +153,20 @@ export function OrderSuccessPage() {
       <div className="relative mx-auto max-w-[1120px] px-4 pb-20 pt-10 sm:px-6 sm:pt-16">
         {/* ── Hero ─────────────────────────────────────────────── */}
         <section className="flex flex-col items-center text-center">
-          {isPaid ? <ConfirmedBadge reduceMotion={Boolean(reduceMotion)} /> : <PendingBadge />}
+          {isConfirmed ? <ConfirmedBadge reduceMotion={Boolean(reduceMotion)} /> : <PendingBadge />}
 
           <m.p
             {...fadeUp(0.35)}
             className="mt-7 mb-0 font-mono text-[11px] font-semibold uppercase tracking-[0.22em] text-[#E6321C]"
           >
-            {isPaid ? 'Order confirmed' : 'Awaiting payment'}
+            {isPaid ? 'Order confirmed' : isCod ? 'Order confirmed · Cash on Delivery' : 'Awaiting payment'}
           </m.p>
 
           <m.h1
             {...fadeUp(0.45)}
             className="m-0 mt-3 text-[clamp(36px,7vw,68px)] font-extrabold leading-[0.95] tracking-[-0.045em]"
           >
-            {isPaid ? (
+            {isConfirmed ? (
               <>
                 Thank you{firstName ? ',' : ''}
                 {firstName && (
@@ -185,6 +187,8 @@ export function OrderSuccessPage() {
           >
             {isPaid
               ? 'Your payment was received and your order is confirmed. We’re getting your pieces ready for dispatch.'
+              : isCod
+              ? `Your Cash on Delivery order is confirmed! Please keep ${formatINR(order.total)} ready in cash or UPI at the time of delivery.`
               : 'We haven’t received the payment for this order yet. If money has left your account, it will be confirmed here automatically within a few minutes.'}
           </m.p>
 
@@ -298,13 +302,21 @@ export function OrderSuccessPage() {
             <dl className="m-0 space-y-2 px-5 pb-6 pt-4 border-t-2 border-[#171717] font-mono text-xs sm:px-7">
               <SummaryRow label="SUBTOTAL" value={formatINR(order.subtotal ?? order.total)} />
               {discount > 0 && <SummaryRow label="DISCOUNT" value={`−${formatINR(discount)}`} accent />}
-              <SummaryRow label="DELIVERY" value="FREE" accent />
+              <SummaryRow
+                label="DELIVERY / SHIPPING"
+                value={order.shipping_fee > 0 ? formatINR(order.shipping_fee) : 'FREE'}
+                accent={!order.shipping_fee}
+              />
               <SummaryRow label="TAXES" value="INCLUSIVE" />
               <div className="flex items-end justify-between border-t-2 border-[#171717] pt-4 mt-2">
                 <dt className="text-xs font-black uppercase">
-                  {isPaid ? 'TOTAL PAID' : 'TOTAL AMOUNT'}
+                  {isPaid ? 'TOTAL PAID' : isCod ? 'TOTAL PAYABLE (COD)' : 'TOTAL AMOUNT'}
                   <span className="mt-0.5 block font-mono text-[10px] font-normal text-[#6F6A63]">
-                    {isPaid ? 'PAID ONLINE // 100% SECURE' : 'PAYMENT PENDING'}
+                    {isPaid
+                      ? 'PAID ONLINE // 100% SECURE'
+                      : isCod
+                      ? 'PAY ON DELIVERY (CASH / UPI)'
+                      : 'PAYMENT PENDING'}
                   </span>
                 </dt>
                 <dd className="m-0 font-mono text-2xl font-black tracking-tight text-[#171717] sm:text-3xl">
@@ -320,7 +332,7 @@ export function OrderSuccessPage() {
               <h2 id="next-heading" className="m-0 text-base font-black uppercase tracking-tight pb-3 border-b-2 border-[#171717]">
                 WHAT HAPPENS NEXT
               </h2>
-              <ProgressTimeline status={String(order.status || '')} paid={isPaid} placedTime={placedTime} />
+              <ProgressTimeline status={String(order.status || '')} paid={isConfirmed} placedTime={placedTime} />
             </m.section>
 
             {/* Delivery address */}

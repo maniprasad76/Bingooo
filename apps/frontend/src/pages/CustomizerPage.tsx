@@ -179,7 +179,7 @@ export function CustomizerPage() {
 
   // Warm the browser cache with this garment's other photos so switching colour or side is instant.
   useEffect(() => {
-    const urls = availableColors.flatMap((c) => [c.frontImageUrl, c.backImageUrl || '']).filter(Boolean);
+    const urls = availableColors.map((c) => c.frontImageUrl).filter(Boolean);
     const timer = window.setTimeout(() => {
       for (const url of urls) new Image().src = resolveImageUrl(url);
     }, 600);

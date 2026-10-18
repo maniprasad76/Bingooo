@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { api } from '../lib/api';
+import { api, STOREFRONT_URL } from '../lib/api';
 import {
   DollarSign,
   ShoppingBag,
@@ -56,8 +56,13 @@ const INITIAL_DATA: DashboardData = {
 const STATUS_BADGE: Record<string, string> = {
   delivered: 'badge-success',
   shipped: 'badge-info',
+  packed: 'badge-info',
   processing: 'badge-warning',
+  paid: 'badge-warning',
+  confirmed: 'badge-warning',
   pending_payment: 'badge-neutral',
+  return_requested: 'badge-danger',
+  returned: 'badge-neutral',
   cancelled: 'badge-danger',
 };
 
@@ -199,7 +204,7 @@ export function DashboardPage() {
               Orders <ArrowUpRight size={14} />
             </Link>
             <a
-              href="http://localhost:5173"
+              href={STOREFRONT_URL}
               target="_blank"
               rel="noopener noreferrer"
               className="btn-secondary text-xs py-2 px-4"
@@ -284,7 +289,7 @@ export function DashboardPage() {
                 </div>
                 <div className="flex items-center gap-3 pt-2 flex-wrap justify-center">
                   <a
-                    href="http://localhost:5173"
+                    href={STOREFRONT_URL}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="btn-primary text-xs py-2 px-4 shadow-[2px_2px_0px_#171717]"

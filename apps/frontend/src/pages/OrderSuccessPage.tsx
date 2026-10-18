@@ -473,10 +473,10 @@ function PendingBadge() {
 }
 
 const STEPS = [
-  { key: 'confirmed', title: 'Order confirmed', body: 'Payment received. Your order is in our queue.', Icon: Check },
+  { key: 'confirmed', title: 'Order confirmed', body: 'Your order is in our queue.', Icon: Check },
   { key: 'packed', title: 'Packed with care', body: 'Every piece is checked and packed by hand.', Icon: Package },
   { key: 'shipped', title: 'On its way', body: 'You’ll get your tracking number the moment it ships.', Icon: Truck },
-  { key: 'delivered', title: 'Delivered', body: 'Free delivery to your door, anywhere in India.', Icon: Home },
+  { key: 'delivered', title: 'Delivered', body: 'Delivered to your door, anywhere in India.', Icon: Home },
 ];
 
 function progressIndex(status: string, paid: boolean): number {

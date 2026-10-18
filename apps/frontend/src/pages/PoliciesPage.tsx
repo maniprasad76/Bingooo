@@ -66,7 +66,7 @@ export function PoliciesPage() {
           </h1>
 
           <p className="text-sm sm:text-base text-[#6F6A63] leading-relaxed">
-            Transparent, customer-first standards governing your orders, custom 3D printing, doorstep exchanges, and privacy.
+            Transparent, customer-first standards governing your orders, custom printing, doorstep exchanges, and privacy.
           </p>
         </div>
 

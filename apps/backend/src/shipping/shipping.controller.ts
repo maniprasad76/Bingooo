@@ -7,8 +7,11 @@ import {
   Query,
   Res,
   UseGuards,
+  Headers,
   NotFoundException,
+  UnauthorizedException,
 } from '@nestjs/common';
+import { timingSafeEqual } from 'crypto';
 import { Response } from 'express';
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { ShippingService } from './shipping.service';
@@ -72,19 +75,29 @@ export class ShippingController {
 
   @Post('shiprocket/webhook')
   @ApiOperation({ summary: 'Shiprocket tracking status & delivery webhook' })
-  handleWebhook(@Body() body: any) {
+  handleWebhook(@Headers('x-api-key') apiKey: string | undefined, @Body() body: any) {
+    // Shiprocket sends the token set in its webhook settings as x-api-key; without
+    // it anyone could mark orders delivered and message customers.
+    const expected = process.env.SHIPROCKET_WEBHOOK_TOKEN || '';
+    const given = Buffer.from(apiKey || '');
+    if (!expected || given.length !== Buffer.byteLength(expected) || !timingSafeEqual(given, Buffer.from(expected))) {
+      throw new UnauthorizedException({ code: 'INVALID_WEBHOOK_TOKEN', message: 'Invalid webhook token.' });
+    }
     return this.shiprocketService.handleWebhook(body);
   }
 
   @Get('label/:orderId')
-  @ApiOperation({ summary: 'Render 4x6 Thermal Shipping Label HTML for direct thermal printing' })
+  @UseGuards(AuthGuard, RolesGuard)
+  @Permissions('orders.manage')
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Render 4x6 Thermal Shipping Label HTML for direct thermal printing (Admin/Staff only)' })
   renderShippingLabel(@Param('orderId') orderId: string, @Res() res: Response) {
     const order = db.orders.find((o) => o.id === orderId || o.order_number === orderId);
     if (!order) {
       throw new NotFoundException(`Order ${orderId} not found.`);
     }
 
-    const html = generateThermalShippingLabelHtml(order);
+    const html = generateThermalShippingLabelHtml(order, db.order_items.filter((i) => i.order_id === order.id));
     res.setHeader('Content-Type', 'text/html; charset=utf-8');
     res.send(html);
   }

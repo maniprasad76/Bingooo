@@ -99,8 +99,12 @@ async function run() {
         garment({ name: 'Polo', style: 'polo', compareAtPrice: 100 }),
       ],
     });
-    const [g1, g2, g3] = ok.garments;
-    assert(g1.id === 'oversized-t-shirt' && g2.id === 'oversized-t-shirt-2', 'New garments get unique ids from their names', `${g1.id}, ${g2.id}`);
+    // The storefront lists polo before other garments (see GARMENT_ORDER), so look them up.
+    const g1 = ok.garments.find((g) => g.id === 'oversized-t-shirt')!;
+    const g2 = ok.garments.find((g) => g.id === 'oversized-t-shirt-2')!;
+    const g3 = ok.garments.find((g) => g.id === 'polo')!;
+    assert(Boolean(g1 && g2 && g3), 'New garments get unique ids from their names', ok.garments.map((g) => g.id).join(', '));
+    assert(ok.garments[0].id === 'polo', 'Known garments (oversized, polo, hoodie) are listed first, in that order', ok.garments.map((g) => g.id).join(', '));
     assert(JSON.stringify(g2.sizes) === JSON.stringify(['36', '38', '40']), 'Numeric sizes allowed; duplicates and spaces removed', JSON.stringify(g2.sizes));
     assert(g3.style === 'polo' && g3.compareAtPrice === null, 'Compare-at price below the selling price is dropped');
     assert(typeof ok.updatedAt === 'string' && db.customizer_config.garments.length === 3, 'Saved config replaces the stored one');
@@ -110,6 +114,7 @@ async function run() {
     assert(/^400 .*name/.test(bad({ name: '  ' })), 'Garment needs a name', bad({ name: '  ' }));
     assert(/^400 .*hex/.test(bad({ colors: [{ name: 'Red', hex: 'red' }] })), 'Colour needs a valid hex code');
     assert(/^400 .*photos/.test(bad({ colors: [{ name: 'Red', hex: '#E6321C', frontImageUrl: 'javascript:alert(1)' }] })), 'javascript: photo links rejected');
+    assert(/^400 .*photos/.test(bad({ colors: [{ name: 'Red', hex: '#E6321C', frontImageUrl: '//evil.example/x.png' }] })), 'Protocol-relative links to other sites rejected');
     assert(/^400 .*photos/.test(bad({ colors: [{ name: 'Red', hex: '#E6321C', frontImageUrl: 'data:image/png;base64,AAAA' }] })), 'Inline base64 photos rejected (they would bloat the database)');
     assert(/^400 .*photos/.test(bad({ colors: [{ name: 'Red', hex: '#E6321C', frontImageUrl: 'http://evil.example/x.png' }] })), 'Plain http photo links rejected outside localhost');
     assert(rejection(() => service.updateStudioConfig({})).startsWith('400'), 'A payload without a garments list is rejected');

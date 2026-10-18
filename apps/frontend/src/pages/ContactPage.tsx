@@ -590,7 +590,7 @@ export function ContactPage() {
             </h2>
 
             <p className="mt-5 text-[#aaa7a1] text-[14px] sm:text-[15px] leading-[1.8] max-w-[620px]">
-              Touch our 240–280 GSM heavyweight cotton fabrics, test our relaxed drop-shoulder drape, or design bespoke custom tees live in our 3D Atelier terminal. Walk-ins welcome daily.
+              Touch our 240–280 GSM heavyweight cotton fabrics, test our relaxed drop-shoulder drape, or design bespoke custom tees with us in the studio. Walk-ins welcome daily.
             </p>
           </div>
 
@@ -612,7 +612,7 @@ export function ContactPage() {
                   BINGOOO MEN'S WEAR
                 </h3>
                 <p className="text-[#e6321c] text-[12px] font-mono font-bold uppercase tracking-wider mb-6">
-                  Heavyweight Menswear & 3D Garment Atelier
+                  Heavyweight Menswear & Custom Garment Studio
                 </p>
 
                 <div className="space-y-4 mb-8">
@@ -654,7 +654,7 @@ export function ContactPage() {
                       240 GSM Fabric Rails
                     </span>
                     <span className="px-3 py-1 bg-white/5 border border-white/10 text-[#f7eedb]">
-                      3D Atelier Terminal
+                      Custom Studio
                     </span>
                     <span className="px-3 py-1 bg-white/5 border border-white/10 text-[#f7eedb]">
                       Trial Rooms

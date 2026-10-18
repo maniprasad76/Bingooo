@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { api, resolveImageUrl } from '../lib/api';
+import { api, resolveImageUrl, STOREFRONT_URL } from '../lib/api';
 import { useToast } from '../components/Toast';
 import {
   Search,
@@ -65,12 +65,18 @@ interface Order {
   shippingAddress?: any;
 }
 
-const STATUSES = ['all', 'pending_payment', 'processing', 'shipped', 'delivered', 'cancelled'];
+// Every order status (packages/types OrderStatus); 'confirmed' = cash on delivery, awaiting dispatch.
+const STATUSES = ['all', 'pending_payment', 'paid', 'confirmed', 'processing', 'packed', 'shipped', 'delivered', 'return_requested', 'returned', 'cancelled'];
 const STATUS_BADGE: Record<string, string> = {
   delivered: 'badge-success',
   shipped: 'badge-info',
+  packed: 'badge-info',
   processing: 'badge-warning',
+  paid: 'badge-warning',
+  confirmed: 'badge-warning',
   pending_payment: 'badge-neutral',
+  return_requested: 'badge-danger',
+  returned: 'badge-neutral',
   cancelled: 'badge-danger',
 };
 
@@ -184,12 +190,12 @@ export function OrdersPage() {
   const handleShipWithShiprocket = async (order: Order) => {
     setShippingWithShiprocket(order.id);
     try {
-      const res = await api.post<{ awb_code: string; courier_name: string; isMock?: boolean }>(
+      const res = await api.post<{ awb_code: string; courier_name: string }>(
         `/shipping/shiprocket/generate-awb/${order.id}`
       );
       toast.success(
         'Shiprocket Dispatched',
-        `AWB ${res.awb_code} generated via ${res.courier_name}${res.isMock ? ' (Sandbox)' : ''}. Customer notified!`
+        `AWB ${res.awb_code} generated via ${res.courier_name}. Customer notified.`
       );
       fetchOrders();
       if (selectedOrder && selectedOrder.id === order.id) {
@@ -207,15 +213,19 @@ export function OrdersPage() {
     }
   };
 
-  const handlePrintThermalLabel = (orderId: string) => {
-    const isProd =
-      typeof window !== 'undefined' &&
-      (window.location.hostname === 'admin.bingooo.co.in' ||
-        window.location.hostname.endsWith('.bingooo.co.in') ||
-        window.location.hostname.includes('vercel.app'));
-    const backendUrl = isProd ? 'https://api.bingooo.co.in' : 'http://localhost:3000';
-    const labelUrl = `${backendUrl}/api/v1/shipping/label/${orderId}`;
-    window.open(labelUrl, '_blank', 'width=500,height=750,menubar=no,toolbar=no,location=no');
+  const handlePrintThermalLabel = async (orderId: string) => {
+    // The label holds the customer's address, so it is fetched signed-in rather than opened by URL.
+    const win = window.open('', '_blank', 'width=500,height=750,menubar=no,toolbar=no,location=no');
+    try {
+      const html = await api.text(`/shipping/label/${encodeURIComponent(orderId)}`);
+      const url = URL.createObjectURL(new Blob([html], { type: 'text/html' }));
+      if (win) win.location.href = url;
+      else window.open(url, '_blank');
+      setTimeout(() => URL.revokeObjectURL(url), 60_000);
+    } catch (err: any) {
+      win?.close();
+      toast.error('Label Error', err?.message || 'Could not load the shipping label.');
+    }
   };
 
   const handleExportCsv = () => {
@@ -706,7 +716,7 @@ export function OrdersPage() {
                   </div>
                 </div>
                 <a
-                  href={`http://localhost:5173/track-order?awb=${selectedOrder.tracking_number}`}
+                  href={`${STOREFRONT_URL}/track-order?awb=${selectedOrder.tracking_number}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-xs font-mono font-black text-[#171717] underline hover:text-[#E6321C]"

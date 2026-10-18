@@ -103,7 +103,7 @@ export function Navbar() {
       {/* ─── Top Bar ─── */}
       <div className="min-h-[28px] bg-[#171717] text-white border-b border-[#171717]">
         <div className="container-bingooo min-h-[28px] flex items-center justify-between text-[9px] font-mono font-bold tracking-[0.1em] uppercase select-none">
-          <div>FREE DELIVERY ACROSS INDIA · 240+ GSM HEAVYWEIGHT</div>
+          <div>FREE DELIVERY ON PREPAID ORDERS · 240+ GSM HEAVYWEIGHT</div>
 
           <div className="hidden sm:flex items-center gap-[22px]">
             <a

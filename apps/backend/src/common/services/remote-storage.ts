@@ -50,10 +50,16 @@ export function publicObjectUrl(bucket: string, key: string): string {
   return `${config().url}/storage/v1/object/public/${bucket}/${encodeKey(key)}`;
 }
 
-export async function uploadObject(bucket: string, key: string, body: Buffer | string, contentType: string): Promise<void> {
+export async function uploadObject(
+  bucket: string,
+  key: string,
+  body: Buffer | string,
+  contentType: string,
+  cacheControl?: string,
+): Promise<void> {
   const res = await request(`object/${bucket}/${encodeKey(key)}`, {
     method: 'POST',
-    headers: { 'Content-Type': contentType, 'x-upsert': 'true' },
+    headers: { 'Content-Type': contentType, 'x-upsert': 'true', ...(cacheControl ? { 'cache-control': cacheControl } : {}) },
     body: typeof body === 'string' ? body : new Uint8Array(body),
   });
   if (!res.ok) throw await failure(res, `Upload ${bucket}/${key}`);

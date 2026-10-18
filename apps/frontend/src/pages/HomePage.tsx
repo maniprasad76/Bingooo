@@ -197,7 +197,7 @@ export function HomePage() {
     <main className="bg-[#f7eedb] text-[#171717] font-sans antialiased selection:bg-[#e6321c] selection:text-white">
       <SEO
         title="Bingooo® — Oversized T-Shirts for Men (240 GSM) & Luxury Streetwear India"
-        description="Shop India's #1 240–280 GSM heavyweight oversized t-shirts for men & streetwear. 100% super-combed cotton, drop-shoulder fit, 3D custom printing atelier. 100% secure prepaid & Pan-India free delivery."
+        description="Shop India's #1 240–280 GSM heavyweight oversized t-shirts for men & streetwear. 100% super-combed cotton, drop-shoulder fit, custom printing studio. Free delivery on prepaid orders, cash on delivery available."
         keywords="oversized t-shirts for men, 240 gsm oversized t shirt, heavyweight t shirt india, drop shoulder t shirt, luxury streetwear india, custom oversized t shirt printing india, streetwear brand india, boxy fit t shirt men, 100 combed cotton oversized tee, 380 gsm fleece hoodie, acid wash oversized t shirt, dtf printing custom t shirt, oversized tees india, bingooo menswear"
         canonical="https://www.bingooo.co.in"
         schema={[
@@ -245,7 +245,7 @@ export function HomePage() {
             </h1>
 
             <p className="my-4 mb-7 text-xs sm:text-[13px] font-semibold tracking-[0.18em] uppercase text-[#6f6a63] max-w-[480px] leading-relaxed">
-              240–280 GSM Heavyweight Streetwear <span className="text-[#e6321c] font-bold mx-1.5">•</span> Custom 3D Atelier
+              240–280 GSM Heavyweight Streetwear <span className="text-[#e6321c] font-bold mx-1.5">•</span> Custom Studio
             </p>
 
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3.5 sm:gap-4">

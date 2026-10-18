@@ -804,6 +804,80 @@ async function runSecuritySuite() {
       `Got status ${badRole.status}`,
     );
 
+    console.log('\n📦 SUITE 6: Shipping & Cash on Delivery');
+    // Never reach a real Shiprocket account from a test.
+    delete process.env.SHIPROCKET_EMAIL;
+    delete process.env.SHIPROCKET_PASSWORD;
+    const shipStamp = Date.now();
+    const shipOrder: any = {
+      id: `sec-ship-${shipStamp}`,
+      order_number: `BGO-SEC-${shipStamp}`,
+      user_id: admin.id,
+      status: 'processing',
+      payment_status: 'pending',
+      payment_method: 'cod',
+      total: 1079,
+      shipping_address: { name: '<script>alert(1)</script>Ravi', phone: '9876543210', line1: '1 Main Road', city: 'Srikakulam', state: 'Andhra Pradesh', postalCode: '532001', country: 'IN' },
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    };
+    db.orders.push(shipOrder);
+    db.order_items.push({ id: `${shipOrder.id}-item`, order_id: shipOrder.id, sku: 'SEC-TEE-M', title_snapshot: 'Security Tee', variant_snapshot_json: { size: 'M' }, quantity: 1, unit_price: 999, total: 999 });
+
+    const labelAnon = await fetch(`${BASE_URL}/shipping/label/${shipOrder.order_number}`);
+    assert(labelAnon.status === 401, 'Shipping', 'Shipping labels (customer name, phone, address) need a staff login', `HTTP ${labelAnon.status}`);
+    const labelStaff = await fetch(`${BASE_URL}/shipping/label/${shipOrder.order_number}`, { headers: asUser(admin.token) });
+    const labelHtml = await labelStaff.text();
+    assert(
+      labelStaff.status === 200 && !labelHtml.includes('<script>alert(1)') && labelHtml.includes('&lt;script&gt;'),
+      'Shipping',
+      'Customer-entered text on labels is escaped',
+      `HTTP ${labelStaff.status}`,
+    );
+    assert(
+      labelHtml.includes('Security Tee') && labelHtml.includes('COD · COLLECT ₹1079') && !labelHtml.includes('29AABCB1234F1Z8') && !labelHtml.includes('Bangalore'),
+      'Shipping',
+      'Labels show the real items, the COD amount to collect and the real return address',
+    );
+
+    const courierHook = (key: string) =>
+      fetch(`${BASE_URL}/shipping/shiprocket/webhook`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'x-api-key': key },
+        body: JSON.stringify({ order_id: shipOrder.order_number, current_status: 'DELIVERED' }),
+      });
+    const savedHookToken = process.env.SHIPROCKET_WEBHOOK_TOKEN;
+    process.env.SHIPROCKET_WEBHOOK_TOKEN = 'sec-webhook-token';
+    const forgedHook = await courierHook('guess');
+    assert(forgedHook.status === 401 && shipOrder.status === 'processing', 'Shipping', 'Courier webhook without the shared token is rejected', `HTTP ${forgedHook.status}`);
+    const realHook = await courierHook('sec-webhook-token');
+    assert(
+      realHook.status < 300 && shipOrder.status === 'delivered' && Boolean(shipOrder.delivered_at),
+      'Shipping',
+      'Courier "delivered" goes through the normal status flow (delivered_at set, so the review request follows)',
+      `HTTP ${realHook.status}, status ${shipOrder.status}`,
+    );
+    if (savedHookToken === undefined) delete process.env.SHIPROCKET_WEBHOOK_TOKEN;
+    else process.env.SHIPROCKET_WEBHOOK_TOKEN = savedHookToken;
+
+    const awbAttempt = await fetch(`${BASE_URL}/shipping/shiprocket/generate-awb/${shipOrder.id}`, { method: 'POST', headers: asUser(admin.token) });
+    assert(awbAttempt.status === 503 && !shipOrder.tracking_number, 'Shipping', 'Without Shiprocket no tracking number is invented or sent to the customer', `HTTP ${awbAttempt.status}`);
+
+    // Custom prints are prepaid only, whatever the page sends.
+    const { CheckoutService } = await import('../src/checkout/checkout.service');
+    const checkout = app.get(CheckoutService);
+    const codVariant = { id: `sec-cod-var-${shipStamp}`, product_id: `sec-cod-prod-${shipStamp}`, sku: 'SEC-COD', size: 'M', color: 'Black', price: 999, stock_quantity: 5, reserved_quantity: 0 };
+    db.product_variants.push(codVariant);
+    db.carts.push({ id: `sec-cod-cart-${shipStamp}`, user_id: admin.id, created_at: new Date().toISOString() });
+    db.cart_items.push({ id: `sec-cod-item-${shipStamp}`, cart_id: `sec-cod-cart-${shipStamp}`, variant_id: codVariant.id, quantity: 1, customization_id: 'sec-custom-print' });
+    let codError = '';
+    try {
+      checkout.validateAndCalculate({ cartId: `sec-cod-cart-${shipStamp}`, paymentMethod: 'cod', shippingAddress: shipOrder.shipping_address } as any, { userId: admin.id } as any);
+    } catch (err: any) {
+      codError = err?.response?.code || err?.message || 'error';
+    }
+    assert(codError === 'COD_NOT_AVAILABLE', 'Checkout', 'Cash on delivery is refused for custom printed items', codError || 'accepted');
+
     db.users = db.users.filter((u) => ![support.id, productManager.id, admin.id].includes(u.id));
 
     // ═════════════════════════════════════════════════════════════════════

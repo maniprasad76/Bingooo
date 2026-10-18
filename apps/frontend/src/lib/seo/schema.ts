@@ -56,7 +56,7 @@ export function generateOrganizationSchema() {
     logo: `${SITE_URL}/brand-logo.png`,
     image: `${SITE_URL}/brand-logo.png`,
     description:
-      'Contemporary Indian luxury menswear crafted with 240 to 280 GSM heavyweight cotton and bespoke 3D custom apparel.',
+      'Contemporary Indian luxury menswear crafted with 240 to 280 GSM heavyweight cotton and bespoke custom apparel.',
     keywords:
       'oversized t-shirts for men, 240 gsm oversized t shirt, heavyweight streetwear india, custom oversized t shirt printing india, drop shoulder t-shirt, 380 gsm fleece hoodie',
     knowsAbout: [
@@ -64,7 +64,7 @@ export function generateOrganizationSchema() {
       'Oversized Streetwear',
       'DTF Custom Printing',
       'Heavyweight Hoodies',
-      '3D Apparel Design',
+      'Custom Apparel Design',
     ],
     telephone: '+91-7981787317',
     email: 'bingooo.sklm@gmail.com',

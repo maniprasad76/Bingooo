@@ -1,10 +1,11 @@
 import { useEffect, useState, useRef } from 'react';
-import { api, resolveImageUrl } from '../lib/api';
+import { api, resolveImageUrl, STOREFRONT_URL } from '../lib/api';
 import { useToast } from '../components/Toast';
 import {
   PrintAreaPreview,
   printAreasFor,
   checkGarmentPhoto,
+  shrinkGarmentPhoto,
   CHECKERBOARD,
   type PrintAreas,
 } from '../components/PrintAreaPreview';
@@ -432,7 +433,7 @@ export function CustomizerStudioPage() {
       applyConfig(saved);
       setHasUnsavedChanges(false);
       setShowColorModal(false);
-      toast.success('Saved & Published Live!', `"${newColor.name}" is now live on http://localhost:5173/customize`);
+      toast.success('Saved & Published Live!', `"${newColor.name}" is now live on ${STOREFRONT_URL}/customize`);
       setStatusMessage({
         type: 'success',
         text: `Published! "${newColor.name}" images are now visible on the storefront custom studio.`,
@@ -490,7 +491,7 @@ export function CustomizerStudioPage() {
       // Goes through the API (not a relative URL, which on the deployed admin
       // hits the admin's own domain). No base64 fallback: embedding the image
       // in the studio config bloats the database and hides the failure.
-      const { url: finalUrl } = await api.upload(file, 'garments');
+      const { url: finalUrl } = await api.upload(await shrinkGarmentPhoto(file), 'garments');
       if (!finalUrl) throw new Error('Upload did not return an image URL.');
 
       if (colorId === MODAL_UPLOAD) {
@@ -666,7 +667,7 @@ export function CustomizerStudioPage() {
 
         <div className="flex items-center gap-2.5">
           <a
-            href="http://localhost:5173/customize"
+            href={`${STOREFRONT_URL}/customize`}
             target="_blank"
             rel="noopener noreferrer"
             className="btn-outline text-xs gap-1.5 font-bold"
@@ -1269,7 +1270,7 @@ export function CustomizerStudioPage() {
                       {hasUnsavedChanges ? '⚠️ You have unsaved image or colorway changes' : '✓ All colorways and photos are published'}
                     </div>
                     <p className="text-[11px] text-[#6F6A63] mt-0.5">
-                      Save to immediately reflect your front and back mockup images on the customer customizer (http://localhost:5173/customize).
+                      Save to immediately reflect your front and back mockup images on the customer customizer ({STOREFRONT_URL}/customize).
                     </p>
                   </div>
                   <button
@@ -1509,7 +1510,7 @@ export function CustomizerStudioPage() {
                       {hasUnsavedChanges ? '⚠️ You have unsaved size or measurement changes' : '✓ All sizes and measurements are saved'}
                     </div>
                     <p className="text-[11px] text-[#6F6A63] mt-0.5">
-                      Save to update available size selectors and size chart tables on http://localhost:5173/customize.
+                      Save to update available size selectors and size chart tables on {STOREFRONT_URL}/customize.
                     </p>
                   </div>
                   <button
@@ -1702,7 +1703,7 @@ export function CustomizerStudioPage() {
                         {hasUnsavedChanges ? '⚠️ You have unsaved print area or garment changes' : '✓ Custom studio is ready and live'}
                       </div>
                       <p className="text-[11px] text-[#6F6A63] mt-0.5">
-                        Save all changes to update the live customer studio on http://localhost:5173/customize.
+                        Save all changes to update the live customer studio on {STOREFRONT_URL}/customize.
                       </p>
                     </div>
                     <button
@@ -1937,7 +1938,7 @@ export function CustomizerStudioPage() {
                 Unsaved Studio Changes Ready to Publish
               </div>
               <div className="text-[10px] text-[#F7EEDB]/80 truncate hidden sm:block">
-                Click Save to immediately display your uploaded images on http://localhost:5173/customize
+                Click Save to immediately display your uploaded images on {STOREFRONT_URL}/customize
               </div>
             </div>
           </div>

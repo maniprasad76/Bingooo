@@ -206,7 +206,7 @@ export function PrivacyPolicyPage() {
                 </h3>
               </div>
               <p className="max-w-[300px] m-0 text-[#6f6a63] text-[11px] leading-[1.7]">
-                Artwork and typography uploaded to our 3D Customizer Studio remain strictly confidential. Your designs are used solely to produce your custom piece.
+                Artwork and typography uploaded to our Custom Studio remain strictly confidential. Your designs are used solely to produce your custom piece.
               </p>
             </article>
 
@@ -251,7 +251,7 @@ export function PrivacyPolicyPage() {
           </h2>
 
           <p className="max-w-[410px] m-0 mb-[30px] text-[#aaa7a1] text-[12px] leading-[1.8]">
-            When you upload illustrations, band logos, or custom text to our 3D Studio, you retain 100% of your copyright. We do not exhibit or reproduce your graphics on public collections without your written consent.
+            When you upload illustrations, band logos, or custom text to our Custom Studio, you retain 100% of your copyright. We do not exhibit or reproduce your graphics on public collections without your written consent.
           </p>
 
           <div>
@@ -297,7 +297,7 @@ export function PrivacyPolicyPage() {
                   <strong className="text-[#171717]">Order Records:</strong> Items purchased, size selections, billing amounts, order timestamps, and invoice records for warranty and accounting.
                 </p>
                 <p>
-                  <strong className="text-[#171717]">Studio Uploads:</strong> High-resolution artwork files, image dimensions, and text customization coordinates configured in our 3D garment creator.
+                  <strong className="text-[#171717]">Studio Uploads:</strong> High-resolution artwork files, image dimensions, and text customization coordinates configured in our custom studio.
                 </p>
               </div>
             </article>

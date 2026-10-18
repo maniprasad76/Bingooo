@@ -287,7 +287,7 @@ export function SearchPage() {
                 NO PIECES MATCH "{searchQuery}"
               </h3>
               <p className="max-w-[420px] mx-auto text-xs text-[#6f6a63] leading-relaxed mb-6">
-                Try searching for generic terms like "tee", "hoodie", "oversized", or design your own bespoke piece in our 3D Studio.
+                Try searching for generic terms like "tee", "hoodie", "oversized", or design your own bespoke piece in our Custom Studio.
               </p>
               <div className="flex flex-wrap items-center justify-center gap-3">
                 <button
@@ -378,7 +378,7 @@ export function SearchPage() {
               <Truck size={24} className="text-[#171717] shrink-0 stroke-[1.5]" />
               <div>
                 <div className="text-[9px] font-extrabold uppercase text-[#171717]">Fast Shipping</div>
-                <div className="text-[9px] text-[#6f6a63]">Free delivery on all orders</div>
+                <div className="text-[9px] text-[#6f6a63]">Free delivery on prepaid orders</div>
               </div>
             </div>
 

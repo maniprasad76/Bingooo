@@ -1406,28 +1406,5 @@
     ],
     "updatedAt": "2026-10-10T19:01:22.846Z"
   },
-  "users": [
-    {
-      "id": "admin-super-root",
-      "email": "admin@bingooo.in",
-      "full_name": "Super Admin",
-      "role": "SUPER_ADMIN",
-      "status": "active",
-      "password_hash": "pbkdf2$100000$524485714df3d4732dc7d51e7b64bc06$1aef5a6edafc42b5e6752956a103acf58e06c920ebf73d865dca63de04a74781bbcbd45f60ecf9da83bfc20419e7b76f3aa0e8b64f4f9a74c2631b2bc834d25d",
-      "updated_at": "2026-10-09T13:36:49.591Z",
-      "fullName": "Bingooo Super Admin"
-    },
-    {
-      "id": "a5e27e8a-6f49-4b0a-aaa4-ea436471203f",
-      "email": "basaprasaduu@gmail.com",
-      "full_name": "Mani Prasad",
-      "phone": "",
-      "role": "SUPER_ADMIN",
-      "status": "active",
-      "password_hash": "pbkdf2$100000$524485714df3d4732dc7d51e7b64bc06$1aef5a6edafc42b5e6752956a103acf58e06c920ebf73d865dca63de04a74781bbcbd45f60ecf9da83bfc20419e7b76f3aa0e8b64f4f9a74c2631b2bc834d25d",
-      "created_at": "2026-10-09T02:26:36.067Z",
-      "updated_at": "2026-10-09T13:36:49.593Z",
-      "fullName": "Prasad"
-    }
-  ]
+  "users": []
 }

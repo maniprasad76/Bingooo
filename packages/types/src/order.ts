@@ -6,6 +6,8 @@
 export type OrderStatus =
   | 'pending_payment'
   | 'paid'
+  /** Cash on delivery: placed and accepted, paid at the door. */
+  | 'confirmed'
   | 'processing'
   | 'packed'
   | 'shipped'

@@ -247,7 +247,7 @@ export function TermsPage() {
               </div>
               <div className="space-y-3 text-[13px] leading-[1.8] text-[#6f6a63]">
                 <p>
-                  Our 3D Customizer Lab produces bespoke garments tailored to your specifications. Due to the permanent nature of textile printing, custom pieces cannot be cancelled once heat-press curing begins.
+                  Our Custom Studio produces bespoke garments tailored to your specifications. Due to the permanent nature of textile printing, custom pieces cannot be cancelled once heat-press curing begins.
                 </p>
                 <p>
                   Customers must ensure artwork resolution is high (minimum 300 DPI recommended). Slight visual color variations between digital monitor displays and physical fabric ink absorption fall within acceptable craft tolerances.

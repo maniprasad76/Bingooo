@@ -1,6 +1,6 @@
 import { useEffect, useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
-import { api, resolveImageUrl } from '../lib/api';
+import { api, resolveImageUrl, STOREFRONT_URL } from '../lib/api';
 import {
   Plus,
   Pencil,
@@ -106,14 +106,14 @@ export function ProductsPage() {
             </span>
             <span className="text-[#171717]/40 font-mono">•</span>
             <span className="text-[10px] font-mono font-bold uppercase tracking-widest text-[#6F6A63] whitespace-nowrap">
-              {stats.total} TOTAL • {stats.active} LIVE • {stats.customizable} 3D BESPOKE
+              {stats.total} TOTAL • {stats.active} LIVE • {stats.customizable} CUSTOMIZABLE
             </span>
           </div>
           <h1 className="text-2xl font-black uppercase tracking-tight text-[#171717] font-sans mt-0.5">
             Products Workshop<span className="text-[#E6321C]">.</span>
           </h1>
           <p className="text-xs text-[#6F6A63] mt-0.5">
-            Manage heavy-duty tees, hoodies, oversize drops, and bespoke 3D customizer garments.
+            Manage heavy-duty tees, hoodies, oversize drops and customizable garments.
           </p>
         </div>
 
@@ -239,7 +239,7 @@ export function ProductsPage() {
                             )}
                             {p.customization_enabled && (
                               <span className="absolute top-0 right-0 px-1 py-0.5 text-[8px] font-mono font-black uppercase bg-[#E6321C] text-white border-b border-l border-[#171717]">
-                                3D
+                                STUDIO
                               </span>
                             )}
                           </div>
@@ -343,7 +343,7 @@ export function ProductsPage() {
                       <td className="text-right">
                         <div className="flex items-center justify-end gap-1.5">
                           <a
-                            href={`http://localhost:5173/product/${p.slug}`}
+                            href={`${STOREFRONT_URL}/product/${p.slug}`}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="btn-outline p-1.5 text-[#171717] hover:bg-[#171717] hover:text-white"

@@ -3,9 +3,10 @@ import { ShippingController } from './shipping.controller';
 import { ShippingService } from './shipping.service';
 import { ShiprocketService } from './shiprocket.service';
 import { NotificationsModule } from '../notifications/notifications.module';
+import { OrdersModule } from '../orders/orders.module';
 
 @Module({
-  imports: [NotificationsModule],
+  imports: [NotificationsModule, OrdersModule],
   controllers: [ShippingController],
   providers: [ShippingService, ShiprocketService],
   exports: [ShippingService, ShiprocketService],

@@ -129,7 +129,8 @@ export function contrastFor(hex: string): '#FFFFFF' | '#171717' {
 export function cleanImageUrl(value: unknown): { url: string; rejected: boolean } {
   const raw = text(value, 2048);
   if (!raw || raw.startsWith('/custom/')) return { url: '', rejected: false };
-  if (raw.startsWith('/')) return { url: raw, rejected: false };
+  // Site-relative paths only: '//host/x.png' is another site's image.
+  if (raw.startsWith('/') && !raw.startsWith('//')) return { url: raw, rejected: false };
   try {
     const url = new URL(raw);
     const local = url.hostname === 'localhost' || url.hostname === '127.0.0.1';

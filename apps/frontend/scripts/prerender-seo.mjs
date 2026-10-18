@@ -271,9 +271,9 @@ function writePage(routePath, html) {
 // ── Content blocks ──────────────────────────────────────────────────────────
 
 const POLICY_FACTS = [
-  'Free delivery on every order across India (typically 3–7 business days).',
+  'Free delivery on every prepaid order across India (typically 3–7 business days); cash on delivery adds ₹80.',
   `${POLICY.returnDays}-day easy size exchange with free doorstep pickup.`,
-  'Secure prepaid checkout via UPI, cards and net banking (Razorpay) — 5% off every prepaid order. No cash on delivery.',
+  'Pay online via UPI, cards and net banking (Razorpay) for 5% off, or cash on delivery (not for custom printed items).',
 ];
 
 const nav = (crumbs) =>
@@ -351,7 +351,7 @@ function catalogOverview(categories, productsByCategory, products) {
 const FAQS = [
   ['Which GSM is best for oversized t-shirts in India?', '240 to 280 GSM 100% combed cotton is the sweet spot for oversized t-shirts. Lighter 160–180 GSM tees cling and lose shape, while 240 GSM gives a structured, boxy drop-shoulder drape that still breathes in Indian weather and holds its shape wash after wash.'],
   ['Where can I buy heavyweight oversized t-shirts for men in India?', 'Bingooo (bingooo.co.in) makes 240 GSM heavyweight oversized t-shirts and streetwear in 100% combed cotton, with secure prepaid checkout and free delivery across India.'],
-  ['Is Cash on Delivery (COD) available?', 'No. Bingooo is a prepaid-only store. Pay securely by UPI, card or net banking through Razorpay and get 5% off every prepaid order.'],
+  ['Is Cash on Delivery (COD) available?', 'Yes. Cash on delivery is available across India for ₹80 extra (not for custom printed items). Prefer to pay online? UPI, cards and net banking get an instant 5% discount and free delivery.'],
   ['How long does delivery take, and is it free?', 'Delivery is free on every order across India and usually takes 3 to 7 business days depending on your location. You can track your order on the Track Order page.'],
   ['What is the return and exchange policy?', `You can request a size exchange within ${POLICY.returnDays} days of delivery, with free doorstep pickup. Items must be unworn and unwashed with tags attached. Damaged or misprinted items are replaced or refunded — message us within 48 hours of delivery.`],
   ['Can I customize an oversized t-shirt with my own artwork?', 'Yes. The Bingooo design studio lets you add your own text or artwork to a heavyweight blank, preview it live, and order with no minimum quantity.'],
@@ -362,7 +362,7 @@ const STATIC_PAGES = [
     path: 'customize',
     routeChunk: 'src/pages/CustomizerPage.tsx',
     title: formatSeoTitle('Custom T-Shirt Printing Online in India — Design Studio'),
-    description: 'Design your own oversized t-shirt online. Add text or artwork, choose from 48 fonts, preview it live and order with no minimum quantity. Free delivery across India.',
+    description: 'Design your own oversized t-shirt or hoodie online. Upload your artwork for the front and back, preview it on the real garment and order on WhatsApp with no minimum quantity.',
     schema: {
       '@context': 'https://schema.org',
       '@type': 'Service',
@@ -412,7 +412,7 @@ const STATIC_PAGES = [
   {
     path: 'shipping-policy',
     routeChunk: 'src/pages/ShippingPolicyPage.tsx',
-    title: formatSeoTitle('Shipping Policy — Free Delivery Across India'),
+    title: formatSeoTitle('Shipping Policy — Free Delivery on Prepaid Orders'),
     description: 'Bingooo ships free to every pincode we serve in India. Orders are packed within 1–2 days and usually arrive in 3–7 business days, with tracking.',
     body: `<h1>Shipping Policy</h1>${policyList()}<p>Track any order on the <a href="/track-order">Track Order</a> page.</p>`,
   },
@@ -445,7 +445,7 @@ const addToSitemap = (loc, { lastmod = TODAY, priority = '0.6', changefreq = 'we
 // SPA shell for every non-prerendered route: no canonical, no homepage FAQ.
 fs.writeFileSync(path.join(DIST_DIR, 'app.html'), renderPage({
   title: formatSeoTitle(null),
-  description: 'Bingooo — heavyweight oversized t-shirts, hoodies and custom streetwear. Free delivery across India.',
+  description: 'Bingooo — heavyweight oversized t-shirts, hoodies and custom streetwear. Free delivery on prepaid orders across India.',
 }), 'utf-8');
 
 // Homepage: keep its FAQ markup (the homepage shows those questions) and add crawlable links.
@@ -467,7 +467,7 @@ pageCount++;
 // Shop
 writePage('shop', renderPage({
   title: formatSeoTitle('Shop Oversized T-Shirts, Hoodies & Streetwear Online in India'),
-  description: 'Shop Bingooo streetwear: heavyweight oversized t-shirts, hoodies and more in premium cotton. Secure prepaid checkout, free delivery across India and 7-day easy exchange.',
+  description: 'Shop Bingooo streetwear: heavyweight oversized t-shirts, hoodies and more in premium cotton. Free delivery on prepaid orders, cash on delivery available and 7-day easy exchange.',
   canonical: `${SITE_URL}/shop`,
   routeChunk: 'src/pages/ShopPage.tsx',
   schemas: [

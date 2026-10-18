@@ -36,28 +36,39 @@ function generateSvgBarcode(code: string, width = 280, height = 50): string {
   `;
 }
 
-export function generateThermalShippingLabelHtml(order: any): string {
-  const awb = order?.tracking_number || `BNG${Date.now().toString().slice(-8)}`;
-  const orderNumber = order?.order_number || order?.id || 'ORD-0001';
-  const carrier = order?.carrier || 'Delhivery Express';
+/** Customer-entered text goes into HTML: escape it. */
+const esc = (value: unknown) =>
+  String(value ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]!);
+
+/** Return address for undelivered parcels (the address published on the website). */
+const CONSIGNOR = process.env.SHIP_FROM_ADDRESS || 'BINGOOO, 7 Roads Junction, Main Road, Srikakulam, Andhra Pradesh - 532001';
+const CONSIGNOR_PHONE = process.env.SHIP_FROM_PHONE || '+91 79817 87317';
+
+/** `items` are the order's rows from db.order_items. */
+export function generateThermalShippingLabelHtml(order: any, items: any[]): string {
+  // Barcode the AWB once assigned; until then the order number (still scannable at packing).
+  const orderNumber = esc(order?.order_number || order?.id);
+  const awb = order?.tracking_number || order?.order_number || order?.id || '';
+  const carrier = esc(order?.carrier || 'Courier to be assigned');
   const orderDate = new Date(order?.created_at || Date.now()).toLocaleDateString('en-IN', {
     day: '2-digit',
     month: 'short',
     year: 'numeric',
   });
 
-  const addr = order?.shipping_address || {};
-  const recipientName = addr.name || order?.customer_name || 'Customer';
-  const recipientPhone = addr.phone || order?.customer_phone || 'N/A';
-  const addressLine = [addr.line1, addr.line2, addr.address, addr.street].filter(Boolean).join(', ') || 'Address Line';
-  const city = addr.city || 'Bangalore';
-  const state = addr.state || 'Karnataka';
-  const pincode = addr.postal_code || addr.postalCode || addr.pincode || '560001';
+  // Checkout requires every address field, so there are no stand-in values.
+  const addr = order?.shipping_address || order?.address_snapshot_json || {};
+  const recipientName = esc(addr.name);
+  const recipientPhone = esc(addr.phone);
+  const addressLine = esc([addr.line1, addr.line2].filter(Boolean).join(', '));
+  const city = esc(addr.city);
+  const state = esc(addr.state);
+  const pincode = esc(addr.postalCode || addr.postal_code || addr.pincode);
 
-  const items = Array.isArray(order?.items) ? order.items : [];
   const itemCount = items.reduce((sum: number, it: any) => sum + (it.quantity || 1), 0) || 1;
   const weight = (0.45 * itemCount).toFixed(2);
-  const totalAmount = Math.round(order?.total_amount || 0);
+  const totalAmount = Math.round(order?.total ?? order?.total_amount ?? 0);
+  const isCod = order?.payment_method === 'cod';
 
   const barcodeSvg = generateSvgBarcode(awb, 300, 52);
 
@@ -329,12 +340,12 @@ export function generateThermalShippingLabelHtml(order: any): string {
         </tr>
       </thead>
       <tbody>
-        ${(items.length > 0 ? items : [{ title: '240 GSM Oversized Streetwear Tee', size: 'L', quantity: 1 }])
+        ${items
           .map((item: any) => `
             <tr>
-              <td>${item.product_name || item.title || 'Streetwear Apparel'}</td>
-              <td style="text-align:center;font-weight:bold;">${item.size || 'L'}</td>
-              <td style="text-align:center;font-weight:bold;">${item.quantity || 1}</td>
+              <td>${esc(item.title_snapshot || item.product_name || item.title)}</td>
+              <td style="text-align:center;font-weight:bold;">${esc(item.variant_snapshot_json?.size || item.size)}</td>
+              <td style="text-align:center;font-weight:bold;">${esc(item.quantity || 1)}</td>
             </tr>
           `).join('')}
       </tbody>
@@ -344,12 +355,11 @@ export function generateThermalShippingLabelHtml(order: any): string {
     <div class="consignor-row">
       <div class="consignor-text">
         <div class="section-title">Return If Undelivered (Consignor)</div>
-        <strong>BINGOOO ATELIER LOGISTICS HUB</strong><br />
-        #42, 4th Cross, Indiranagar Industrial Area, Bangalore - 560038<br />
-        GSTIN: 29AABCB1234F1Z8 · Care: +91 99000 88000
+        ${esc(CONSIGNOR)}<br />
+        Phone: ${esc(CONSIGNOR_PHONE)}
       </div>
       <div class="watermark">
-        PREPAID · ₹${totalAmount}
+        ${isCod ? `COD · COLLECT ₹${totalAmount}` : `PREPAID · ₹${totalAmount}`}
       </div>
     </div>
   </div>

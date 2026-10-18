@@ -109,7 +109,7 @@ export function productSeoDescription(product) {
   if (description.length >= 50) return truncate(description, 160);
   const facts = [product.fabric, product.fit].map(stripHtml).filter(Boolean).join(', ');
   return truncate(
-    `Buy ${stripHtml(product.title)} online at Bingooo${facts ? ` — ${facts}` : ''}. Free delivery across India and ${POLICY.returnDays}-day easy exchange.`,
+    `Buy ${stripHtml(product.title)} online at Bingooo${facts ? ` — ${facts}` : ''}. Free delivery on prepaid orders and ${POLICY.returnDays}-day easy exchange.`,
     160,
   );
 }
@@ -213,7 +213,7 @@ export function categorySeoDescription(category, productCount = 0) {
   if (custom.length >= 50) return truncate(custom, 160);
   const name = stripHtml(category.name);
   return truncate(
-    `Shop ${productCount > 0 ? `${productCount} ` : ''}${name.toLowerCase()} from Bingooo — premium cotton streetwear. Secure prepaid checkout, free delivery across India and ${POLICY.returnDays}-day easy exchange.`,
+    `Shop ${productCount > 0 ? `${productCount} ` : ''}${name.toLowerCase()} from Bingooo — premium cotton streetwear. Free delivery on prepaid orders, cash on delivery available across India and ${POLICY.returnDays}-day easy exchange.`,
     160,
   );
 }
@@ -265,7 +265,7 @@ export function localBusinessSchema() {
     image: `${SITE_URL}/brand-logo.png`,
     logo: `${SITE_URL}/brand-logo.png`,
     description:
-      'Bingooo is India\'s premier heavyweight menswear brand offering 240–280 GSM oversized t-shirts, drop-shoulder hoodies, and bespoke custom-printed apparel engineered in our 3D Atelier. Located at 7 Roads Junction, Srikakulam, Andhra Pradesh.',
+      'Bingooo is India\'s premier heavyweight menswear brand offering 240–280 GSM oversized t-shirts, drop-shoulder hoodies, and bespoke custom-printed apparel made in our Srikakulam atelier. Located at 7 Roads Junction, Srikakulam, Andhra Pradesh.',
     keywords:
       'oversized t-shirts for men, 240 gsm oversized t shirt, heavyweight streetwear, custom t-shirt printing, drop shoulder t-shirt, mens clothing store srikakulam, streetwear andhra pradesh',
     knowsAbout: [
@@ -275,7 +275,7 @@ export function localBusinessSchema() {
       'DTF Custom Printing',
       'Heavyweight Hoodies',
       'Drop Shoulder Silhouettes',
-      '3D Garment Atelier',
+      'Custom Garment Studio',
     ],
     telephone: '+91-7981787317',
     email: 'bingooo.sklm@gmail.com',

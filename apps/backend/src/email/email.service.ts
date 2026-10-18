@@ -262,7 +262,7 @@ export class EmailService {
 
     const body = `
       <h1 style="margin:0 0 6px;font-size:22px;font-weight:800;color:${BRAND.charcoal};letter-spacing:-0.5px;">Order confirmed</h1>
-      <p style="margin:0 0 24px;font-size:14px;color:#6B6356;">Hi ${escapeHtml(firstName)}, thank you for shopping with us. We've received your payment and your order is confirmed.</p>
+      <p style="margin:0 0 24px;font-size:14px;color:#6B6356;">Hi ${escapeHtml(firstName)}, thank you for shopping with us. ${params.paymentMethod === 'Cash on delivery' ? `Your order is confirmed. Please pay ${escapeHtml(formatINR(params.total))} in cash or UPI when it's delivered.` : "We've received your payment and your order is confirmed."}</p>
 
       <!-- Order number badge -->
       <div style="background-color:rgba(23,23,23,0.04);border-radius:8px;padding:16px 20px;margin-bottom:28px;display:flex;justify-content:space-between;align-items:center;">

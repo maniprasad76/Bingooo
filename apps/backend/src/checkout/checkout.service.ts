@@ -94,6 +94,13 @@ export class CheckoutService {
     const discountedSubtotal = Math.max(0, subtotal - discount);
 
     const isCod = dto.paymentMethod === 'cod';
+    // Custom prints can't be resold if refused at the door: prepaid only.
+    if (isCod && validatedItems.some((i: any) => i.customizationId)) {
+      throw new BadRequestException({
+        code: 'COD_NOT_AVAILABLE',
+        message: 'Cash on delivery is not available for custom printed items. Please pay online.',
+      });
+    }
     const prepaidPct = Number(db.settings.prepaid_discount_percentage) || 5;
     const prepaidDiscount = isCod ? 0 : Math.round(discountedSubtotal * (prepaidPct / 100));
     const shippingFee = isCod ? 80 : 0;

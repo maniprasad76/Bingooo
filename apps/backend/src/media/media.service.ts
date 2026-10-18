@@ -104,7 +104,8 @@ export class MediaService {
     if (isRemoteStorageEnabled()) {
       const key = `uploads/${filename}`;
       try {
-        await uploadObject(PUBLIC_MEDIA_BUCKET, key, buffer, mimetype);
+        // Unique file names, so the content never changes: cache for a year.
+        await uploadObject(PUBLIC_MEDIA_BUCKET, key, buffer, mimetype, 'max-age=31536000');
       } catch (err) {
         console.error('[Media] Remote upload failed:', (err as Error).message);
         throw new ServiceUnavailableException({ code: 'UPLOAD_FAILED', message: 'Image storage is unavailable. Please try again.' });

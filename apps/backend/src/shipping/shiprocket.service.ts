@@ -1,6 +1,6 @@
-import { Injectable, Logger, NotFoundException, BadRequestException } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException, BadRequestException, ServiceUnavailableException } from '@nestjs/common';
 import { db, saveDb } from '../common/database/store';
-import { WhatsAppService } from '../notifications/whatsapp.service';
+import { OrdersService } from '../orders/orders.service';
 
 export interface ShiprocketCredentials {
   email?: string;
@@ -23,7 +23,9 @@ export class ShiprocketService {
   private tokenExpiresAt: number = 0;
   private readonly apiBase = 'https://apiv2.shiprocket.in/v1/external';
 
-  constructor(private readonly whatsAppService: WhatsAppService) {}
+  constructor(
+    private readonly ordersService: OrdersService,
+  ) {}
 
   /**
    * Acquire or reuse JWT token for Shiprocket API v2
@@ -160,15 +162,25 @@ export class ShiprocketService {
     }
 
     const token = await this.getAuthToken();
-    const addr = order.shipping_address || {};
-    const recipientName = addr.name || order.customer_name || 'Valued Customer';
-    const recipientPhone = addr.phone || order.customer_phone || '9999999999';
+    // Real order data only: a wrong address, amount or payment type costs a parcel or the cash.
+    const addr = order.shipping_address || order.address_snapshot_json || {};
+    const recipientName = String(addr.name || '').trim();
+    const recipientPhone = String(addr.phone || '').replace(/[^0-9]/g, '').slice(-10);
+    const pincode = String(addr.postalCode || addr.postal_code || addr.pincode || '').trim();
+    const items = db.order_items.filter((i) => i.order_id === order.id);
+    if (!recipientName || recipientPhone.length !== 10 || !addr.line1 || !addr.city || !pincode || items.length === 0) {
+      throw new BadRequestException({
+        code: 'ORDER_NOT_SHIPPABLE',
+        message: 'This order is missing its delivery address, phone or items, so it cannot be sent to Shiprocket.',
+      });
+    }
+    const customerEmail = db.users.find((u) => u.id === order.user_id)?.email || '';
 
-    const orderItems = (order.items || []).map((item: any, idx: number) => ({
-      name: item.product_name || item.title || 'Heavyweight Garment',
-      sku: item.sku || `BNG-${idx + 1}`,
+    const orderItems = items.map((item: any) => ({
+      name: item.title_snapshot || item.sku,
+      sku: item.sku,
       units: item.quantity || 1,
-      selling_price: Math.round(item.unit_price || item.price || 999),
+      selling_price: Math.round(item.unit_price || 0),
       discount: 0,
       tax: 0,
       hsn: 610910,
@@ -177,36 +189,34 @@ export class ShiprocketService {
     const payload = {
       order_id: order.order_number || order.id,
       order_date: new Date(order.created_at || Date.now()).toISOString().slice(0, 10),
-      pickup_location: 'Primary Warehouse',
+      // Must match a pickup location name in the Shiprocket dashboard.
+      pickup_location: process.env.SHIPROCKET_PICKUP_LOCATION || 'Primary Warehouse',
       channel_id: '',
       comment: 'BINGOOO 240 GSM Luxury Streetwear',
-      billing_customer_name: recipientName.split(' ')[0] || 'Customer',
-      billing_last_name: recipientName.split(' ').slice(1).join(' ') || 'Bingooo',
-      billing_address: [addr.line1, addr.address, addr.street].filter(Boolean).join(' ') || 'Street Address',
+      billing_customer_name: recipientName.split(' ')[0],
+      billing_last_name: recipientName.split(' ').slice(1).join(' '),
+      billing_address: addr.line1,
       billing_address_2: addr.line2 || '',
-      billing_city: addr.city || 'Bangalore',
-      billing_pincode: addr.postal_code || addr.postalCode || addr.pincode || '560001',
-      billing_state: addr.state || 'Karnataka',
+      billing_city: addr.city,
+      billing_pincode: pincode,
+      billing_state: addr.state || '',
       billing_country: 'India',
-      billing_email: order.customer_email || 'orders@bingooo.in',
-      billing_phone: recipientPhone.replace(/[^0-9]/g, '').slice(-10) || '9876543210',
+      billing_email: customerEmail,
+      billing_phone: recipientPhone,
       shipping_is_billing: true,
-      order_items: orderItems.length > 0 ? orderItems : [{
-        name: 'BINGOOO Apparel Item',
-        sku: 'BNG-001',
-        units: 1,
-        selling_price: Math.round(order.total_amount || 999),
-      }],
-      payment_method: 'Prepaid',
+      order_items: orderItems,
+      // COD tells the courier to collect sub_total in cash at the door.
+      payment_method: order.payment_method === 'cod' ? 'COD' : 'Prepaid',
       shipping_charges: 0,
       giftwrap_charges: 0,
       transaction_charges: 0,
-      total_discount: Math.round(order.discount_amount || 0),
-      sub_total: Math.round(order.total_amount || 999),
+      total_discount: 0,
+      // The final order total (discounts and COD fee already applied).
+      sub_total: Math.round(order.total || 0),
       length: 30,
       breadth: 25,
       height: 5,
-      weight: 0.45 * Math.max(1, order.items?.length || 1),
+      weight: 0.45 * Math.max(1, items.reduce((n: number, i: any) => n + (i.quantity || 1), 0)),
     };
 
     if (token) {
@@ -234,23 +244,13 @@ export class ShiprocketService {
       }
     }
 
-    // Sandbox / Mock simulation fallback
-    const mockShipmentId = 1000000 + Math.floor(Math.random() * 900000);
-    const mockOrderId = 2000000 + Math.floor(Math.random() * 900000);
-    order.shiprocket_order_id = mockOrderId;
-    order.shiprocket_shipment_id = mockShipmentId;
-    order.status = 'processing';
-    order.updated_at = new Date().toISOString();
-    saveDb();
-
-    return {
-      success: true,
-      order_id: mockOrderId,
-      shipment_id: mockShipmentId,
-      status: 'PROCESSING',
-      status_code: 1,
-      isMock: true,
-    };
+    // Never invent a shipment: the admin must know it was not created.
+    throw new ServiceUnavailableException({
+      code: 'SHIPROCKET_UNAVAILABLE',
+      message: token
+        ? 'Shiprocket did not create the shipment. Check the order details and try again, or ship manually.'
+        : 'Shiprocket is not configured (SHIPROCKET_EMAIL / SHIPROCKET_PASSWORD). Ship manually and enter the AWB.',
+    });
   }
 
   /**
@@ -290,14 +290,8 @@ export class ShiprocketService {
           const carrier = data?.response?.data?.courier_name || 'Delhivery Express';
 
           if (awb) {
-            order.tracking_number = awb;
-            order.carrier = carrier;
-            order.status = 'shipped';
-            order.updated_at = new Date().toISOString();
-            saveDb();
-
-            // Notify customer via WhatsApp
-            this.whatsAppService.sendShippingUpdate(order).catch(() => {});
+            // Same path as a manual "shipped" update: audit log, WhatsApp and email.
+            this.ordersService.updateStatus(order.id, 'shipped', undefined, awb, carrier, { email: 'shiprocket' });
 
             return {
               success: true,
@@ -312,27 +306,13 @@ export class ShiprocketService {
       }
     }
 
-    // Sandbox / Mock simulation fallback
-    const mockCouriers = ['Delhivery Express', 'Bluedart Air', 'Xpressbees Priority', 'DTDC Express'];
-    const carrier = mockCouriers[Math.floor(Math.random() * mockCouriers.length)];
-    const mockAwb = `BNG${Date.now().toString().slice(-8)}${Math.floor(Math.random() * 90 + 10)}`;
-
-    order.tracking_number = mockAwb;
-    order.carrier = carrier;
-    order.status = 'shipped';
-    order.updated_at = new Date().toISOString();
-    saveDb();
-
-    // Trigger WhatsApp dispatch alert
-    this.whatsAppService.sendShippingUpdate(order).catch(() => {});
-
-    return {
-      success: true,
-      awb_code: mockAwb,
-      courier_name: carrier,
-      shipment_id: shipmentId || 1002345,
-      isMock: true,
-    };
+    // Never send the customer a made-up tracking number.
+    throw new ServiceUnavailableException({
+      code: 'SHIPROCKET_AWB_FAILED',
+      message: token
+        ? 'Shiprocket did not assign an AWB. Nothing was sent to the customer; try again or ship manually.'
+        : 'Shiprocket is not configured. Nothing was sent to the customer; ship manually and enter the AWB.',
+    });
   }
 
   /**
@@ -356,25 +336,10 @@ export class ShiprocketService {
       }
     }
 
-    // Local DB lookup fallback
-    const order = db.orders.find((o) => o.tracking_number?.toLowerCase() === awb.toLowerCase());
-    return {
-      tracking: {
-        track_status: 1,
-        shipment_status: order?.status ? order.status.toUpperCase() : 'SHIPPED',
-        carrier_name: order?.carrier || 'Delhivery Surface',
-        awb_code: awb,
-        current_status: order?.status === 'delivered' ? 'Delivered' : 'In Transit — Out for Delivery Soon',
-        origin: 'Bangalore Hub',
-        destination: order?.shipping_address?.city || 'Customer Destination',
-        events: [
-          { status: 'Manifest Generated', activity: 'Parcel packed at BINGOOO Dispatch Atelier', location: 'Bangalore Hub', date: new Date(Date.now() - 86400000).toISOString() },
-          { status: 'In Transit', activity: 'Arrived at sorting facility', location: 'Hub Central', date: new Date(Date.now() - 43200000).toISOString() },
-          { status: order?.status === 'delivered' ? 'Delivered' : 'Out for Delivery', activity: order?.status === 'delivered' ? 'Delivered to recipient' : 'Dispatched with delivery rider', location: order?.shipping_address?.city || 'Local Hub', date: new Date().toISOString() },
-        ],
-      },
-      isMock: true,
-    };
+    throw new ServiceUnavailableException({
+      code: 'SHIPROCKET_TRACKING_UNAVAILABLE',
+      message: 'Live courier tracking is unavailable right now. Use /shipping/track for the order status.',
+    });
   }
 
   /**
@@ -395,27 +360,14 @@ export class ShiprocketService {
       return { received: true, updated: false };
     }
 
-    let statusUpdated = false;
-    if (currentStatus.includes('DELIVERED')) {
-      order.status = 'delivered';
-      statusUpdated = true;
-    } else if (currentStatus.includes('OUT FOR DELIVERY')) {
-      order.status = 'out_for_delivery';
-      statusUpdated = true;
-    } else if (currentStatus.includes('IN TRANSIT') || currentStatus.includes('SHIPPED')) {
-      order.status = 'shipped';
-      statusUpdated = true;
-    } else if (currentStatus.includes('RTO') || currentStatus.includes('RETURN')) {
-      order.status = 'returned';
-      statusUpdated = true;
-    }
+    // RTO first: "RTO DELIVERED" means it came back to us, not that the customer got it.
+    let next: string | null = null;
+    if (currentStatus.includes('RTO') || currentStatus.includes('RETURN')) next = 'returned';
+    else if (currentStatus.includes('DELIVERED')) next = 'delivered';
+    else if (currentStatus.includes('IN TRANSIT') || currentStatus.includes('SHIPPED') || currentStatus.includes('OUT FOR DELIVERY')) next = 'shipped';
 
-    if (statusUpdated) {
-      order.updated_at = new Date().toISOString();
-      saveDb();
-      this.whatsAppService.sendShippingUpdate(order).catch(() => {});
-    }
-
-    return { received: true, updated: statusUpdated };
+    if (!next || order.status === next) return { received: true, updated: false };
+    this.ordersService.updateStatus(order.id, next, undefined, undefined, undefined, { email: 'shiprocket-webhook' });
+    return { received: true, updated: true };
   }
 }

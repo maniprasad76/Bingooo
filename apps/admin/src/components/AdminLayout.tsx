@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { STOREFRONT_URL } from '../lib/api';
 import { Outlet, NavLink, useNavigate, useLocation } from 'react-router-dom';
 import { useAuthStore } from '../store/auth';
 import { adminLogout } from '../lib/auth';
@@ -281,7 +282,7 @@ export function AdminLayout() {
 
             {/* Visit Storefront CTA */}
             <a
-              href="http://localhost:5173"
+              href={STOREFRONT_URL}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 px-3.5 py-2 rounded-md bg-[#EDE0CC] border-1.5 border-[#171717] text-xs font-mono font-black uppercase tracking-wider text-[#171717] shadow-[2px_2px_0px_#171717] hover:bg-[#E6321C] hover:text-white hover:border-[#171717] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all no-underline"

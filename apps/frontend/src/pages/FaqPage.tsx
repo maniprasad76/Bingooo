@@ -121,7 +121,7 @@ const FAQ_ITEMS: FaqItem[] = [
     category: 'payments',
     question: 'Is Cash on Delivery (COD) available?',
     answer:
-      'To guarantee priority courier dispatch, zero transit delays, and avoid cash-handling surcharges, Bingooo operates exclusively as a 100% secure prepaid store. We provide an instant 5% prepaid discount on all orders placed via UPI (Google Pay, PhonePe, Paytm), Cards, or Net Banking.',
+      'Yes. Cash on delivery is available across India for ₹80 extra (not for custom printed items). Prefer to pay online? UPI (Google Pay, PhonePe, Paytm), cards and net banking get an instant 5% discount and free delivery.',
     searchKeywords: 'cash on delivery cod payment prepaid methods discounts online razorpay upi',
   },
   {
@@ -245,7 +245,7 @@ export function FaqPage() {
     <div className="min-h-screen bg-[#F7EEDB] text-[#171717] font-sans selection:bg-[#E6321C] selection:text-white pb-12 sm:pb-20">
       <SEO
         title="FAQs — BINGOOO"
-        description="Find answers to all frequently asked questions about Bingooo Men's Wear: orders, delivery times, size guides, return policies, custom 3D studio, and payments."
+        description="Find answers to all frequently asked questions about Bingooo Men's Wear: orders, delivery times, size guides, return policies, custom studio, and payments."
         canonical="https://www.bingooo.co.in/faq"
         schema={generateFaqSchema(FAQ_ITEMS.map((f) => ({ question: f.question, answer: f.answer })))}
       />

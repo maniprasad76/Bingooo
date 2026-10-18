@@ -137,6 +137,28 @@ export interface PhotoCheck {
  * (the storefront shows garments on its own coloured backdrop), big enough
  * to stay sharp, and roughly square so front and back line up.
  */
+/**
+ * Garment photos load on every visit to the custom page, so a 2 MB PNG becomes a
+ * ~150 KB WebP (transparency kept, at most 1600px). Falls back to the original
+ * when the browser can't encode WebP or the result isn't smaller.
+ */
+export async function shrinkGarmentPhoto(file: File, maxSide = 1600): Promise<File> {
+  try {
+    const bitmap = await createImageBitmap(file);
+    const scale = Math.min(1, maxSide / Math.max(bitmap.width, bitmap.height));
+    const canvas = document.createElement('canvas');
+    canvas.width = Math.round(bitmap.width * scale);
+    canvas.height = Math.round(bitmap.height * scale);
+    canvas.getContext('2d')?.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+    bitmap.close();
+    const blob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, 'image/webp', 0.88));
+    if (!blob || blob.type !== 'image/webp' || blob.size >= file.size) return file;
+    return new File([blob], file.name.replace(/\.[^.]+$/, '') + '.webp', { type: 'image/webp' });
+  } catch {
+    return file;
+  }
+}
+
 export async function checkGarmentPhoto(file: File): Promise<PhotoCheck> {
   const isPngOrWebp =
     file.type === 'image/png' ||

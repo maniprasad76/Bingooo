@@ -132,7 +132,7 @@ export function QuickViewModal({ product, isOpen, onClose }: QuickViewModalProps
             </button>
 
             <div className="grid grid-cols-1 md:grid-cols-12">
-              {/* Left Column: 3D Interactive Garment Preview (7 cols) */}
+              {/* Left Column: Garment Preview (7 cols) */}
               <div className="md:col-span-7 bg-paper/60 p-8 flex flex-col items-center justify-center relative border-b md:border-b-0 md:border-r border-border">
                 {/* Product Image Showcase */}
                 <div className="w-full max-w-sm aspect-[4/5] flex items-center justify-center p-4">
@@ -152,7 +152,7 @@ export function QuickViewModal({ product, isOpen, onClose }: QuickViewModalProps
                       : '240 GSM LOOPKNIT COTTON'}
                   </span>
                   <span className="flex items-center gap-1">
-                    <Truck size={14} className="text-brand-red" /> FREE SHIPPING ON ALL ORDERS
+                    <Truck size={14} className="text-brand-red" /> FREE SHIPPING ON PREPAID ORDERS
                   </span>
                 </div>
               </div>

@@ -7,6 +7,8 @@ import {
   Check,
   MessageCircle,
   Sparkles,
+  Eye,
+  Plus,
 } from 'lucide-react';
 import { SizeAdvisorModal } from '../components/catalog/SizeAdvisorModal';
 import { api } from '../lib/api/client';
@@ -14,6 +16,7 @@ import { useToast } from '../components/ui/ToastContext';
 import { BINGOOO_PHONE_RAW } from '../lib/social';
 import { SEO } from '../components/common/SEO';
 import { resolveImageUrl } from '../lib/utils';
+import { triggerHaptic } from '../lib/native/capacitorBridge';
 import { GarmentStage } from '../components/studio/GarmentStage';
 import { DEFAULT_PRINT_AREAS, type PrintAreas } from '../components/studio/printAreas';
 
@@ -79,7 +82,10 @@ const GARMENT_ORDER = ['oversized', 'polo', 'hoodie'];
 export function CustomizerPage() {
   const [searchParams] = useSearchParams();
   const { toast } = useToast();
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const frontFileInputRef = useRef<HTMLInputElement>(null);
+  const backFileInputRef = useRef<HTMLInputElement>(null);
+  const frontCardRef = useRef<HTMLDivElement>(null);
+  const backCardRef = useRef<HTMLDivElement>(null);
 
   // ─── STATE ────────────────────────────────────────────────────────────────
   // Garments, colours, photos, sizes and prices all come from the admin studio.
@@ -89,7 +95,7 @@ export function CustomizerPage() {
   const [selectedColorId, setSelectedColorId] = useState<string>('');
   const [selectedSize, setSelectedSize] = useState<string>('');
   const [currentView, setCurrentView] = useState<GarmentView>('FRONT');
-  const [activePlacement, setActivePlacement] = useState<DesignPlacement>('center');
+  const [frontPlacement, setFrontPlacement] = useState<'center' | 'left_chest'>('center');
   const [artworks, setArtworks] = useState<Record<DesignPlacement, UploadedArtwork | null>>({
     center: null,
     left_chest: null,
@@ -99,6 +105,7 @@ export function CustomizerPage() {
   const [showAdvisorModal, setShowAdvisorModal] = useState<boolean>(false);
   const [sizeUnit, setSizeUnit] = useState<'in' | 'cm'>('in');
   const [quoteSuccessModal, setQuoteSuccessModal] = useState<boolean>(false);
+  const [showPromptModal, setShowPromptModal] = useState<null | 'ask_back' | 'ask_front' | 'ask_empty'>(null);
 
   // ─── LOAD THE STUDIO CATALOGUE ─────────────────────────────────────────────
   useEffect(() => {
@@ -179,14 +186,15 @@ export function CustomizerPage() {
     return () => window.clearTimeout(timer);
   }, [availableColors]);
 
-  // ─── FILE UPLOAD HANDLER (PNG ONLY) ───────────────────────────────────────
-  const handleFileUpload = (files: FileList | null) => {
+  // ─── FILE UPLOAD HANDLER FOR DUAL SIDES (PNG ONLY) ─────────────────────────
+  const handleSideFileUpload = (side: 'front' | 'back', files: FileList | null) => {
     if (!files || files.length === 0) return;
     const file = files[0];
 
     // STRICT PNG ONLY CHECK
     const isPng = file.type === 'image/png' || file.name.toLowerCase().endsWith('.png');
     if (!isPng) {
+      triggerHaptic('error');
       toast({
         title: 'Only PNG Files Accepted',
         description: 'Please upload a transparent .png file to ensure crisp high-resolution printing.',
@@ -197,6 +205,7 @@ export function CustomizerPage() {
 
     // Size limit check (max 20MB)
     if (file.size > 20 * 1024 * 1024) {
+      triggerHaptic('error');
       toast({
         title: 'File Too Large',
         description: 'Maximum artwork file size is 20MB.',
@@ -207,10 +216,17 @@ export function CustomizerPage() {
 
     const previewUrl = URL.createObjectURL(file);
     const sizeKb = Math.round(file.size / 1024);
+    const targetPlacement: DesignPlacement = side === 'front' ? frontPlacement : 'back';
+
+    // Revoke old URL if any
+    const oldArt = artworks[targetPlacement];
+    if (oldArt) {
+      URL.revokeObjectURL(oldArt.previewUrl);
+    }
 
     setArtworks((prev) => ({
       ...prev,
-      [activePlacement]: {
+      [targetPlacement]: {
         file,
         previewUrl,
         name: file.name,
@@ -220,14 +236,18 @@ export function CustomizerPage() {
       },
     }));
 
+    triggerHaptic('success');
+    setCurrentView(side === 'front' ? 'FRONT' : 'BACK');
+
     toast({
-      title: 'Artwork Uploaded',
-      description: `Applied ${file.name} to ${activePlacement.replace('_', ' ').toUpperCase()} preview.`,
+      title: `${side === 'front' ? 'Front Side' : 'Back Side'} Artwork Uploaded`,
+      description: `Applied ${file.name} to ${targetPlacement.replace('_', ' ').toUpperCase()} preview.`,
       variant: 'success',
     });
   };
 
   const removeArtwork = (placement: DesignPlacement) => {
+    triggerHaptic('light');
     setArtworks((prev) => {
       const existing = prev[placement];
       if (existing) {
@@ -248,18 +268,31 @@ export function CustomizerPage() {
     });
   };
 
-  // Switch placement and auto-toggle front/back view
-  const handleSelectPlacement = (placement: DesignPlacement) => {
-    setActivePlacement(placement);
-    if (placement === 'back') {
-      setCurrentView('BACK');
-    } else {
+  const handleSelectFrontPlacement = (placement: 'center' | 'left_chest') => {
+    triggerHaptic('selection');
+    if (placement === frontPlacement) {
       setCurrentView('FRONT');
+      return;
     }
+
+    // Transfer artwork to the new front placement if new is empty
+    const currentFrontArt = artworks[frontPlacement];
+    const targetArt = artworks[placement];
+
+    if (currentFrontArt && !targetArt) {
+      setArtworks((prev) => ({
+        ...prev,
+        [placement]: currentFrontArt,
+        [frontPlacement]: null,
+      }));
+    }
+
+    setFrontPlacement(placement);
+    setCurrentView('FRONT');
   };
 
   // ─── WHATSAPP QUOTATION GENERATOR ─────────────────────────────────────────
-  const handleWhatsAppQuote = () => {
+  const proceedToWhatsApp = () => {
     if (!currentGarment || !activeColor) return;
     const garmentName = currentGarment.name;
     const price = currentGarment.price;
@@ -299,7 +332,31 @@ export function CustomizerPage() {
 
     const waUrl = `https://wa.me/${BINGOOO_PHONE_RAW}?text=${encodeURIComponent(message)}`;
     window.open(waUrl, '_blank', 'noopener,noreferrer');
+    setShowPromptModal(null);
     setQuoteSuccessModal(true);
+  };
+
+  const handleWhatsAppQuote = () => {
+    triggerHaptic('medium');
+    const hasFrontArt = Boolean(artworks.center || artworks.left_chest);
+    const hasBackArt = Boolean(artworks.back);
+
+    if (hasFrontArt && !hasBackArt) {
+      setShowPromptModal('ask_back');
+      return;
+    }
+
+    if (!hasFrontArt && hasBackArt) {
+      setShowPromptModal('ask_front');
+      return;
+    }
+
+    if (!hasFrontArt && !hasBackArt) {
+      setShowPromptModal('ask_empty');
+      return;
+    }
+
+    proceedToWhatsApp();
   };
 
   // Count active artworks
@@ -431,31 +488,53 @@ export function CustomizerPage() {
               <div className="flex items-center gap-1 bg-white p-1 border-2 border-[#171717] shadow-[3px_3px_0px_#171717]">
                 <button
                   type="button"
-                  onClick={() => setCurrentView('FRONT')}
-                  className={`px-4 py-1.5 text-xs font-bold uppercase tracking-wider transition-all ${
+                  onClick={() => {
+                    triggerHaptic('selection');
+                    setCurrentView('FRONT');
+                  }}
+                  className={`px-4 py-1.5 text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 ${
                     currentView === 'FRONT'
-                      ? 'bg-[#171717] text-white'
+                      ? 'bg-[#171717] text-white shadow-[1px_1px_0px_#171717]'
                       : 'bg-transparent text-[#171717] hover:bg-black/5'
                   }`}
                 >
-                  FRONT
+                  <span>FRONT</span>
+                  {Boolean(artworks.center || artworks.left_chest) && (
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#E6321C]" />
+                  )}
                 </button>
                 <button
                   type="button"
-                  onClick={() => setCurrentView('BACK')}
-                  className={`px-4 py-1.5 text-xs font-bold uppercase tracking-wider transition-all ${
+                  onClick={() => {
+                    triggerHaptic('selection');
+                    setCurrentView('BACK');
+                  }}
+                  className={`px-4 py-1.5 text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 ${
                     currentView === 'BACK'
-                      ? 'bg-[#171717] text-white'
+                      ? 'bg-[#171717] text-white shadow-[1px_1px_0px_#171717]'
                       : 'bg-transparent text-[#171717] hover:bg-black/5'
                   }`}
                 >
-                  BACK
+                  <span>BACK</span>
+                  {Boolean(artworks.back) && (
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#E6321C]" />
+                  )}
                 </button>
               </div>
 
               {/* Quick Status */}
-              <div className="text-white text-xs font-mono font-medium tracking-tight bg-black/30 backdrop-blur-sm px-3 py-1.5 rounded">
-                {uploadedCount > 0 ? `${uploadedCount} Artworks Applied` : 'Ready for Design'}
+              <div className="text-white text-xs font-mono font-medium tracking-tight bg-black/40 backdrop-blur-sm px-3 py-1.5 rounded border border-white/10">
+                {Boolean(artworks.center || artworks.left_chest) && Boolean(artworks.back) ? (
+                  <span className="text-emerald-400 font-bold flex items-center gap-1">
+                    <Check size={12} /> Front & Back Applied ({uploadedCount})
+                  </span>
+                ) : Boolean(artworks.center || artworks.left_chest) ? (
+                  <span>Front Added ({uploadedCount}) · Back Empty</span>
+                ) : Boolean(artworks.back) ? (
+                  <span>Back Added ({uploadedCount}) · Front Empty</span>
+                ) : (
+                  <span>Ready for Design</span>
+                )}
               </div>
             </div>
           </div>
@@ -617,154 +696,304 @@ export function CustomizerPage() {
               </div>
 
               {/* ─────────────────────────────────────────────────────────────
-                  STEP 03: ADD YOUR DESIGN (PNG ONLY)
+                  STEP 03: ADD YOUR ARTWORK (FRONT & BACK DUAL UPLOAD)
                  ───────────────────────────────────────────────────────────── */}
               <div className="pt-6 mt-6 border-t-[2px] border-[#171717]">
-                <div className="flex items-center justify-between mb-3.5">
+                <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center gap-3">
                     <span className="w-7 h-7 rounded-full bg-[#171717] text-white font-mono font-bold text-xs flex items-center justify-center shrink-0">
                       03
                     </span>
                     <span className="text-xs uppercase font-mono font-bold tracking-widest text-[#171717]">
-                      ADD YOUR DESIGN
+                      ADD YOUR ARTWORK
                     </span>
                   </div>
                   <span className="text-[11px] font-mono font-bold bg-[#E6321C]/15 text-[#E6321C] px-2 py-0.5 border border-[#E6321C]/30">
-                    PNG ONLY
+                    PNG ONLY · 300 DPI
                   </span>
                 </div>
 
-                {/* Placement Selector Tabs */}
-                <div className="grid grid-cols-3 gap-2 mb-4">
-                  {[
-                    { id: 'center', label: 'CENTER' },
-                    { id: 'left_chest', label: 'LEFT CHEST' },
-                    { id: 'back', label: 'BACK' },
-                  ].map((tab) => {
-                    const isTabActive = activePlacement === tab.id;
-                    const hasArt = !!artworks[tab.id as DesignPlacement];
-
-                    return (
-                      <button
-                        key={tab.id}
-                        type="button"
-                        onClick={() => handleSelectPlacement(tab.id as DesignPlacement)}
-                        className={`py-2 px-2 border-2 border-[#171717] font-bold text-xs uppercase tracking-wider relative transition-all ${
-                          isTabActive
-                            ? 'bg-[#171717] text-white shadow-[2px_2px_0px_#171717]'
-                            : 'bg-white text-[#171717] hover:bg-black/5'
-                        }`}
-                      >
-                        <span>{tab.label}</span>
-                        {hasArt && (
-                          <span className="absolute -top-1.5 -right-1.5 w-3.5 h-3.5 bg-[#E6321C] text-white rounded-full text-[9px] flex items-center justify-center font-bold">
-                            ✓
-                          </span>
-                        )}
-                      </button>
-                    );
-                  })}
-                </div>
-
-                {/* File Upload Zone for Active Placement */}
+                {/* Hidden File Inputs for Front and Back */}
                 <input
                   type="file"
-                  ref={fileInputRef}
+                  ref={frontFileInputRef}
                   accept=".png,image/png"
                   className="hidden"
-                  onChange={(e) => handleFileUpload(e.target.files)}
+                  onChange={(e) => handleSideFileUpload('front', e.target.files)}
+                />
+                <input
+                  type="file"
+                  ref={backFileInputRef}
+                  accept=".png,image/png"
+                  className="hidden"
+                  onChange={(e) => handleSideFileUpload('back', e.target.files)}
                 />
 
-                {artworks[activePlacement] ? (
-                  // Active Artwork Controls
-                  <div className="bg-white border-2 border-[#171717] p-3.5 shadow-[3px_3px_0px_#171717]">
-                    <div className="flex items-center justify-between mb-3 pb-2 border-b border-black/10">
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 border border-black/20 bg-black/5 flex items-center justify-center p-1 overflow-hidden">
-                          <img
-                            src={artworks[activePlacement]!.previewUrl}
-                            alt="Uploaded artwork"
-                            className="max-w-full max-h-full object-contain"
-                          />
-                        </div>
-                        <div>
-                          <p className="text-xs font-bold text-[#171717] truncate max-w-[170px] sm:max-w-[220px]">
-                            {artworks[activePlacement]!.name}
-                          </p>
-                          <p className="text-[11px] font-mono text-[#171717]/60">
-                            {artworks[activePlacement]!.sizeKb} KB · Transparent PNG
-                          </p>
-                        </div>
-                      </div>
-                      <button
-                        type="button"
-                        onClick={() => removeArtwork(activePlacement)}
-                        className="p-1.5 text-[#171717]/60 hover:text-[#E6321C] transition-colors"
-                        title="Remove artwork"
-                      >
-                        <X size={16} />
-                      </button>
-                    </div>
-
-                    {/* Scale Slider */}
-                    <div className="flex items-center justify-between gap-3 text-xs font-bold">
-                      <span className="text-[#171717]/70 text-[11px] uppercase tracking-wider">
-                        PRINT SCALE:
-                      </span>
-                      <div className="flex items-center gap-2 flex-1 max-w-[200px]">
-                        <input
-                          type="range"
-                          min="0.6"
-                          max="1.4"
-                          step="0.05"
-                          value={artworks[activePlacement]!.scale}
-                          onChange={(e) =>
-                            updateArtworkScale(activePlacement, parseFloat(e.target.value))
-                          }
-                          className="w-full accent-[#171717] cursor-pointer"
-                        />
-                        <span className="text-[11px] font-mono w-9 text-right">
-                          {Math.round(artworks[activePlacement]!.scale * 100)}%
+                <div className="space-y-4">
+                  {/* ───────────────────────────────────────────────────────────
+                      SIDE A: FRONT SIDE ARTWORK CARD
+                     ─────────────────────────────────────────────────────────── */}
+                  <div
+                    ref={frontCardRef}
+                    className="bg-white border-2 border-[#171717] p-4 shadow-[3px_3px_0px_#171717]"
+                  >
+                    <div className="flex items-center justify-between pb-3 mb-3 border-b border-black/10">
+                      <div className="flex items-center gap-2">
+                        <span className="w-2.5 h-2.5 rounded-full bg-[#E6321C]" />
+                        <span className="text-xs font-black uppercase tracking-wider text-[#171717]">
+                          FRONT SIDE
                         </span>
                       </div>
+                      {/* Placement Toggle: Center vs Left Chest */}
+                      <div className="flex items-center border border-[#171717] bg-[#F7EEDB] p-0.5">
+                        <button
+                          type="button"
+                          onClick={() => handleSelectFrontPlacement('center')}
+                          className={`px-2.5 py-1 text-[11px] font-bold uppercase transition-all ${
+                            frontPlacement === 'center'
+                              ? 'bg-[#171717] text-white shadow-[1px_1px_0px_#171717]'
+                              : 'text-[#171717] hover:bg-black/5'
+                          }`}
+                        >
+                          CENTER
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleSelectFrontPlacement('left_chest')}
+                          className={`px-2.5 py-1 text-[11px] font-bold uppercase transition-all ${
+                            frontPlacement === 'left_chest'
+                              ? 'bg-[#171717] text-white shadow-[1px_1px_0px_#171717]'
+                              : 'text-[#171717] hover:bg-black/5'
+                          }`}
+                        >
+                          LEFT CHEST
+                        </button>
+                      </div>
                     </div>
 
-                    <div className="mt-2.5 pt-2 border-t border-black/10 flex items-center justify-between">
-                      <button
-                        type="button"
-                        onClick={() => fileInputRef.current?.click()}
-                        className="text-[11px] font-bold text-[#171717] hover:text-[#E6321C] underline underline-offset-2"
+                    {artworks[frontPlacement] ? (
+                      <div>
+                        <div className="flex items-center justify-between mb-3">
+                          <div className="flex items-center gap-3">
+                            <div className="w-12 h-12 border border-black/20 bg-black/5 flex items-center justify-center p-1 overflow-hidden shrink-0">
+                              <img
+                                src={artworks[frontPlacement]!.previewUrl}
+                                alt="Uploaded front artwork"
+                                className="max-w-full max-h-full object-contain"
+                              />
+                            </div>
+                            <div>
+                              <p className="text-xs font-bold text-[#171717] truncate max-w-[170px] sm:max-w-[220px]">
+                                {artworks[frontPlacement]!.name}
+                              </p>
+                              <p className="text-[11px] font-mono text-[#171717]/60">
+                                {artworks[frontPlacement]!.sizeKb} KB · {frontPlacement === 'center' ? 'Center Print' : 'Chest Pocket'}
+                              </p>
+                            </div>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => removeArtwork(frontPlacement)}
+                            className="p-1.5 text-[#171717]/60 hover:text-[#E6321C] transition-colors"
+                            title="Remove front artwork"
+                          >
+                            <X size={16} />
+                          </button>
+                        </div>
+
+                        {/* Front Scale Slider */}
+                        <div className="flex items-center justify-between gap-3 text-xs font-bold bg-[#F7EEDB]/60 p-2 border border-black/10">
+                          <span className="text-[#171717]/70 text-[11px] uppercase tracking-wider">
+                            SCALE:
+                          </span>
+                          <div className="flex items-center gap-2 flex-1 max-w-[200px]">
+                            <input
+                              type="range"
+                              min="0.6"
+                              max="1.4"
+                              step="0.05"
+                              value={artworks[frontPlacement]!.scale}
+                              onChange={(e) =>
+                                updateArtworkScale(frontPlacement, parseFloat(e.target.value))
+                              }
+                              className="w-full accent-[#171717] cursor-pointer"
+                            />
+                            <span className="text-[11px] font-mono w-9 text-right font-bold">
+                              {Math.round(artworks[frontPlacement]!.scale * 100)}%
+                            </span>
+                          </div>
+                        </div>
+
+                        <div className="mt-2.5 flex items-center justify-between">
+                          <button
+                            type="button"
+                            onClick={() => frontFileInputRef.current?.click()}
+                            className="text-[11px] font-bold text-[#171717] hover:text-[#E6321C] underline underline-offset-2"
+                          >
+                            Replace Front Artwork
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              triggerHaptic('selection');
+                              setCurrentView('FRONT');
+                            }}
+                            className="text-[11px] font-bold text-emerald-700 flex items-center gap-1 hover:underline"
+                          >
+                            <Eye size={12} /> View Front
+                          </button>
+                        </div>
+                      </div>
+                    ) : (
+                      <div
+                        onClick={() => {
+                          triggerHaptic('selection');
+                          setCurrentView('FRONT');
+                          frontFileInputRef.current?.click();
+                        }}
+                        onDragOver={(e) => e.preventDefault()}
+                        onDrop={(e) => {
+                          e.preventDefault();
+                          handleSideFileUpload('front', e.dataTransfer.files);
+                        }}
+                        className="border-2 border-dashed border-[#171717] bg-[#F7EEDB]/30 hover:bg-[#F7EEDB]/80 p-5 text-center cursor-pointer transition-all hover:shadow-[2px_2px_0px_#171717] group"
                       >
-                        Replace Artwork
-                      </button>
-                      <span className="text-[11px] text-emerald-600 font-bold flex items-center gap-1">
-                        <Check size={12} /> Projected On Garment
+                        <Upload
+                          size={22}
+                          className="mx-auto text-[#171717] group-hover:scale-110 group-hover:text-[#E6321C] transition-all mb-1.5"
+                        />
+                        <p className="text-xs font-bold text-[#171717] uppercase tracking-wider">
+                          UPLOAD FRONT {frontPlacement === 'center' ? 'CENTER' : 'LEFT CHEST'} ARTWORK
+                        </p>
+                        <p className="text-[11px] font-mono text-[#171717]/60 mt-0.5">
+                          Click or drag & drop transparent PNG (Max 20MB)
+                        </p>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* ───────────────────────────────────────────────────────────
+                      SIDE B: BACK SIDE ARTWORK CARD (OPTIONAL / ASK TO UPLOAD)
+                     ─────────────────────────────────────────────────────────── */}
+                  <div
+                    ref={backCardRef}
+                    className="bg-white border-2 border-[#171717] p-4 shadow-[3px_3px_0px_#171717]"
+                  >
+                    <div className="flex items-center justify-between pb-3 mb-3 border-b border-black/10">
+                      <div className="flex items-center gap-2">
+                        <span className="w-2.5 h-2.5 rounded-full bg-[#171717]" />
+                        <span className="text-xs font-black uppercase tracking-wider text-[#171717]">
+                          BACK SIDE
+                        </span>
+                      </div>
+                      <span className="text-[10px] font-mono font-bold uppercase tracking-wider px-2 py-0.5 border border-[#171717]/20 bg-[#F7EEDB] text-[#171717]/80">
+                        {artworks.back ? '✓ PRINT APPLIED' : 'OPTIONAL BACK PRINT'}
                       </span>
                     </div>
+
+                    {artworks.back ? (
+                      <div>
+                        <div className="flex items-center justify-between mb-3">
+                          <div className="flex items-center gap-3">
+                            <div className="w-12 h-12 border border-black/20 bg-black/5 flex items-center justify-center p-1 overflow-hidden shrink-0">
+                              <img
+                                src={artworks.back.previewUrl}
+                                alt="Uploaded back artwork"
+                                className="max-w-full max-h-full object-contain"
+                              />
+                            </div>
+                            <div>
+                              <p className="text-xs font-bold text-[#171717] truncate max-w-[170px] sm:max-w-[220px]">
+                                {artworks.back.name}
+                              </p>
+                              <p className="text-[11px] font-mono text-[#171717]/60">
+                                {artworks.back.sizeKb} KB · Back Center Print
+                              </p>
+                            </div>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => removeArtwork('back')}
+                            className="p-1.5 text-[#171717]/60 hover:text-[#E6321C] transition-colors"
+                            title="Remove back artwork"
+                          >
+                            <X size={16} />
+                          </button>
+                        </div>
+
+                        {/* Back Scale Slider */}
+                        <div className="flex items-center justify-between gap-3 text-xs font-bold bg-[#F7EEDB]/60 p-2 border border-black/10">
+                          <span className="text-[#171717]/70 text-[11px] uppercase tracking-wider">
+                            SCALE:
+                          </span>
+                          <div className="flex items-center gap-2 flex-1 max-w-[200px]">
+                            <input
+                              type="range"
+                              min="0.6"
+                              max="1.4"
+                              step="0.05"
+                              value={artworks.back.scale}
+                              onChange={(e) =>
+                                updateArtworkScale('back', parseFloat(e.target.value))
+                              }
+                              className="w-full accent-[#171717] cursor-pointer"
+                            />
+                            <span className="text-[11px] font-mono w-9 text-right font-bold">
+                              {Math.round(artworks.back.scale * 100)}%
+                            </span>
+                          </div>
+                        </div>
+
+                        <div className="mt-2.5 flex items-center justify-between">
+                          <button
+                            type="button"
+                            onClick={() => backFileInputRef.current?.click()}
+                            className="text-[11px] font-bold text-[#171717] hover:text-[#E6321C] underline underline-offset-2"
+                          >
+                            Replace Back Artwork
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              triggerHaptic('selection');
+                              setCurrentView('BACK');
+                            }}
+                            className="text-[11px] font-bold text-emerald-700 flex items-center gap-1 hover:underline"
+                          >
+                            <Eye size={12} /> View Back
+                          </button>
+                        </div>
+                      </div>
+                    ) : (
+                      <div>
+                        <div
+                          onClick={() => {
+                            triggerHaptic('selection');
+                            setCurrentView('BACK');
+                            backFileInputRef.current?.click();
+                          }}
+                          onDragOver={(e) => e.preventDefault()}
+                          onDrop={(e) => {
+                            e.preventDefault();
+                            handleSideFileUpload('back', e.dataTransfer.files);
+                          }}
+                          className="border-2 border-dashed border-[#171717] bg-[#F7EEDB]/30 hover:bg-[#F7EEDB]/80 p-5 text-center cursor-pointer transition-all hover:shadow-[2px_2px_0px_#171717] group"
+                        >
+                          <Upload
+                            size={22}
+                            className="mx-auto text-[#171717] group-hover:scale-110 group-hover:text-[#E6321C] transition-all mb-1.5"
+                          />
+                          <p className="text-xs font-bold text-[#171717] uppercase tracking-wider">
+                            UPLOAD BACK SIDE ARTWORK
+                          </p>
+                          <p className="text-[11px] font-mono text-[#171717]/60 mt-0.5">
+                            Want a design on the back too? Click or drag transparent PNG (Max 20MB)
+                          </p>
+                        </div>
+                      </div>
+                    )}
                   </div>
-                ) : (
-                  // Empty Dropzone
-                  <div
-                    onClick={() => fileInputRef.current?.click()}
-                    onDragOver={(e) => e.preventDefault()}
-                    onDrop={(e) => {
-                      e.preventDefault();
-                      handleFileUpload(e.dataTransfer.files);
-                    }}
-                    className="border-2 border-dashed border-[#171717] bg-white/70 hover:bg-white p-6 text-center cursor-pointer transition-all hover:shadow-[3px_3px_0px_#171717] group"
-                  >
-                    <Upload
-                      size={24}
-                      className="mx-auto text-[#171717] group-hover:scale-110 group-hover:text-[#E6321C] transition-all mb-2"
-                    />
-                    <p className="text-xs font-bold text-[#171717] uppercase tracking-wider">
-                      UPLOAD {activePlacement.replace('_', ' ').toUpperCase()} ARTWORK
-                    </p>
-                    <p className="text-[11px] font-mono text-[#171717]/60 mt-1">
-                      Drag & drop transparent PNG only (Max 20MB)
-                    </p>
-                  </div>
-                )}
+                </div>
               </div>
             </div>
 
@@ -940,6 +1169,156 @@ export function CustomizerPage() {
         initialSize={selectedSize}
         garmentType={currentGarment?.style === 'hoodie' ? 'hoodie' : 'oversized'}
       />
+
+      {/* ═════════════════════════════════════════════════════════════════════
+          FRONT / BACK CONFIRMATION PROMPT MODAL
+         ═════════════════════════════════════════════════════════════════════ */}
+      {showPromptModal && (
+        <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-[#F7EEDB] border-[3px] border-[#171717] shadow-[8px_8px_0px_#171717] max-w-md w-full p-6 sm:p-7 relative animate-in fade-in zoom-in-95 duration-150">
+            <button
+              type="button"
+              onClick={() => setShowPromptModal(null)}
+              className="absolute top-4 right-4 w-7 h-7 border border-[#171717] bg-white hover:bg-[#E6321C] hover:text-white flex items-center justify-center transition-colors"
+            >
+              <X size={16} />
+            </button>
+
+            <div className="flex items-center gap-2 mb-3">
+              <span className="w-2.5 h-2.5 rounded-full bg-[#E6321C]" />
+              <span className="text-[11px] font-mono uppercase font-bold tracking-widest text-[#171717]">
+                STUDIO CHECKPOINT
+              </span>
+            </div>
+
+            {showPromptModal === 'ask_back' && (
+              <>
+                <h3 className="text-xl sm:text-2xl font-black uppercase text-[#171717] mb-2 leading-tight">
+                  ADD A BACK SIDE DESIGN?
+                </h3>
+                <p className="text-xs sm:text-sm font-medium text-[#171717]/80 mb-5 leading-relaxed">
+                  You have configured artwork for the <strong className="text-[#171717]">front side only</strong>. Would you like to upload a design for the back as well before submitting your quote?
+                </p>
+
+                <div className="bg-white border-2 border-[#171717] p-3 mb-5 text-xs font-mono flex items-center justify-between">
+                  <div>
+                    <span className="text-[#171717]/60">Front: </span>
+                    <span className="font-bold text-emerald-700">✓ Uploaded</span>
+                  </div>
+                  <div>
+                    <span className="text-[#171717]/60">Back: </span>
+                    <span className="font-bold text-[#E6321C]">Empty</span>
+                  </div>
+                </div>
+
+                <div className="flex flex-col gap-2.5">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      triggerHaptic('selection');
+                      setShowPromptModal(null);
+                      setCurrentView('BACK');
+                      backCardRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                      setTimeout(() => backFileInputRef.current?.click(), 300);
+                    }}
+                    className="w-full bg-[#E6321C] hover:bg-[#ff3b20] text-white py-3.5 px-4 text-xs font-black uppercase tracking-wider border-2 border-[#171717] shadow-[2px_2px_0px_#171717] flex items-center justify-center gap-2 transition-all active:scale-[0.98]"
+                  >
+                    <Plus size={16} />
+                    <span>+ YES, ADD BACK ARTWORK</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => proceedToWhatsApp()}
+                    className="w-full bg-[#171717] hover:bg-black text-white py-3 px-4 text-xs font-bold uppercase tracking-wider border-2 border-[#171717] flex items-center justify-center gap-2 transition-all"
+                  >
+                    <span>CONTINUE WITH FRONT ONLY →</span>
+                  </button>
+                </div>
+              </>
+            )}
+
+            {showPromptModal === 'ask_front' && (
+              <>
+                <h3 className="text-xl sm:text-2xl font-black uppercase text-[#171717] mb-2 leading-tight">
+                  ADD A FRONT SIDE DESIGN?
+                </h3>
+                <p className="text-xs sm:text-sm font-medium text-[#171717]/80 mb-5 leading-relaxed">
+                  You have configured artwork for the <strong className="text-[#171717]">back side only</strong>. Would you like to upload a design for the front as well before submitting your quote?
+                </p>
+
+                <div className="bg-white border-2 border-[#171717] p-3 mb-5 text-xs font-mono flex items-center justify-between">
+                  <div>
+                    <span className="text-[#171717]/60">Front: </span>
+                    <span className="font-bold text-[#E6321C]">Empty</span>
+                  </div>
+                  <div>
+                    <span className="text-[#171717]/60">Back: </span>
+                    <span className="font-bold text-emerald-700">✓ Uploaded</span>
+                  </div>
+                </div>
+
+                <div className="flex flex-col gap-2.5">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      triggerHaptic('selection');
+                      setShowPromptModal(null);
+                      setCurrentView('FRONT');
+                      frontCardRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                      setTimeout(() => frontFileInputRef.current?.click(), 300);
+                    }}
+                    className="w-full bg-[#E6321C] hover:bg-[#ff3b20] text-white py-3.5 px-4 text-xs font-black uppercase tracking-wider border-2 border-[#171717] shadow-[2px_2px_0px_#171717] flex items-center justify-center gap-2 transition-all active:scale-[0.98]"
+                  >
+                    <Plus size={16} />
+                    <span>+ YES, ADD FRONT ARTWORK</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => proceedToWhatsApp()}
+                    className="w-full bg-[#171717] hover:bg-black text-white py-3 px-4 text-xs font-bold uppercase tracking-wider border-2 border-[#171717] flex items-center justify-center gap-2 transition-all"
+                  >
+                    <span>CONTINUE WITH BACK ONLY →</span>
+                  </button>
+                </div>
+              </>
+            )}
+
+            {showPromptModal === 'ask_empty' && (
+              <>
+                <h3 className="text-xl sm:text-2xl font-black uppercase text-[#171717] mb-2 leading-tight">
+                  NO ARTWORK UPLOADED
+                </h3>
+                <p className="text-xs sm:text-sm font-medium text-[#171717]/80 mb-5 leading-relaxed">
+                  You haven't uploaded any artwork yet. You can upload front or back graphics now, or request a quote for blank heavy cotton garments.
+                </p>
+
+                <div className="flex flex-col gap-2.5">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      triggerHaptic('selection');
+                      setShowPromptModal(null);
+                      frontCardRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                      setTimeout(() => frontFileInputRef.current?.click(), 300);
+                    }}
+                    className="w-full bg-[#E6321C] hover:bg-[#ff3b20] text-white py-3.5 px-4 text-xs font-black uppercase tracking-wider border-2 border-[#171717] shadow-[2px_2px_0px_#171717] flex items-center justify-center gap-2 transition-all active:scale-[0.98]"
+                  >
+                    <Upload size={16} />
+                    <span>UPLOAD ARTWORK (FRONT/BACK)</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => proceedToWhatsApp()}
+                    className="w-full bg-[#171717] hover:bg-black text-white py-3 px-4 text-xs font-bold uppercase tracking-wider border-2 border-[#171717] flex items-center justify-center gap-2 transition-all"
+                  >
+                    <span>ORDER AS BLANK GARMENT →</span>
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+      )}
 
       {/* ═════════════════════════════════════════════════════════════════════
           WHATSAPP QUOTE SUCCESS REMINDER MODAL

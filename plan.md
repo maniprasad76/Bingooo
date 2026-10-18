@@ -1,91 +1,72 @@
-# Plan: Cash on Delivery (COD) Implementation & Pricing Adjustments
+# Plan: Dual-Sided (Front & Back) Artwork Upload Experience
 
-## 1. Objectives & Confirmed Decisions
-1. **Cash on Delivery (COD)**:
-   - Provide "Cash on Delivery (COD)" payment option at checkout alongside existing UPI and Card/NetBanking methods.
-   - For COD orders, do not trigger Razorpay payment gateway; place the order directly and navigate to the order success page.
-   - For custom printed items, require prepaid checkout with a clear notice (bespoke made-to-order garments).
-2. **Shipping Charge Logic**:
-   - **Prepaid Orders**: 100% Free Shipping pan-India (₹0 shipping fee).
-   - **COD Orders**: Flat ₹80 shipping & COD handling charge added to order total.
-3. **Prepaid Discount**:
-   - **Prepaid Orders**: Apply 5% discount on the discounted subtotal.
-   - **COD Orders**: No prepaid discount (0%).
-4. **Order Success & Tracking**:
-   - COD orders are created with `status: 'confirmed'`, `payment_method: 'cod'`, `payment_status: 'pending'` (payable on delivery in cash/UPI).
-   - Order Success page celebrates COD orders appropriately ("Order confirmed (Cash on Delivery)", showing amount payable at delivery and ₹80 delivery fee breakdown).
-5. **Architectural Invariants & Security**:
-   - Strict server-side pricing: All calculation of subtotal, coupon discounts, prepaid discount (0% for COD, 5% for prepaid), shipping charge (₹80 for COD, ₹0 for prepaid), and total payable is enforced in `apps/backend/src/checkout/checkout.service.ts`.
-   - Prevent stock expiry reaper (`sweepExpiredOrders`) from cancelling COD orders which are pending cash payment on delivery.
-   - Shared types in `packages/types/src/order.ts`.
+## 1. Overview
+In the Bingooo Studio customizer (`apps/frontend/src/pages/CustomizerPage.tsx`), users currently interact with artwork placement through a 3-tab selector (`CENTER`, `LEFT CHEST`, `BACK`), which presents only one single file input dropzone at any given time. Users frequently upload only one side (usually Front Center) and miss the fact that back-side printing is supported, with no prompt asking them if they need a back design.
+
+This feature re-engineers Step 03 of the Customizer into an intuitive dual-sided experience:
+- Dedicated, clearly distinct **Front Side** and **Back Side** artwork upload cards.
+- Smooth automatic camera/mockup flipping between **FRONT** and **BACK** when interacting with each side.
+- Proactive **"Add Back Design?"** Bauhaus prompt modal when the user requests a quote with only one side configured, giving them an effortless opportunity to upload back artwork or proceed with front-only.
+- Comprehensive quotation payload reflecting both sides accurately.
 
 ---
 
-## 2. File-by-File Changes
+## 2. Target Files & Key Modifications
 
-### 2.1 Shared Types
-- **File**: `packages/types/src/order.ts`
-  - Update `PaymentMethod` to `'prepaid' | 'cod'`.
-  - Add optional `shippingFee?: number;`, `prepaidDiscount?: number;`, and `paymentMethod?: PaymentMethod;` to `Order` interface.
+### Primary File: `apps/frontend/src/pages/CustomizerPage.tsx`
+1. **State Management**:
+   - Keep `artworks` record (`center`, `left_chest`, `back`).
+   - Add `frontPlacement` selector state (`'center' | 'left_chest'`, default `'center'`).
+   - Add `activeUploadSide` state (`'front' | 'back'`) for drag-and-drop and file input targets.
+   - Separate file inputs / triggers for Front and Back artwork: `frontFileInputRef` and `backFileInputRef`.
+   - Add `showBackPromptModal` state to prompt the user if they request a quote with only Front (or only Back) artwork.
 
-### 2.2 Backend Checkout & Order DTOs
-- **File**: `apps/backend/src/checkout/dto/checkout.dto.ts`
-  - Update `paymentMethod` in `CheckoutValidationDto`: `@IsIn(['prepaid', 'cod'])`.
-- **File**: `apps/backend/src/checkout/checkout.service.ts`
-  - In `validateAndCalculate`:
-    - Check `dto.paymentMethod`:
-      - If `'prepaid'`: apply 5% prepaid discount, set `shippingFee = 0`.
-      - If `'cod'`: set `prepaidDiscount = 0`, set `shippingFee = 80`.
-    - Calculate total: `Math.max(0, discountedSubtotal - prepaidDiscount + shippingFee)`.
-    - Return `shippingFee`, `prepaidDiscount`, `paymentMethod`, `payableNow: dto.paymentMethod === 'cod' ? 0 : total`.
-- **File**: `apps/backend/src/orders/orders.service.ts`
-  - In `createOrder`:
-    - Save `payment_method: dto.paymentMethod`, `shipping_fee: calculation.shippingFee`, `prepaid_discount: calculation.prepaidDiscount`.
-    - Set `status: dto.paymentMethod === 'cod' ? 'confirmed' : 'pending_payment'`.
-    - Set `payment_status: dto.paymentMethod === 'cod' ? 'pending' : 'pending'`.
-  - In `sweepExpiredOrders`:
-    - Ensure order sweeps only target `payment_method !== 'cod'` (do not cancel confirmed COD orders).
+2. **File Handling**:
+   - Support uploading directly to `front` (to whichever of `center` or `left_chest` is chosen) and `back`.
+   - Transparent PNG validation, 20MB limit check, scale sliders (60% to 140%), and artwork removal per side.
+   - Auto-switching `currentView`:
+     - Clicking/uploading Front switches view to `'FRONT'`.
+     - Clicking/uploading Back switches view to `'BACK'`.
 
-### 2.3 Storefront Checkout Page
-- **File**: `apps/frontend/src/pages/CheckoutPage.tsx`
-  - Expand `PaymentMethodType` to include `'cod'`.
-  - Compute `isPrepaid = paymentMethod !== 'cod'`.
-  - Set `shippingFee = paymentMethod === 'cod' ? 80 : 0`.
-  - Set `prepaidDiscount = isPrepaid ? Math.round(subtotalAfterCoupon * (prepaidDiscountPct / 100)) : 0`.
-  - Set `total = Math.max(0, subtotalAfterCoupon - prepaidDiscount + shippingFee)`.
-  - Add COD payment card in "CHOOSE PAYMENT METHOD" section with badge showing "+₹80 Shipping Charge" and note that 5% discount applies only to prepaid orders.
-  - Disable or show notice if cart contains custom bespoke items.
-  - In Order Summary breakdown:
-    - Display Delivery line: `shippingFee > 0 ? '₹80' : 'FREE'`.
-    - Display Prepaid discount line only when `isPrepaid && prepaidDiscount > 0`.
-  - In submit handler `onSubmit`:
-    - If `paymentMethod === 'cod'`:
-      - Call `api.post('/orders', { cartId, couponCode, paymentMethod: 'cod', shippingAddress })`.
-      - Clear cart via `clearCart()`.
-      - Show toast: "Order Placed! Order #{order_number} confirmed."
-      - Navigate to `/order-success/{order_number}` with `{ order, paid: false, isCod: true }`.
-      - Skip Razorpay modal.
-    - If prepaid (`upi` / `cards`):
-      - Continue existing Razorpay checkout flow.
+3. **Step 03 Bauhaus UI Redesign**:
+   - Header with dual status indicators: `FRONT: [✓ Center | ✓ Chest | Empty]` and `BACK: [✓ Uploaded | Empty]`.
+   - **Front Side Card**:
+     - Placement toggle: `CENTER` vs `LEFT CHEST`.
+     - Upload Dropzone / Active Artwork preview with scale slider, file metadata, and remove button.
+   - **Back Side Card**:
+     - Status: `BACK PRINT (OPTIONAL)`.
+     - Upload Dropzone / Active Artwork preview with scale slider, file metadata, and remove button.
+     - Welcoming empty state asking: *"Want to add a design on the back too? Click or drag transparent PNG here"*.
 
-### 2.4 Storefront Order Success Page
-- **File**: `apps/frontend/src/pages/OrderSuccessPage.tsx`
-  - Detect `isCod = order.payment_method === 'cod'`.
-  - Display appropriate hero and badge for COD:
-    - Status: "Order confirmed (Cash on Delivery)"
-    - Subtitle: "Your Cash on Delivery order is confirmed! Please keep ₹{order.total} ready in cash or UPI at the time of delivery."
-    - Total line: "TOTAL AMOUNT (CASH ON DELIVERY)".
-    - Delivery line: `order.shipping_fee > 0 ? formatINR(order.shipping_fee) : 'FREE'`.
+4. **Quote Pre-Flight Check & Confirmation Modal**:
+   - When the user clicks **"GET WHATSAPP QUOTE"**:
+     - If both Front and Back have artwork, or if user explicitly skipped: proceed directly to WhatsApp.
+     - If ONLY Front is uploaded (or ONLY Back): open a Bauhaus confirmation modal:
+       - *"Would you like to add back printing as well?"*
+       - Button 1: **"+ Yes, Add Back Design"** -> scrolls to Back upload card, flips preview to BACK, focuses back dropzone.
+       - Button 2: **"Continue with Front Only"** -> proceeds directly to WhatsApp.
+     - If neither side has artwork: friendly toast reminding them to add a design, or continue with blank garment.
+
+5. **WhatsApp Message Generation**:
+   - Accurately details Front Artwork (Center or Left Chest), Back Artwork, garment fit, color, and size.
 
 ---
 
-## 3. Verification Steps
-1. Run `npm run typecheck` across all workspaces to verify zero TypeScript errors.
-2. Verify COD order creation via API / tests:
-   - Validating checkout with `paymentMethod: 'cod'` gives `shippingFee: 80`, `prepaidDiscount: 0`.
-   - Validating checkout with `paymentMethod: 'prepaid'` gives `shippingFee: 0`, `prepaidDiscount: 5%`.
-3. Verify frontend checkout behaves smoothly:
-   - Selecting COD updates order summary to +₹80 Delivery and removes 5% prepaid discount.
-   - Selecting UPI or Cards restores FREE Delivery and 5% prepaid discount.
-   - Placing COD order skips Razorpay and reaches Order Success with clear COD instructions.
-4. Run `python -m graphify update .` to sync knowledge graph.
+## 3. Invariants & Design Token Consistency
+- **Colors**: Strictly `#F7EEDB` (Warm Cream), `#171717` (Charcoal), `#E6321C` (Signal Red), and `#FFFFFF`.
+- **Icons**: Lucide React only (`Upload`, `Check`, `X`, `Layers`, `MessageCircle`, `RotateCw`, etc.). No emojis.
+- **Typography**: Manrope font styling with uppercase tracking.
+- **Haptics**: Use `triggerHaptic('selection')` or `triggerHaptic('success')` on upload/switch.
+
+---
+
+## 4. Verification & Testing
+- Typecheck passes across all workspaces: `npm run typecheck`.
+- Manual/Visual flow validation:
+  1. Upload Front image (Center) -> front mockup reflects artwork.
+  2. Toggle to Left Chest -> artwork re-positions to Left Chest.
+  3. Upload Back image -> garment view flips to Back, back artwork reflects on mockup.
+  4. Scale adjustments work independently on Front and Back.
+  5. Delete front artwork -> back remains intact, front resets.
+  6. Click "GET WHATSAPP QUOTE" with front only -> modal appears asking if they want back artwork.
+  7. Clicking "+ Yes, Add Back Design" switches to Back. Clicking "Continue with Front Only" opens WhatsApp.

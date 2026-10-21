@@ -22,7 +22,7 @@ import { ProductPlaceholder } from '../components/ui/ProductPlaceholder';
 import { api } from '../lib/api/client';
 import { useToast } from '../components/ui/ToastContext';
 import { WhatsAppIcon } from '../components/ui/SocialIcons';
-import { getWhatsAppUrl } from '../lib/social';
+import { getWhatsAppUrl, BINGOOO_GOOGLE_REVIEW_URL } from '../lib/social';
 import { triggerHaptic } from '../lib/native/capacitorBridge';
 import { trackPurchase } from '../lib/analytics';
 
@@ -373,6 +373,15 @@ export function OrderSuccessPage() {
                 >
                   <WhatsAppIcon className="h-3.5 w-3.5 text-[#25D366]" />
                   <span>WHATSAPP CONCIERGE</span>
+                </a>
+                <a
+                  href={BINGOOO_GOOGLE_REVIEW_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={() => triggerHaptic('light')}
+                  className="btn-bauhaus inline-flex items-center gap-2 border-2 border-white/40 bg-transparent px-3.5 py-2 font-mono text-[10px] font-black uppercase tracking-wider text-white hover:border-white active:translate-x-[1px] active:translate-y-[1px] transition-all no-underline"
+                >
+                  <span>REVIEW US ON GOOGLE</span>
                 </a>
                 <Link
                   to="/account/orders"

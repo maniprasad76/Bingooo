@@ -315,6 +315,7 @@ export function localBusinessSchema() {
       'https://www.youtube.com/@bingooo_co',
       'https://twitter.com/bingooo_co',
       'https://wa.me/917981787317',
+      'https://g.page/r/CTB0-DMkuipPEBI',
       GOOGLE_MAPS_STORE_URL,
     ],
   };

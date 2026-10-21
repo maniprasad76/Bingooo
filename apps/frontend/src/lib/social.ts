@@ -9,6 +9,8 @@ export const BINGOOO_YOUTUBE_URL = 'https://www.youtube.com/@bingooo_co';
 export const BINGOOO_YOUTUBE_HANDLE = '@bingooo_co';
 export const BINGOOO_TWITTER_URL = 'https://twitter.com/bingooo_co';
 export const BINGOOO_TWITTER_HANDLE = '@bingooo_co';
+export const BINGOOO_GOOGLE_PROFILE_URL = 'https://g.page/r/CTB0-DMkuipPEBI';
+export const BINGOOO_GOOGLE_REVIEW_URL = 'https://g.page/r/CTB0-DMkuipPEBI/review';
 export const BINGOOO_COMMUNITY_URL = 'https://chat.whatsapp.com/HRFrD7YPl8f1xdLvPXvDiQ';
 
 export function getWhatsAppUrl(message?: string): string {

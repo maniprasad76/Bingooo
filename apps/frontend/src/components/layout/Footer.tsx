@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowUpRight, ChevronRight, MapPin } from 'lucide-react';
+import { ArrowUpRight, ChevronRight, MapPin, Star } from 'lucide-react';
 import { m, AnimatePresence } from 'framer-motion';
 import { cn } from '../../lib/utils';
 import { triggerHaptic } from '../../lib/native/capacitorBridge';
@@ -17,6 +17,7 @@ import {
   BINGOOO_INSTAGRAM_URL,
   BINGOOO_INSTAGRAM_HANDLE,
   BINGOOO_EMAIL_SUPPORT,
+  BINGOOO_GOOGLE_REVIEW_URL,
   BINGOOO_PHONE_DISPLAY,
   BINGOOO_YOUTUBE_URL,
   BINGOOO_YOUTUBE_HANDLE,
@@ -367,6 +368,16 @@ export function Footer() {
           >
             <span>Directions on Google Maps</span>
             <ArrowUpRight size={12} />
+          </a>
+          <a
+            href={BINGOOO_GOOGLE_REVIEW_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={() => triggerHaptic('light')}
+            className="text-[#f7eedb] hover:text-white font-bold tracking-[0.06em] uppercase inline-flex items-center gap-1 transition-colors whitespace-nowrap"
+          >
+            <Star size={12} />
+            <span>Review us on Google</span>
           </a>
         </div>
 

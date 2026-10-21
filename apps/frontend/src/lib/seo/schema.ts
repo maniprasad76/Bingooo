@@ -102,6 +102,7 @@ export function generateOrganizationSchema() {
       'https://www.youtube.com/@bingooo_co',
       'https://twitter.com/bingooo_co',
       'https://wa.me/917981787317',
+      'https://g.page/r/CTB0-DMkuipPEBI',
     ],
     priceRange: '₹₹',
   };

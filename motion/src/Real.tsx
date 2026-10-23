@@ -11,7 +11,8 @@ type Shot = {
   drift: [number, number];
   lines: string[];
   pos: "top" | "bottom";
-  tint?: string;
+  /** render the website-in-phone shot instead of a plain photo */
+  site?: boolean;
 };
 
 const T = 14; // transition overlap, frames
@@ -24,9 +25,24 @@ const SHOTS: Shot[] = [
   { img: "real-fit-3.jpg", dur: 110, zoom: [1.0, 1.0], focus: [30, 50], drift: [-170, 0], lines: ["Design yours."], pos: "bottom" },
 ];
 
-const starts = SHOTS.reduce<number[]>((a, s, i) => (a.push(i ? a[i - 1] + SHOTS[i - 1].dur - T : 0), a), []);
-const END_START = starts[SHOTS.length - 1] + SHOTS[SHOTS.length - 1].dur - T;
-export const REAL_TOTAL = END_START + 120;
+/** Longer 32s cut: every photo holds a little longer and the live studio on bingooo.co.in gets its own shot. */
+const SHOTS_LONG: Shot[] = [
+  { ...SHOTS[0], dur: 118 },
+  { ...SHOTS[1], dur: 112 },
+  { ...SHOTS[2], dur: 112 },
+  { ...SHOTS[3], dur: 124 },
+  { ...SHOTS[4], dur: 118 },
+  { img: "site-mobile.png", dur: 210, zoom: [1, 1], focus: [50, 50], drift: [0, 0], lines: ["Design it live", "."], pos: "top", site: true },
+  { ...SHOTS[5], lines: ["Yours in", "a few taps."], dur: 120 },
+];
+
+const layout = (shots: Shot[]) => {
+  const starts = shots.reduce<number[]>((a, s, i) => (a.push(i ? a[i - 1] + shots[i - 1].dur - T : 0), a), []);
+  const endStart = starts[shots.length - 1] + shots[shots.length - 1].dur - T;
+  return { starts, endStart, total: endStart + 120 };
+};
+export const REAL_TOTAL = layout(SHOTS).total;
+export const REAL_LONG_TOTAL = layout(SHOTS_LONG).total;
 
 /** Cheap handheld camera: layered sines, no random so renders are deterministic. */
 const shake = (f: number, amp: number) => ({
@@ -70,15 +86,59 @@ const ShotView: React.FC<{ s: Shot; first: boolean }> = ({ s, first }) => {
   );
 };
 
+/** A phone held in frame, scrolling the live custom studio, over a defocused street photo. */
+const SiteView: React.FC<{ s: Shot }> = ({ s }) => {
+  const f = useCurrentFrame();
+  const fadeIn = ease(f, 0, T);
+  const blurOut = ease(f, s.dur - T, s.dur, 0, 14);
+  const slideOut = -ease(f, s.dur - T, s.dur, 0, 90);
+  const sh = shake(f, 4);
+  const rise = interpolate(ease(f, 0, 30), [0, 1], [260, 0]);
+  const tilt = interpolate(f, [0, s.dur], [7, -3]);
+  // screenshot is 780x6150; the phone screen shows 780x1690 of it at a time
+  const scroll = interpolate(f, [30, 80, 110, 150, 175, s.dur], [0, 0, 1500, 1500, 2700, 2900], { extrapolateLeft: "clamp", extrapolateRight: "clamp", easing: (t) => t * t * (3 - 2 * t) });
+  const W = 560, H = W * 2.16, R = 86, bezel = 22;
+  const scr = (W - bezel * 2) / 780;
+  return (
+    <AbsoluteFill style={{ opacity: fadeIn, background: C.ink, overflow: "hidden" }}>
+      <AbsoluteFill style={{ filter: `blur(${blurOut}px)`, transform: `translateX(${slideOut}px)` }}>
+        <Img src={staticFile("img/real-fit-3.jpg")} style={{ position: "absolute", inset: -60, width: "calc(100% + 120px)", height: "calc(100% + 120px)", objectFit: "cover", objectPosition: "35% 50%", filter: "blur(18px) brightness(0.55) saturate(0.9)", transform: `scale(${1.1 + f / 3000})` }} />
+        <div style={{ position: "absolute", left: (1080 - W) / 2, top: 420, width: W, height: H, transform: `translate(${sh.x}px, ${rise + sh.y}px) perspective(2400px) rotateY(${tilt}deg) rotateX(${tilt * 0.4}deg)` }}>
+          {/* contact shadow */}
+          <div style={{ position: "absolute", inset: 0, borderRadius: R, boxShadow: "0 80px 120px rgba(0,0,0,.6), 0 30px 40px rgba(0,0,0,.45)" }} />
+          {/* titanium frame */}
+          <div style={{ position: "absolute", inset: 0, borderRadius: R, background: "linear-gradient(135deg, #5a5650 0%, #1d1c1a 35%, #3b3935 60%, #121110 100%)" }} />
+          <div style={{ position: "absolute", inset: 8, borderRadius: R - 8, background: "#050505" }} />
+          {/* screen */}
+          <div style={{ position: "absolute", inset: bezel, borderRadius: R - bezel, overflow: "hidden", background: C.cream }}>
+            <Img src={staticFile("img/site-mobile.png")} style={{ position: "absolute", left: 0, top: 64, width: 780 * scr, transform: `translateY(${-scroll * scr}px)` }} />
+            {/* status bar */}
+            <div style={{ position: "absolute", left: 0, right: 0, top: 0, height: 64, background: C.ink, color: C.cream, fontFamily: SANS, fontWeight: 800, fontSize: 24, display: "flex", alignItems: "center", padding: "6px 52px 0" }}>9:41</div>
+            {/* glass reflection sweeping across */}
+            <div style={{ position: "absolute", inset: 0, background: `linear-gradient(115deg, transparent ${20 + f / 4}%, rgba(255,255,255,.16) ${28 + f / 4}%, transparent ${40 + f / 4}%)` }} />
+          </div>
+          {/* dynamic island */}
+          <div style={{ position: "absolute", top: bezel + 22, left: W / 2 - 70, width: 140, height: 40, borderRadius: 20, background: "#000" }} />
+        </div>
+      </AbsoluteFill>
+      <AbsoluteFill style={{ background: "linear-gradient(to bottom, rgba(10,8,6,.75) 0%, transparent 26%)" }} />
+      <Caption s={s} />
+      <div style={{ position: "absolute", left: 0, right: 0, bottom: 120, textAlign: "center", opacity: ease(f, 40, 60) * ease(f, s.dur - T - 8, s.dur - T, 1, 0) }}>
+        <span style={{ fontFamily: MONO, fontWeight: 500, fontSize: 40, letterSpacing: "0.12em", color: C.cream, background: C.red, padding: "14px 30px" }}>BINGOOO.CO.IN</span>
+      </div>
+    </AbsoluteFill>
+  );
+};
+
 const Caption: React.FC<{ s: Shot }> = ({ s }) => {
   const f = useCurrentFrame();
   const out = ease(f, s.dur - T - 8, s.dur - T, 1, 0);
-  const isBingooo = s.lines[0].startsWith("Your Bingooo");
+  const isBingooo = s.lines[1] === ".";
   return (
     <div style={{ position: "absolute", left: 80, right: 80, [s.pos]: s.pos === "bottom" ? 230 : 190, opacity: out } as React.CSSProperties}>
       <div style={{ width: ease(f, 10, 34, 0, 96), height: 5, background: C.red, marginBottom: 28 }} />
       {isBingooo ? (
-        <Rise delay={14}><div style={{ fontFamily: SANS, fontWeight: 800, fontSize: 132, lineHeight: 1.0, color: C.cream, letterSpacing: "-0.03em" }}>Your Bingooo<Dot /></div></Rise>
+        <Rise delay={14}><div style={{ fontFamily: SANS, fontWeight: 800, fontSize: 124, lineHeight: 1.0, color: C.cream, letterSpacing: "-0.03em", textShadow: "0 4px 40px rgba(0,0,0,.45)" }}>{s.lines[0]}<Dot /></div></Rise>
       ) : (
         s.lines.map((l, i) => (
           <Rise key={i} delay={14 + i * 5}>
@@ -128,21 +188,25 @@ const EndCard: React.FC = () => {
   );
 };
 
-export const Real: React.FC = () => {
+const Cut: React.FC<{ shots: Shot[]; audio: string }> = ({ shots, audio }) => {
   const f = useCurrentFrame();
+  const { starts, endStart: END_START, total } = layout(shots);
   return (
     <AbsoluteFill style={{ background: C.ink }}>
       <FontFaces />
-      {SHOTS.map((s, i) => (
+      {shots.map((s, i) => (
         <Sequence key={s.img} from={starts[i]} durationInFrames={s.dur}>
-          <ShotView s={s} first={i === 0} />
+          {s.site ? <SiteView s={s} /> : <ShotView s={s} first={i === 0} />}
         </Sequence>
       ))}
       <Sequence from={END_START}><EndCard /></Sequence>
       <Sequence durationInFrames={END_START + 20}><FilmLook /></Sequence>
       {/* open from black */}
       <AbsoluteFill style={{ background: "#000", opacity: ease(f, 0, 12, 1, 0), pointerEvents: "none" }} />
-      <Audio src={staticFile("audio/real-bed.wav")} volume={(fr) => interpolate(fr, [REAL_TOTAL - 45, REAL_TOTAL], [1, 0], { extrapolateLeft: "clamp" })} />
+      <Audio src={staticFile(`audio/${audio}`)} volume={(fr) => interpolate(fr, [total - 45, total], [1, 0], { extrapolateLeft: "clamp" })} />
     </AbsoluteFill>
   );
 };
+
+export const Real: React.FC = () => <Cut shots={SHOTS} audio="real-bed.wav" />;
+export const RealLong: React.FC = () => <Cut shots={SHOTS_LONG} audio="real-bed-long.wav" />;

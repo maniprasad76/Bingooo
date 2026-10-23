@@ -21,7 +21,7 @@ const END = 130;
 const ITEMS: Item[] = [
   { name: "T-SHIRT", price: 699, spec: "100% combed cotton · classic crewneck", bg: C.cream, fg: C.ink,
     imgs: ["white-front.png", "black-front.png", "beige-front.png", "red-front.png"], tags: ["WHITE", "BLACK", "BEIGE", "RED"] },
-  { name: "OVERSIZED", price: 1299, spec: "240 GSM loopknit french terry · drop-shoulder", bg: C.ink, fg: C.cream,
+  { name: "OVERSIZED", price: 699, spec: "240 GSM loopknit french terry · drop-shoulder", bg: C.ink, fg: C.cream,
     imgs: ["black-back.png", "white-back.png", "beige-back.png", "red-back.png"], tags: ["BLACK", "WHITE", "BEIGE", "RED"] },
   { name: "HOODIE", price: 849, spec: "430 GSM heavyweight fleece · drop-shoulder", bg: C.red, fg: C.cream,
     imgs: ["hoodie-black-front.png", "hoodie-white-front.png", "hoodie-black-back.png", "hoodie-white-back.png"], tags: ["BLACK", "WHITE", "BLACK · BACK", "WHITE · BACK"] },

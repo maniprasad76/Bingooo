@@ -40,9 +40,9 @@ for s in starts:
 k = Kokoro("/tmp/kk/kokoro-v1.0.onnx", "/tmp/kk/voices-v1.0.bin")
 lines = [
     (0.35, "Meet the Bingooo lineup."),
-    (starts[0] / FPS + 0.5, "The T-shirt. Combed cotton, classic crewneck. Rupees nine ninety-nine."),
+    (starts[0] / FPS + 0.5, "The T-shirt. Combed cotton, classic crewneck. Rupees six ninety-nine."),
     (starts[1] / FPS + 0.5, "The oversized. Two forty G S M french terry. Rupees twelve ninety-nine."),
-    (starts[2] / FPS + 0.5, "The hoodie. Four thirty G S M fleece. Rupees twenty-four ninety-nine."),
+    (starts[2] / FPS + 0.5, "The hoodie. Four thirty G S M fleece. Rupees eight forty-nine."),
     ((starts[2] + SCENE - 12) / FPS + 0.4, "Or design your own. Bingooo. Wear what defines you."),
 ]
 vo = np.zeros(n)

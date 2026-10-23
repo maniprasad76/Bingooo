@@ -1,5 +1,5 @@
 import React from "react";
-import { AbsoluteFill, Audio, Img, Sequence, interpolate, staticFile, useCurrentFrame } from "remotion";
+import { AbsoluteFill, Audio, Img, Sequence, interpolate, staticFile, useCurrentFrame, useVideoConfig } from "remotion";
 import { C, SANS, MONO, FontFaces, Rise, Dot, ease } from "./brand";
 
 type Shot = {
@@ -97,13 +97,16 @@ const SiteView: React.FC<{ s: Shot }> = ({ s }) => {
   const tilt = interpolate(f, [0, s.dur], [7, -3]);
   // screenshot is 780x6150; the phone screen shows 780x1690 of it at a time
   const scroll = interpolate(f, [30, 80, 110, 150, 175, s.dur], [0, 0, 1500, 1500, 2700, 2900], { extrapolateLeft: "clamp", extrapolateRight: "clamp", easing: (t) => t * t * (3 - 2 * t) });
-  const W = 560, H = W * 2.16, R = 86, bezel = 22;
+  // layout is authored for 1920px tall; k shrinks it for the 4:5 and 1:1 feed renders
+  const { width, height } = useVideoConfig();
+  const k = height / 1920;
+  const W = 560 * k, H = W * 2.16, R = 86 * k, bezel = 22 * k;
   const scr = (W - bezel * 2) / 780;
   return (
     <AbsoluteFill style={{ opacity: fadeIn, background: C.ink, overflow: "hidden" }}>
       <AbsoluteFill style={{ filter: `blur(${blurOut}px)`, transform: `translateX(${slideOut}px)` }}>
         <Img src={staticFile("img/real-fit-3.jpg")} style={{ position: "absolute", inset: -60, width: "calc(100% + 120px)", height: "calc(100% + 120px)", objectFit: "cover", objectPosition: "35% 50%", filter: "blur(18px) brightness(0.55) saturate(0.9)", transform: `scale(${1.1 + f / 3000})` }} />
-        <div style={{ position: "absolute", left: (1080 - W) / 2, top: 420, width: W, height: H, transform: `translate(${sh.x}px, ${rise + sh.y}px) perspective(2400px) rotateY(${tilt}deg) rotateX(${tilt * 0.4}deg)` }}>
+        <div style={{ position: "absolute", left: (width - W) / 2, top: 420 * k, width: W, height: H, transform: `translate(${sh.x}px, ${rise + sh.y}px) perspective(2400px) rotateY(${tilt}deg) rotateX(${tilt * 0.4}deg)` }}>
           {/* contact shadow */}
           <div style={{ position: "absolute", inset: 0, borderRadius: R, boxShadow: "0 80px 120px rgba(0,0,0,.6), 0 30px 40px rgba(0,0,0,.45)" }} />
           {/* titanium frame */}
@@ -111,20 +114,20 @@ const SiteView: React.FC<{ s: Shot }> = ({ s }) => {
           <div style={{ position: "absolute", inset: 8, borderRadius: R - 8, background: "#050505" }} />
           {/* screen */}
           <div style={{ position: "absolute", inset: bezel, borderRadius: R - bezel, overflow: "hidden", background: C.cream }}>
-            <Img src={staticFile("img/site-mobile.png")} style={{ position: "absolute", left: 0, top: 64, width: 780 * scr, transform: `translateY(${-scroll * scr}px)` }} />
+            <Img src={staticFile("img/site-mobile.png")} style={{ position: "absolute", left: 0, top: 64 * k, width: 780 * scr, transform: `translateY(${-scroll * scr}px)` }} />
             {/* status bar */}
-            <div style={{ position: "absolute", left: 0, right: 0, top: 0, height: 64, background: C.ink, color: C.cream, fontFamily: SANS, fontWeight: 800, fontSize: 24, display: "flex", alignItems: "center", padding: "6px 52px 0" }}>9:41</div>
+            <div style={{ position: "absolute", left: 0, right: 0, top: 0, height: 64 * k, background: C.ink, color: C.cream, fontFamily: SANS, fontWeight: 800, fontSize: 24 * k, display: "flex", alignItems: "center", padding: `${6 * k}px ${52 * k}px 0` }}>9:41</div>
             {/* glass reflection sweeping across */}
             <div style={{ position: "absolute", inset: 0, background: `linear-gradient(115deg, transparent ${20 + f / 4}%, rgba(255,255,255,.16) ${28 + f / 4}%, transparent ${40 + f / 4}%)` }} />
           </div>
           {/* dynamic island */}
-          <div style={{ position: "absolute", top: bezel + 22, left: W / 2 - 70, width: 140, height: 40, borderRadius: 20, background: "#000" }} />
+          <div style={{ position: "absolute", top: bezel + 22 * k, left: W / 2 - 70 * k, width: 140 * k, height: 40 * k, borderRadius: 20 * k, background: "#000" }} />
         </div>
       </AbsoluteFill>
       <AbsoluteFill style={{ background: "linear-gradient(to bottom, rgba(10,8,6,.75) 0%, transparent 26%)" }} />
       <Caption s={s} />
-      <div style={{ position: "absolute", left: 0, right: 0, bottom: 120, textAlign: "center", opacity: ease(f, 40, 60) * ease(f, s.dur - T - 8, s.dur - T, 1, 0) }}>
-        <span style={{ fontFamily: MONO, fontWeight: 500, fontSize: 40, letterSpacing: "0.12em", color: C.cream, background: C.red, padding: "14px 30px" }}>BINGOOO.CO.IN</span>
+      <div style={{ position: "absolute", left: 0, right: 0, bottom: 120 * k, textAlign: "center", opacity: ease(f, 40, 60) * ease(f, s.dur - T - 8, s.dur - T, 1, 0) }}>
+        <span style={{ fontFamily: MONO, fontWeight: 500, fontSize: 40 * Math.max(k, 0.75), letterSpacing: "0.12em", color: C.cream, background: C.red, padding: "14px 30px" }}>BINGOOO.CO.IN</span>
       </div>
     </AbsoluteFill>
   );
@@ -134,15 +137,17 @@ const Caption: React.FC<{ s: Shot }> = ({ s }) => {
   const f = useCurrentFrame();
   const out = ease(f, s.dur - T - 8, s.dur - T, 1, 0);
   const isBingooo = s.lines[1] === ".";
+  const k = useVideoConfig().height / 1920;
+  const size = 124 * Math.max(k, 0.78);
   return (
-    <div style={{ position: "absolute", left: 80, right: 80, [s.pos]: s.pos === "bottom" ? 230 : 190, opacity: out } as React.CSSProperties}>
+    <div style={{ position: "absolute", left: 80, right: 80, [s.pos]: (s.pos === "bottom" ? 230 : 190) * k, opacity: out } as React.CSSProperties}>
       <div style={{ width: ease(f, 10, 34, 0, 96), height: 5, background: C.red, marginBottom: 28 }} />
       {isBingooo ? (
-        <Rise delay={14}><div style={{ fontFamily: SANS, fontWeight: 800, fontSize: 124, lineHeight: 1.0, color: C.cream, letterSpacing: "-0.03em", textShadow: "0 4px 40px rgba(0,0,0,.45)" }}>{s.lines[0]}<Dot /></div></Rise>
+        <Rise delay={14}><div style={{ fontFamily: SANS, fontWeight: 800, fontSize: size, lineHeight: 1.0, color: C.cream, letterSpacing: "-0.03em", textShadow: "0 4px 40px rgba(0,0,0,.45)" }}>{s.lines[0]}<Dot /></div></Rise>
       ) : (
         s.lines.map((l, i) => (
           <Rise key={i} delay={14 + i * 5}>
-            <div style={{ fontFamily: SANS, fontWeight: 800, fontSize: 124, lineHeight: 1.04, color: C.cream, letterSpacing: "-0.03em", textShadow: "0 4px 40px rgba(0,0,0,.45)" }}>{l}</div>
+            <div style={{ fontFamily: SANS, fontWeight: 800, fontSize: size, lineHeight: 1.04, color: C.cream, letterSpacing: "-0.03em", textShadow: "0 4px 40px rgba(0,0,0,.45)" }}>{l}</div>
           </Rise>
         ))
       )}

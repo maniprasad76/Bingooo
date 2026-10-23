@@ -23,7 +23,7 @@ const DEFAULT_DESCRIPTION =
   "Shop India's premier 240–280 GSM heavyweight oversized t-shirts for men & streetwear. 100% super-combed cotton, drop-shoulder fit, custom printing studio. Free delivery on prepaid orders, cash on delivery available.";
 const DEFAULT_KEYWORDS =
   "oversized t-shirts for men, 240 gsm oversized t shirt, heavyweight t shirt india, drop shoulder t shirt, luxury streetwear india, custom oversized t shirt printing india, streetwear brand india, boxy fit t shirt men, 100 combed cotton oversized tee, bingooo menswear";
-const DEFAULT_IMAGE = '/brand-logo.png';
+const DEFAULT_IMAGE = '/og-image.png';
 const BASE_URL = SITE_URL;
 
 /**

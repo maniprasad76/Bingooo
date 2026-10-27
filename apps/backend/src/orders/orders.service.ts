@@ -134,7 +134,7 @@ export class OrdersService implements OnModuleInit, OnModuleDestroy {
   expireUnpaidOrders(now = Date.now()) {
     let expired = 0;
     for (const order of db.orders) {
-      if (order.status !== 'pending_payment' || order.payment_method === 'cod') continue;
+      if (order.status !== 'pending_payment') continue;
       if (now - Date.parse(order.created_at) < UNPAID_ORDER_TTL_MS) continue;
       order.status = 'cancelled';
       order.payment_status = 'expired';
@@ -154,13 +154,11 @@ export class OrdersService implements OnModuleInit, OnModuleDestroy {
     const randSuffix = Math.floor(1000 + Math.random() * 9000);
     const orderNumber = `BGO-${dateStr}-${randSuffix}`;
 
-    const isCod = dto.paymentMethod === 'cod';
-
     const order = {
       id: orderId,
       order_number: orderNumber,
       user_id: owner.userId,
-      status: isCod ? 'confirmed' : 'pending_payment',
+      status: 'pending_payment',
       payment_status: 'pending',
       payment_method: dto.paymentMethod,
       subtotal: calculation.subtotal,
@@ -249,8 +247,6 @@ export class OrdersService implements OnModuleInit, OnModuleDestroy {
     db.cart_items = db.cart_items.filter((i) => i.cart_id !== dto.cartId);
 
     saveDb();
-    // Online orders are confirmed once payment is captured (PaymentsService); COD now.
-    if (isCod) this.notifyConfirmed(order);
     return this.enrichOrder(order);
   }
 
@@ -342,8 +338,7 @@ export class OrdersService implements OnModuleInit, OnModuleDestroy {
   }
 
   private async sendConfirmationEmail(order: any, enriched: any) {
-    const cod = order.payment_method === 'cod';
-    if (order.payment_status !== 'captured' && !cod) return;
+    if (order.payment_status !== 'captured') return;
     if (['sent', 'sending'].includes(order.email_confirmation?.status)) return;
     const user = order.user_id ? db.users.find((u) => u.id === order.user_id) : null;
     const to = String(user?.email || order.email || '').trim();
@@ -366,7 +361,7 @@ export class OrdersService implements OnModuleInit, OnModuleDestroy {
       discount: Number(order.discount || 0) + Number(order.prepaid_discount || 0),
       tax: 0, // prices are tax-inclusive
       total: Number(order.total || 0),
-      paymentMethod: cod ? 'Cash on delivery' : 'Razorpay',
+      paymentMethod: 'Razorpay (Prepaid)',
       shippingAddress: address,
     });
     order.email_confirmation = result.ok

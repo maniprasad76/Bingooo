@@ -121,8 +121,8 @@ const FAQ_ITEMS: FaqItem[] = [
     category: 'payments',
     question: 'Is Cash on Delivery (COD) available?',
     answer:
-      'Yes. Cash on delivery is available across India for ₹80 extra (not for custom printed items). Prefer to pay online? UPI (Google Pay, PhonePe, Paytm), cards and net banking get an instant 5% discount and free delivery.',
-    searchKeywords: 'cash on delivery cod payment prepaid methods discounts online razorpay upi',
+      'No. To guarantee prompt dispatch and eliminate delivery friction, Bingooo operates exclusively on a 100% secure prepaid architecture. We accept UPI (Google Pay, PhonePe, Paytm, CRED), Cards, and NetBanking via Razorpay with universal free delivery across India.',
+    searchKeywords: 'cash on delivery cod payment prepaid methods discounts online razorpay upi free delivery',
   },
   {
     id: 'payments-2',

@@ -323,7 +323,7 @@ export function ShopPage() {
         description={
           slug
             ? categorySeoDescription(seoCategory || { name: categoryLabel }, filteredProducts.length)
-            : 'Shop Bingooo streetwear: heavyweight oversized t-shirts, hoodies and more in premium cotton. Free delivery on prepaid orders, cash on delivery available and 7-day easy exchange.'
+            : 'Shop Bingooo streetwear: heavyweight oversized t-shirts, hoodies and more in premium cotton. 100% secure prepaid checkout, free delivery across India, and 7-day easy exchange.'
         }
         keywords={slug ? `${categoryLabel.toLowerCase()}, ${categoryLabel.toLowerCase()} online india, bingooo` : 'oversized t-shirts for men, heavyweight t shirt india, streetwear brand india, bingooo'}
         canonical={slug ? categoryUrl(slug) : `${SITE_URL}/shop`}

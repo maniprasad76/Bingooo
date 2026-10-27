@@ -241,3 +241,5 @@ python -m graphify update .   # Keep graph.json and GRAPH_REPORT.md updated
   - Purged 180+ automated bot users, 50 synthetic test orders, and duplicate demo products; preserved official catalog apparel, real admin accounts, and promotional coupons.
 - **2026-10-10: End-to-End Promotional Coupon Engine & Real-Time Checkout Recalculation**
   - Linked coupon management between Admin Panel, NestJS backend `CouponsService`, and Storefront checkout (`BINGOOO10`, `WELCOME20`, `FREESHIP`).
+- **2026-10-27: Complete Removal of Cash on Delivery (COD) & Partial COD (100% Prepaid Only)**
+  - Fully purged all COD and Partial COD payment paths across the monorepo; locked `PaymentMethod` to `'prepaid'`, removed COD options and UI from checkout, eliminated conditional shipping fees, and updated all thermal print labels and SEO meta tags.

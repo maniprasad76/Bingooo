@@ -24,8 +24,8 @@ export class CheckoutValidationDto {
 
   @IsOptional() @IsString() @MaxLength(50) couponCode?: string;
 
-  @IsIn(['prepaid', 'cod'])
-  paymentMethod!: 'prepaid' | 'cod';
+  @IsIn(['prepaid'])
+  paymentMethod!: 'prepaid';
 
   @ValidateNested()
   @Type(() => ShippingAddressDto)

@@ -6,7 +6,7 @@
 export type OrderStatus =
   | 'pending_payment'
   | 'paid'
-  /** Cash on delivery: placed and accepted, paid at the door. */
+  /** Order placed and confirmed. */
   | 'confirmed'
   | 'processing'
   | 'packed'
@@ -25,8 +25,8 @@ export type PaymentStatus =
   | 'refunded'
   | 'partially_refunded';
 
-/** Payment method */
-export type PaymentMethod = 'prepaid' | 'cod';
+/** Payment method: 100% secure prepaid only */
+export type PaymentMethod = 'prepaid';
 
 export interface Order {
   id: string;

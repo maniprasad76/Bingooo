@@ -68,7 +68,6 @@ export function generateThermalShippingLabelHtml(order: any, items: any[]): stri
   const itemCount = items.reduce((sum: number, it: any) => sum + (it.quantity || 1), 0) || 1;
   const weight = (0.45 * itemCount).toFixed(2);
   const totalAmount = Math.round(order?.total ?? order?.total_amount ?? 0);
-  const isCod = order?.payment_method === 'cod';
 
   const barcodeSvg = generateSvgBarcode(awb, 300, 52);
 
@@ -359,7 +358,7 @@ export function generateThermalShippingLabelHtml(order: any, items: any[]): stri
         Phone: ${esc(CONSIGNOR_PHONE)}
       </div>
       <div class="watermark">
-        ${isCod ? `COD · COLLECT ₹${totalAmount}` : `PREPAID · ₹${totalAmount}`}
+        PREPAID · ₹${totalAmount}
       </div>
     </div>
   </div>

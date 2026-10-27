@@ -205,13 +205,12 @@ export class ShiprocketService {
       billing_phone: recipientPhone,
       shipping_is_billing: true,
       order_items: orderItems,
-      // COD tells the courier to collect sub_total in cash at the door.
-      payment_method: order.payment_method === 'cod' ? 'COD' : 'Prepaid',
+      // 100% secure prepaid architecture
+      payment_method: 'Prepaid',
       shipping_charges: 0,
       giftwrap_charges: 0,
       transaction_charges: 0,
       total_discount: 0,
-      // The final order total (discounts and COD fee already applied).
       sub_total: Math.round(order.total || 0),
       length: 30,
       breadth: 25,

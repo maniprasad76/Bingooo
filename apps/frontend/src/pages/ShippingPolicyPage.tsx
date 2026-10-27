@@ -163,7 +163,7 @@ export function ShippingPolicyPage() {
     <main className="bg-[#F7EEDB] text-[#171717] font-sans antialiased selection:bg-[#E6321C] selection:text-white">
       <SEO
         title="Shipping & Delivery Policy — BINGOOO Atelier"
-        description="Review Bingooo's pan-India delivery timelines, courier tracking details, dispatch schedules, free shipping on prepaid orders and ₹80 cash on delivery."
+        description="Review Bingooo's pan-India delivery timelines, courier tracking details, dispatch schedules, 100% universal free shipping, and prepaid delivery policy."
         canonical="https://www.bingooo.co.in/shipping-policy"
       />
 

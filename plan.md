@@ -1,72 +1,92 @@
-# Plan: Dual-Sided (Front & Back) Artwork Upload Experience
+# Plan: Complete Removal of Cash on Delivery (COD) & Partial COD (Prepaid Only)
 
-## 1. Overview
-In the Bingooo Studio customizer (`apps/frontend/src/pages/CustomizerPage.tsx`), users currently interact with artwork placement through a 3-tab selector (`CENTER`, `LEFT CHEST`, `BACK`), which presents only one single file input dropzone at any given time. Users frequently upload only one side (usually Front Center) and miss the fact that back-side printing is supported, with no prompt asking them if they need a back design.
-
-This feature re-engineers Step 03 of the Customizer into an intuitive dual-sided experience:
-- Dedicated, clearly distinct **Front Side** and **Back Side** artwork upload cards.
-- Smooth automatic camera/mockup flipping between **FRONT** and **BACK** when interacting with each side.
-- Proactive **"Add Back Design?"** Bauhaus prompt modal when the user requests a quote with only one side configured, giving them an effortless opportunity to upload back artwork or proceed with front-only.
-- Comprehensive quotation payload reflecting both sides accurately.
+## Goal
+Transition the Bingooo platform to operate strictly on 100% secure prepaid orders (Razorpay UPI, Credit/Debit Cards, NetBanking) with universal free shipping pan-India. Completely remove all COD payment options, partial-COD residue, COD fee calculations, and update all customer-facing policies, FAQs, thermal labels, and SEO meta tags.
 
 ---
 
-## 2. Target Files & Key Modifications
+## Proposed Changes
 
-### Primary File: `apps/frontend/src/pages/CustomizerPage.tsx`
-1. **State Management**:
-   - Keep `artworks` record (`center`, `left_chest`, `back`).
-   - Add `frontPlacement` selector state (`'center' | 'left_chest'`, default `'center'`).
-   - Add `activeUploadSide` state (`'front' | 'back'`) for drag-and-drop and file input targets.
-   - Separate file inputs / triggers for Front and Back artwork: `frontFileInputRef` and `backFileInputRef`.
-   - Add `showBackPromptModal` state to prompt the user if they request a quote with only Front (or only Back) artwork.
-
-2. **File Handling**:
-   - Support uploading directly to `front` (to whichever of `center` or `left_chest` is chosen) and `back`.
-   - Transparent PNG validation, 20MB limit check, scale sliders (60% to 140%), and artwork removal per side.
-   - Auto-switching `currentView`:
-     - Clicking/uploading Front switches view to `'FRONT'`.
-     - Clicking/uploading Back switches view to `'BACK'`.
-
-3. **Step 03 Bauhaus UI Redesign**:
-   - Header with dual status indicators: `FRONT: [✓ Center | ✓ Chest | Empty]` and `BACK: [✓ Uploaded | Empty]`.
-   - **Front Side Card**:
-     - Placement toggle: `CENTER` vs `LEFT CHEST`.
-     - Upload Dropzone / Active Artwork preview with scale slider, file metadata, and remove button.
-   - **Back Side Card**:
-     - Status: `BACK PRINT (OPTIONAL)`.
-     - Upload Dropzone / Active Artwork preview with scale slider, file metadata, and remove button.
-     - Welcoming empty state asking: *"Want to add a design on the back too? Click or drag transparent PNG here"*.
-
-4. **Quote Pre-Flight Check & Confirmation Modal**:
-   - When the user clicks **"GET WHATSAPP QUOTE"**:
-     - If both Front and Back have artwork, or if user explicitly skipped: proceed directly to WhatsApp.
-     - If ONLY Front is uploaded (or ONLY Back): open a Bauhaus confirmation modal:
-       - *"Would you like to add back printing as well?"*
-       - Button 1: **"+ Yes, Add Back Design"** -> scrolls to Back upload card, flips preview to BACK, focuses back dropzone.
-       - Button 2: **"Continue with Front Only"** -> proceeds directly to WhatsApp.
-     - If neither side has artwork: friendly toast reminding them to add a design, or continue with blank garment.
-
-5. **WhatsApp Message Generation**:
-   - Accurately details Front Artwork (Center or Left Chest), Back Artwork, garment fit, color, and size.
+### 1. Shared Types
+#### `packages/types/src/order.ts`
+- Change `PaymentMethod` type to strictly `'prepaid'`.
+- Remove any COD descriptions/references from `OrderStatus` comments.
 
 ---
 
-## 3. Invariants & Design Token Consistency
-- **Colors**: Strictly `#F7EEDB` (Warm Cream), `#171717` (Charcoal), `#E6321C` (Signal Red), and `#FFFFFF`.
-- **Icons**: Lucide React only (`Upload`, `Check`, `X`, `Layers`, `MessageCircle`, `RotateCw`, etc.). No emojis.
-- **Typography**: Manrope font styling with uppercase tracking.
-- **Haptics**: Use `triggerHaptic('selection')` or `triggerHaptic('success')` on upload/switch.
+### 2. Backend Validation & Order Pipeline
+#### `apps/backend/src/checkout/dto/checkout.dto.ts`
+- Update `CheckoutValidationDto`:
+  - Change `@IsIn(['prepaid', 'cod'])` to `@IsIn(['prepaid'])`.
+  - Change `paymentMethod!: 'prepaid' | 'cod'` to `paymentMethod!: 'prepaid'`.
+
+#### `apps/backend/src/checkout/checkout.service.ts`
+- Remove `const isCod = dto.paymentMethod === 'cod'`.
+- Remove the custom-items COD rejection check (`COD_NOT_AVAILABLE`).
+- Standardize `shippingFee` to `0` (universal free delivery).
+- Set `payableNow: total`.
+
+#### `apps/backend/src/orders/orders.service.ts`
+- In `createOrder`:
+  - Set `status: 'pending_payment'` always (all orders start unpaid until payment gateway capture).
+  - Remove `if (isCod) this.notifyConfirmed(order);` (confirmation notifications happen only when payment is captured via Razorpay).
+- In `expireUnpaidOrders`:
+  - Remove `|| order.payment_method === 'cod'` check since all orders are prepaid.
+- In `sendConfirmationEmail`:
+  - Remove conditional `paymentMethod: cod ? 'Cash on delivery' : 'Razorpay'`; set to `'Razorpay (Prepaid)'`.
+  - Require captured payment before sending email.
+
+#### `apps/backend/src/shipping/shiprocket.service.ts`
+- In `createCustomOrderPayload`:
+  - Set `payment_method: 'Prepaid'` always.
+  - Set `sub_total: 0` for collect amount (0 COD charge).
+
+#### `apps/backend/src/shipping/shipping-label.util.ts`
+- Remove COD watermark check (`isCod ? COD · COLLECT... : PREPAID...`).
+- Always watermark shipping labels with `PREPAID · ₹${totalAmount}`.
+
+#### `apps/backend/src/email/email.service.ts`
+- In `sendOrderConfirmationEmail` HTML template:
+  - Remove the ternary checking `params.paymentMethod === 'Cash on delivery'`.
+
+#### `apps/backend/test/run-security-suite.ts`
+- Update test cases that used `payment_method: 'cod'` or tested COD refusal to test prepaid flows and ensure invalid payment methods like `'cod'` are rejected by the checkout validator.
 
 ---
 
-## 4. Verification & Testing
-- Typecheck passes across all workspaces: `npm run typecheck`.
-- Manual/Visual flow validation:
-  1. Upload Front image (Center) -> front mockup reflects artwork.
-  2. Toggle to Left Chest -> artwork re-positions to Left Chest.
-  3. Upload Back image -> garment view flips to Back, back artwork reflects on mockup.
-  4. Scale adjustments work independently on Front and Back.
-  5. Delete front artwork -> back remains intact, front resets.
-  6. Click "GET WHATSAPP QUOTE" with front only -> modal appears asking if they want back artwork.
-  7. Clicking "+ Yes, Add Back Design" switches to Back. Clicking "Continue with Front Only" opens WhatsApp.
+### 3. Storefront Frontend
+#### `apps/frontend/src/pages/CheckoutPage.tsx`
+- Change `type PaymentMethodType = 'upi' | 'cards' | 'cod'` to `'upi' | 'cards'`.
+- Remove the Option 3 Cash on Delivery (COD) radio box UI card.
+- In `onSubmit`:
+  - Remove the `if (paymentMethod === 'cod')` branch.
+  - All orders create an order with `paymentMethod: 'prepaid'` and proceed to Razorpay modal.
+- Remove `isPrepaid` / `paymentMethod === 'cod'` shipping fee calculations (shipping fee is always ₹0).
+
+#### `apps/frontend/src/pages/OrderSuccessPage.tsx`
+- Remove `isCod` state check (`order.payment_method === 'cod' || Boolean(navState.isCod)`).
+- Clean up order status badges and descriptions: display "Order confirmed" and "Paid online // 100% Secure".
+
+#### `apps/frontend/src/pages/FaqPage.tsx`
+- Update FAQ item "Is Cash on Delivery (COD) available?" to state:
+  - "No. To ensure fast, seamless dispatch and zero delivery friction, Bingooo operates exclusively on 100% secure prepaid checkout via UPI (Google Pay, PhonePe, Paytm, CRED), Cards, and NetBanking, with free delivery on every order."
+
+#### `apps/frontend/src/pages/ShippingPolicyPage.tsx`
+- Update meta description and policy text to remove all mentions of "₹80 cash on delivery".
+
+#### `apps/frontend/src/pages/HomePage.tsx`, `ShopPage.tsx`, `SEO.tsx`, `index.html`, `scripts/prerender-seo.mjs`, `src/lib/seo/catalog-seo.mjs`
+- Update SEO descriptions and structured FAQ schemas to remove "cash on delivery available" and state "100% secure prepaid checkout & universal free delivery across India".
+
+---
+
+## Verification Plan
+
+### Automated Checks
+1. Typecheck: `npm run typecheck` across all monorepo packages and apps (`packages/types`, `apps/backend`, `apps/frontend`, `apps/admin`).
+2. Run backend security test suite: `npm run test:security` in `apps/backend`.
+3. Re-index codebase with Graphify: `python -m graphify update .`.
+
+### Git Push
+1. Check `git status` and `git diff`.
+2. Commit with clean GSD message: `feat(checkout): enforce 100% prepaid-only orders and remove all COD and partial COD`.
+3. Push to GitHub: `git push origin main`.

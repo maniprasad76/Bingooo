@@ -99,9 +99,8 @@ export function OrderSuccessPage() {
     return <OrderUnavailable paymentFailed={isPaymentFailure} orderNumber={orderNumber} />;
   }
 
-  const isCod = order.payment_method === 'cod' || Boolean(navState.isCod);
   const isPaid = PAID_STATUSES.includes(String(order.payment_status)) || (!hasFreshOrder && verifiedAtCheckout);
-  const isConfirmed = isPaid || isCod;
+  const isConfirmed = isPaid;
   const address = order.address_snapshot_json || order.shipping_address || {};
   const firstName = String(address.name || '').trim().split(/\s+/)[0];
   const phoneDigits = String(address.phone || '').replace(/\D/g, '');
@@ -159,7 +158,7 @@ export function OrderSuccessPage() {
             {...fadeUp(0.35)}
             className="mt-7 mb-0 font-mono text-[11px] font-semibold uppercase tracking-[0.22em] text-[#E6321C]"
           >
-            {isPaid ? 'Order confirmed' : isCod ? 'Order confirmed · Cash on Delivery' : 'Awaiting payment'}
+            {isPaid ? 'Order confirmed' : 'Awaiting payment'}
           </m.p>
 
           <m.h1
@@ -187,8 +186,6 @@ export function OrderSuccessPage() {
           >
             {isPaid
               ? 'Your payment was received and your order is confirmed. We’re getting your pieces ready for dispatch.'
-              : isCod
-              ? `Your Cash on Delivery order is confirmed! Please keep ${formatINR(order.total)} ready in cash or UPI at the time of delivery.`
               : 'We haven’t received the payment for this order yet. If money has left your account, it will be confirmed here automatically within a few minutes.'}
           </m.p>
 
@@ -310,12 +307,10 @@ export function OrderSuccessPage() {
               <SummaryRow label="TAXES" value="INCLUSIVE" />
               <div className="flex items-end justify-between border-t-2 border-[#171717] pt-4 mt-2">
                 <dt className="text-xs font-black uppercase">
-                  {isPaid ? 'TOTAL PAID' : isCod ? 'TOTAL PAYABLE (COD)' : 'TOTAL AMOUNT'}
+                  {isPaid ? 'TOTAL PAID' : 'TOTAL AMOUNT'}
                   <span className="mt-0.5 block font-mono text-[10px] font-normal text-[#6F6A63]">
                     {isPaid
                       ? 'PAID ONLINE // 100% SECURE'
-                      : isCod
-                      ? 'PAY ON DELIVERY (CASH / UPI)'
                       : 'PAYMENT PENDING'}
                   </span>
                 </dt>

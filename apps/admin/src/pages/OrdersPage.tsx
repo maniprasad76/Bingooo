@@ -65,7 +65,7 @@ interface Order {
   shippingAddress?: any;
 }
 
-// Every order status (packages/types OrderStatus); 'confirmed' = cash on delivery, awaiting dispatch.
+// Every order status (packages/types OrderStatus); 'confirmed' = payment captured & confirmed, awaiting dispatch.
 const STATUSES = ['all', 'pending_payment', 'paid', 'confirmed', 'processing', 'packed', 'shipped', 'delivered', 'return_requested', 'returned', 'cancelled'];
 const STATUS_BADGE: Record<string, string> = {
   delivered: 'badge-success',

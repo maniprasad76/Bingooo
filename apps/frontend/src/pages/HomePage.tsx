@@ -197,7 +197,7 @@ export function HomePage() {
     <main className="bg-[#f7eedb] text-[#171717] font-sans antialiased selection:bg-[#e6321c] selection:text-white">
       <SEO
         title="Bingooo® — Oversized T-Shirts for Men (240 GSM) & Luxury Streetwear India"
-        description="Shop India's #1 240–280 GSM heavyweight oversized t-shirts for men & streetwear. 100% super-combed cotton, drop-shoulder fit, custom printing studio. Free delivery on prepaid orders, cash on delivery available."
+        description="Shop India's #1 240–280 GSM heavyweight oversized t-shirts for men & streetwear. 100% super-combed cotton, drop-shoulder fit, custom printing studio. 100% secure prepaid checkout & free pan-India delivery."
         keywords="oversized t-shirts for men, 240 gsm oversized t shirt, heavyweight t shirt india, drop shoulder t shirt, luxury streetwear india, custom oversized t shirt printing india, streetwear brand india, boxy fit t shirt men, 100 combed cotton oversized tee, 380 gsm fleece hoodie, acid wash oversized t shirt, dtf printing custom t shirt, oversized tees india, bingooo menswear"
         canonical="https://www.bingooo.co.in"
         schema={[

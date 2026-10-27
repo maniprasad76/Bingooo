@@ -804,7 +804,7 @@ async function runSecuritySuite() {
       `Got status ${badRole.status}`,
     );
 
-    console.log('\n📦 SUITE 6: Shipping & Cash on Delivery');
+    console.log('\n📦 SUITE 6: Shipping & Logistics');
     // Never reach a real Shiprocket account from a test.
     delete process.env.SHIPROCKET_EMAIL;
     delete process.env.SHIPROCKET_PASSWORD;
@@ -814,8 +814,8 @@ async function runSecuritySuite() {
       order_number: `BGO-SEC-${shipStamp}`,
       user_id: admin.id,
       status: 'processing',
-      payment_status: 'pending',
-      payment_method: 'cod',
+      payment_status: 'captured',
+      payment_method: 'prepaid',
       total: 1079,
       shipping_address: { name: '<script>alert(1)</script>Ravi', phone: '9876543210', line1: '1 Main Road', city: 'Srikakulam', state: 'Andhra Pradesh', postalCode: '532001', country: 'IN' },
       created_at: new Date().toISOString(),
@@ -835,9 +835,9 @@ async function runSecuritySuite() {
       `HTTP ${labelStaff.status}`,
     );
     assert(
-      labelHtml.includes('Security Tee') && labelHtml.includes('COD · COLLECT ₹1079') && !labelHtml.includes('29AABCB1234F1Z8') && !labelHtml.includes('Bangalore'),
+      labelHtml.includes('Security Tee') && labelHtml.includes('PREPAID · ₹1079') && !labelHtml.includes('29AABCB1234F1Z8') && !labelHtml.includes('Bangalore'),
       'Shipping',
-      'Labels show the real items, the COD amount to collect and the real return address',
+      'Labels show the real items, the prepaid watermark and the real return address',
     );
 
     const courierHook = (key: string) =>
@@ -863,20 +863,17 @@ async function runSecuritySuite() {
     const awbAttempt = await fetch(`${BASE_URL}/shipping/shiprocket/generate-awb/${shipOrder.id}`, { method: 'POST', headers: asUser(admin.token) });
     assert(awbAttempt.status === 503 && !shipOrder.tracking_number, 'Shipping', 'Without Shiprocket no tracking number is invented or sent to the customer', `HTTP ${awbAttempt.status}`);
 
-    // Custom prints are prepaid only, whatever the page sends.
-    const { CheckoutService } = await import('../src/checkout/checkout.service');
-    const checkout = app.get(CheckoutService);
-    const codVariant = { id: `sec-cod-var-${shipStamp}`, product_id: `sec-cod-prod-${shipStamp}`, sku: 'SEC-COD', size: 'M', color: 'Black', price: 999, stock_quantity: 5, reserved_quantity: 0 };
-    db.product_variants.push(codVariant);
-    db.carts.push({ id: `sec-cod-cart-${shipStamp}`, user_id: admin.id, created_at: new Date().toISOString() });
-    db.cart_items.push({ id: `sec-cod-item-${shipStamp}`, cart_id: `sec-cod-cart-${shipStamp}`, variant_id: codVariant.id, quantity: 1, customization_id: 'sec-custom-print' });
-    let codError = '';
-    try {
-      checkout.validateAndCalculate({ cartId: `sec-cod-cart-${shipStamp}`, paymentMethod: 'cod', shippingAddress: shipOrder.shipping_address } as any, { userId: admin.id } as any);
-    } catch (err: any) {
-      codError = err?.response?.code || err?.message || 'error';
-    }
-    assert(codError === 'COD_NOT_AVAILABLE', 'Checkout', 'Cash on delivery is refused for custom printed items', codError || 'accepted');
+    // All orders must be prepaid; COD or invalid paymentMethod is rejected
+    const codAttempt = await fetch(`${BASE_URL}/orders`, {
+      method: 'POST',
+      headers: { ...asUser(admin.token), 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        cartId: 'nonexistent-cart',
+        paymentMethod: 'cod',
+        shippingAddress: shipOrder.shipping_address,
+      }),
+    });
+    assert(codAttempt.status === 400, 'Checkout', 'COD paymentMethod is rejected by DTO validation', `HTTP ${codAttempt.status}`);
 
     db.users = db.users.filter((u) => ![support.id, productManager.id, admin.id].includes(u.id));
 

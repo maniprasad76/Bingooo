@@ -93,17 +93,9 @@ export class CheckoutService {
 
     const discountedSubtotal = Math.max(0, subtotal - discount);
 
-    const isCod = dto.paymentMethod === 'cod';
-    // Custom prints can't be resold if refused at the door: prepaid only.
-    if (isCod && validatedItems.some((i: any) => i.customizationId)) {
-      throw new BadRequestException({
-        code: 'COD_NOT_AVAILABLE',
-        message: 'Cash on delivery is not available for custom printed items. Please pay online.',
-      });
-    }
     const prepaidPct = Number(db.settings.prepaid_discount_percentage) || 5;
-    const prepaidDiscount = isCod ? 0 : Math.round(discountedSubtotal * (prepaidPct / 100));
-    const shippingFee = isCod ? 80 : 0;
+    const prepaidDiscount = Math.round(discountedSubtotal * (prepaidPct / 100));
+    const shippingFee = 0; // Universal free shipping across India for all prepaid orders
 
     const tax = 0; // All prices are all-inclusive (no extra GST)
     const total = Math.max(0, discountedSubtotal - prepaidDiscount + shippingFee);
@@ -120,7 +112,7 @@ export class CheckoutService {
       tax,
       total,
       paymentMethod: dto.paymentMethod,
-      payableNow: isCod ? 0 : total,
+      payableNow: total,
       shippingAddress: dto.shippingAddress,
     };
   }

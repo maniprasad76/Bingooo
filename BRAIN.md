@@ -225,4 +225,7 @@ python -m graphify update .
   - Implemented automatic camera/mockup flipping between `FRONT` and `BACK` on interaction and live preview synchronization.
   - Added proactive Bauhaus Studio Checkpoint prompt modal when users request a quote with only one side configured, offering an intuitive 1-click option to add back/front graphics or proceed with single-sided print.
   - Synchronized WhatsApp quotation generator to detail both Front and Back artwork files and specs accurately.
+- **2026-10-27: Complete Removal of Cash on Delivery (COD) & Partial COD (100% Prepaid Only)**
+  - Transitioned the entire checkout and order pipeline exclusively to 100% secure prepaid architecture (Razorpay UPI, Cards, NetBanking); eliminated all COD payment selectors, residue calculations, and custom-item COD restrictions from backend, frontend, admin, shared types, thermal print labels, and SEO meta tags.
+
 

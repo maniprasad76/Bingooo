@@ -213,7 +213,7 @@ export function categorySeoDescription(category, productCount = 0) {
   if (custom.length >= 50) return truncate(custom, 160);
   const name = stripHtml(category.name);
   return truncate(
-    `Shop ${productCount > 0 ? `${productCount} ` : ''}${name.toLowerCase()} from Bingooo — premium cotton streetwear. Free delivery on prepaid orders, cash on delivery available across India and ${POLICY.returnDays}-day easy exchange.`,
+    `Shop ${productCount > 0 ? `${productCount} ` : ''}${name.toLowerCase()} from Bingooo — premium cotton streetwear. 100% secure prepaid checkout, free delivery across India, and ${POLICY.returnDays}-day easy exchange.`,
     160,
   );
 }

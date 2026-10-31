@@ -78,11 +78,12 @@ Bingooo adheres to a warm, editorial streetwear aesthetic designed to wow custom
 - **Curated Streetwear Catalog:** Heavyweight combed cotton t-shirts (240–280 GSM boxy cut), double-layered fleece hoodies, drop-shoulder crewnecks, and tactical cargo trousers.
 - **Garment Detail & Fit Guide:** Interactive size matrix (S, M, L, XL, XXL) with fabric specs, GSM weight, washing care, and live stock radar.
 - **Live Custom Design Studio:**
-  - Real-time 2D garment canvas with front/back toggle.
-  - Multi-font typographic customizer and vector artwork upload.
-  - Print method selector (Direct-to-Garment / DTG vs. High-Density Embroidery).
-  - Dynamic price calculator based on artwork area and placement complexity.
-- **Persistent Cart & Wishlist:** Seamless flyout cart drawer with free shipping progress bar, instant coupon application, and saved designs vault.
+  - Real-time 2D garment canvas driven by transparent PNG photography uploaded via the Admin Studio (prohibiting fake mockup clipart, cartoon vector shirts, and placeholder text overlays).
+  - Multi-font typographic customizer (48 display fonts) and vector/raster artwork upload.
+  - Print method selector (Direct-to-Garment / DTG vs. High-Density Embroidery vs. DTF).
+  - Dynamic price calculator with struck-through comparison pricing (e.g. ₹1,499 strike to base price).
+  - Procedural Three.js 3D garment studio toggle with 360° turntable rotation.
+- **Persistent Cart & Checkout:** Flyout cart drawer with 100% universal free delivery Pan-India, 100% secure prepaid checkout (5% instant discount), and real-time coupon calculation (`BINGOOO10`, `WELCOME20`, `FREESHIP`).
 
 ### 🎛️ Operations Control Center (`apps/admin`)
 A unified back-office suite organized into 7 functional operational divisions:

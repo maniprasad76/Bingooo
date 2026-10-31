@@ -15,6 +15,11 @@ const API_BASE = configuredApiUrl
   ? 'https://api.bingooo.co.in/api/v1'
   : '/api/v1';
 
+/** The customer storefront, for "view live" links. */
+export const STOREFRONT_URL =
+  (import.meta.env.VITE_STOREFRONT_URL as string | undefined)?.replace(/\/$/, '') ||
+  (isProdAdmin ? 'https://www.bingooo.co.in' : 'http://localhost:5173');
+
 /** Resolve media URLs for admin previews — rewrites localhost:3000 API urls to production API or relative */
 export function resolveImageUrl(url?: string | null): string {
   if (!url) return '';
@@ -24,19 +29,32 @@ export function resolveImageUrl(url?: string | null): string {
       window.location.hostname.endsWith('.bingooo.co.in') ||
       window.location.hostname.includes('vercel.app'));
 
-  if (url.startsWith('http://localhost:3000/api/')) {
-    return isProd
-      ? url.replace('http://localhost:3000', 'https://api.bingooo.co.in')
-      : url.replace('http://localhost:3000', '');
+  let normalized = url.trim();
+  if (normalized.includes('tshirt-step-3-black.png')) {
+    normalized = normalized.replace('tshirt-step-3-black.png', 'black-front.png');
   }
 
-  if (url.startsWith('https://localhost:3000/api/')) {
+  if (normalized.startsWith('http://localhost:3000/api/')) {
     return isProd
-      ? url.replace('https://localhost:3000', 'https://api.bingooo.co.in')
-      : url.replace('https://localhost:3000', '');
+      ? normalized.replace('http://localhost:3000', 'https://api.bingooo.co.in')
+      : normalized.replace('http://localhost:3000', '');
   }
 
-  return url;
+  if (normalized.startsWith('https://localhost:3000/api/')) {
+    return isProd
+      ? normalized.replace('https://localhost:3000', 'https://api.bingooo.co.in')
+      : normalized.replace('https://localhost:3000', '');
+  }
+
+  if (normalized.startsWith('/api/')) {
+    return isProd ? `https://api.bingooo.co.in${normalized}` : normalized;
+  }
+
+  if (!normalized.startsWith('http://') && !normalized.startsWith('https://') && !normalized.startsWith('data:') && !normalized.startsWith('/')) {
+    normalized = `/${normalized}`;
+  }
+
+  return normalized;
 }
 
 export class ApiError extends Error {
@@ -117,6 +135,13 @@ export const api = {
     request<T>(path, { method: 'PUT', body }),
   delete: <T = unknown>(path: string) =>
     request<T>(path, { method: 'DELETE' }),
+  /** Signed-in GET of a non-JSON response, e.g. the shipping label HTML. */
+  text: async (path: string): Promise<string> => {
+    const token = localStorage.getItem('bingooo_auth_token');
+    const res = await fetch(`${API_BASE}${path}`, { headers: token ? { Authorization: `Bearer ${token}` } : {} });
+    if (!res.ok) throw new ApiError(res.status, 'REQUEST_FAILED', res.status === 401 || res.status === 403 ? 'Please sign in again.' : 'Request failed');
+    return res.text();
+  },
   upload: async (file: File, category = 'products'): Promise<{ url: string; name?: string; id?: string }> => {
     const formData = new FormData();
     formData.append('file', file);

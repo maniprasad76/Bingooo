@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 Bingooo: a streetwear men's-wear e-commerce platform with a live custom-garment design
 studio. npm-workspaces monorepo: `apps/frontend` (customer storefront), `apps/admin`
-(27-route back-office), `apps/backend` (NestJS 10 API), `packages/types` (`@bingooo/types`,
+(15-route back-office: 13 management pages plus login), `apps/backend` (NestJS 11 API), `packages/types` (`@bingooo/types`,
 shared DTOs/enums), `packages/config`. Frontend also ships to Android via Capacitor.
 
 ## Commands

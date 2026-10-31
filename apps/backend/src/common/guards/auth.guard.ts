@@ -22,6 +22,22 @@ const SESSION_CACHE_TTL_MS = 5 * 60 * 1000;
 const SESSION_CACHE_MAX = 5000;
 const verifiedSessions = new Map<string, { authData: any; expiresAt: number }>();
 
+/**
+ * True when the token claims to come from this project's Supabase Auth
+ * (iss = <SUPABASE_URL>/auth/v1). Anything else, such as a tampered copy of our
+ * own JWT, is rejected without a network call: that keeps forged tokens a fast
+ * 401 and stops them from making this server call Supabase on their behalf.
+ */
+function issuedBySupabase(token: string, supabaseUrl: string): boolean {
+  try {
+    const payload = JSON.parse(Buffer.from(token.split('.')[1], 'base64url').toString('utf8'));
+    const iss = new URL(String(payload.iss));
+    return iss.host === new URL(supabaseUrl).host && iss.pathname.replace(/\/+$/, '') === '/auth/v1';
+  } catch {
+    return false;
+  }
+}
+
 function tokenExpiryMs(token: string): number {
   try {
     const payload = JSON.parse(Buffer.from(token.split('.')[1], 'base64url').toString('utf8'));
@@ -179,7 +195,7 @@ export class AuthGuard implements CanActivate {
       process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ||
       process.env.VITE_SUPABASE_PUBLISHABLE_KEY;
 
-    if (supabaseUrl && supabaseKey) {
+    if (supabaseUrl && supabaseKey && issuedBySupabase(token, supabaseUrl)) {
       const authData = await resolveSupabaseUser(token, supabaseUrl, supabaseKey);
       if (authData) {
         const userEmail = (authData.email || '').toLowerCase().trim();

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { supabase } from '../lib/auth/supabase';
+import { getSupabase } from '../lib/auth/supabase';
 import { useAuthStore } from '../store/auth';
 import { Logo } from '../components/ui/Logo';
 
@@ -19,6 +19,7 @@ export function AuthCallbackPage() {
     let isMounted = true;
 
     async function handleAuth() {
+      const supabase = await getSupabase();
       if (!supabase) {
         if (isMounted) {
           navigate('/login', { replace: true });
@@ -105,7 +106,7 @@ export function AuthCallbackPage() {
         }
 
         // Listen for auth state change if session is still settling
-        const { data: authListener } = supabase.auth.onAuthStateChange((_event, session) => {
+        const { data: authListener } = supabase.auth.onAuthStateChange((_event: unknown, session: any) => {
           if (session) {
             handleUserSession(session);
           }

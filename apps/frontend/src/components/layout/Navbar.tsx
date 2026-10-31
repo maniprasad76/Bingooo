@@ -7,20 +7,20 @@ import {
   Heart,
   ShoppingBag,
   X,
-  Sparkles,
   Package,
   ChevronRight,
   Phone,
   Eye,
   Ruler,
 } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { m, AnimatePresence } from 'framer-motion';
 import { cn } from '../../lib/utils';
 import { useCartStore } from '../../store/cart';
 import { useAuthStore } from '../../store/auth';
 import { useUIStore } from '../../store/ui';
 import { Logo } from '../ui/Logo';
-import { WhatsAppIcon, getWhatsAppUrl } from '../ui/SocialIcons';
+import { WhatsAppIcon } from '../ui/SocialIcons';
+import { getWhatsAppUrl } from '../../lib/social';
 import { triggerHaptic } from '../../lib/native/capacitorBridge';
 import { preloadRouteChunk } from '../../lib/utils/preloader';
 
@@ -36,7 +36,7 @@ const categoryShortcuts = [
   { label: 'T-Shirts', spec: '240+ GSM', sub: 'Oversized & Heavy', href: '/category/t-shirts' },
   { label: 'Hoodies', spec: '400 GSM', sub: 'Boxy Winter Fleece', href: '/category/hoodies' },
   { label: 'Shirts', spec: 'RELAXED', sub: 'Cuban & Atelier Cut', href: '/category/shirts' },
-  { label: 'Bottoms', spec: 'STREET', sub: 'Cargoes & Denims', href: '/category/jeans' },
+  { label: 'Bottoms', spec: 'STREET', sub: 'Cargoes & Denims', href: '/category/bottoms' },
 ];
 
 export function Navbar() {
@@ -94,33 +94,35 @@ export function Navbar() {
   return (
     <header
       className={cn(
-        'sticky top-0 z-40 w-full transition-all duration-300',
+        'sticky top-0 z-40 w-full transition-all duration-200 border-b-2 border-[#171717]',
         isScrolled
-          ? 'shadow-md bg-[#FAF8F5]/98 backdrop-blur-xl'
-          : 'shadow-2xs bg-[#FAF8F5]'
+          ? 'shadow-[0_4px_0px_#171717] bg-[#F7EEDB]'
+          : 'bg-[#F7EEDB]'
       )}
     >
       {/* ─── Top Bar ─── */}
-      <div className="min-h-[28px] bg-[#171717] text-white flex items-center justify-between px-4 sm:px-8 text-[9px] font-semibold tracking-[0.08em] uppercase select-none">
-        <div>FREE DELIVERY ON ALL ORDERS</div>
+      <div className="min-h-[28px] bg-[#171717] text-white border-b border-[#171717]">
+        <div className="container-bingooo min-h-[28px] flex items-center justify-between text-[9px] font-mono font-bold tracking-[0.1em] uppercase select-none">
+          <div>FREE DELIVERY ON PREPAID ORDERS · 240+ GSM HEAVYWEIGHT</div>
 
-        <div className="hidden sm:flex items-center gap-[22px]">
-          <a
-            href={getWhatsAppUrl('Hi Bingooo, I would like to inquire about a bulk order for custom apparel.')}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="hover:text-[#25D366] text-[#F7EEDB] transition-colors inline-flex items-center gap-1.5 font-bold"
-          >
-            <WhatsAppIcon className="w-3 h-3 text-[#25D366]" />
-            <span>BULK ORDERS (WHATSAPP)</span>
-          </a>
-          <Link to="/track-order" className="hover:text-[#E6321C] transition-colors">TRACK ORDER</Link>
-          <Link to="/faq" className="hover:text-[#E6321C] transition-colors">HELP</Link>
+          <div className="hidden sm:flex items-center gap-[22px]">
+            <a
+              href={getWhatsAppUrl('Hi Bingooo, I would like to inquire about a bulk order for custom apparel.')}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-[#25D366] text-[#F7EEDB] transition-colors inline-flex items-center gap-1.5 font-bold py-1.5"
+            >
+              <WhatsAppIcon className="w-3 h-3 text-[#25D366]" />
+              <span>BULK ORDERS (WHATSAPP)</span>
+            </a>
+            <Link to="/track-order" className="py-1.5 hover:text-[#E6321C] transition-colors">TRACK ORDER</Link>
+            <Link to="/faq" className="py-1.5 hover:text-[#E6321C] transition-colors">HELP</Link>
+          </div>
         </div>
       </div>
 
       {/* ─── Header ─── */}
-      <nav className="h-[64px] md:h-[76px] bg-[#F7EEDB] border-b border-[#DDD3C5] flex items-center relative z-40">
+      <nav className="h-[64px] md:h-[74px] bg-[#F7EEDB] flex items-center relative z-40">
         <div className="w-[min(calc(100%-32px),1440px)] md:w-[min(calc(100%-48px),1440px)] mx-auto grid grid-cols-[auto_1fr_auto] md:grid-cols-[1fr_auto_1fr] items-center gap-4 md:gap-[30px]">
           {/* Left: Navigation links */}
           <div className="hidden md:flex items-center gap-[27px]">
@@ -134,7 +136,7 @@ export function Navbar() {
                   onMouseEnter={() => preloadRouteChunk(link.href)}
                   onTouchStart={() => preloadRouteChunk(link.href)}
                   className={cn(
-                    'text-[11px] font-semibold uppercase transition-colors tracking-normal',
+                    'py-3 text-[11px] font-semibold uppercase transition-colors tracking-normal',
                     isActive ? 'text-[#E6321C]' : 'text-[#171717] hover:text-[#E6321C]'
                   )}
                 >
@@ -154,13 +156,13 @@ export function Navbar() {
           </Link>
 
           {/* Right: Actions */}
-          <div className="flex items-center justify-end gap-1.5 md:gap-5">
+          <div className="flex items-center justify-end gap-1 md:gap-5">
             <button
               onClick={() => {
                 triggerHaptic('light');
                 openSearchModal();
               }}
-              className="inline-flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-normal text-[#171717] hover:text-[#E6321C] transition-colors cursor-pointer p-2 md:p-0"
+              className="inline-flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-normal text-[#171717] hover:text-[#E6321C] transition-colors cursor-pointer p-2 md:px-0 md:py-3"
               aria-label="Search"
             >
               <Search className="w-5 h-5 md:w-[17px] md:h-[17px] stroke-[1.6]" />
@@ -170,7 +172,7 @@ export function Navbar() {
             <Link
               to={isAuthenticated ? '/account' : '/login'}
               onMouseEnter={() => preloadRouteChunk('/account')}
-              className="hidden md:inline-flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-normal text-[#171717] hover:text-[#E6321C] transition-colors"
+              className="hidden md:inline-flex items-center gap-1.5 py-3 text-[10px] font-semibold uppercase tracking-normal text-[#171717] hover:text-[#E6321C] transition-colors"
               aria-label="Login"
             >
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" className="w-[17px] h-[17px] stroke-[1.5]">
@@ -182,12 +184,13 @@ export function Navbar() {
 
             <Link
               to="/account/wishlist"
+              onClick={() => triggerHaptic('light')}
               onMouseEnter={() => preloadRouteChunk('/account')}
-              className="hidden md:inline-flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-normal text-[#171717] hover:text-[#E6321C] transition-colors"
+              className="inline-flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-normal text-[#171717] hover:text-[#E6321C] transition-colors cursor-pointer p-2 md:px-0 md:py-3"
               aria-label="Wishlist"
             >
-              <Heart className="w-3.5 h-3.5" />
-              <span>Wishlist</span>
+              <Heart className="w-5 h-5 md:w-3.5 md:h-3.5 stroke-[1.6]" />
+              <span className="hidden md:inline">Wishlist</span>
             </Link>
 
             <button
@@ -196,12 +199,14 @@ export function Navbar() {
                 openCartDrawer();
               }}
               onMouseEnter={() => preloadRouteChunk('/cart')}
-              className="hidden md:inline-flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-normal text-[#171717] hover:text-[#E6321C] transition-colors cursor-pointer"
+              className="hidden md:inline-flex items-center gap-1.5 py-3 text-[10px] font-bold uppercase tracking-wider text-[#171717] hover:text-[#E6321C] transition-colors cursor-pointer"
               aria-label="Cart"
             >
-              <ShoppingBag className="w-3.5 h-3.5" />
+              <ShoppingBag className="w-4 h-4" />
               <span>Cart</span>
-              <span>({itemCount})</span>
+              <span className="px-1.5 py-0.5 bg-[#171717] text-white text-[10px] font-mono font-bold rounded-[2px]">
+                {itemCount}
+              </span>
             </button>
 
             {/* Menu toggle */}
@@ -210,10 +215,10 @@ export function Navbar() {
                 triggerHaptic('light');
                 openMobileMenu();
               }}
-              className="md:hidden p-2 text-[#171717] hover:text-[#E6321C] transition-colors cursor-pointer"
+              className="md:hidden p-2 -mr-1.5 text-[#171717] hover:text-[#E6321C] transition-colors cursor-pointer"
               aria-label="Open menu"
             >
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6">
                 <path d="M4 7h16M4 12h16M4 17h16" />
               </svg>
             </button>
@@ -228,7 +233,7 @@ export function Navbar() {
             {mobileMenuOpen && (
               <>
                 {/* Backdrop */}
-                <motion.div
+                <m.div
                   key="mobile-nav-backdrop"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
@@ -241,18 +246,18 @@ export function Navbar() {
                 />
 
                 {/* Slide Drawer Panel */}
-                <motion.div
+                <m.div
                   key="mobile-nav-drawer"
                   initial={{ x: '-100%' }}
                   animate={{ x: 0 }}
                   exit={{ x: '-100%' }}
                   transition={{ duration: 0.28, ease: [0.32, 0.72, 0, 1] }}
-                  className="fixed top-0 bottom-0 left-0 z-[9999] w-[88vw] max-w-[360px] h-[100dvh] max-h-[100dvh] bg-[#FAF8F5] border-r border-[#DDD3C5] shadow-2xl flex flex-col overflow-hidden md:hidden overscroll-contain"
+                  className="fixed top-0 bottom-0 left-0 z-[9999] w-[88vw] max-w-[360px] h-[100dvh] max-h-[100dvh] bg-[#F7EEDB] border-r-2 border-[#171717] shadow-[6px_0px_0px_#171717] flex flex-col overflow-hidden md:hidden overscroll-contain"
                   role="dialog"
                   aria-label="Mobile Navigation"
                 >
                   {/* Drawer Top Header */}
-                  <div className="p-4 border-b border-[#DDD3C5] flex items-center justify-between bg-[#F7EEDB] shrink-0">
+                  <div className="p-4 border-b-2 border-[#171717] flex items-center justify-between bg-[#F7EEDB] shrink-0">
                     <div className="flex items-center gap-2.5">
                       <Logo variant="red" size="sm" />
                     </div>
@@ -261,7 +266,7 @@ export function Navbar() {
                         triggerHaptic('light');
                         closeMobileMenu();
                       }}
-                      className="w-8 h-8 rounded-full border border-[#DDD3C5] bg-white hover:bg-[#171717] hover:text-white flex items-center justify-center text-[#171717] transition-colors cursor-pointer"
+                      className="w-8 h-8 rounded-none border-2 border-[#171717] bg-white hover:bg-[#E6321C] hover:text-white flex items-center justify-center text-[#171717] transition-colors cursor-pointer shadow-[2px_2px_0px_#171717]"
                       aria-label="Close menu"
                     >
                       <X size={16} />
@@ -311,20 +316,6 @@ export function Navbar() {
                       >
                         <span>WOMEN</span>
                         <ChevronRight size={15} className="text-[#6F6A63] group-hover:text-[#171717] group-hover:translate-x-0.5 transition-all" />
-                      </Link>
-
-                      <Link
-                        to="/customize"
-                        onClick={closeMobileMenu}
-                        className="flex items-center justify-between p-2.5 rounded-lg bg-[#E6321C]/8 border border-[#E6321C]/20 text-[#171717] font-extrabold text-sm uppercase tracking-wider transition-colors group hover:bg-[#E6321C]/15"
-                      >
-                        <div className="flex items-center gap-2">
-                          <Sparkles size={15} className="text-[#E6321C]" />
-                          <span>CUSTOM STUDIO</span>
-                        </div>
-                        <span className="text-[9px] font-mono font-bold px-1.5 py-0.5 rounded bg-[#E6321C] text-white uppercase">
-                          3D ATELIER
-                        </span>
                       </Link>
 
                       <Link
@@ -452,7 +443,7 @@ export function Navbar() {
                       href={getWhatsAppUrl('Hi Bingooo, I would like to inquire about your apparel.')}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-[#171717] active:bg-[#252525] hover:bg-[#252525] text-white text-xs font-bold uppercase tracking-wider transition-colors shadow-md cursor-pointer"
+                      className="flex items-center justify-center gap-2 py-3 px-4 rounded-[2px] bg-[#171717] active:bg-[#252525] hover:bg-[#252525] text-white text-xs font-bold uppercase tracking-wider transition-colors shadow-md cursor-pointer"
                     >
                       <WhatsAppIcon className="w-4 h-4 text-[#25D366]" />
                       <span>WhatsApp Concierge</span>
@@ -461,7 +452,7 @@ export function Navbar() {
                       BINGOOO &bull; WEAR WHAT DEFINES YOU
                     </div>
                   </div>
-                </motion.div>
+                </m.div>
               </>
             )}
           </AnimatePresence>,

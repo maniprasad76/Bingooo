@@ -1,10 +1,11 @@
 import { useState } from 'react';
+import { Picture } from '../components/ui/Picture';
+import { IMAGES } from '../lib/images';
 import { Link, useNavigate } from 'react-router-dom';
 import {
   Search,
   Phone,
   ArrowRight,
-  Sparkles,
   ShoppingBag,
   Package,
   Ruler,
@@ -12,7 +13,8 @@ import {
   CheckCircle2,
 } from 'lucide-react';
 import { SEO } from '../components/common/SEO';
-import { WhatsAppIcon, getWhatsAppUrl } from '../components/ui/SocialIcons';
+import { WhatsAppIcon } from '../components/ui/SocialIcons';
+import { getWhatsAppUrl } from '../lib/social';
 import { triggerHaptic } from '../lib/native/capacitorBridge';
 import { useProducts } from '../hooks/useProducts';
 import { resolveImageUrl } from '../lib/utils';
@@ -57,7 +59,7 @@ export function NotFoundPage() {
       <div className="border-b border-[#DDD3C5] bg-[#EDE0CC]/60 px-4 sm:px-8 py-3 text-[11px]">
         <div className="container-bingooo flex flex-col sm:flex-row sm:items-center justify-between gap-2">
           <nav aria-label="Breadcrumb" className="flex items-center gap-2 font-mono uppercase tracking-wider text-[#6F6A63]">
-            <Link to="/" className="hover:text-[#171717] transition-colors">HOME</Link>
+            <Link to="/" className="py-1.5 hover:text-[#171717] transition-colors">HOME</Link>
             <span>/</span>
             <span className="text-[#6F6A63]">ATELIER NAVIGATION</span>
             <span>/</span>
@@ -126,15 +128,6 @@ export function NotFoundPage() {
             </Link>
 
             <Link
-              to="/customize"
-              onClick={() => triggerHaptic('light')}
-              className="btn btn-red text-xs inline-flex items-center gap-2"
-            >
-              <Sparkles className="w-3.5 h-3.5" />
-              <span>CUSTOM 3D STUDIO</span>
-            </Link>
-
-            <Link
               to="/"
               onClick={() => triggerHaptic('light')}
               className="btn btn-outline text-xs"
@@ -146,8 +139,10 @@ export function NotFoundPage() {
 
         {/* Right Imagery Banner */}
         <div className="relative min-h-[360px] sm:min-h-[460px] lg:min-h-full overflow-hidden bg-[#171717]">
-          <img
-            src="/real-fit-5.jpg"
+          <Picture
+            image={IMAGES.realFit5}
+            sizes="(min-width: 1024px) 52vw, 100vw"
+            loading="eager"
             alt="Bingooo atelier streetwear archive"
             className="w-full h-full object-cover grayscale contrast-125 opacity-85"
           />
@@ -187,8 +182,6 @@ export function NotFoundPage() {
           <div className="flex flex-wrap justify-center items-center gap-3 mt-8 font-mono text-[11px] uppercase tracking-wider text-[#DDD3C5]">
             <Link to="/shop" className="hover:text-white underline">SHOP ALL TEES</Link>
             <span>•</span>
-            <Link to="/customize" className="hover:text-white underline">3D CUSTOMIZER</Link>
-            <span>•</span>
             <Link to="/size-guide" className="hover:text-white underline">SIZE & FIT GUIDE</Link>
             <span>•</span>
             <Link to="/track-order" className="hover:text-white underline">TRACK ORDER</Link>
@@ -226,7 +219,7 @@ export function NotFoundPage() {
               <article key={item.id} className="group flex flex-col bg-white border border-[#DDD3C5] rounded-[2px] overflow-hidden shadow-xs hover:border-[#171717] transition-all">
                 <div className="relative aspect-[3/4] overflow-hidden bg-[#EDE0CC]">
                   <Link to={item.link} className="block h-full w-full">
-                    <img
+                    <img loading="lazy" decoding="async"
                       src={item.image}
                       alt={item.name}
                       className="h-full w-full object-cover grayscale contrast-110 group-hover:grayscale-0 group-hover:scale-105 transition-all duration-500 ease-out"

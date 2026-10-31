@@ -6,6 +6,8 @@
 export type OrderStatus =
   | 'pending_payment'
   | 'paid'
+  /** Order placed and confirmed. */
+  | 'confirmed'
   | 'processing'
   | 'packed'
   | 'shipped'
@@ -23,7 +25,7 @@ export type PaymentStatus =
   | 'refunded'
   | 'partially_refunded';
 
-/** Payment method */
+/** Payment method: 100% secure prepaid only */
 export type PaymentMethod = 'prepaid';
 
 export interface Order {
@@ -32,8 +34,11 @@ export interface Order {
   userId: string;
   status: OrderStatus;
   paymentStatus: PaymentStatus;
+  paymentMethod?: PaymentMethod;
   subtotal: number;
   discount: number;
+  prepaidDiscount?: number;
+  shippingFee?: number;
   tax: number;
   total: number;
   currency: string;

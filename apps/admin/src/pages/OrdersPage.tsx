@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { api, resolveImageUrl } from '../lib/api';
+import { api, resolveImageUrl, STOREFRONT_URL } from '../lib/api';
 import { useToast } from '../components/Toast';
 import {
   Search,
@@ -8,16 +8,12 @@ import {
   Truck,
   Package,
   MapPin,
-  Phone,
-  Calendar,
-  CheckCircle2,
-  Clock,
   Printer,
   Sparkles,
-  ExternalLink,
-  ShieldCheck,
   Shirt,
   X,
+  Download,
+  FileText,
 } from 'lucide-react';
 
 interface OrderItem {
@@ -33,6 +29,9 @@ interface OrderItem {
   image?: string;
   image_url?: string;
   imageUrl?: string;
+  product?: any;
+  variant?: any;
+  variant_snapshot_json?: any;
   customization?: any;
 }
 
@@ -66,12 +65,18 @@ interface Order {
   shippingAddress?: any;
 }
 
-const STATUSES = ['all', 'pending_payment', 'processing', 'shipped', 'delivered', 'cancelled'];
+// Every order status (packages/types OrderStatus); 'confirmed' = payment captured & confirmed, awaiting dispatch.
+const STATUSES = ['all', 'pending_payment', 'paid', 'confirmed', 'processing', 'packed', 'shipped', 'delivered', 'return_requested', 'returned', 'cancelled'];
 const STATUS_BADGE: Record<string, string> = {
   delivered: 'badge-success',
   shipped: 'badge-info',
+  packed: 'badge-info',
   processing: 'badge-warning',
+  paid: 'badge-warning',
+  confirmed: 'badge-warning',
   pending_payment: 'badge-neutral',
+  return_requested: 'badge-danger',
+  returned: 'badge-neutral',
   cancelled: 'badge-danger',
 };
 
@@ -180,6 +185,127 @@ export function OrdersPage() {
     }
   };
 
+  const [shippingWithShiprocket, setShippingWithShiprocket] = useState<string | null>(null);
+
+  const handleShipWithShiprocket = async (order: Order) => {
+    setShippingWithShiprocket(order.id);
+    try {
+      const res = await api.post<{ awb_code: string; courier_name: string }>(
+        `/shipping/shiprocket/generate-awb/${order.id}`
+      );
+      toast.success(
+        'Shiprocket Dispatched',
+        `AWB ${res.awb_code} generated via ${res.courier_name}. Customer notified.`
+      );
+      fetchOrders();
+      if (selectedOrder && selectedOrder.id === order.id) {
+        setSelectedOrder({
+          ...selectedOrder,
+          status: 'shipped',
+          carrier: res.courier_name,
+          tracking_number: res.awb_code,
+        });
+      }
+    } catch (err: any) {
+      toast.error('Shiprocket Error', err?.message || 'Failed to dispatch with Shiprocket.');
+    } finally {
+      setShippingWithShiprocket(null);
+    }
+  };
+
+  const handlePrintThermalLabel = async (orderId: string) => {
+    // The label holds the customer's address, so it is fetched signed-in rather than opened by URL.
+    const win = window.open('', '_blank', 'width=500,height=750,menubar=no,toolbar=no,location=no');
+    try {
+      const html = await api.text(`/shipping/label/${encodeURIComponent(orderId)}`);
+      const url = URL.createObjectURL(new Blob([html], { type: 'text/html' }));
+      if (win) win.location.href = url;
+      else window.open(url, '_blank');
+      setTimeout(() => URL.revokeObjectURL(url), 60_000);
+    } catch (err: any) {
+      win?.close();
+      toast.error('Label Error', err?.message || 'Could not load the shipping label.');
+    }
+  };
+
+  const handleExportCsv = () => {
+    if (orders.length === 0) {
+      toast.error('No Orders', 'There are no orders to export.');
+      return;
+    }
+
+    const headers = [
+      'Order ID',
+      'Date',
+      'Customer Name',
+      'Customer Phone',
+      'Customer Email',
+      'Items',
+      'Quantity',
+      'Total Amount (INR)',
+      'Payment Status',
+      'Payment Method',
+      'Fulfillment Status',
+      'Carrier',
+      'AWB Tracking',
+      'Delivery Address',
+      'City',
+      'State',
+      'Pincode',
+    ];
+
+    const rows = orders.map((o) => {
+      const orderNum = o.order_number || o.orderNumber || o.id;
+      const dateVal = o.created_at || o.createdAt ? new Date(o.created_at || o.createdAt!).toISOString().slice(0, 10) : '';
+      const addr = o.shipping_address || o.shippingAddress || {};
+      const custName = addr.name || o.user?.fullName || 'Customer';
+      const custPhone = addr.phone || '';
+      const custEmail = o.user?.email || '';
+      const items = (o.items || []).map((it) => `${it.title_snapshot || it.title || 'Item'} (x${it.quantity || 1}, ${it.size || 'M'})`).join('; ') || 'Bingooo Garment';
+      const totalQty = (o.items || []).reduce((sum, it) => sum + (it.quantity || 1), 0) || o.items_count || 1;
+      const totalAmt = o.total || o.total_amount || 0;
+      const payStatus = o.payment_status || o.paymentStatus || 'pending';
+      const payMethod = o.payment_method || o.paymentMethod || 'Prepaid';
+      const status = o.status;
+      const carrier = o.carrier || '';
+      const awb = o.tracking_number || '';
+      const addressLine = [addr.line1, addr.line2, addr.address, addr.street].filter(Boolean).join(' ');
+      const city = addr.city || '';
+      const state = addr.state || '';
+      const pincode = addr.postal_code || addr.postalCode || addr.pincode || '';
+
+      return [
+        orderNum,
+        dateVal,
+        custName,
+        custPhone,
+        custEmail,
+        items,
+        totalQty,
+        totalAmt,
+        payStatus,
+        payMethod,
+        status,
+        carrier,
+        awb,
+        addressLine,
+        city,
+        state,
+        pincode,
+      ].map((val) => `"${String(val).replace(/"/g, '""')}"`).join(',');
+    });
+
+    const csvContent = 'data:text/csv;charset=utf-8,' + [headers.join(','), ...rows].join('\n');
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement('a');
+    link.setAttribute('href', encodedUri);
+    link.setAttribute('download', `bingooo-orders-export-${new Date().toISOString().slice(0, 10)}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    toast.success('Orders Exported', `Downloaded ${orders.length} order records to CSV.`);
+  };
+
   return (
     <div className="space-y-6">
       {/* Editorial Header */}
@@ -202,28 +328,38 @@ export function OrdersPage() {
           </p>
         </div>
 
-        <button
-          onClick={fetchOrders}
-          className="btn-outline gap-2"
-          disabled={loading}
-          title="Refresh orders"
-        >
-          <RefreshCw size={14} className={loading ? 'animate-spin' : ''} />
-          <span>Refresh Orders</span>
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={handleExportCsv}
+            className="btn-outline gap-2 font-mono text-xs"
+            title="Download full orders and sales CSV ledger"
+          >
+            <Download size={14} />
+            <span>Export CSV</span>
+          </button>
+          <button
+            onClick={fetchOrders}
+            className="btn-outline gap-2 font-mono text-xs"
+            disabled={loading}
+            title="Refresh orders"
+          >
+            <RefreshCw size={14} className={loading ? 'animate-spin' : ''} />
+            <span>Refresh Orders</span>
+          </button>
+        </div>
       </div>
 
-      {/* Filters & Search Toolbar */}
-      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 bg-white p-3.5 rounded-2xl border border-border/80 shadow-card">
-        <div className="flex flex-wrap gap-1 bg-beige/40 p-1 rounded-xl border border-border/60">
+      {/* Modern Filters & Search Toolbar */}
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 bg-white p-3.5 border-1.5 border-[#171717] rounded-xl shadow-[3px_3px_0px_#171717]">
+        <div className="flex flex-wrap gap-1.5 p-1 border-1.5 border-[#171717] bg-[#EDE0CC] rounded-lg">
           {STATUSES.map((s) => (
             <button
               key={s}
               onClick={() => setFilter(s)}
-              className={`px-3 py-1 rounded-lg text-[10px] font-mono font-bold uppercase tracking-wider transition-all ${
+              className={`px-3 py-1.5 border-1.5 border-[#171717] rounded-md text-[10px] font-mono font-black uppercase tracking-wider transition-all cursor-pointer ${
                 filter === s
-                  ? 'bg-ink text-white shadow-2xs'
-                  : 'text-muted hover:text-ink hover:bg-white/60'
+                  ? 'bg-[#E6321C] text-white shadow-[1.5px_1.5px_0px_#171717]'
+                  : 'bg-white text-[#171717] hover:bg-[#F7EEDB]'
               }`}
             >
               {s.replace(/_/g, ' ')}
@@ -233,13 +369,13 @@ export function OrdersPage() {
 
         <form onSubmit={handleSearch} className="flex gap-2">
           <div className="relative">
-            <Search size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted" />
+            <Search size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#171717]" />
             <input
               type="text"
               placeholder="Search Order #, Name, Phone..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="admin-input pl-10 w-full sm:w-[280px] py-1.5 text-xs"
+              className="admin-input pl-10 w-full sm:w-[280px] py-1.5 text-xs font-mono"
             />
           </div>
         </form>
@@ -251,7 +387,7 @@ export function OrdersPage() {
           <table className="admin-table [&_th]:px-3 [&_td]:px-3">
             <thead>
               <tr>
-                <th>Item / Preview</th>
+                <th>Purchased Garments / Items</th>
                 <th>Customer</th>
                 <th className="hidden 2xl:table-cell">Quantity</th>
                 <th>Total Paid</th>
@@ -299,59 +435,111 @@ export function OrdersPage() {
                     firstItem?.image_url ||
                     firstItem?.imageUrl ||
                     firstItem?.image ||
+                    firstItem?.product?.images?.[0]?.url ||
+                    firstItem?.product?.images?.[0] ||
+                    firstItem?.product?.image_url ||
+                    firstItem?.product?.primary_image ||
+                    firstItem?.product?.primaryImage ||
+                    firstItem?.variant?.image ||
+                    firstItem?.variant_snapshot_json?.image ||
                     firstItem?.customization?.previewKey ||
-                    firstItem?.customization?.preview_url;
+                    firstItem?.customization?.preview_url ||
+                    firstItem?.customization?.preview_key ||
+                    firstItem?.customization?.design_json?.garment?.frontImageUrl;
                   const itemImg = resolveImageUrl(rawImg);
                   const itemCount = o.items?.length || o.itemCount || 1;
                   const hasCustom = o.items?.some((it) => !!it.customization) || !!firstItem?.customization;
-                  const itemTitle = firstItem?.title_snapshot || firstItem?.title || 'Bingooo Garment';
+                  const itemTitle = firstItem?.title_snapshot || firstItem?.title || '240 GSM Heavyweight Oversized Tee — Noir';
+                  const itemSize = firstItem?.size || firstItem?.variant?.size || firstItem?.variant_snapshot_json?.size || 'L';
+                  const itemColor = firstItem?.color || firstItem?.variant?.color || firstItem?.variant_snapshot_json?.color || 'Noir Black';
 
                   return (
                     <tr key={o.id} className="group">
                       <td>
-                        <button
-                          type="button"
-                          onClick={() => setSelectedOrder(o)}
-                          title={`Inspect Order #${orderNum} — ${itemTitle}`}
-                          className="relative flex items-center justify-center w-14 h-14 rounded-xl bg-beige/40 border border-border/80 hover:border-brand-red shadow-2xs group/thumb overflow-hidden transition-all duration-200 focus:outline-hidden focus:ring-2 focus:ring-brand-red/30 cursor-pointer"
-                        >
-                          {itemImg ? (
-                            <img
-                              src={itemImg}
-                              alt={itemTitle}
-                              className="w-full h-full object-cover group-hover/thumb:scale-110 transition-transform duration-300"
-                              onError={(e) => {
-                                (e.target as HTMLElement).style.display = 'none';
-                              }}
-                            />
-                          ) : (
-                            <div className="flex flex-col items-center justify-center text-muted/60 group-hover/thumb:text-brand-red transition-colors">
+                        <div className="flex items-center gap-3.5 min-w-[260px] max-w-[340px]">
+                          {/* Garment Image Thumbnail */}
+                          <button
+                            type="button"
+                            onClick={() => setSelectedOrder(o)}
+                            title={`Inspect Order #${orderNum} — ${itemTitle}`}
+                            className="relative flex items-center justify-center w-14 h-14 rounded-lg bg-[#EDE0CC] border-1.5 border-[#171717] hover:border-[#E6321C] shadow-[2px_2px_0px_#171717] group/thumb overflow-hidden shrink-0 transition-all duration-200 cursor-pointer"
+                          >
+                            {itemImg ? (
+                              <img
+                                src={itemImg}
+                                alt={itemTitle}
+                                className="w-full h-full object-cover group-hover/thumb:scale-105 transition-transform duration-300"
+                                onError={(e) => {
+                                  (e.target as HTMLElement).style.display = 'none';
+                                  const fallback = (e.target as HTMLElement).nextElementSibling;
+                                  if (fallback) (fallback as HTMLElement).style.display = 'flex';
+                                }}
+                              />
+                            ) : null}
+                            <div
+                              className="flex flex-col items-center justify-center text-[#171717]/40 group-hover/thumb:text-[#E6321C] transition-colors"
+                              style={{ display: itemImg ? 'none' : 'flex' }}
+                            >
                               <Shirt size={22} />
                             </div>
-                          )}
 
-                          {/* 3D Customizer Badge if bespoke print */}
-                          {hasCustom && (
-                            <span className="absolute top-1 right-1 px-1 py-0.5 rounded text-[7px] font-mono font-black uppercase bg-brand-red text-white shadow-xs leading-none">
-                              3D
+                            {/* 3D Customizer Badge if bespoke print */}
+                            {hasCustom && (
+                              <span className="absolute top-0.5 right-0.5 px-1 py-0.2 rounded-[2px] text-[7px] font-mono font-black uppercase bg-[#E6321C] text-white shadow-xs leading-none">
+                                3D
+                              </span>
+                            )}
+
+                            {/* Multi-item badge */}
+                            {itemCount > 1 && (
+                              <span className="absolute bottom-0.5 right-0.5 px-1 py-0.2 rounded-[2px] text-[8px] font-mono font-black bg-[#171717] text-white shadow-xs leading-none">
+                                +{itemCount - 1}
+                              </span>
+                            )}
+
+                            {/* Hover inspection overlay */}
+                            <div className="absolute inset-0 bg-[#171717]/30 opacity-0 group-hover/thumb:opacity-100 transition-opacity flex items-center justify-center">
+                              <Eye size={15} className="text-white drop-shadow-md" />
+                            </div>
+                          </button>
+
+                          {/* Garment Title & Variant Specs */}
+                          <div className="space-y-1 min-w-0 flex-1">
+                            <button
+                              type="button"
+                              onClick={() => setSelectedOrder(o)}
+                              className="text-left font-sans font-bold text-xs text-[#171717] hover:text-[#E6321C] transition-colors line-clamp-2 block leading-snug cursor-pointer"
+                              title={itemTitle}
+                            >
+                              {itemTitle}
+                            </button>
+
+                            <div className="flex flex-wrap items-center gap-1.5 text-[10px] font-mono">
+                              <span className="bg-[#171717] text-white px-1.5 py-0.5 rounded-[2px] font-black tracking-wider">
+                                {itemSize}
+                              </span>
+                              <span className="bg-[#EDE0CC] text-[#171717] border border-[#171717]/30 px-1.5 py-0.5 rounded-[2px] font-bold">
+                                {itemColor}
+                              </span>
+                              {hasCustom && (
+                                <span className="bg-[#E6321C]/10 text-[#E6321C] border border-[#E6321C]/30 px-1.5 py-0.5 rounded-[2px] font-black uppercase tracking-wider flex items-center gap-0.5">
+                                  <Sparkles size={9} /> Custom
+                                </span>
+                              )}
+                            </div>
+
+                            {/* Multi-item note */}
+                            {itemCount > 1 && o.items?.[1] && (
+                              <p className="text-[10px] text-[#6F6A63] font-mono line-clamp-1 italic">
+                                + {o.items[1].title_snapshot || o.items[1].title || 'Garment'} ({o.items[1].size || 'M'})
+                              </p>
+                            )}
+
+                            <span className="min-[1366px]:hidden block text-[10px] text-muted font-mono whitespace-nowrap">
+                              {formatDate(dateVal)}
                             </span>
-                          )}
-
-                          {/* Multi-item badge */}
-                          {itemCount > 1 && (
-                            <span className="absolute bottom-1 right-1 px-1 py-0.5 rounded text-[8px] font-mono font-black bg-ink/80 text-white shadow-xs backdrop-blur-xs leading-none">
-                              +{itemCount - 1}
-                            </span>
-                          )}
-
-                          {/* Hover inspection overlay */}
-                          <div className="absolute inset-0 bg-ink/30 opacity-0 group-hover/thumb:opacity-100 transition-opacity flex items-center justify-center">
-                            <Eye size={15} className="text-white drop-shadow-md" />
                           </div>
-                        </button>
-                        <span className="min-[1366px]:hidden block mt-1 text-[10px] text-muted font-mono whitespace-nowrap">
-                          {formatDate(dateVal)}
-                        </span>
+                        </div>
                       </td>
 
                       <td>
@@ -427,6 +615,13 @@ export function OrdersPage() {
                             ))}
                           </select>
                           <button
+                            onClick={() => handlePrintThermalLabel(o.id)}
+                            className="btn-ghost p-1.5 rounded-lg text-muted hover:text-ink hover:bg-beige"
+                            title="Print 4×6 Thermal Shipping Label"
+                          >
+                            <FileText size={15} />
+                          </button>
+                          <button
                             onClick={() => setSelectedOrder(o)}
                             className="btn-ghost p-1.5 rounded-lg text-muted hover:text-ink hover:bg-beige"
                             title="Inspect Order Details"
@@ -446,13 +641,13 @@ export function OrdersPage() {
 
       {/* Order Details Inspector Modal */}
       {selectedOrder && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="bg-white rounded-3xl max-w-2xl w-full p-6 sm:p-8 shadow-2xl border border-border/80 space-y-6 max-h-[90vh] overflow-y-auto">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 animate-in fade-in duration-200">
+          <div className="bg-white rounded-[2px] max-w-2xl w-full p-6 sm:p-8 shadow-[6px_6px_0px_#171717] border-2 border-[#171717] space-y-6 max-h-[90vh] overflow-y-auto">
             {/* Modal Header */}
-            <div className="flex items-center justify-between border-b border-border/70 pb-4">
+            <div className="flex items-center justify-between border-b-2 border-[#171717] pb-4">
               <div>
                 <div className="flex items-center gap-2.5">
-                  <h3 className="text-xl font-black uppercase tracking-tight text-ink font-mono">
+                  <h3 className="text-xl font-black uppercase tracking-tight text-[#171717] font-mono">
                     #{selectedOrder.order_number || selectedOrder.orderNumber}
                   </h3>
                   <span
@@ -460,26 +655,44 @@ export function OrdersPage() {
                       STATUS_BADGE[selectedOrder.status] || 'badge-neutral'
                     }`}
                   >
-                    <span className="w-1.5 h-1.5 rounded-full bg-current" />
                     {selectedOrder.status}
                   </span>
                 </div>
-                <span className="text-xs text-muted font-mono mt-0.5 block">
+                <span className="text-xs text-[#6F6A63] font-mono mt-0.5 block">
                   Placed on {formatDate(selectedOrder.created_at || selectedOrder.createdAt)}
                 </span>
               </div>
 
-              <div className="flex items-center gap-2">
+              <div className="flex flex-wrap items-center gap-2">
+                {selectedOrder.status !== 'shipped' && selectedOrder.status !== 'delivered' && selectedOrder.status !== 'cancelled' && (
+                  <button
+                    onClick={() => handleShipWithShiprocket(selectedOrder)}
+                    disabled={shippingWithShiprocket === selectedOrder.id}
+                    className="bg-[#171717] hover:bg-[#E6321C] text-white py-2 px-3 text-xs gap-1.5 font-mono font-bold flex items-center border border-[#171717] rounded-[2px] transition-colors cursor-pointer"
+                    title="1-Click Dispatch & AWB generation via Shiprocket logistics partner"
+                  >
+                    <Truck size={14} />
+                    <span>{shippingWithShiprocket === selectedOrder.id ? 'Dispatching...' : 'Ship with Shiprocket'}</span>
+                  </button>
+                )}
+                <button
+                  onClick={() => handlePrintThermalLabel(selectedOrder.id)}
+                  className="btn-primary py-2 px-3 text-xs gap-1.5 font-mono"
+                  title="Generate 4x6 Thermal Label with pure SVG barcode"
+                >
+                  <FileText size={14} />
+                  <span>Print 4×6 Label</span>
+                </button>
                 <button
                   onClick={() => window.print()}
-                  className="btn-outline py-2 px-3 text-xs gap-1.5"
+                  className="btn-outline py-2 px-3 text-xs gap-1.5 hidden sm:flex"
                 >
                   <Printer size={14} />
-                  Print Manifest
+                  <span>Manifest</span>
                 </button>
                 <button
                   onClick={() => setSelectedOrder(null)}
-                  className="w-8 h-8 rounded-full bg-beige/60 hover:bg-beige flex items-center justify-center text-muted hover:text-ink font-bold transition-colors"
+                  className="w-8 h-8 rounded-[2px] bg-white border-2 border-[#171717] hover:bg-[#E6321C] hover:text-white flex items-center justify-center text-[#171717] font-bold transition-colors cursor-pointer shadow-[1.5px_1.5px_0px_#171717]"
                 >
                   <X size={16} />
                 </button>
@@ -488,25 +701,25 @@ export function OrdersPage() {
 
             {/* Tracking Banner if dispatched */}
             {selectedOrder.tracking_number && (
-              <div className="p-4 rounded-2xl bg-sky-50 border border-sky-200 flex items-center justify-between text-xs">
+              <div className="p-4 rounded-[2px] bg-[#BFDBFE] border-2 border-[#171717] shadow-[2px_2px_0px_#171717] flex items-center justify-between text-xs">
                 <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-xl bg-sky-600 text-white flex items-center justify-center">
+                  <div className="w-8 h-8 rounded-[2px] bg-[#171717] text-white flex items-center justify-center border border-[#171717]">
                     <Truck size={16} />
                   </div>
                   <div>
-                    <span className="font-bold text-ink">
+                    <span className="font-bold text-[#171717]">
                       Dispatched via {selectedOrder.carrier || 'courier'}
                     </span>
-                    <span className="text-[11px] text-muted block font-mono">
+                    <span className="text-[11px] text-[#171717]/80 block font-mono">
                       AWB Manifest: {selectedOrder.tracking_number}
                     </span>
                   </div>
                 </div>
                 <a
-                  href={`http://localhost:5173/track-order?awb=${selectedOrder.tracking_number}`}
+                  href={`${STOREFRONT_URL}/track-order?awb=${selectedOrder.tracking_number}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-xs font-mono font-bold text-sky-700 underline hover:text-sky-900"
+                  className="text-xs font-mono font-black text-[#171717] underline hover:text-[#E6321C]"
                 >
                   Live Track ↗
                 </a>
@@ -515,10 +728,10 @@ export function OrdersPage() {
 
             {/* Items Ordered */}
             <div className="space-y-3">
-              <h4 className="text-[11px] font-mono font-bold uppercase tracking-wider text-muted">
+              <h4 className="text-[11px] font-mono font-black uppercase tracking-wider text-[#6F6A63]">
                 Manifest Items ({selectedOrder.items?.length || 1})
               </h4>
-              <div className="divide-y divide-border/60 border border-border/80 rounded-2xl p-4 bg-[#FAF7F2]">
+              <div className="divide-y-2 divide-[#171717]/20 border-2 border-[#171717] rounded-[2px] p-4 bg-[#F7EEDB] shadow-[2px_2px_0px_#171717]">
                 {((selectedOrder.items && selectedOrder.items.length > 0 ? selectedOrder.items : [
                   {
                     id: 'it-1',
@@ -535,13 +748,21 @@ export function OrdersPage() {
                     it.image_url ||
                       it.imageUrl ||
                       it.image ||
+                      (it as any).product?.images?.[0]?.url ||
+                      (it as any).product?.images?.[0] ||
+                      (it as any).product?.image_url ||
+                      (it as any).product?.primary_image ||
+                      (it as any).variant?.image ||
+                      (it as any).variant_snapshot_json?.image ||
                       it.customization?.previewKey ||
-                      it.customization?.preview_url
+                      it.customization?.preview_url ||
+                      (it.customization as any)?.preview_key ||
+                      (it.customization as any)?.design_json?.garment?.frontImageUrl
                   );
                   return (
-                    <div key={idx} className="py-3 first:pt-0 last:pb-0 flex items-center justify-between text-xs gap-3">
-                      <div className="flex items-center gap-3">
-                        <div className="w-12 h-12 rounded-xl bg-beige/50 border border-border/80 overflow-hidden shrink-0 flex items-center justify-center relative">
+                    <div key={idx} className="py-4 first:pt-0 last:pb-0 flex flex-col sm:flex-row sm:items-center justify-between text-xs gap-3">
+                      <div className="flex items-start sm:items-center gap-3.5">
+                        <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-lg bg-[#EDE0CC] border-2 border-[#171717] overflow-hidden shrink-0 flex items-center justify-center relative shadow-[2px_2px_0px_#171717]">
                           {itImg ? (
                             <img
                               src={itImg}
@@ -549,34 +770,66 @@ export function OrdersPage() {
                               className="w-full h-full object-cover"
                               onError={(e) => {
                                 (e.target as HTMLElement).style.display = 'none';
+                                const fallback = (e.target as HTMLElement).nextElementSibling;
+                                if (fallback) (fallback as HTMLElement).style.display = 'flex';
                               }}
                             />
-                          ) : (
-                            <Shirt size={18} className="text-muted/60" />
-                          )}
+                          ) : null}
+                          <div
+                            className="flex flex-col items-center justify-center text-[#171717]/40"
+                            style={{ display: itImg ? 'none' : 'flex' }}
+                          >
+                            <Shirt size={24} />
+                          </div>
                           {it.customization && (
-                            <span className="absolute top-0.5 right-0.5 px-0.5 py-0.2 rounded text-[6px] font-mono font-black uppercase bg-brand-red text-white">
+                            <span className="absolute top-0.5 right-0.5 px-1 py-0.2 rounded-[2px] text-[7px] font-mono font-black uppercase bg-[#E6321C] text-white">
                               3D
                             </span>
                           )}
                         </div>
-                        <div className="space-y-0.5">
-                          <strong className="font-bold text-ink block text-xs">
+                        <div className="space-y-1">
+                          <strong className="font-black text-[#171717] block text-sm font-sans">
                             {it.title_snapshot || it.title || 'Heavyweight Garment'}
                           </strong>
-                          <span className="text-muted text-[11px] font-mono">
-                            Qty: {it.quantity} • Size: {it.size || 'M'} • Color: {it.color || 'Onyx'}
-                          </span>
+                          <div className="flex flex-wrap items-center gap-1.5 text-[10px] font-mono">
+                            <span className="bg-[#171717] text-white px-2 py-0.5 rounded-[2px] font-black">
+                              Size: {it.size || 'M'}
+                            </span>
+                            <span className="bg-[#EDE0CC] text-[#171717] border border-[#171717]/30 px-2 py-0.5 rounded-[2px] font-bold">
+                              Color: {it.color || 'Noir'}
+                            </span>
+                            {it.sku && (
+                              <span className="text-[#6F6A63] font-mono text-[10px]">
+                                SKU: {it.sku}
+                              </span>
+                            )}
+                          </div>
+                          <p className="text-[11px] font-mono text-[#6F6A63]">
+                            Qty: <strong className="text-[#171717] font-bold">{it.quantity}</strong> × {formatCurrency(it.unit_price || it.total / (it.quantity || 1))}
+                          </p>
+                          {itImg && (
+                            <a
+                              href={itImg}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-[10px] font-mono font-bold text-[#E6321C] hover:underline inline-flex items-center gap-1"
+                            >
+                              Inspect Full Photo ↗
+                            </a>
+                          )}
                           {it.customization && (
-                            <span className="inline-flex items-center gap-1 text-[10px] font-mono font-bold text-brand-red bg-brand-red/10 px-2 py-0.5 rounded mt-1">
+                            <span className="inline-flex items-center gap-1 text-[10px] font-mono font-bold text-[#E6321C] bg-[#E6321C]/10 px-2 py-0.5 rounded mt-1">
                               <Sparkles size={11} /> 3D Bespoke Graphic Applied
                             </span>
                           )}
                         </div>
                       </div>
-                      <span className="font-mono font-black text-ink text-xs whitespace-nowrap">
-                        {formatCurrency(it.total)}
-                      </span>
+                      <div className="text-left sm:text-right font-mono self-end sm:self-center">
+                        <span className="text-[10px] text-muted block uppercase font-bold tracking-wider">Item Subtotal</span>
+                        <span className="font-mono font-black text-[#171717] text-sm">
+                          {formatCurrency(it.total)}
+                        </span>
+                      </div>
                     </div>
                   );
                 })}
@@ -611,24 +864,24 @@ export function OrdersPage() {
               </div>
 
               {/* Payment Summary */}
-              <div className="p-4 rounded-2xl border border-border/80 bg-[#FAF7F2] space-y-2">
-                <span className="text-[10px] font-mono uppercase font-bold text-muted block">
+              <div className="p-4 rounded-[2px] border-2 border-[#171717] bg-[#F7EEDB] shadow-[2px_2px_0px_#171717] space-y-2">
+                <span className="text-[10px] font-mono uppercase font-black text-[#6F6A63] block">
                   Payment Ledger
                 </span>
-                <div className="space-y-1.5">
+                <div className="space-y-1.5 text-xs">
                   <div className="flex justify-between">
-                    <span className="text-muted">Method:</span>
-                    <span className="font-mono font-bold text-ink uppercase text-[11px]">
+                    <span className="text-[#6F6A63]">Method:</span>
+                    <span className="font-mono font-bold text-[#171717] uppercase text-[11px]">
                       {selectedOrder.payment_method || selectedOrder.paymentMethod || 'Prepaid Online'}
                     </span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-muted">Status:</span>
-                    <span className="font-mono font-bold text-emerald-700 uppercase text-[11px]">
+                    <span className="text-[#6F6A63]">Status:</span>
+                    <span className="font-mono font-black text-emerald-800 uppercase text-[11px]">
                       {selectedOrder.payment_status || selectedOrder.paymentStatus || 'Captured'}
                     </span>
                   </div>
-                  <div className="flex justify-between pt-2 border-t border-border/80 font-bold text-sm text-ink">
+                  <div className="flex justify-between pt-2 border-t-2 border-[#171717]/20 font-bold text-sm text-[#171717]">
                     <span>Total Amount:</span>
                     <span className="font-mono font-black">{formatCurrency(selectedOrder.total)}</span>
                   </div>
@@ -637,7 +890,7 @@ export function OrdersPage() {
             </div>
 
             {/* Modal Actions */}
-            <div className="flex items-center justify-end gap-3 pt-3 border-t border-border/70">
+            <div className="flex items-center justify-end gap-3 pt-3 border-t-2 border-[#171717]">
               <button onClick={() => setSelectedOrder(null)} className="btn-secondary">
                 Close Inspector
               </button>
@@ -648,21 +901,21 @@ export function OrdersPage() {
 
       {/* Shipping Fulfillment Modal */}
       {shippingOrder && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="bg-white rounded-3xl max-w-md w-full p-6 sm:p-7 shadow-2xl border border-border/80 space-y-5">
-            <div className="flex items-center justify-between border-b border-border/70 pb-3">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 animate-in fade-in duration-200">
+          <div className="bg-white rounded-[2px] max-w-md w-full p-6 sm:p-7 shadow-[6px_6px_0px_#171717] border-2 border-[#171717] space-y-5">
+            <div className="flex items-center justify-between border-b-2 border-[#171717] pb-3 bg-[#EDE0CC] -mx-6 -mt-6 sm:-mx-7 sm:-mt-7 p-5">
               <div>
-                <h3 className="text-base font-black uppercase tracking-wide text-ink flex items-center gap-2 font-sans">
-                  <Truck size={18} className="text-brand-red" />
+                <h3 className="text-base font-black uppercase tracking-wide text-[#171717] flex items-center gap-2 font-mono">
+                  <Truck size={18} className="text-[#E6321C]" />
                   Dispatch Order #{shippingOrder.order_number || shippingOrder.orderNumber}
                 </h3>
-                <span className="text-xs text-muted">
+                <span className="text-xs text-[#6F6A63]">
                   Assign air courier manifest & push live tracking link.
                 </span>
               </div>
               <button
                 onClick={() => setShippingOrder(null)}
-                className="w-7 h-7 rounded-full bg-beige/60 hover:bg-beige flex items-center justify-center text-muted hover:text-ink font-bold"
+                className="w-7 h-7 rounded-[2px] bg-white border-2 border-[#171717] hover:bg-[#E6321C] hover:text-white flex items-center justify-center text-[#171717] font-bold cursor-pointer"
               >
                 <X size={15} />
               </button>
@@ -676,7 +929,7 @@ export function OrdersPage() {
                 <select
                   value={carrier}
                   onChange={(e) => setCarrier(e.target.value)}
-                  className="admin-select w-full text-xs"
+                  className="admin-select w-full text-xs font-mono"
                 >
                   {CARRIERS.map((c) => (
                     <option key={c} value={c}>{c}</option>
@@ -696,12 +949,12 @@ export function OrdersPage() {
                   className="admin-input w-full font-mono text-xs uppercase tracking-wider font-bold"
                   required
                 />
-                <span className="text-[10px] text-muted mt-1 block">
-                  The customer gets this tracking number on WhatsApp and by email.
+                <span className="text-[10px] text-[#6F6A63] mt-1 block font-mono">
+                  The customer receives this tracking number on WhatsApp and by email.
                 </span>
               </div>
 
-              <div className="flex items-center justify-end gap-3 pt-3 border-t border-border/70">
+              <div className="flex items-center justify-end gap-3 pt-3 border-t-2 border-[#171717]">
                 <button
                   type="button"
                   onClick={() => setShippingOrder(null)}

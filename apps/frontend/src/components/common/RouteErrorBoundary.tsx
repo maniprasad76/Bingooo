@@ -29,7 +29,7 @@ export function RouteErrorBoundary() {
 
   return (
     <div className="flex min-h-[70vh] w-full flex-col items-center justify-center px-4 py-12 text-center bg-[#FAF8F5]">
-      <div className="mx-auto w-full max-w-md rounded-2xl border border-[#DDD3C5] bg-white p-8 shadow-xs">
+      <div className="mx-auto w-full max-w-md rounded-[2px] border border-[#DDD3C5] bg-white p-8 shadow-xs">
         <div className="mb-6 flex justify-center">
           <Logo variant="red" size="md" />
         </div>

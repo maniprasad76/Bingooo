@@ -1,5 +1,4 @@
 import { Link } from 'react-router-dom';
-import { ChevronRight } from 'lucide-react';
 import { generateBreadcrumbsSchema, toJsonLd, type BreadcrumbItem } from '../../lib/seo/schema';
 
 export interface BreadcrumbsProps {
@@ -27,7 +26,7 @@ export function Breadcrumbs({ items, className = '', showSchema = true }: Breadc
       )}
       <nav
         aria-label="Breadcrumb"
-        className={`flex items-center gap-1.5 text-xs font-sans text-[#6F6A63] ${className}`}
+        className={`flex items-center gap-1.5 font-mono text-[10px] sm:text-[11px] uppercase tracking-wider text-[#6F6A63] ${className}`}
       >
         <ol className="flex items-center flex-wrap gap-1.5" role="list">
           {fullItems.map((item, index) => {
@@ -35,23 +34,19 @@ export function Breadcrumbs({ items, className = '', showSchema = true }: Breadc
             return (
               <li key={item.url} className="flex items-center gap-1.5">
                 {index > 0 && (
-                  <ChevronRight
-                    size={12}
-                    className="text-[#DDD3C5] shrink-0"
-                    aria-hidden="true"
-                  />
+                  <span className="text-[#171717]/40 font-bold px-0.5" aria-hidden="true">/</span>
                 )}
                 {isLast ? (
                   <span
                     aria-current="page"
-                    className="text-[#171717] font-semibold truncate max-w-[200px] sm:max-w-[320px]"
+                    className="border border-[#171717] bg-white text-[#171717] px-2 py-0.5 rounded-[2px] font-black truncate max-w-[200px] sm:max-w-[320px] shadow-[1px_1px_0px_#171717]"
                   >
                     {item.name}
                   </span>
                 ) : (
                   <Link
                     to={item.url}
-                    className="hover:text-[#E6321C] transition-colors focus-visible:outline-none focus-visible:underline rounded"
+                    className="font-bold text-[#6F6A63] hover:text-[#E6321C] transition-colors focus-visible:outline-none"
                   >
                     {item.name}
                   </Link>

@@ -31,7 +31,7 @@ export function saveCartItemMeta(key: string, meta: CartItemMeta): void {
       store[meta.slug.toLowerCase().trim()] = { ...(store[meta.slug.toLowerCase().trim()] || {}), ...meta };
     }
     sessionStorage.setItem(STORAGE_KEY, JSON.stringify(store));
-  } catch (e) {
+  } catch {
     // SessionStorage may be restricted in private browsing
   }
 }
@@ -45,7 +45,7 @@ export function getCartItemMeta(key?: string, fallbackTitle?: string, fallbackSl
     if (fallbackSlug && store[fallbackSlug.toLowerCase().trim()]) return store[fallbackSlug.toLowerCase().trim()];
     if (fallbackTitle && store[fallbackTitle.toLowerCase().trim()]) return store[fallbackTitle.toLowerCase().trim()];
     return null;
-  } catch (e) {
+  } catch {
     return null;
   }
 }

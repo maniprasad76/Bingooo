@@ -22,3 +22,8 @@ export declare function breadcrumbSchema(items: Array<{ name: string; url: strin
 export declare function categorySeoTitle(category: AnyRecord): string;
 export declare function categorySeoDescription(category: AnyRecord, productCount?: number): string;
 export declare function categorySchema(category: AnyRecord, products?: AnyRecord[]): AnyRecord;
+export declare const GOOGLE_MAPS_STORE_URL: string;
+export declare const GOOGLE_MAPS_DIRECTIONS_URL: string;
+export declare const GOOGLE_MAPS_EMBED_URL: string;
+export declare const GOOGLE_REVIEW_URL: string;
+export declare function localBusinessSchema(): AnyRecord;

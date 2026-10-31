@@ -1,11 +1,9 @@
 import { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { X, Sparkles, ShoppingBag, Check, ArrowRight, ShieldCheck, Truck } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { m, AnimatePresence } from 'framer-motion';
+import { X, ShoppingBag, Check, ShieldCheck, Truck } from 'lucide-react';
 import { Button } from '../ui/Button';
-import { Badge } from '../ui/Badge';
 import { useCart } from '../../hooks/useCart';
-import { useToast } from '../ui/Toast';
+import { useToast } from '../ui/ToastContext';
 import { resolveImageUrl } from '../../lib/utils';
 
 export interface QuickViewProduct {
@@ -109,7 +107,7 @@ export function QuickViewModal({ product, isOpen, onClose }: QuickViewModalProps
       {isOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 md:p-10">
           {/* Backdrop */}
-          <motion.div
+          <m.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -118,12 +116,12 @@ export function QuickViewModal({ product, isOpen, onClose }: QuickViewModalProps
           />
 
           {/* Modal Container */}
-          <motion.div
+          <m.div
             initial={{ opacity: 0, scale: 0.94, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.94, y: 20 }}
             transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-            className="relative z-10 w-full max-w-4xl max-h-[90vh] overflow-y-auto rounded-2xl bg-white border border-border shadow-2xl"
+            className="relative z-10 w-full max-w-4xl max-h-[90vh] overflow-y-auto rounded-[2px] bg-white border border-border shadow-2xl"
           >
             {/* Close Button */}
             <button
@@ -134,11 +132,11 @@ export function QuickViewModal({ product, isOpen, onClose }: QuickViewModalProps
             </button>
 
             <div className="grid grid-cols-1 md:grid-cols-12">
-              {/* Left Column: 3D Interactive Garment Preview (7 cols) */}
+              {/* Left Column: Garment Preview (7 cols) */}
               <div className="md:col-span-7 bg-paper/60 p-8 flex flex-col items-center justify-center relative border-b md:border-b-0 md:border-r border-border">
                 {/* Product Image Showcase */}
                 <div className="w-full max-w-sm aspect-[4/5] flex items-center justify-center p-4">
-                  <img
+                  <img loading="lazy" decoding="async"
                     src={mainImage}
                     alt={product.title}
                     className="h-full w-full object-contain p-2 transition-transform duration-500 hover:scale-105"
@@ -154,7 +152,7 @@ export function QuickViewModal({ product, isOpen, onClose }: QuickViewModalProps
                       : '240 GSM LOOPKNIT COTTON'}
                   </span>
                   <span className="flex items-center gap-1">
-                    <Truck size={14} className="text-brand-red" /> FREE SHIPPING ON ALL ORDERS
+                    <Truck size={14} className="text-brand-red" /> FREE SHIPPING ON PREPAID ORDERS
                   </span>
                 </div>
               </div>
@@ -167,12 +165,6 @@ export function QuickViewModal({ product, isOpen, onClose }: QuickViewModalProps
                       <span className="text-[11px] font-mono uppercase tracking-widest text-brand-red font-bold">
                         {product.category.name}
                       </span>
-                    )}
-                    {product.customizationEnabled && (
-                      <Badge variant="accent" size="sm">
-                        <Sparkles size={11} className="mr-1" />
-                        Studio Ready
-                      </Badge>
                     )}
                   </div>
 
@@ -265,20 +257,10 @@ export function QuickViewModal({ product, isOpen, onClose }: QuickViewModalProps
                     <ShoppingBag size={18} />
                     Add to Bag — ₹{product.basePrice}
                   </Button>
-
-                  {product.customizationEnabled && (
-                    <Link to={`/customize/${product.slug}`} onClick={onClose} className="block w-full">
-                      <Button variant="outline" size="lg" fullWidth className="border-ink text-ink hover:bg-ink hover:text-white">
-                        <Sparkles size={16} />
-                        Open in 2D Design Studio
-                        <ArrowRight size={16} />
-                      </Button>
-                    </Link>
-                  )}
                 </div>
               </div>
             </div>
-          </motion.div>
+          </m.div>
         </div>
       )}
     </AnimatePresence>

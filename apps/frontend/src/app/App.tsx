@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { RouterProvider } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { LazyMotion } from 'framer-motion';
 import { ToastProvider } from '../components/ui/Toast';
 import { initAuth } from '../lib/auth/supabase';
 import { router } from './router';
@@ -30,6 +31,10 @@ const queryClient = new QueryClient({
 
 setPreloaderQueryClient(queryClient);
 
+// Components use framer-motion's lightweight `m` elements; the animation engine
+// itself downloads after first render instead of with the initial bundle.
+const loadMotionFeatures = () => import('../lib/motion/features').then((mod) => mod.default);
+
 export function App() {
   useEffect(() => {
     initAuth();
@@ -38,13 +43,15 @@ export function App() {
 
   return (
     <GlobalErrorBoundary>
-      <QueryClientProvider client={queryClient}>
-        <ToastProvider>
-          <OfflineBanner />
-          <RouterProvider router={router} />
-          <SpeedInsights />
-        </ToastProvider>
-      </QueryClientProvider>
+      <LazyMotion features={loadMotionFeatures}>
+        <QueryClientProvider client={queryClient}>
+          <ToastProvider>
+            <OfflineBanner />
+            <RouterProvider router={router} />
+            <SpeedInsights />
+          </ToastProvider>
+        </QueryClientProvider>
+      </LazyMotion>
     </GlobalErrorBoundary>
   );
 }

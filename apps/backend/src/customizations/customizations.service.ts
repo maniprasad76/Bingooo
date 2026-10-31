@@ -1,6 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { v4 as uuidv4 } from 'uuid';
 import { db, saveDb } from '../common/database/store';
+import { normalizeStudioConfig, type StudioConfig } from './studio-config';
 
 @Injectable()
 export class CustomizationsService {
@@ -29,7 +30,7 @@ export class CustomizationsService {
       status: 'approved', // ready for print
       print_status: 'ready_to_print',
       design_json: data.designJson || {},
-      preview_url: data.previewKey || '/custom/tshirt-step-3-black.png',
+      preview_url: data.previewKey || data.designJson?.garment?.frontImageUrl || null,
       print_file_key: data.printFileKey || null,
       print_spec: data.printSpec || {
         method: 'DTG (Direct-to-Garment)',
@@ -171,121 +172,65 @@ export class CustomizationsService {
     return req;
   }
 
-  /** Studio Customizer Garments & Color Mockup Configuration */
-  getStudioConfig() {
-    if (!db.customizer_config || !Array.isArray(db.customizer_config.garments) || db.customizer_config.garments.length === 0) {
-      db.customizer_config = {
-        garments: [],
-        updatedAt: new Date().toISOString(),
-      };
+  /** Custom studio catalogue, managed entirely from the admin panel. */
+  getStudioConfig(): StudioConfig {
+    if (!db.customizer_config || !Array.isArray(db.customizer_config.garments)) {
+      return { garments: [], updatedAt: null };
     }
-    const DEFAULT_SIZES = ['XS', 'S', 'M', 'L', 'XL', 'XXL', '3XL'];
-    const DEFAULT_ACTIVE_SIZES = ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
-    db.customizer_config.garments.forEach((g: any) => {
-      if (!g.sizes || !Array.isArray(g.sizes) || g.sizes.length === 0) {
-        g.sizes = [...DEFAULT_SIZES];
-      }
-      if (!g.activeSizes || !Array.isArray(g.activeSizes) || g.activeSizes.length === 0) {
-        g.activeSizes = [...DEFAULT_ACTIVE_SIZES];
-      }
-      if (!g.compareAtPrice) {
-        g.compareAtPrice = Math.round((g.price || 1299) * 1.4);
-      }
-    });
-    return db.customizer_config;
+    const normalized = normalizeStudioConfig(db.customizer_config, false);
+    // One-time cleanup of stored data (e.g. links to the removed bundled mockups).
+    if (JSON.stringify(normalized) !== JSON.stringify({ garments: db.customizer_config.garments, updatedAt: db.customizer_config.updatedAt ?? null })) {
+      db.customizer_config = normalized;
+      saveDb();
+    }
+    return normalized;
   }
 
-  updateStudioConfig(data: any) {
-    db.customizer_config = {
-      ...db.customizer_config,
-      ...data,
-      updatedAt: new Date().toISOString(),
-    };
+  updateStudioConfig(data: any): StudioConfig {
+    const normalized = normalizeStudioConfig(data, true);
+    db.customizer_config = { garments: normalized.garments, updatedAt: new Date().toISOString() };
     saveDb();
     return db.customizer_config;
   }
 
-  addColorToGarment(
-    garmentId: string,
-    colorData: {
-      id?: string;
-      name: string;
-      hex: string;
-      textContrast?: string;
-      frontImageUrl: string;
-      backImageUrl?: string;
-      isActive?: boolean;
-    },
-  ) {
+  private saveGarments(garments: any[]) {
+    return this.updateStudioConfig({ garments });
+  }
+
+  private findGarment(garmentId: string) {
     const config = this.getStudioConfig();
-    const garment = config.garments.find((g: any) => g.id === garmentId);
+    const garment = config.garments.find((g) => g.id === garmentId);
     if (!garment) {
       throw new NotFoundException({ code: 'GARMENT_NOT_FOUND', message: `Garment ${garmentId} not found` });
     }
+    return { config, garment };
+  }
 
-    const colorId =
-      colorData.id ||
-      colorData.name.toLowerCase().replace(/[^a-z0-9]/g, '-') ||
-      `col-${Date.now()}`;
-
-    const hex = colorData.hex.replace('#', '');
-    const r = parseInt(hex.substring(0, 2) || '0', 16);
-    const g = parseInt(hex.substring(2, 4) || '0', 16);
-    const b = parseInt(hex.substring(4, 6) || '0', 16);
-    const brightness = (r * 299 + g * 587 + b * 114) / 1000;
-    const computedContrast = brightness > 140 ? '#171717' : '#FFFFFF';
-
-    const newColor = {
-      id: colorId,
-      name: colorData.name,
-      hex: colorData.hex.startsWith('#') ? colorData.hex : `#${colorData.hex}`,
-      textContrast: colorData.textContrast || computedContrast,
-      frontImageUrl: colorData.frontImageUrl,
-      backImageUrl: colorData.backImageUrl || '',
-      isActive: colorData.isActive !== false,
-    };
-
-    const existingIndex = garment.colors.findIndex((c: any) => c.id === newColor.id);
-    if (existingIndex >= 0) {
-      garment.colors[existingIndex] = { ...garment.colors[existingIndex], ...newColor };
-    } else {
-      garment.colors.push(newColor);
-    }
-
-    config.updatedAt = new Date().toISOString();
-    saveDb();
-    return { garment, color: newColor };
+  addColorToGarment(garmentId: string, colorData: any) {
+    const { config, garment } = this.findGarment(garmentId);
+    garment.colors = [...garment.colors.filter((c) => c.id !== colorData?.id), { ...colorData, isActive: colorData?.isActive !== false }];
+    const saved = this.saveGarments(config.garments);
+    const updated = saved.garments.find((g) => g.id === garmentId)!;
+    return { garment: updated, color: updated.colors[updated.colors.length - 1] };
   }
 
   updateGarmentColor(garmentId: string, colorId: string, colorData: any) {
-    const config = this.getStudioConfig();
-    const garment = config.garments.find((g: any) => g.id === garmentId);
-    if (!garment) {
-      throw new NotFoundException({ code: 'GARMENT_NOT_FOUND', message: `Garment ${garmentId} not found` });
-    }
-
-    const color = garment.colors.find((c: any) => c.id === colorId);
+    const { config, garment } = this.findGarment(garmentId);
+    const color = garment.colors.find((c) => c.id === colorId);
     if (!color) {
       throw new NotFoundException({ code: 'COLOR_NOT_FOUND', message: `Color ${colorId} not found` });
     }
-
-    Object.assign(color, colorData);
-    config.updatedAt = new Date().toISOString();
-    saveDb();
-    return { garment, color };
+    Object.assign(color, colorData, { id: colorId });
+    const saved = this.saveGarments(config.garments);
+    const updated = saved.garments.find((g) => g.id === garmentId)!;
+    return { garment: updated, color: updated.colors.find((c) => c.id === colorId) };
   }
 
   deleteGarmentColor(garmentId: string, colorId: string) {
-    const config = this.getStudioConfig();
-    const garment = config.garments.find((g: any) => g.id === garmentId);
-    if (!garment) {
-      throw new NotFoundException({ code: 'GARMENT_NOT_FOUND', message: `Garment ${garmentId} not found` });
-    }
-
-    garment.colors = garment.colors.filter((c: any) => c.id !== colorId);
-    config.updatedAt = new Date().toISOString();
-    saveDb();
-    return { success: true, garment };
+    const { config, garment } = this.findGarment(garmentId);
+    garment.colors = garment.colors.filter((c) => c.id !== colorId);
+    const saved = this.saveGarments(config.garments);
+    return { success: true, garment: saved.garments.find((g) => g.id === garmentId) };
   }
 }
 

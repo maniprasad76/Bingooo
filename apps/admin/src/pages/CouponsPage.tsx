@@ -119,21 +119,21 @@ export function CouponsPage() {
   return (
     <div className="space-y-6">
       {/* Editorial Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b-2 border-[#171717] pb-4">
         <div>
           <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5">
-            <span className="text-[10px] font-mono font-bold uppercase tracking-[0.2em] text-brand-red whitespace-nowrap">
+            <span className="text-[10px] font-mono font-bold uppercase tracking-[0.2em] bg-[#171717] text-white px-2 py-0.5">
               PROMOTIONS ENGINE
             </span>
-            <span className="text-muted/40 font-mono">•</span>
-            <span className="text-[10px] font-mono font-bold uppercase tracking-widest text-muted whitespace-nowrap">
+            <span className="text-[#171717]/40 font-mono">•</span>
+            <span className="text-[10px] font-mono font-bold uppercase tracking-widest text-[#171717]/70">
               {activeCoupons} ACTIVE PROMOS
             </span>
           </div>
-          <h1 className="text-2xl font-black uppercase tracking-tight text-ink font-sans mt-0.5">
+          <h1 className="text-2xl font-black uppercase tracking-tight text-[#171717] font-sans mt-1">
             Discount Vouchers & Coupons
           </h1>
-          <p className="text-xs text-muted mt-0.5">
+          <p className="text-xs text-[#171717]/70 mt-0.5 font-medium">
             Create promotional codes, seasonal drops, and minimum order threshold discounts.
           </p>
         </div>
@@ -153,43 +153,43 @@ export function CouponsPage() {
         </div>
       </div>
 
-      {/* Bento Mini Stats */}
+      {/* Bauhaus Bento Mini Stats */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div className="stat-card">
+        <div className="bg-white border-2 border-[#171717] p-4 shadow-[4px_4px_0px_#171717]">
           <div className="flex items-center justify-between">
-            <span className="stat-label">Configured Vouchers</span>
-            <div className="w-9 h-9 rounded-xl bg-beige/60 border border-border/60 flex items-center justify-center text-ink">
+            <span className="text-[11px] font-mono font-bold uppercase text-[#171717]/70 tracking-wider">Configured Vouchers</span>
+            <div className="w-8 h-8 border-2 border-[#171717] bg-[#F7EEDB] flex items-center justify-center text-[#171717] shadow-[2px_2px_0px_#171717]">
               <Ticket size={16} />
             </div>
           </div>
-          <p className="stat-value">{totalCoupons}</p>
-          <span className="text-[10px] font-mono text-muted mt-1 block">Total promotional codes</span>
+          <p className="text-2xl font-black font-mono text-[#171717] mt-2">{totalCoupons}</p>
+          <span className="text-[10px] font-mono text-[#171717]/60 mt-1 block uppercase">Total promotional codes</span>
         </div>
 
-        <div className="stat-card">
+        <div className="bg-white border-2 border-[#171717] p-4 shadow-[4px_4px_0px_#171717]">
           <div className="flex items-center justify-between">
-            <span className="stat-label">Active on Checkout</span>
-            <div className="w-9 h-9 rounded-xl bg-emerald-50 border border-emerald-200 flex items-center justify-center text-emerald-700">
+            <span className="text-[11px] font-mono font-bold uppercase text-[#171717]/70 tracking-wider">Active on Checkout</span>
+            <div className="w-8 h-8 border-2 border-[#171717] bg-emerald-100 flex items-center justify-center text-emerald-900 shadow-[2px_2px_0px_#171717]">
               <CheckCircle2 size={16} />
             </div>
           </div>
-          <p className="stat-value text-emerald-700">{activeCoupons}</p>
-          <span className="text-[10px] font-mono text-emerald-700 mt-1 block">Can be claimed by customers</span>
+          <p className="text-2xl font-black font-mono text-emerald-800 mt-2">{activeCoupons}</p>
+          <span className="text-[10px] font-mono text-emerald-800 font-bold mt-1 block uppercase">Can be claimed by customers</span>
         </div>
 
-        <div className="stat-card">
+        <div className="bg-white border-2 border-[#171717] p-4 shadow-[4px_4px_0px_#171717]">
           <div className="flex items-center justify-between">
-            <span className="stat-label">Total Redemptions</span>
-            <div className="w-9 h-9 rounded-xl bg-brand-red/10 border border-brand-red/20 flex items-center justify-center text-brand-red">
+            <span className="text-[11px] font-mono font-bold uppercase text-[#171717]/70 tracking-wider">Total Redemptions</span>
+            <div className="w-8 h-8 border-2 border-[#171717] bg-[#E6321C] flex items-center justify-center text-white shadow-[2px_2px_0px_#171717]">
               <Percent size={16} />
             </div>
           </div>
-          <p className="stat-value">{totalRedemptions}</p>
-          <span className="text-[10px] font-mono text-muted mt-1 block">Orders with voucher applied</span>
+          <p className="text-2xl font-black font-mono text-[#E6321C] mt-2">{totalRedemptions}</p>
+          <span className="text-[10px] font-mono text-[#E6321C] font-bold mt-1 block uppercase">Orders with voucher applied</span>
         </div>
       </div>
 
-      {/* Coupons Table */}
+      {/* Bauhaus Coupons Table */}
       <div className="admin-table-container">
         <div className="overflow-x-auto">
           <table className="admin-table">
@@ -206,10 +206,10 @@ export function CouponsPage() {
             <tbody>
               {loading ? (
                 <tr>
-                  <td colSpan={6} className="text-center py-16 text-muted">
+                  <td colSpan={6} className="text-center py-16 text-[#171717]/60">
                     <div className="flex flex-col items-center justify-center gap-2">
-                      <RefreshCw size={20} className="animate-spin text-brand-red" />
-                      <span className="font-mono text-xs uppercase tracking-widest">
+                      <RefreshCw size={22} className="animate-spin text-[#E6321C]" />
+                      <span className="font-mono text-xs uppercase tracking-widest font-bold">
                         Loading Vouchers…
                       </span>
                     </div>
@@ -217,11 +217,11 @@ export function CouponsPage() {
                 </tr>
               ) : coupons.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="text-center py-16 text-muted">
+                  <td colSpan={6} className="text-center py-16 text-[#171717]/60">
                     <div className="flex flex-col items-center justify-center gap-2">
-                      <Ticket size={28} className="text-muted/50" />
-                      <span className="font-bold text-ink text-sm">No vouchers created</span>
-                      <p className="text-xs text-muted max-w-sm">
+                      <Ticket size={32} className="text-[#171717]/40" />
+                      <span className="font-bold text-[#171717] text-sm uppercase font-mono">No vouchers created</span>
+                      <p className="text-xs text-[#171717]/70 max-w-sm">
                         Create discount codes to drive sales and celebrate new drops.
                       </p>
                     </div>
@@ -229,15 +229,15 @@ export function CouponsPage() {
                 </tr>
               ) : (
                 coupons.map((c) => (
-                  <tr key={c.id} className="group">
+                  <tr key={c.id} className="hover:bg-[#FAF7F2] transition-colors">
                     <td>
                       <div className="flex items-center gap-2">
-                        <span className="font-mono text-xs font-black tracking-widest bg-beige/80 border border-border/80 px-2.5 py-1 rounded-lg text-ink">
+                        <span className="font-mono text-xs font-black tracking-widest bg-[#F7EEDB] border-2 border-[#171717] px-2.5 py-1 text-[#171717] shadow-[2px_2px_0px_#171717]">
                           {c.code}
                         </span>
                         <button
                           onClick={() => copyCode(c.code)}
-                          className="text-muted hover:text-ink transition-colors p-1"
+                          className="p-1 border border-[#171717] bg-white hover:bg-[#FAF7F2] text-[#171717] transition-colors"
                           title="Copy Code"
                         >
                           <Copy size={13} />
@@ -246,7 +246,7 @@ export function CouponsPage() {
                     </td>
 
                     <td>
-                      <span className="font-mono font-bold text-xs text-brand-red">
+                      <span className="font-mono font-black text-xs text-[#E6321C]">
                         {c.type === 'percentage'
                           ? `${c.value ?? 0}% OFF`
                           : `₹${Number(c.value ?? 0).toLocaleString('en-IN')} FLAT`}
@@ -254,7 +254,7 @@ export function CouponsPage() {
                     </td>
 
                     <td>
-                      <span className="font-mono text-xs text-ink">
+                      <span className="font-mono text-xs font-bold text-[#171717]">
                         ₹{Number(c.min_order_value ?? 0).toLocaleString('en-IN')}
                       </span>
                     </td>
@@ -262,12 +262,12 @@ export function CouponsPage() {
                     <td>
                       <div className="space-y-1 max-w-[120px]">
                         <div className="flex items-center justify-between text-[10px] font-mono">
-                          <span className="font-bold text-ink">{c.used_count ?? 0}</span>
-                          <span className="text-muted">/{c.max_uses ?? '∞'} max</span>
+                          <span className="font-bold text-[#171717]">{c.used_count ?? 0}</span>
+                          <span className="text-[#171717]/60 font-semibold">/{c.max_uses ?? '∞'}</span>
                         </div>
-                        <div className="w-full bg-beige/60 h-1.5 rounded-full overflow-hidden border border-border/40">
+                        <div className="w-full bg-[#FAF7F2] h-2 border border-[#171717] overflow-hidden">
                           <div
-                            className="bg-brand-red h-full rounded-full transition-all"
+                            className="bg-[#E6321C] h-full transition-all"
                             style={{
                               width: `${Math.min(100, Math.round(((c.used_count ?? 0) / (c.max_uses || 1)) * 100))}%`,
                             }}
@@ -277,8 +277,12 @@ export function CouponsPage() {
                     </td>
 
                     <td>
-                      <span className={`badge ${c.is_active ? 'badge-success' : 'badge-neutral'}`}>
-                        <span className="w-1.5 h-1.5 rounded-full bg-current" />
+                      <span
+                        className={`inline-flex items-center gap-1 px-2 py-0.5 border border-[#171717] text-[10px] font-mono font-bold uppercase shadow-[1px_1px_0px_#171717] ${
+                          c.is_active ? 'bg-emerald-100 text-emerald-900' : 'bg-zinc-200 text-zinc-700'
+                        }`}
+                      >
+                        <span className="w-1.5 h-1.5 bg-current" />
                         {c.is_active ? 'Active' : 'Inactive'}
                       </span>
                     </td>
@@ -287,21 +291,21 @@ export function CouponsPage() {
                       <div className="flex items-center justify-end gap-1.5">
                         <button
                           onClick={() => handleToggle(c.id, c.code, !c.is_active)}
-                          className="btn-ghost p-1.5"
+                          className="p-1 border border-[#171717] bg-white hover:bg-[#F7EEDB] transition-colors"
                           title={c.is_active ? 'Deactivate' : 'Activate'}
                         >
                           {c.is_active ? (
-                            <ToggleRight size={22} className="text-emerald-600" />
+                            <ToggleRight size={20} className="text-emerald-700" />
                           ) : (
-                            <ToggleLeft size={22} className="text-muted" />
+                            <ToggleLeft size={20} className="text-[#171717]/40" />
                           )}
                         </button>
                         <button
                           onClick={() => setCouponToDelete(c)}
-                          className="btn-ghost p-1.5 text-rose-500 hover:text-rose-700 hover:bg-rose-50"
+                          className="p-1 border border-[#171717] bg-white hover:bg-[#E6321C] hover:text-white text-[#171717] transition-colors"
                           title="Delete"
                         >
-                          <Trash2 size={15} />
+                          <Trash2 size={14} />
                         </button>
                       </div>
                     </td>
@@ -313,22 +317,22 @@ export function CouponsPage() {
         </div>
       </div>
 
-      {/* Create Modal */}
+      {/* Bauhaus Create Modal */}
       {showModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in duration-200">
-          <div className="bg-white rounded-3xl max-w-md w-full p-6 sm:p-7 shadow-2xl border border-border/80 space-y-5">
-            <div className="flex items-center justify-between border-b border-border/70 pb-3">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-xs p-4 animate-in fade-in duration-200">
+          <div className="bg-[#F7EEDB] border-2 border-[#171717] max-w-md w-full p-6 shadow-[8px_8px_0px_#171717] space-y-5">
+            <div className="flex items-center justify-between border-b-2 border-[#171717] pb-3">
               <div>
-                <h3 className="text-base font-black uppercase tracking-wide text-ink font-sans">
+                <h3 className="text-base font-black uppercase tracking-wide text-[#171717] font-sans">
                   Create Promotional Voucher
                 </h3>
-                <span className="text-xs text-muted">
+                <span className="text-xs text-[#171717]/70 font-medium">
                   Configure discount percentage, min order, and redemption limit.
                 </span>
               </div>
               <button
                 onClick={() => setShowModal(false)}
-                className="w-7 h-7 rounded-full bg-beige/60 hover:bg-beige flex items-center justify-center text-muted hover:text-ink font-bold"
+                className="w-7 h-7 border-2 border-[#171717] bg-white hover:bg-[#E6321C] hover:text-white flex items-center justify-center text-[#171717] font-bold transition-colors shadow-[2px_2px_0px_#171717]"
               >
                 <X size={15} />
               </button>
@@ -350,7 +354,7 @@ export function CouponsPage() {
                 <div>
                   <label className="admin-label">Discount Type</label>
                   <select
-                    className="admin-select"
+                    className="admin-select font-mono font-semibold"
                     value={form.type}
                     onChange={(e) =>
                       setForm({ ...form, type: e.target.value as 'percentage' | 'fixed' })
@@ -364,7 +368,7 @@ export function CouponsPage() {
                   <label className="admin-label">Benefit Value</label>
                   <input
                     type="number"
-                    className="admin-input font-mono"
+                    className="admin-input font-mono font-bold"
                     value={form.value}
                     onChange={(e) => setForm({ ...form, value: Number(e.target.value) })}
                     required
@@ -396,7 +400,7 @@ export function CouponsPage() {
                 </div>
               </div>
 
-              <div className="flex justify-end gap-2.5 pt-3 border-t border-border/70">
+              <div className="flex justify-end gap-2.5 pt-3 border-t-2 border-[#171717]">
                 <button
                   type="button"
                   onClick={() => setShowModal(false)}

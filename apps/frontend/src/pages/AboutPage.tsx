@@ -1,4 +1,6 @@
 import { Link } from 'react-router-dom';
+import { Picture } from '../components/ui/Picture';
+import { ABOUT_HERO_SIZES, IMAGES } from '../lib/images';
 import { SEO } from '../components/common/SEO';
 import { triggerHaptic } from '../lib/native/capacitorBridge';
 
@@ -42,8 +44,10 @@ export function AboutPage() {
         </div>
 
         <div className="h-[400px] sm:h-[500px] lg:h-auto overflow-hidden relative">
-          <img
-            src="/about-atelier.jpg"
+          <Picture
+            image={IMAGES.aboutAtelier}
+            sizes={ABOUT_HERO_SIZES}
+            loading="eager"
             alt="Bingooo Atelier — Wear What Feels Like You"
             className="w-full h-full object-cover object-center"
           />
@@ -75,8 +79,9 @@ export function AboutPage() {
       <section className="py-[clamp(70px,9vw,120px)]" id="story">
         <div className="container-bingooo grid grid-cols-1 lg:grid-cols-[0.9fr_1.1fr] gap-[clamp(50px,9vw,140px)] items-center">
           <div className="aspect-[4/5] overflow-hidden bg-[#ede0cc] max-w-[600px] mx-auto lg:mx-0 w-full">
-            <img
-              src="/about-atelier.jpg"
+            <Picture
+              image={IMAGES.aboutAtelier}
+              sizes="(min-width: 1024px) 45vw, 100vw"
               alt="Bingooo clothing story"
               className="w-full h-full object-cover"
             />
@@ -230,8 +235,9 @@ export function AboutPage() {
       ======================================================= */}
       <section className="grid grid-cols-1 lg:grid-cols-[55%_45%] min-h-[550px] lg:min-h-[600px]">
         <div className="min-h-[380px] lg:min-h-full overflow-hidden">
-          <img
-            src="/custom-studio.jpg"
+          <Picture
+            image={IMAGES.customStudio}
+            sizes="(min-width: 1024px) 55vw, 100vw"
             alt="Bingooo Custom Studio atelier workshop"
             className="w-full h-full object-cover object-center"
           />
@@ -239,25 +245,25 @@ export function AboutPage() {
 
         <div className="flex flex-col justify-center p-[45px_24px] sm:p-[clamp(45px,7vw,100px)] bg-[#171717] text-white">
           <div className="text-[10px] font-semibold tracking-[0.2em] uppercase text-[#e6321c] mb-3">
-            CUSTOM STUDIO
+            BINGOOO ATELIER
           </div>
 
           <h2 className="my-3 mb-5 text-[clamp(40px,5vw,70px)] font-extrabold leading-[0.88] tracking-[-0.065em] uppercase text-white">
-            YOUR IDEA.<br />
-            YOUR CANVAS.
+            WEAR WHAT<br />
+            DEFINES YOU.
           </h2>
 
           <p className="max-w-[410px] m-0 mb-[30px] text-[#aaa7a1] text-[12px] leading-[1.8]">
-            We believe your favourite piece of clothing doesn't always exist yet. That's why we built BINGOOO Custom. Upload your artwork, choose your garment, customize it and make something completely yours.
+            We build streetwear that stands apart. From 240 GSM single jersey cotton to precision-tailored drop shoulders, every garment is engineered for durability, structure, and distinctive style.
           </p>
 
           <div>
             <Link
-              to="/customize"
+              to="/shop"
               onClick={() => triggerHaptic('medium')}
               className="inline-flex items-center justify-center min-h-[48px] px-[23px] rounded-[7px] bg-[#e6321c] text-white text-[10px] font-bold uppercase tracking-wider hover:bg-[#b91f12] hover:-translate-y-0.5 transition-all"
             >
-              CREATE YOUR OWN →
+              EXPLORE THE COLLECTION →
             </Link>
           </div>
         </div>
@@ -285,17 +291,12 @@ export function AboutPage() {
           </div>
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
-            {[
-              '/real-fit-1.jpg',
-              '/real-fit-2.jpg',
-              '/real-fit-3.jpg',
-              '/real-fit-4.jpg',
-            ].map((imgSrc, i) => (
+            {[IMAGES.realFit1, IMAGES.realFit2, IMAGES.realFit3, IMAGES.realFit4].map((image, i) => (
               <div key={i} className="aspect-square overflow-hidden bg-[#ede0cc]">
-                <img
-                  src={imgSrc}
+                <Picture
+                  image={image}
+                  sizes="(min-width: 768px) 25vw, 50vw"
                   alt={`Bingooo Community ${i + 1}`}
-                  loading="lazy"
                   className="w-full h-full object-cover hover:scale-[1.04] transition-transform duration-500 ease-out"
                 />
               </div>

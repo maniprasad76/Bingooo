@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 
     <!-- ── Primary Meta ── -->
-    <meta name="description" content="Shop India's #1 240–280 GSM heavyweight oversized t-shirts for men &amp; streetwear. 100% super-combed cotton, drop-shoulder fit, 3D custom printing atelier. Cash on delivery &amp; Pan-India free delivery." />
+    <meta name="description" content="Shop India's #1 240–280 GSM heavyweight oversized t-shirts for men &amp; streetwear. 100% super-combed cotton, drop-shoulder fit, custom printing studio. 100% secure prepaid checkout &amp; free pan-India delivery." />
     <meta name="keywords" content="oversized t-shirts for men, 240 gsm oversized t shirt, heavyweight t shirt india, drop shoulder t shirt, luxury streetwear india, custom oversized t shirt printing india, streetwear brand india, boxy fit t shirt men, 100 combed cotton oversized tee, 380 gsm fleece hoodie, acid wash oversized t shirt, dtf printing custom t shirt, oversized tees india, bingooo menswear, heavyweight cotton t-shirt" />
     <meta name="author" content="Bingooo" />
     <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
@@ -22,7 +22,7 @@
 
     <!-- ── OpenGraph ── -->
     <meta property="og:title" content="Bingooo® — Oversized T-Shirts for Men (240 GSM) &amp; Luxury Streetwear India" />
-    <meta property="og:description" content="Shop India's #1 240–280 GSM heavyweight oversized t-shirts for men &amp; streetwear. 100% super-combed cotton, drop-shoulder fit, 3D custom printing atelier. Express Pan-India delivery." />
+    <meta property="og:description" content="Shop India's #1 240–280 GSM heavyweight oversized t-shirts for men &amp; streetwear. 100% super-combed cotton, drop-shoulder fit, custom printing studio. Express Pan-India delivery." />
     <meta property="og:type" content="website" />
     <meta property="og:image" content="https://www.bingooo.co.in/brand-logo.png" />
     <meta property="og:image:width" content="1200" />
@@ -34,7 +34,7 @@
     <!-- ── Twitter Card ── -->
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="Bingooo® — Oversized T-Shirts for Men (240 GSM) &amp; Luxury Streetwear India" />
-    <meta name="twitter:description" content="Shop India's #1 240–280 GSM heavyweight oversized t-shirts for men &amp; streetwear. 100% super-combed cotton, drop-shoulder fit, 3D custom printing atelier. Express Pan-India delivery." />
+    <meta name="twitter:description" content="Shop India's #1 240–280 GSM heavyweight oversized t-shirts for men &amp; streetwear. 100% super-combed cotton, drop-shoulder fit, custom printing studio. Express Pan-India delivery." />
     <meta name="twitter:image" content="https://www.bingooo.co.in/brand-logo.png" />
 
     <!-- ── PWA ── -->
@@ -46,21 +46,25 @@
     <link rel="manifest" href="/manifest.webmanifest" />
 
     <!-- ── Favicons & App Icons ── -->
-    <link rel="icon" type="image/svg+xml" href="/brand-logo.svg?v=2026.2" id="app-favicon-svg" />
+    <link rel="icon" type="image/svg+xml" href="/brand-logo.svg?v=2026.3" id="app-favicon-svg" />
     <link rel="icon" type="image/png" sizes="32x32" href="/brand-logo-32.png?v=2026.2" id="app-favicon-png" />
     <link rel="icon" type="image/png" sizes="16x16" href="/brand-logo-16.png?v=2026.2" />
     <link rel="shortcut icon" href="/favicon.ico?v=2026.2" />
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png?v=2026.2" />
 
-    <!-- ── Font Preconnects ── -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-
-    <!-- ── Fonts with display=swap to eliminate FOIT (render-blocking) ── -->
-    <link
-      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Manrope:wght@400;500;600;700;800&display=swap"
-      rel="stylesheet"
-    />
+    <!-- ── Fonts: self-hosted (public/fonts/v1), the same latin/latin-ext files and ranges
+         Google Fonts serves, so text no longer waits on a third-party stylesheet. ── -->
+    <link rel="preload" href="/fonts/v1/manrope-latin.woff2" as="font" type="font/woff2" crossorigin />
+    <style>
+      @font-face { font-family: 'Manrope'; font-style: normal; font-weight: 400 800; font-display: swap; src: url(/fonts/v1/manrope-latin-ext.woff2) format('woff2'); unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF; }
+      @font-face { font-family: 'Manrope'; font-style: normal; font-weight: 400 800; font-display: swap; src: url(/fonts/v1/manrope-latin.woff2) format('woff2'); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+      @font-face { font-family: 'IBM Plex Mono'; font-style: normal; font-weight: 400; font-display: swap; src: url(/fonts/v1/plex-mono-400-latin-ext.woff2) format('woff2'); unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF; }
+      @font-face { font-family: 'IBM Plex Mono'; font-style: normal; font-weight: 400; font-display: swap; src: url(/fonts/v1/plex-mono-400-latin.woff2) format('woff2'); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+      @font-face { font-family: 'IBM Plex Mono'; font-style: normal; font-weight: 500; font-display: swap; src: url(/fonts/v1/plex-mono-500-latin-ext.woff2) format('woff2'); unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF; }
+      @font-face { font-family: 'IBM Plex Mono'; font-style: normal; font-weight: 500; font-display: swap; src: url(/fonts/v1/plex-mono-500-latin.woff2) format('woff2'); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+      @font-face { font-family: 'IBM Plex Mono'; font-style: normal; font-weight: 600; font-display: swap; src: url(/fonts/v1/plex-mono-600-latin-ext.woff2) format('woff2'); unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF; }
+      @font-face { font-family: 'IBM Plex Mono'; font-style: normal; font-weight: 600; font-display: swap; src: url(/fonts/v1/plex-mono-600-latin.woff2) format('woff2'); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+    </style>
 
     <title>Bingooo® — Oversized T-Shirts for Men (240 GSM) &amp; Luxury Streetwear India</title>
 
@@ -85,14 +89,14 @@
           }
         },
         {
-          "@type": ["ClothingStore", "LocalBusiness"],
+          "@type": ["ClothingStore", "MensClothingStore", "LocalBusiness"],
           "@id": "https://www.bingooo.co.in/#localbusiness",
           "name": "Bingooo",
-          "alternateName": ["Bingooo Men's Wear", "Bingooo Atelier Srikakulam"],
+          "alternateName": ["Bingooo Men's Wear", "Bingooo Atelier Srikakulam", "Bingooo Menswear Flagship Store"],
           "url": "https://www.bingooo.co.in",
           "logo": "https://www.bingooo.co.in/brand-logo.png",
           "image": "https://www.bingooo.co.in/brand-logo.png",
-          "description": "India's premier heavyweight menswear brand. 240–280 GSM oversized t-shirts, drop-shoulder hoodies, and bespoke custom apparel engineered in our 3D Atelier.",
+          "description": "India's premier heavyweight menswear brand. 240–280 GSM oversized t-shirts, drop-shoulder hoodies, and bespoke custom apparel made in our Srikakulam atelier. Located at 7 Roads Junction, Srikakulam, Andhra Pradesh.",
           "telephone": "+91-7981787317",
           "email": "bingooo.sklm@gmail.com",
           "priceRange": "₹699–₹1,999",
@@ -105,7 +109,7 @@
             "Heavyweight Streetwear",
             "Drop Shoulder Fit",
             "Custom T-Shirt Printing India",
-            "3D Atelier Garment Studio",
+            "Custom Garment Studio",
             "380 GSM Fleece Hoodies"
           ],
           "address": {
@@ -121,10 +125,19 @@
             "latitude": "18.2969",
             "longitude": "83.8968"
           },
-          "hasMap": "https://maps.google.com/?q=Srikakulam+Andhra+Pradesh",
+          "hasMap": "https://www.google.com/maps/search/?api=1&query=Bingooo+7+Roads+Junction+Main+Road+Srikakulam+Andhra+Pradesh+532001",
+          "areaServed": [
+            { "@type": "City", "name": "Srikakulam" },
+            { "@type": "City", "name": "Visakhapatnam" },
+            { "@type": "AdministrativeArea", "name": "Andhra Pradesh" },
+            { "@type": "Country", "name": "India" }
+          ],
           "sameAs": [
-            "https://www.instagram.com/bingooo.co",
-            "https://wa.me/917981787317"
+            "https://www.instagram.com/bingooo.co.in",
+            "https://www.youtube.com/@bingooo_co",
+            "https://twitter.com/bingooo_co",
+            "https://wa.me/917981787317",
+            "https://www.google.com/maps/search/?api=1&query=Bingooo+7+Roads+Junction+Main+Road+Srikakulam+Andhra+Pradesh+532001"
           ]
         },
         {
@@ -149,10 +162,10 @@
             },
             {
               "@type": "Question",
-              "name": "How does custom oversized t-shirt printing work in the Bingooo 3D Atelier?",
+              "name": "How does custom oversized t-shirt printing work in the Bingooo Custom Studio?",
               "acceptedAnswer": {
                 "@type": "Answer",
-                "text": "Bingooo's 3D Atelier Studio lets you customize 240 GSM heavyweight blanks in real-time 3D. Upload high-resolution graphics, position prints on the front, back, or sleeves, and preview the physical drape in 360 degrees. Your design is produced using high-density direct-to-film (DTF) technology that resists cracking and peeling."
+                "text": "Bingooo's Custom Studio lets you design on 240 GSM heavyweight blanks: upload high-resolution PNG artwork for the front and back and preview it on real photos of the garment. Your design is produced using high-density direct-to-film (DTF) technology that resists cracking and peeling."
               }
             },
             {
@@ -160,7 +173,7 @@
               "name": "Is Cash on Delivery (COD) available, and is shipping free?",
               "acceptedAnswer": {
                 "@type": "Answer",
-                "text": "Bingooo operates exclusively as a 100% secure prepaid store and does not offer Cash on Delivery — pay via UPI, Cards, or Net Banking and get an instant 5% prepaid discount. We deliver to all 28 states and 8 union territories across India, with free shipping on every order and express 3–7 day delivery."
+                "text": "No. To guarantee prompt dispatch and eliminate delivery friction, Bingooo operates exclusively on a 100% secure prepaid architecture. We accept UPI, cards and net banking via Razorpay with universal free delivery to all 28 states and 8 union territories across India, typically in 3–7 days."
               }
             }
           ]
@@ -169,34 +182,33 @@
     }
     </script>
 
+    <!-- ── Google Analytics 4 (GA4) ── -->
+    <!-- Calls queue in dataLayer immediately; the tag script itself loads once the page is
+         idle so it never competes with first paint. Page views are sent by the router
+         (lib/analytics.ts), so the config does not send its own (that double-counted). -->
     <script>
-      try {
-        var fv = document.getElementById('app-favicon-svg');
-        if (fv) fv.href = '/brand-logo.svg?t=' + Date.now();
-      } catch (e) {}
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-N5EGTHS9SG', { send_page_view: false });
+      (function () {
+        function load() {
+          var s = document.createElement('script');
+          s.async = true;
+          s.src = 'https://www.googletagmanager.com/gtag/js?id=G-N5EGTHS9SG';
+          document.head.appendChild(s);
+        }
+        function whenIdle() {
+          if ('requestIdleCallback' in window) requestIdleCallback(load, { timeout: 4000 });
+          else setTimeout(load, 1500);
+        }
+        if (document.readyState === 'complete') whenIdle();
+        else window.addEventListener('load', whenIdle, { once: true });
+      })();
     </script>
   </head>
   <body>
-    <!-- ── Brand Preloader: Displayed instantly with zero latency while JS bundle initializes ── -->
-    <div id="root">
-      <div id="bingooo-initial-loader" style="position:fixed;inset:0;background:#111111;color:#f7eedb;display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:'Manrope',system-ui,-apple-system,sans-serif;z-index:99999;user-select:none;">
-        <div style="display:flex;align-items:baseline;font-size:32px;font-weight:900;letter-spacing:-0.05em;color:#f7eedb;line-height:1;">
-          BINGOOO<span style="color:#e6321c;display:inline-block;margin-left:2px;">.</span>
-        </div>
-        <div style="margin-top:8px;font-size:11px;letter-spacing:0.25em;text-transform:uppercase;color:#888888;font-weight:600;">
-          Wear What Defines You
-        </div>
-        <div style="margin-top:28px;width:120px;height:2px;background:rgba(255,255,255,0.08);border-radius:999px;overflow:hidden;position:relative;">
-          <div style="position:absolute;top:0;left:0;height:100%;width:40%;background:#e6321c;border-radius:999px;animation:bingooo-pulse 1.2s ease-in-out infinite alternate;"></div>
-        </div>
-        <style>
-          @keyframes bingooo-pulse {
-            0% { transform: translateX(0); width: 25%; }
-            100% { transform: translateX(200%); width: 45%; }
-          }
-        </style>
-      </div>
-    </div>
+    <div id="root"></div>
 
     <!-- ── Search Engine & Non-JS Fallback: Parsed by crawlers without flashing to JS users ── -->
     <noscript>
@@ -207,7 +219,7 @@
             <a href="/shop" style="margin-right: 16px; color: #171717; text-decoration: none; font-weight: 600;">Shop All</a>
             <a href="/category/oversized-tees" style="margin-right: 16px; color: #171717; text-decoration: none; font-weight: 600;">Oversized Tees</a>
             <a href="/category/hoodies" style="margin-right: 16px; color: #171717; text-decoration: none; font-weight: 600;">Hoodies</a>
-            <a href="/customize" style="margin-right: 16px; color: #e6321c; text-decoration: none; font-weight: 700;">3D Atelier Studio</a>
+            <a href="/customize" style="margin-right: 16px; color: #e6321c; text-decoration: none; font-weight: 700;">Custom Studio</a>
             <a href="/about" style="color: #171717; text-decoration: none; font-weight: 600;">About Atelier</a>
           </nav>
         </div>
@@ -222,11 +234,11 @@
             Bingooo® — India's Premier 240 GSM Oversized T-Shirts for Men &amp; Streetwear Atelier
           </h1>
           <p style="font-size: 16px; line-height: 1.6; max-width: 780px; color: #444;">
-            Welcome to Bingooo, India's leading destination for luxury heavyweight streetwear and custom apparel. Handcrafted at 7 Roads Junction, Srikakulam, Andhra Pradesh, we engineer premium 240–280 GSM 100% super-combed cotton oversized t-shirts for men, drop-shoulder fleece hoodies (380 GSM), boxy silhouettes, and bespoke apparel via our real-time 3D Atelier Customizer. Delivered across India with secure prepaid checkout and free shipping on every order.
+            Welcome to Bingooo, India's leading destination for luxury heavyweight streetwear and custom apparel. Handcrafted at 7 Roads Junction, Srikakulam, Andhra Pradesh, we engineer premium 240–280 GSM 100% super-combed cotton oversized t-shirts for men, drop-shoulder fleece hoodies (380 GSM), boxy silhouettes, and bespoke apparel via our Custom Studio. Delivered across India with secure prepaid checkout and free shipping on every order.
           </p>
           <div style="margin-top: 24px;">
             <a href="/shop" style="display: inline-block; background: #171717; color: #fff; padding: 12px 24px; font-weight: 700; text-decoration: none; margin-right: 12px;">Shop Oversized T-Shirts</a>
-            <a href="/customize" style="display: inline-block; border: 2px solid #171717; color: #171717; padding: 10px 22px; font-weight: 700; text-decoration: none;">3D Custom Printing Studio</a>
+            <a href="/customize" style="display: inline-block; border: 2px solid #171717; color: #171717; padding: 10px 22px; font-weight: 700; text-decoration: none;">Custom Printing Studio</a>
           </div>
         </section>
 
@@ -245,11 +257,11 @@
             </article>
             <article style="border: 1px solid #ddd; padding: 16px; background: #fff;">
               <h3 style="font-size: 18px; margin: 0 0 8px;"><a href="/shop" style="color: #171717; text-decoration: none;">Shop All Streetwear</a></h3>
-              <p style="color: #666; font-size: 14px; margin-bottom: 8px;">Browse every Bingooo drop, with free delivery on every order across India.</p>
+              <p style="color: #666; font-size: 14px; margin-bottom: 8px;">Browse every Bingooo drop, with free delivery on every prepaid order across India.</p>
             </article>
             <article style="border: 1px solid #ddd; padding: 16px; background: #fff;">
-              <h3 style="font-size: 18px; margin: 0 0 8px;"><a href="/customize" style="color: #171717; text-decoration: none;">Custom 240 GSM Oversized T-Shirt (3D Atelier)</a></h3>
-              <p style="color: #666; font-size: 14px; margin-bottom: 8px;">Upload high-res artwork, preview in 360° 3D, and receive bespoke DTF printed heavyweight streetwear.</p>
+              <h3 style="font-size: 18px; margin: 0 0 8px;"><a href="/customize" style="color: #171717; text-decoration: none;">Custom 240 GSM Oversized T-Shirt (Custom Studio)</a></h3>
+              <p style="color: #666; font-size: 14px; margin-bottom: 8px;">Upload high-res artwork, preview it on the real garment and receive bespoke DTF printed heavyweight streetwear.</p>
               <p style="font-weight: 800; font-size: 16px; color: #e6321c;">From ₹999</p>
             </article>
           </div>
@@ -279,7 +291,7 @@
           <details style="margin-bottom: 12px; padding: 12px; background: #fff; border: 1px solid #ddd;">
             <summary style="font-weight: 700; cursor: pointer;">Can I print my own custom artwork on a Bingooo t-shirt?</summary>
             <p style="margin-top: 8px; font-size: 14px; line-height: 1.5; color: #444;">
-              Yes! Use our interactive <a href="/customize" style="color: #e6321c; font-weight: 600;">3D Atelier Studio</a> to upload your high-resolution graphics, scale and position them on front or back, and order a one-of-a-kind heavyweight custom tee.
+              Yes! Use our interactive <a href="/customize" style="color: #e6321c; font-weight: 600;">Custom Studio</a> to upload your high-resolution graphics, scale and position them on front or back, and order a one-of-a-kind heavyweight custom tee.
             </p>
           </details>
         </section>
@@ -299,7 +311,7 @@
               <li><a href="/category/oversized-tees" style="color: #a3a3a3; text-decoration: none;">Oversized Tees</a></li>
               <li><a href="/category/hoodies" style="color: #a3a3a3; text-decoration: none;">Hoodies &amp; Sweatshirts</a></li>
               <li><a href="/category/cargos" style="color: #a3a3a3; text-decoration: none;">Cargos &amp; Bottoms</a></li>
-              <li><a href="/customize" style="color: #a3a3a3; text-decoration: none;">Custom Atelier 3D</a></li>
+              <li><a href="/customize" style="color: #a3a3a3; text-decoration: none;">Custom Studio</a></li>
             </ul>
           </div>
           <div>

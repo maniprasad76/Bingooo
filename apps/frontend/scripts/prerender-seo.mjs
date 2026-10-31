@@ -8,7 +8,7 @@
 //   - a real HTML page per product, category and key static page
 //     (title, description, canonical, Open Graph, JSON-LD and readable content)
 //   - app.html: the neutral shell served for every other route (see vercel.json)
-//   - sitemap.xml, llms.txt and feeds/google-merchant.xml built from the catalog
+//   - sitemap.xml, llms.txt, feeds/google-merchant.xml and feeds/products.json built from the catalog
 //
 // If the API can't be reached the build still succeeds with the static pages
 // only. Products added later appear once the site is rebuilt; the backend can
@@ -36,7 +36,10 @@ import {
   categorySeoTitle,
   categorySeoDescription,
   categorySchema,
+  localBusinessSchema,
+  GOOGLE_MAPS_STORE_URL,
 } from '../src/lib/seo/catalog-seo.mjs';
+import { ABOUT_HERO_SIZES, ABOUT_HERO_WIDTHS, HERO_SIZES, HERO_WIDTHS } from '../src/lib/hero-image.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const DIST_DIR = path.resolve(__dirname, '../dist');
@@ -169,6 +172,7 @@ function setTag(html, pattern, replacement) {
  * @param {string} [page.bodyHtml]     readable content for crawlers
  * @param {boolean} [page.keepHomeFaq]
  * @param {string[]} [page.extraHead]
+ * @param {string} [page.routeChunk]  source file of the route's page component, preloaded
  */
 function renderPage(page) {
   let html = builtHtml;
@@ -201,7 +205,7 @@ function renderPage(page) {
     html = html.replace(siteGraphBlock, graph ? `<script type="application/ld+json">${jsonLd(graph)}</script>` : '');
   }
 
-  const head = [...(page.extraHead || [])];
+  const head = [...(page.extraHead || []), ...(page.routeChunk ? routeChunkPreloads(page.routeChunk) : [])];
   if (page.schemas?.length) {
     const data = page.schemas.length === 1 ? page.schemas[0] : page.schemas;
     // Same id the app's SEO component uses, so it replaces this block once it runs.
@@ -220,6 +224,44 @@ function renderPage(page) {
   return html;
 }
 
+// Vite's build manifest (build.manifest in vite.config.ts) maps source files to their
+// hashed chunks. It is only needed here, so it is deleted from dist at the end.
+const MANIFEST_DIR = path.join(DIST_DIR, '.vite');
+const MANIFEST_PATH = path.join(MANIFEST_DIR, 'manifest.json');
+const manifest = fs.existsSync(MANIFEST_PATH) ? JSON.parse(fs.readFileSync(MANIFEST_PATH, 'utf-8')) : {};
+
+/**
+ * modulepreload links for a route's lazily loaded page component (e.g.
+ * 'src/pages/ShopPage.tsx') and the chunks it statically imports. The app only
+ * requests that chunk once its main bundle has run; listing it in the HTML downloads
+ * it alongside the bundle instead. Chunks the shell already preloads are skipped.
+ */
+function routeChunkPreloads(src) {
+  const seen = new Set();
+  const files = [];
+  const visit = (key) => {
+    if (seen.has(key) || !manifest[key]) return;
+    seen.add(key);
+    files.push(manifest[key].file);
+    (manifest[key].imports || []).forEach(visit);
+  };
+  visit(src);
+  if (!files.length) console.warn(`[SEO prerender] No chunk for ${src} in the Vite manifest; skipping its preload.`);
+  return files
+    .filter((file) => !builtHtml.includes(`/${file}"`))
+    .map((file) => `<link rel="modulepreload" crossorigin href="/${file}" />`);
+}
+
+/**
+ * Preload for a page's largest image (public/img/v1/<name>-<width>.avif), which the
+ * app only renders once its JavaScript has loaded. `widths` and `sizes` must match the
+ * page's <Picture> exactly or the browser downloads the image twice. Browsers without
+ * AVIF skip this and fetch the WebP when the page renders.
+ */
+function imagePreload(name, widths, sizes) {
+  return `<link rel="preload" as="image" type="image/avif" fetchpriority="high" imagesrcset="${widths.map((w) => `/img/v1/${name}-${w}.avif ${w}w`).join(', ')}" imagesizes="${sizes}" />`;
+}
+
 function writePage(routePath, html) {
   const dir = routePath ? path.join(DIST_DIR, routePath) : DIST_DIR;
   fs.mkdirSync(dir, { recursive: true });
@@ -231,7 +273,7 @@ function writePage(routePath, html) {
 const POLICY_FACTS = [
   'Free delivery on every order across India (typically 3–7 business days).',
   `${POLICY.returnDays}-day easy size exchange with free doorstep pickup.`,
-  'Secure prepaid checkout via UPI, cards and net banking (Razorpay) — 5% off every prepaid order. No cash on delivery.',
+  'Pay online via UPI, cards and net banking (Razorpay) with 100% secure 256-bit checkout.',
 ];
 
 const nav = (crumbs) =>
@@ -309,7 +351,7 @@ function catalogOverview(categories, productsByCategory, products) {
 const FAQS = [
   ['Which GSM is best for oversized t-shirts in India?', '240 to 280 GSM 100% combed cotton is the sweet spot for oversized t-shirts. Lighter 160–180 GSM tees cling and lose shape, while 240 GSM gives a structured, boxy drop-shoulder drape that still breathes in Indian weather and holds its shape wash after wash.'],
   ['Where can I buy heavyweight oversized t-shirts for men in India?', 'Bingooo (bingooo.co.in) makes 240 GSM heavyweight oversized t-shirts and streetwear in 100% combed cotton, with secure prepaid checkout and free delivery across India.'],
-  ['Is Cash on Delivery (COD) available?', 'No. Bingooo is a prepaid-only store. Pay securely by UPI, card or net banking through Razorpay and get 5% off every prepaid order.'],
+  ['Is Cash on Delivery (COD) available?', 'No. To ensure fast, seamless dispatch and zero delivery friction, Bingooo operates exclusively on a 100% secure prepaid checkout via UPI, cards and net banking with universal free delivery across India.'],
   ['How long does delivery take, and is it free?', 'Delivery is free on every order across India and usually takes 3 to 7 business days depending on your location. You can track your order on the Track Order page.'],
   ['What is the return and exchange policy?', `You can request a size exchange within ${POLICY.returnDays} days of delivery, with free doorstep pickup. Items must be unworn and unwashed with tags attached. Damaged or misprinted items are replaced or refunded — message us within 48 hours of delivery.`],
   ['Can I customize an oversized t-shirt with my own artwork?', 'Yes. The Bingooo design studio lets you add your own text or artwork to a heavyweight blank, preview it live, and order with no minimum quantity.'],
@@ -318,8 +360,9 @@ const FAQS = [
 const STATIC_PAGES = [
   {
     path: 'customize',
+    routeChunk: 'src/pages/CustomizerPage.tsx',
     title: formatSeoTitle('Custom T-Shirt Printing Online in India — Design Studio'),
-    description: 'Design your own oversized t-shirt online. Add text or artwork, choose from 48 fonts, preview it live and order with no minimum quantity. Free delivery across India.',
+    description: 'Design your own oversized t-shirt or hoodie online. Upload your artwork for the front and back, preview it on the real garment and order on WhatsApp with no minimum quantity.',
     schema: {
       '@context': 'https://schema.org',
       '@type': 'Service',
@@ -333,20 +376,30 @@ const STATIC_PAGES = [
   },
   {
     path: 'about',
+    routeChunk: 'src/pages/AboutPage.tsx',
     title: formatSeoTitle('About Bingooo — Heavyweight Streetwear from Srikakulam, India'),
     description: 'Bingooo is a streetwear label from Srikakulam, Andhra Pradesh, making heavyweight 240–280 GSM cotton oversized t-shirts and custom apparel that last.',
-    schema: { '@context': 'https://schema.org', '@type': 'AboutPage', name: 'About Bingooo', url: `${SITE_URL}/about` },
-    body: '<h1>About Bingooo</h1><p>Bingooo was founded at 7 Roads Junction in Srikakulam, Andhra Pradesh, to make heavyweight garments that outlast fast fashion: 240–280 GSM combed cotton, boxy drop-shoulder fits, and custom printing.</p><p>Address: 7 Roads Junction, Main Road, Srikakulam, Andhra Pradesh 532001 · Phone / WhatsApp: +91 79817 87317</p>',
+    schema: {
+      '@context': 'https://schema.org',
+      '@type': 'AboutPage',
+      name: 'About Bingooo',
+      url: `${SITE_URL}/about`,
+      mainEntity: localBusinessSchema(),
+    },
+    extraHead: [imagePreload('about-atelier', ABOUT_HERO_WIDTHS, ABOUT_HERO_SIZES)],
+    body: `<h1>About Bingooo</h1><p>Bingooo was founded at 7 Roads Junction in Srikakulam, Andhra Pradesh, to make heavyweight garments that outlast fast fashion: 240–280 GSM combed cotton, boxy drop-shoulder fits, and custom printing.</p><p>Address: 7 Roads Junction, Main Road, Srikakulam, Andhra Pradesh 532001 · Phone / WhatsApp: +91 79817 87317 · Open daily 9 AM–9 PM IST</p><p><a href="${GOOGLE_MAPS_STORE_URL}">View Flagship Atelier on Google Maps</a></p>`,
   },
   {
     path: 'contact',
+    routeChunk: 'src/pages/ContactPage.tsx',
     title: formatSeoTitle('Contact Bingooo — WhatsApp, Phone & Store Address'),
     description: 'Contact Bingooo on WhatsApp or call +91 79817 87317, email bingooo.sklm@gmail.com, or visit 7 Roads Junction, Srikakulam, Andhra Pradesh. Open daily 9 AM–9 PM.',
-    schema: { '@context': 'https://schema.org', '@type': 'ContactPage', name: 'Contact Bingooo', url: `${SITE_URL}/contact` },
-    body: '<h1>Contact Bingooo</h1><p>Address: 7 Roads Junction, Main Road, Srikakulam, Andhra Pradesh 532001</p><p>WhatsApp / Call: +91 79817 87317</p><p>Email: bingooo.sklm@gmail.com</p><p>Hours: Monday–Sunday, 9:00 AM–9:00 PM IST</p>',
+    schema: localBusinessSchema(),
+    body: `<h1>Contact Bingooo</h1><p>Address: 7 Roads Junction, Main Road, Srikakulam, Andhra Pradesh 532001</p><p>WhatsApp / Call: +91 79817 87317</p><p>Email: bingooo.sklm@gmail.com</p><p>Hours: Monday–Sunday, 9:00 AM–9:00 PM IST</p><p><a href="${GOOGLE_MAPS_STORE_URL}">Get directions on Google Maps</a></p>`,
   },
   {
     path: 'faq',
+    routeChunk: 'src/pages/FaqPage.tsx',
     title: formatSeoTitle('FAQ — Sizing, Delivery, Exchanges & Payments'),
     description: 'Answers about Bingooo oversized t-shirts: best GSM, free delivery times, the 7-day exchange policy, prepaid payments with 5% off, and custom printing.',
     schema: {
@@ -358,12 +411,14 @@ const STATIC_PAGES = [
   },
   {
     path: 'shipping-policy',
-    title: formatSeoTitle('Shipping Policy — Free Delivery Across India'),
+    routeChunk: 'src/pages/ShippingPolicyPage.tsx',
+    title: formatSeoTitle('Shipping Policy — Free Delivery on Prepaid Orders'),
     description: 'Bingooo ships free to every pincode we serve in India. Orders are packed within 1–2 days and usually arrive in 3–7 business days, with tracking.',
     body: `<h1>Shipping Policy</h1>${policyList()}<p>Track any order on the <a href="/track-order">Track Order</a> page.</p>`,
   },
   {
     path: 'returns-refunds',
+    routeChunk: 'src/pages/ReturnsRefundsPage.tsx',
     title: formatSeoTitle('Returns & Exchanges — 7-Day Easy Size Exchange'),
     description: `Request a size exchange within ${POLICY.returnDays} days of delivery with free doorstep pickup. Damaged or misprinted items are replaced or refunded.`,
     body: `<h1>Returns &amp; Exchanges</h1><p>${esc(FAQS[4][1])}</p>`,
@@ -390,7 +445,7 @@ const addToSitemap = (loc, { lastmod = TODAY, priority = '0.6', changefreq = 'we
 // SPA shell for every non-prerendered route: no canonical, no homepage FAQ.
 fs.writeFileSync(path.join(DIST_DIR, 'app.html'), renderPage({
   title: formatSeoTitle(null),
-  description: 'Bingooo — heavyweight oversized t-shirts, hoodies and custom streetwear. Free delivery across India.',
+  description: 'Bingooo — heavyweight oversized t-shirts, hoodies and custom streetwear. Free delivery on prepaid orders across India.',
 }), 'utf-8');
 
 // Homepage: keep its FAQ markup (the homepage shows those questions) and add crawlable links.
@@ -399,6 +454,10 @@ const homeHtml = renderPage({
   description: stripHtml(builtHtml.match(/<meta name="description" content="([^"]*)"/)?.[1] || '').replace(/&amp;/g, '&'),
   canonical: `${SITE_URL}/`,
   keepHomeFaq: true,
+  // The hero photo is the homepage's largest paint, but the app only renders it once
+  // its JavaScript has loaded; preloading starts the download straight away. Browsers
+  // without AVIF skip this and fetch the WebP when the page renders.
+  extraHead: [imagePreload('hero', HERO_WIDTHS, HERO_SIZES)],
   bodyHtml: `<h1>Bingooo — Heavyweight Oversized T-Shirts &amp; Streetwear in India</h1><p>240–280 GSM combed cotton oversized t-shirts, hoodies and custom printing, made in Srikakulam, Andhra Pradesh.</p>${policyList()}${catalogOverview(categories, productsByCategory, products)}<p><a href="/shop">Shop all</a> · <a href="/customize">Design your own</a> · <a href="/faq">FAQ</a></p>`,
 });
 fs.writeFileSync(TEMPLATE_PATH, homeHtml, 'utf-8');
@@ -408,8 +467,9 @@ pageCount++;
 // Shop
 writePage('shop', renderPage({
   title: formatSeoTitle('Shop Oversized T-Shirts, Hoodies & Streetwear Online in India'),
-  description: 'Shop Bingooo streetwear: heavyweight oversized t-shirts, hoodies and more in premium cotton. Secure prepaid checkout, free delivery across India and 7-day easy exchange.',
+  description: 'Shop Bingooo streetwear: heavyweight oversized t-shirts, hoodies and more in premium cotton. 100% secure prepaid checkout, free delivery across India, and 7-day easy exchange.',
   canonical: `${SITE_URL}/shop`,
+  routeChunk: 'src/pages/ShopPage.tsx',
   schemas: [
     {
       '@context': 'https://schema.org',
@@ -436,6 +496,7 @@ for (const category of categories) {
     title: categorySeoTitle(category),
     description: categorySeoDescription(category, items.length),
     canonical: categoryUrl(category.slug),
+    routeChunk: 'src/pages/ShopPage.tsx',
     ogImage: category.image_url ? absoluteUrl(category.image_url) : items[0] ? productImages(items[0])[0] : undefined,
     schemas: [
       categorySchema(category, items),
@@ -458,6 +519,7 @@ for (const product of products) {
     title: productSeoTitle(product),
     description: productSeoDescription(product),
     canonical: productUrl(product.slug),
+    routeChunk: 'src/pages/ProductPage.tsx',
     ogType: 'product',
     ogImage: images[0],
     extraHead: price > 0
@@ -493,6 +555,8 @@ for (const page of STATIC_PAGES) {
       breadcrumbSchema([{ name: 'Home', url: '/' }, { name: stripHtml(page.title).replace(/ \| Bingooo®$/, ''), url: `/${page.path}` }]),
     ],
     bodyHtml: page.body,
+    extraHead: page.extraHead,
+    routeChunk: page.routeChunk,
   }));
   addToSitemap(url, { priority: page.path === 'customize' ? '0.9' : '0.5', changefreq: page.path === 'customize' ? 'weekly' : 'monthly' });
   pageCount++;
@@ -628,4 +692,42 @@ fs.writeFileSync(path.join(DIST_DIR, 'feeds', 'google-merchant.xml'), [
   '',
 ].join('\n'), 'utf-8');
 
-console.log(`[SEO prerender] ${pageCount} pages, ${sitemapEntries.length} sitemap URLs, ${feedItems.length} feed items, llms.txt written.`);
+// ── feeds/products.json (JSON Feed 1.1, https://jsonfeed.org) ─────────────
+
+const jsonFeed = {
+  version: 'https://jsonfeed.org/version/1.1',
+  title: 'Bingooo — products',
+  home_page_url: SITE_URL,
+  feed_url: `${SITE_URL}/feeds/products.json`,
+  description: 'Bingooo streetwear catalog: heavyweight oversized t-shirts, hoodies and more.',
+  language: 'en-IN',
+  items: products.map((product) => {
+    const { price, compareAtPrice, inStock } = productPricing(product);
+    const images = productImages(product);
+    return {
+      id: productUrl(product.slug),
+      url: productUrl(product.slug),
+      title: stripHtml(product.title),
+      summary: productSeoDescription(product),
+      content_text: stripHtml(product.description) || productSeoDescription(product),
+      ...(images[0] ? { image: images[0] } : {}),
+      date_published: product.created_at || undefined,
+      date_modified: product.updated_at || undefined,
+      tags: [product.category?.name, ...(Array.isArray(product.tags) ? product.tags : [])].filter(Boolean),
+      _bingooo: {
+        price,
+        ...(compareAtPrice ? { compare_at_price: compareAtPrice } : {}),
+        currency: 'INR',
+        in_stock: inStock,
+        category: product.category?.slug || null,
+      },
+    };
+  }),
+};
+fs.writeFileSync(path.join(DIST_DIR, 'feeds', 'products.json'), `${JSON.stringify(jsonFeed, null, 2)}
+`, 'utf-8');
+
+// The manifest lists source file paths; it was only needed for the route preloads above.
+fs.rmSync(MANIFEST_DIR, { recursive: true, force: true });
+
+console.log(`[SEO prerender] ${pageCount} pages, ${sitemapEntries.length} sitemap URLs, ${feedItems.length} feed items, ${jsonFeed.items.length} JSON feed items, llms.txt written.`);

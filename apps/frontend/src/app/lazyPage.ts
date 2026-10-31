@@ -20,7 +20,7 @@ export function lazyPage<T extends Record<string, unknown>>(
         // ignore storage errors
       }
       return { default: mod[name] as unknown as ComponentType };
-    } catch (firstError) {
+    } catch {
       // 1. Try immediate retry after 300ms
       try {
         await new Promise((r) => setTimeout(r, 300));

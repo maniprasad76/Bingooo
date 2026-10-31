@@ -1,4 +1,6 @@
 import { useState } from 'react';
+import { Picture } from '../components/ui/Picture';
+import { IMAGES } from '../lib/images';
 import { Link } from 'react-router-dom';
 import {
   Ruler,
@@ -14,7 +16,8 @@ import {
 } from 'lucide-react';
 import { SEO } from '../components/common/SEO';
 import { triggerHaptic } from '../lib/native/capacitorBridge';
-import { WhatsAppIcon, getWhatsAppUrl } from '../components/ui/SocialIcons';
+import { WhatsAppIcon } from '../components/ui/SocialIcons';
+import { getWhatsAppUrl } from '../lib/social';
 
 type Unit = 'in' | 'cm';
 
@@ -87,9 +90,9 @@ const FAQS = [
       'We provide a complimentary 7-Day Doorstep Size Exchange across 19,000+ Indian postal codes. Simply tap "Exchange Size" in your Account > Orders dashboard or message our WhatsApp concierge, and a courier will arrive at your door to swap it for your preferred size with zero reverse fees.',
   },
   {
-    question: 'How should I choose sizing for custom on-demand DTF prints?',
+    question: 'How should I choose sizing for oversized streetwear silhouettes?',
     answer:
-      'Because bespoke custom garments cannot be returned for subjective change of mind, please lay your best-fitting t-shirt flat on a table, measure pit-to-pit (chest width) in inches, and match it against our chest specification chart before finalizing your customizer order.',
+      'Our cuts are intentionally engineered with relaxed drop-shoulder proportions. If you prefer a true boxy streetwear aesthetic, order your standard size. For a more conventional regular fit, we recommend selecting one size down.',
   },
   {
     question: 'What is the tolerance variation in handmade tailoring?',
@@ -149,7 +152,7 @@ export function SizeGuidePage() {
       <div className="border-b border-[#DDD3C5] bg-[#EDE0CC]/60 px-4 sm:px-8 py-3 text-[11px]">
         <div className="container-bingooo flex flex-col sm:flex-row sm:items-center justify-between gap-2">
           <nav aria-label="Breadcrumb" className="flex items-center gap-2 font-mono uppercase tracking-wider text-[#6F6A63]">
-            <Link to="/" className="hover:text-[#171717] transition-colors">HOME</Link>
+            <Link to="/" className="py-1.5 hover:text-[#171717] transition-colors">HOME</Link>
             <span>/</span>
             <span className="text-[#6F6A63]">SPECIFICATIONS</span>
             <span>/</span>
@@ -225,10 +228,12 @@ export function SizeGuidePage() {
 
         {/* Right Imagery Banner */}
         <div className="relative min-h-[380px] sm:min-h-[480px] lg:min-h-full overflow-hidden bg-[#171717]">
-          <img
-            src="https://images.unsplash.com/photo-1521572267360-ee0c2909d518?auto=format&fit=crop&w=1600&q=90"
+          <Picture
+            image={IMAGES.sizeGuide}
+            sizes="(min-width: 1024px) 52vw, 100vw"
+            loading="eager"
             alt="Bingooo atelier pattern drafting and garment fit measurement"
-            className="w-full h-full object-cover grayscale contrast-125 opacity-85"
+            className="w-full h-full object-cover contrast-125 opacity-85"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-[#171717]/85 via-transparent to-black/20" />
 
@@ -711,15 +716,6 @@ export function SizeGuidePage() {
             >
               <ShoppingBag className="w-4 h-4" />
               <span>SHOP THE COLLECTION →</span>
-            </Link>
-
-            <Link
-              to="/customize"
-              onClick={() => triggerHaptic('medium')}
-              className="inline-flex items-center justify-center gap-2 min-h-[48px] px-8 rounded-[2px] bg-white text-[#171717] text-[11px] font-extrabold uppercase tracking-wider hover:bg-[#F7EEDB] hover:-translate-y-0.5 transition-all shadow-md"
-            >
-              <Sparkles className="w-4 h-4 text-[#E6321C]" />
-              <span>CUSTOMIZE WITH YOUR ARTWORK</span>
             </Link>
           </div>
         </div>

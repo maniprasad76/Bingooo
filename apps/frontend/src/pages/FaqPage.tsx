@@ -1,6 +1,8 @@
 import { useState, useMemo } from 'react';
+import { Picture } from '../components/ui/Picture';
+import { IMAGES } from '../lib/images';
 import { Link } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
+import { m, AnimatePresence } from 'framer-motion';
 import { SEO } from '../components/common/SEO';
 import { generateFaqSchema } from '../lib/seo/schema';
 import { triggerHaptic } from '../lib/native/capacitorBridge';
@@ -119,8 +121,8 @@ const FAQ_ITEMS: FaqItem[] = [
     category: 'payments',
     question: 'Is Cash on Delivery (COD) available?',
     answer:
-      'To guarantee priority courier dispatch, zero transit delays, and avoid cash-handling surcharges, Bingooo operates exclusively as a 100% secure prepaid store. We provide an instant 5% prepaid discount on all orders placed via UPI (Google Pay, PhonePe, Paytm), Cards, or Net Banking.',
-    searchKeywords: 'cash on delivery cod payment prepaid methods discounts online razorpay upi',
+      'No. To guarantee prompt dispatch and eliminate delivery friction, Bingooo operates exclusively on a 100% secure prepaid architecture. We accept UPI (Google Pay, PhonePe, Paytm, CRED), Cards, and NetBanking via Razorpay with universal free delivery across India.',
+    searchKeywords: 'cash on delivery cod payment prepaid methods discounts online razorpay upi free delivery',
   },
   {
     id: 'payments-2',
@@ -143,10 +145,10 @@ const FAQ_ITEMS: FaqItem[] = [
   {
     id: 'custom-1',
     category: 'custom',
-    question: 'How does the custom clothing feature work?',
+    question: 'How do custom or bulk merchandise orders work?',
     answer:
-      'Visit our 3D Customizer Studio, select your blank silhouette (Oversized Tee, Hoodie, or Sweatshirt), pick a color, and upload your high-resolution artwork or type custom typography. Position, scale, and rotate your graphics on the front or back in real time before placing your order.',
-    searchKeywords: 'custom clothing customizer artwork upload print design 3d personalize create your own',
+      'For bespoke prints and custom merchandise inquiries, reach out directly to our WhatsApp concierge. Our team assists with garment blank selection (240 GSM tees, 380 GSM hoodies), digital mockups, artwork verification, and direct-to-film (DTF) print execution.',
+    searchKeywords: 'custom clothing bulk orders merchandise inquiry dtf print personalized',
   },
   {
     id: 'custom-2',
@@ -243,7 +245,7 @@ export function FaqPage() {
     <div className="min-h-screen bg-[#F7EEDB] text-[#171717] font-sans selection:bg-[#E6321C] selection:text-white pb-12 sm:pb-20">
       <SEO
         title="FAQs — BINGOOO"
-        description="Find answers to all frequently asked questions about Bingooo Men's Wear: orders, delivery times, size guides, return policies, custom 3D studio, and payments."
+        description="Find answers to all frequently asked questions about Bingooo Men's Wear: orders, delivery times, size guides, return policies, custom studio, and payments."
         canonical="https://www.bingooo.co.in/faq"
         schema={generateFaqSchema(FAQ_ITEMS.map((f) => ({ question: f.question, answer: f.answer })))}
       />
@@ -293,8 +295,10 @@ export function FaqPage() {
           aria-hidden="true"
         >
           <div className="w-full h-full relative overflow-hidden flex items-center justify-center bg-gradient-to-br from-[#d5cfc5] to-[#8d8983]">
-            <img
-              src="/about-atelier.jpg"
+            <Picture
+              image={IMAGES.aboutAtelier}
+              sizes="(min-width: 1024px) 610px, (min-width: 640px) 510px, 390px"
+              loading="eager"
               alt="Bingooo Editorial Menswear"
               className="w-full h-full object-cover object-top grayscale contrast-110 mix-blend-multiply opacity-90"
               onError={(e) => {
@@ -322,7 +326,7 @@ export function FaqPage() {
             aria-label="Breadcrumbs"
             className="py-5 sm:py-[22px] flex items-center gap-[9px] text-[10px] sm:text-[11px] font-medium text-[#6F6A63]"
           >
-            <Link to="/" className="hover:text-[#171717] transition-colors">
+            <Link to="/" className="py-1.5 hover:text-[#171717] transition-colors">
               Home
             </Link>
             <span className="text-[#DDD3C5]">›</span>
@@ -488,7 +492,7 @@ export function FaqPage() {
 
                           <AnimatePresence initial={false}>
                             {isOpen && (
-                              <motion.div
+                              <m.div
                                 id={`answer-${item.id}`}
                                 initial={{ height: 0, opacity: 0 }}
                                 animate={{ height: 'auto', opacity: 1 }}
@@ -499,7 +503,7 @@ export function FaqPage() {
                                 <div className="px-3.5 sm:px-[18px] pr-8 sm:pr-[50px] pb-5 text-[11px] sm:text-[11.5px] leading-[1.75] text-[#6F6A63] border-t border-[#DDD3C5]/30 pt-2 font-normal">
                                   {item.answer}
                                 </div>
-                              </motion.div>
+                              </m.div>
                             )}
                           </AnimatePresence>
                         </div>

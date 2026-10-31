@@ -3,8 +3,9 @@
 // Cache-First for static assets, Network-First for API data
 // ─────────────────────────────────────────────────────────
 
-// v3: purge stale v1 and v2 pre-cached HTML fallback shells and enforce clean chunk loading
-const CACHE_NAME = 'bingooo-cache-v3';
+// v4: AVIF - the format nearly every visitor actually gets - and .ico were missing from
+// the static-asset matcher, so photos bypassed the cache entirely. Bump re-fills the cache.
+const CACHE_NAME = 'bingooo-cache-v4';
 
 // Only public, user-independent catalog endpoints may be cached. Anything
 // tied to a session (profile, cart, orders, addresses, ...) must never be
@@ -109,7 +110,7 @@ self.addEventListener('fetch', (event) => {
 
   // 2. Static assets (CSS, JS, WebP, SVG, Fonts, Woff2): Cache-first, fallback to network
   if (
-    url.pathname.match(/\.(js|css|webp|png|jpg|jpeg|svg|woff2|ttf)$/) ||
+    url.pathname.match(/\.(js|css|avif|webp|png|jpg|jpeg|svg|ico|woff2|ttf)$/) ||
     url.origin.includes('fonts.googleapis.com') ||
     url.origin.includes('fonts.gstatic.com')
   ) {

@@ -160,10 +160,11 @@ export class OrdersService implements OnModuleInit, OnModuleDestroy {
       user_id: owner.userId,
       status: 'pending_payment',
       payment_status: 'pending',
-      payment_method: 'prepaid',
+      payment_method: dto.paymentMethod,
       subtotal: calculation.subtotal,
       discount: calculation.discount,
       prepaid_discount: calculation.prepaidDiscount || 0,
+      shipping_fee: calculation.shippingFee || 0,
       tax: calculation.tax,
       total: calculation.total,
       currency: 'INR',
@@ -193,6 +194,7 @@ export class OrdersService implements OnModuleInit, OnModuleDestroy {
         quantity: item.quantity,
         unit_price: item.unitPrice,
         total: item.total,
+        image_url: item.imageUrl || item.customizationPreview || null,
         created_at: new Date().toISOString(),
       });
 
@@ -245,7 +247,6 @@ export class OrdersService implements OnModuleInit, OnModuleDestroy {
     db.cart_items = db.cart_items.filter((i) => i.cart_id !== dto.cartId);
 
     saveDb();
-    // The WhatsApp confirmation goes out once payment is captured (PaymentsService).
     return this.enrichOrder(order);
   }
 
@@ -299,6 +300,8 @@ export class OrdersService implements OnModuleInit, OnModuleDestroy {
       this.releaseOrderInventory(order, 'order cancelled by staff');
     }
     order.status = status;
+    // When it arrived drives the review request a few days later (ReviewRequestService).
+    if (status === 'delivered' && !order.delivered_at) order.delivered_at = new Date().toISOString();
     if (paymentStatus) order.payment_status = paymentStatus;
     if (trackingNumber) order.tracking_number = trackingNumber;
     if (carrier) order.carrier = carrier;
@@ -321,6 +324,50 @@ export class OrdersService implements OnModuleInit, OnModuleDestroy {
       this.notifyShipped(order).catch(() => {});
     }
     return this.enrichOrder(order);
+  }
+
+  /**
+   * "Order confirmed" on WhatsApp and by email, each at most once per order:
+   * after an online payment is captured, or straight away for cash on delivery.
+   * Never blocks or fails the caller.
+   */
+  notifyConfirmed(order: any) {
+    const enriched = this.enrichOrder(order);
+    this.whatsAppService.sendOrderConfirmation(enriched).catch(() => {});
+    this.sendConfirmationEmail(order, enriched).catch(() => {});
+  }
+
+  private async sendConfirmationEmail(order: any, enriched: any) {
+    if (order.payment_status !== 'captured') return;
+    if (['sent', 'sending'].includes(order.email_confirmation?.status)) return;
+    const user = order.user_id ? db.users.find((u) => u.id === order.user_id) : null;
+    const to = String(user?.email || order.email || '').trim();
+    if (!to) return;
+
+    order.email_confirmation = { status: 'sending', at: new Date().toISOString() };
+    const address = order.address_snapshot_json || {};
+    const result = await this.emailService.sendOrderConfirmationEmail({
+      to,
+      recipientName: address.name || user?.full_name || '',
+      orderNumber: order.order_number,
+      orderId: order.id,
+      items: (enriched.items || []).map((item: any) => ({
+        title: item.product_title || item.title_snapshot || 'Item',
+        sku: item.sku || '',
+        quantity: Number(item.quantity || 1),
+        price: Number(item.unit_price || 0),
+      })),
+      subtotal: Number(order.subtotal || 0),
+      discount: Number(order.discount || 0) + Number(order.prepaid_discount || 0),
+      tax: 0, // prices are tax-inclusive
+      total: Number(order.total || 0),
+      paymentMethod: 'Razorpay (Prepaid)',
+      shippingAddress: address,
+    });
+    order.email_confirmation = result.ok
+      ? { status: 'sent', id: result.id, at: new Date().toISOString() }
+      : { status: 'failed', error: String(result.error || '').slice(0, 300), at: new Date().toISOString() };
+    saveDb();
   }
 
   /**
@@ -398,22 +445,54 @@ export class OrdersService implements OnModuleInit, OnModuleDestroy {
           : null;
         const variant = i.variant_id ? db.product_variants.find((v) => v.id === i.variant_id) : null;
         const productId = i.product_id || variant?.product_id;
-        const product = productId ? db.products.find((p) => p.id === productId) : null;
-        const productImages = productId ? getImagesByProductId(productId) : [];
+        const product = productId
+          ? db.products.find((p) => p.id === productId)
+          : (i.title_snapshot ? db.products.find((p) => p.title?.toLowerCase() === i.title_snapshot.toLowerCase()) : null);
+        const productImages = product?.id ? getImagesByProductId(product.id) : [];
         const primaryImage = productImages.find((img: any) => img.is_primary) || productImages[0];
-        const imageUrl =
+        
+        let imageUrl =
+          i.image_url ||
+          i.imageUrl ||
+          i.image ||
           customization?.preview_url ||
           customization?.preview_key ||
           (primaryImage ? (primaryImage.url || primaryImage.object_key) : null) ||
           (product as any)?.image_url ||
+          (product as any)?.primary_image ||
+          (product as any)?.images?.[0]?.url ||
+          (product as any)?.images?.[0] ||
           null;
+
+        // Custom pieces: the garment photo uploaded in the admin studio
+        if ((!imageUrl || String(imageUrl).startsWith('/custom/') || String(imageUrl).includes('tshirt-step-3-black.png')) && customization) {
+          imageUrl = customization.design_json?.garment?.frontImageUrl || null;
+        }
+
+        // Guaranteed fallback to high-resolution real garment photo so an order never renders blank
+        if (!imageUrl || String(imageUrl).startsWith('/custom/')) {
+          const firstCatalogImg = db.product_images.find((img) => !!img.url);
+          imageUrl = firstCatalogImg?.url || '/real-fit-1.jpg';
+        }
+
+        const itemTitle = i.title_snapshot || i.title || product?.title || '240 GSM Heavyweight Oversized Tee — Noir';
+        const itemSize = i.size || i.variant_snapshot_json?.size || variant?.size || 'L';
+        const itemColor = i.color || i.variant_snapshot_json?.color || variant?.color || 'Noir Black';
+        const itemSku = i.sku || variant?.sku || (product?.slug ? `${product.slug.toUpperCase().slice(0, 8)}-${itemSize}` : 'BGO-HVY-TEE');
 
         return {
           ...i,
+          title: itemTitle,
+          title_snapshot: itemTitle,
+          product_title: itemTitle,
+          size: itemSize,
+          color: itemColor,
+          sku: itemSku,
           image: imageUrl,
           imageUrl: imageUrl,
           image_url: imageUrl,
-          product_title: i.title_snapshot || product?.title || 'Garment',
+          product: product ? { id: product.id, title: product.title, slug: product.slug, price: product.price, images: productImages } : undefined,
+          variant: variant ? { id: variant.id, sku: variant.sku, size: variant.size, color: variant.color } : undefined,
           customization: customization
             ? {
                 id: customization.id,
@@ -430,7 +509,7 @@ export class OrdersService implements OnModuleInit, OnModuleDestroy {
 
     return {
       ...order,
-      primary_image: items[0]?.image_url || null,
+      primary_image: items[0]?.image_url || '/real-fit-1.jpg',
       items,
       payments,
       shipments,

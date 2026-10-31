@@ -39,6 +39,20 @@
 **Decision**: Strict palette of Warm cream `#F7EEDB`, Charcoal `#171717`, Signal red `#E6321C`, Manrope typography, and Lucide React vector icons only.  
 **Consequences**: High-end aesthetic cohesion across all 32 storefront and 27 admin views.  
 
+### [DECISION-006] Admin Panel Authority for Garment Customizer Photography & Zero Mockup Clipart
+**Date**: 2026-10-10  
+**Status**: Accepted  
+**Context**: Synthetic cartoon shirt icons, vector mockups, and fake overlay text (`"YOUR LINE HERE"`, `"BACK PRINT ARTWORK"`) cheapen the bespoke customizer and fail to accurately show real garment drape or fabric textures.  
+**Decision**: Completely decommission mockup clipart and fake text overlays across the storefront and homepage. Establish Admin Panel Customizer Studio (`/customizer`) as the authoritative source for high-resolution transparent PNG garment photography (front/back), dynamic swatches, and sizing specs.  
+**Consequences**: Customers design on authentic streetwear photography with true-to-life alpha transparency; administrators have dynamic control over customizer apparel without code redeploys.  
+
+### [DECISION-007] 100% Universal Free Shipping Pan-India & Zero Cash on Delivery (100% Secure Prepaid)
+**Date**: 2026-10-05  
+**Status**: Accepted  
+**Context**: Complex tiered shipping rules (₹999 thresholds) and Cash on Delivery (COD) cause high Return to Origin (RTO) rates, cart friction, and reconciliation overhead.  
+**Decision**: Standardize platform to 100% complimentary Pan-India shipping on all orders regardless of cart value, and transition exclusively to 100% secure prepaid payments (Razorpay UPI, Cards, NetBanking) with a 5% instant discount.  
+**Consequences**: Frictionless one-page checkout, zero RTO fraud, simplified order pipeline, and guaranteed seller revenue capture.  
+
 ---
 
-*Last updated: 2026-10-01*
+*Last updated: 2026-10-10*

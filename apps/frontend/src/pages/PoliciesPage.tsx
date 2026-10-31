@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { motion, useReducedMotion } from 'framer-motion';
+import { m, useReducedMotion } from 'framer-motion';
 import { Truck, RotateCcw, XCircle, Shield, FileText, Ruler, ArrowRight } from 'lucide-react';
 import { SEO } from '../components/common/SEO';
 
@@ -56,7 +56,7 @@ export function PoliciesPage() {
         {/* ─── Breadcrumb & Header ─── */}
         <div className="text-center space-y-4 max-w-2xl mx-auto">
           <div className="flex items-center justify-center gap-2 text-xs font-mono text-[#6F6A63] uppercase tracking-wider">
-            <Link to="/" className="hover:text-[#E6321C] transition-colors">Home</Link>
+            <Link to="/" className="py-1.5 hover:text-[#E6321C] transition-colors">Home</Link>
             <span>/</span>
             <span className="text-[#171717] font-bold">Policies & Standards</span>
           </div>
@@ -66,7 +66,7 @@ export function PoliciesPage() {
           </h1>
 
           <p className="text-sm sm:text-base text-[#6F6A63] leading-relaxed">
-            Transparent, customer-first standards governing your orders, custom 3D printing, doorstep exchanges, and privacy.
+            Transparent, customer-first standards governing your orders, custom printing, doorstep exchanges, and privacy.
           </p>
         </div>
 
@@ -75,23 +75,23 @@ export function PoliciesPage() {
           {POLICY_CARDS.map((card, idx) => {
             const Icon = card.icon;
             return (
-              <motion.div
+              <m.div
                 key={card.to}
                 initial={shouldReduceMotion ? false : { opacity: 0, y: 12 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: idx * 0.05, type: 'spring', stiffness: 350, damping: 25 }}
-                whileHover={shouldReduceMotion ? undefined : { y: -4, boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.08)' }}
-                className="rounded-2xl"
+                whileHover={shouldReduceMotion ? undefined : { y: -2 }}
+                className="rounded-[2px]"
               >
                 <Link
                   to={card.to}
-                  className="p-6 rounded-2xl bg-white hover:bg-[#EDE0CC]/60 border border-[#DDD3C5] hover:border-[#E6321C]/50 transition-colors flex flex-col justify-between group shadow-2xs h-full"
+                  className="p-6 rounded-[2px] bg-white hover:bg-[#F7EEDB] border-2 border-[#171717] transition-all flex flex-col justify-between group shadow-[3px_3px_0px_#171717] hover:shadow-[5px_5px_0px_#171717] h-full"
                 >
                   <div className="space-y-3">
-                    <div className="w-10 h-10 rounded-xl bg-[#FAF8F5] border border-[#DDD3C5] text-[#171717] flex items-center justify-center group-hover:bg-[#E6321C] group-hover:text-white group-hover:border-[#E6321C] transition-colors">
+                    <div className="w-10 h-10 rounded-[2px] bg-[#F7EEDB] border-2 border-[#171717] text-[#171717] flex items-center justify-center group-hover:bg-[#E6321C] group-hover:text-white group-hover:border-[#E6321C] transition-colors">
                       <Icon className="w-5 h-5" aria-hidden="true" />
                     </div>
-                    <h3 className="text-base font-bold text-[#171717] font-heading group-hover:text-[#E6321C] transition-colors">
+                    <h3 className="text-base font-black text-[#171717] font-heading group-hover:text-[#E6321C] transition-colors uppercase tracking-tight">
                       {card.title}
                     </h3>
                     <p className="text-xs text-[#6F6A63] leading-relaxed">
@@ -99,40 +99,40 @@ export function PoliciesPage() {
                     </p>
                   </div>
 
-                  <div className="pt-5 mt-4 border-t border-[#DDD3C5]/60 flex items-center justify-between text-xs font-bold font-heading text-[#171717] group-hover:text-[#E6321C]">
+                  <div className="pt-5 mt-4 border-t-2 border-[#171717] flex items-center justify-between text-xs font-black font-heading text-[#171717] group-hover:text-[#E6321C] uppercase tracking-wider">
                     <span>Read Full Policy</span>
                     <ArrowRight className="w-4 h-4 transform group-hover:translate-x-1 transition-transform" aria-hidden="true" />
                   </div>
                 </Link>
-              </motion.div>
+              </m.div>
             );
           })}
         </div>
 
         {/* ─── Need Quick Help? ─── */}
-        <div className="p-6 sm:p-8 rounded-2xl bg-[#EDE0CC] border border-[#DDD3C5] flex flex-col sm:flex-row items-center justify-between gap-6">
+        <div className="p-6 sm:p-8 rounded-[2px] bg-[#F7EEDB] border-2 border-[#171717] flex flex-col sm:flex-row items-center justify-between gap-6 shadow-[4px_4px_0px_#171717]">
           <div className="space-y-1 text-center sm:text-left">
-            <h3 className="text-base font-bold font-heading text-[#171717]">Have questions regarding a specific order?</h3>
+            <h3 className="text-base font-black font-heading text-[#171717] uppercase tracking-tight">Have questions regarding a specific order?</h3>
             <p className="text-xs text-[#6F6A63]">Our customer concierge is available 6 days a week to assist you.</p>
           </div>
 
           <div className="flex items-center gap-3">
-            <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
+            <m.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
               <Link
                 to="/faq"
-                className="inline-block px-4 py-2.5 rounded-xl bg-white hover:bg-[#FAF8F5] text-[#171717] border border-[#DDD3C5] text-xs font-bold font-heading transition-colors"
+                className="inline-block px-4 py-2.5 rounded-[2px] bg-white hover:bg-[#F7EEDB] text-[#171717] border-2 border-[#171717] text-xs font-black font-heading uppercase tracking-wider transition-all shadow-[2px_2px_0px_#171717] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none"
               >
                 Browse FAQ
               </Link>
-            </motion.div>
-            <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
+            </m.div>
+            <m.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
               <Link
                 to="/contact"
-                className="inline-block px-4 py-2.5 rounded-xl bg-[#E6321C] hover:bg-[#B91F12] text-white text-xs font-bold font-heading transition-colors shadow-xs"
+                className="inline-block px-4 py-2.5 rounded-[2px] bg-[#E6321C] hover:bg-[#B91F12] text-white text-xs font-black font-heading uppercase tracking-wider transition-all border-2 border-[#171717] shadow-[2px_2px_0px_#171717] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none"
               >
                 Contact Desk
               </Link>
-            </motion.div>
+            </m.div>
           </div>
         </div>
 

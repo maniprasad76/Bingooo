@@ -12,24 +12,24 @@ export interface BadgeProps {
 }
 
 const variantStyles: Record<BadgeVariant, string> = {
-  default: 'bg-[#171717]/10 text-[#171717]',
-  accent: 'bg-[#E6321C]/10 text-[#E6321C] font-bold',
-  success: 'bg-[#238636]/10 text-[#238636] font-bold',
-  danger: 'bg-[#C62828]/10 text-[#C62828] font-bold',
-  outline: 'border border-[#DDD3C5] text-[#6F6A63]',
+  default: 'bg-[#171717] text-white border border-[#171717]',
+  accent: 'bg-[#E6321C] text-white border border-[#171717]',
+  success: 'bg-[#238636] text-white border border-[#171717]',
+  danger: 'bg-[#C62828] text-white border border-[#171717]',
+  outline: 'border-2 border-[#171717] text-[#171717] bg-white',
 };
 
 const sizeStyles: Record<BadgeSize, string> = {
-  sm: 'px-2 py-0.5 text-[10px] tracking-wider uppercase',
-  md: 'px-2.5 py-0.5 text-[11px] tracking-wider uppercase',
-  lg: 'px-3 py-1 text-xs tracking-wider uppercase font-bold',
+  sm: 'px-2 py-0.5 text-[9px] tracking-wider uppercase font-mono',
+  md: 'px-2.5 py-0.5 text-[10px] tracking-wider uppercase font-mono',
+  lg: 'px-3 py-1 text-xs tracking-wider uppercase font-mono font-bold',
 };
 
 export function Badge({ children, variant = 'default', size = 'md', className }: BadgeProps) {
   return (
     <span
       className={cn(
-        'inline-flex items-center rounded-full font-sans font-semibold',
+        'inline-flex items-center rounded-[2px] font-mono font-bold select-none',
         variantStyles[variant],
         sizeStyles[size],
         className,

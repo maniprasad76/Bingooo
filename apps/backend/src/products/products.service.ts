@@ -31,11 +31,24 @@ export class ProductsService {
       items = items.filter((p) => p.status === 'active');
     }
 
-    // Filter: category
+    // Filter: category or gender collection
     if (query.categorySlug) {
       const cat = getCategoryBySlug(query.categorySlug);
-      if (cat) items = items.filter((p) => p.category_id === cat.id);
-      else items = [];
+      if (cat) {
+        items = items.filter((p) => p.category_id === cat.id);
+      } else if (query.categorySlug === 'men' || query.categorySlug === 'women') {
+        const target = query.categorySlug.toLowerCase();
+        items = items.filter((p) => {
+          const tags = Array.isArray((p as any).tags) ? (p as any).tags.map((t: any) => String(t).toLowerCase()) : [];
+          return (
+            tags.includes(target) ||
+            (p.description && p.description.toLowerCase().includes(target)) ||
+            (p.title && p.title.toLowerCase().includes(target))
+          );
+        });
+      } else {
+        items = [];
+      }
     }
 
     // Filter: collection

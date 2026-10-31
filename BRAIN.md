@@ -1,6 +1,6 @@
 # 🧠 Bingooo Knowledge Brain (`BRAIN.md`)
 > **Persistent Architecture, Agent Memory & Engineering Runbook**  
-> *Last Updated: September 2026*
+> *Last Updated: October 10, 2026*
 
 ---
 
@@ -32,7 +32,7 @@ bingooo/
 │   │   ├── src/checkout/# Multi-step checkout pipeline
 │   │   ├── src/orders/  # Order processing & state machine
 │   │   └── src/payments/# Razorpay, UPI & manual payment flows
-│   └── admin/           # Vite 8 + React 19 back-office management dashboard (27 routes)
+│   └── admin/           # Vite 8 + React 19 back-office management dashboard (15 routes: 13 management pages + login/callback)
 │       └── src/pages/   # OrdersPage, ProductEditorPage, DashboardPage, SettingsPage, etc.
 ├── packages/
 │   ├── types/           # Shared TypeScript domain models, DTOs & interfaces
@@ -48,9 +48,9 @@ bingooo/
 The project is indexed with **Graphify** (`graphifyy`), giving all AI assistants and developers structured, deterministic memory of the entire codebase.
 
 ### Graph Memory Stats:
-- **Total Nodes**: 7,333+ symbols & concepts
-- **Total Edges**: 9,922+ relational connections (calls, imports, inherits, references)
-- **Communities**: 646 architectural clusters
+- **Total Nodes**: 9,164+ symbols & concepts
+- **Total Edges**: 12,824+ relational connections (calls, imports, inherits, references)
+- **Communities**: 797 architectural clusters
 
 ### Core Memory Artifacts:
 - [`graphify-out/graph.json`](file:///c:/Users/manip/Desktop/bingooo/graphify-out/graph.json): Raw graph data used for instant contextual querying.
@@ -117,6 +117,10 @@ python -m graphify update .
 
 ## 6. Changelog & Recent Decisions
 
+- **2026-10-06: WhatsApp Cloud API & Email Order Confirmations**
+  - Integrated Meta WhatsApp Cloud API and webhook fallback in `WhatsAppService` with named template support (`order_confirmed`).
+  - Automated WhatsApp and Resend email order confirmations dispatched on payment capture; updated `OrderSuccessPage` with live parcel tracking timeline and luxury receipt.
+
 - **2026-10-04: Audit Phase 3 — Platform Hygiene**
   - CI workflow (typecheck, build, prod audit, 5 backend suites) on every push; frontend/admin `typecheck` now checks real files — it immediately caught a `codTotal` reference left by the COD removal that had broken the production frontend build.
   - NestJS 10 → 11.2.7 (Express 5, patched multer/body-parser/lodash); production audit has no high advisories (remaining moderate js-yaml is Swagger-only, and Swagger is now off in production unless `ENABLE_SWAGGER=true`). `@capacitor/cli` aligned to 8.
@@ -177,7 +181,51 @@ python -m graphify update .
   - Streamlined admin navigation by deprecating the unused Banners route and elevated admin table, badges, and view craftsmanship across admin pages.
 - **2026-10-05: Admin Orders Visual Thumbnail Preview & Image Enrichment**
   - Replaced text-heavy Order Ref column in Admin Orders table with interactive product/customizer thumbnail previews, 3D/multi-item badges, and modal item previews with backend image enrichment.
-- **2026-10-06: Fix Unstyled Crawler Fallback & Stale Cache Lock**
-  - Encapsulated crawler fallback in <noscript>, integrated brand-aligned BINGOOO. splash preloader in #root, updated prerender-seo script, bumped SW cache to v3, and added global stale-chunk error recovery.
+- **2026-10-07: Restore Selected Garment Image Visibility in Checkout & Admin Orders**
+  - Resolved missing cart images and NaN pricing in Checkout order summaries (`CheckoutPage.tsx`), improved image enrichment and normalized preview paths across backend orders and checkout services, and restored thumbnail image previews on Admin Orders page (`OrdersPage.tsx`).
+- **2026-10-08: Layered GPU Wipe Transitions for Brand Intro (Zero-Hang / Silky Color Motion)**
+  - Re-architected brand intro in `apps/frontend/index.html` with 5 stacked, full-bleed color layers (`#171717`, `#E6321C`, `#F7EEDB`, `#1E293B`, `#7F1D1D`). Replaced static pauses and muddy RGB color interpolation with pure GPU-composited slide-up wipes (`translate3d`, `cubic-bezier(0.16, 1, 0.3, 1)` with soft drop-shadow depth). Colors now glide in smoothly with continuous kinetic motion and zero JS thread contention.
+- **2026-10-08: Accelerated Brand Intro Preloader Speed (3.1s → 1.25s)**
+  - Accelerated multilingual brand intro preloader in `apps/frontend/index.html` from 3,100ms to 1,250ms (240ms per stage), with fast 50ms typography morphing and 1,200ms hairline progress interpolation for a punchy, rapid luxury flash opening.
+- **2026-10-08: Side-by-Side Category Cards Layout on Mobile (`HomePage.tsx`)**
+  - Updated the "SHOP BY CATEGORY" section on `HomePage.tsx` to display both Men's Wear and Women's Wear cards side-by-side (`grid-cols-2`) on mobile instead of stacked up and down (`grid-cols-1`), with horizontal image-and-text layout (`flex-row`) inside each card for parity with desktop.
+- **2026-10-08: Plain Background with Full Color Transitions for Brand Intro Preloader**
+  - Removed noisy architectural grid texture and murky radial ambient glow from `apps/frontend/index.html`; replaced with a clean, 100% plain solid background transitioning through 5 distinct full colors (`#171717` Charcoal Black, `#E6321C` Signal Red, `#F7EEDB` Warm Cream, `#1E293B` Cobalt Slate, `#7F1D1D` Crimson Bordeaux) with dynamic coordinated typography, badges, and progress styling.
+- **2026-10-08: Custom Page Default Compared Price Updated to ₹1,499**
+  - Updated default compared price (`compareAtPrice`) for the default oversized customizer garment from ₹1,299 to ₹1,499 across storefront, backend canonical defaults, and admin studio; added struck-through comparison and dynamic discount percentage badges to the Bauhaus sticky action bar and fit selection buttons on `/customize`.
+- **2026-10-10: Atelier Customizer Image Pipeline & Admin-Driven Dynamic Garments**
+  - Removed all fake mockup clipart, cartoon shirt icons, and "YOUR LINE HERE" / "BACK PRINT ARTWORK" text overlays from Customizer and Homepage; established Admin Panel Customizer Studio as the single authority for uploaded garment PNGs with transparent layer preservation, dynamic swatch rendering, and resilient PNG/WebP validation.
+- **2026-10-10: Admin Panel Layout Overhaul & Responsive Viewport Engineering**
+  - Overhauled Admin Panel navigation and view layout: implemented a permanent document-flow sidebar on desktop viewports (`lg+`) and a high-performance backdrop slide-out drawer on mobile/tablet devices (`<lg`). Eliminated table squishing, overlapping cards, and header clipping across all 15 back-office routes.
+- **2026-10-10: Production Database Sanitization & Test Data Purge**
+  - Purged 180+ automated bot users, 50 synthetic test orders, and duplicate demo products from `store.json`. Preserved real admin accounts (`admin@bingooo.in`, `basaprasaduu@gmail.com`), active promotional coupons (`BINGOOO10`, `WELCOME20`, `FREESHIP`), and official catalog streetwear apparel.
+- **2026-10-10: End-to-End Dynamic Coupon Engine & Real-Time Checkout Recalculation**
+  - Linked coupon management between Admin Panel, NestJS backend `CouponsService`, and Storefront checkout. Implemented real-time coupon validation, instant discount deduction, error messaging for invalid codes, and synchronized backend order pricing verification.
+- **2026-10-10: Shiprocket Logistics Integration, 4×6 Thermal Label Generator, Orders CSV Export & Fit Advisor Modal**
+  - Integrated Shiprocket API v2 with JWT token caching, courier serviceability checks, adhoc shipment creation, 1-click AWB assignment, live tracking, and status webhook ingestion (with seamless sandbox simulation fallback).
+  - Built 4×6" (100×150mm) thermal shipping label generator with pure SVG Code-128 barcode, consignee/consignor routing blocks, and print CSS layout.
+  - Added single-click Orders & Sales CSV export in Admin Panel (`OrdersPage.tsx`) covering customer, financial, item, and tracking dimensions.
+  - Implemented interactive "Find Your Fit" Size Recommendation Advisor Modal (`SizeAdvisorModal.tsx`) with height/weight sliders, drape preference selection, and single-click size application across Product and Customizer pages.
+- **2026-10-10: Comprehensive Full-Stack E2E Real-Time User Audit (219 Automated Tests Passed)**
+  - Executed and validated 219 automated end-to-end tests across 100% of Storefront pages (11 main routes + 11 legal/policy pages), 100% of Admin Console operations (13 management views), and NestJS backend APIs (Security, Checkout, Admin, Media, Durability, Studio).
+  - Hardened SizeAdvisorModal with keyboard accessibility (Escape key handler), resolved nested semantic tags, and added defensive response unpacking in Admin ReviewsPage. Zero TypeScript errors and zero runtime exceptions.
+- **2026-10-11: Production Launch Audit & Checklist Hardening**
+  - Seeded ready-to-wear catalog pieces across all 4 core apparel categories (T-Shirts, Hoodies, Shirts, Bottoms) with full variant matrices (XS–XXL, stock counts, SKUs, and pricing).
+  - Normalized Bottoms category shortcut (`/category/bottoms`) with automatic redirect from legacy `/category/jeans`.
+  - Upgraded ShopPage empty state to luxury customer availability notice with direct WhatsApp concierge trigger.
+  - Enabled gender collection tag matching for `/shop?category=men` and `/shop?category=women`.
+  - Injected asynchronous Google Analytics 4 tracking tag (`G-N5EGTHS9SG`) into `index.html`.
+  - Verified 100% test passing across `npm run typecheck`, security test suite (42 tests), and checkout E2E tests (10 tests).
+- **2026-10-13: Google My Business (GMB) & Comprehensive SEO Optimization**
+  - Upgraded Google Business Profile and Local SEO infrastructure: enriched Schema.org JSON-LD (`ClothingStore`, `MensClothingStore`, `LocalBusiness`) with exact geo coordinates (18.2969, 83.8968), canonical Google Maps store search link, area served, and opening hours specification across `schema.ts`, `catalog-seo.mjs`, `prerender-seo.mjs`, and `index.html`.
+  - Overhauled `ContactPage.tsx` with an interactive Google Maps embed, "Get Directions" navigation launcher, "Review Us on Google" CTA, "Copy NAP" clipboard action, in-store fabric rail features, and physical atelier visit specs (Landmark: 7 Roads Junction).
+  - Added sitewide Flagship Atelier NAP citation bar to `Footer.tsx` providing consistent local search authority signals on every indexed page. Zero typecheck errors across all workspaces.
+- **2026-10-18: Dual-Sided (Front & Back) Artwork Studio Upload & Interactive Prompts**
+  - Upgraded customizer studio (`CustomizerPage.tsx`) from a single-tab dropzone to dedicated Front Side (`Center` vs `Left Chest`) and Back Side artwork upload cards.
+  - Implemented automatic camera/mockup flipping between `FRONT` and `BACK` on interaction and live preview synchronization.
+  - Added proactive Bauhaus Studio Checkpoint prompt modal when users request a quote with only one side configured, offering an intuitive 1-click option to add back/front graphics or proceed with single-sided print.
+  - Synchronized WhatsApp quotation generator to detail both Front and Back artwork files and specs accurately.
+- **2026-10-27: Complete Removal of Cash on Delivery (COD) & Partial COD (100% Prepaid Only)**
+  - Transitioned the entire checkout and order pipeline exclusively to 100% secure prepaid architecture (Razorpay UPI, Cards, NetBanking); eliminated all COD payment selectors, residue calculations, and custom-item COD restrictions from backend, frontend, admin, shared types, thermal print labels, and SEO meta tags.
 
 

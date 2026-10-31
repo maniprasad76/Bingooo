@@ -1,4 +1,6 @@
 import { Link } from 'react-router-dom';
+import { Picture } from '../components/ui/Picture';
+import { IMAGES } from '../lib/images';
 import { SEO } from '../components/common/SEO';
 import { triggerHaptic } from '../lib/native/capacitorBridge';
 
@@ -43,8 +45,10 @@ export function PrivacyPolicyPage() {
         </div>
 
         <div className="h-[400px] sm:h-[500px] lg:h-auto overflow-hidden bg-[#ede0cc]">
-          <img
-            src="/privacy-hero.jpg"
+          <Picture
+            image={IMAGES.privacyHero}
+            sizes="(min-width: 1024px) 55vw, 100vw"
+            loading="eager"
             alt="Bingooo - Your Privacy Matters"
             className="w-full h-full object-cover object-center"
           />
@@ -72,8 +76,9 @@ export function PrivacyPolicyPage() {
       <section className="py-[clamp(70px,9vw,120px)]" id="policy-details">
         <div className="container-bingooo grid grid-cols-1 lg:grid-cols-[0.9fr_1.1fr] gap-[clamp(50px,9vw,140px)] items-center">
           <div className="aspect-[4/5] overflow-hidden bg-[#ede0cc] max-w-[600px] mx-auto lg:mx-0 w-full">
-            <img
-              src="/privacy-hero.jpg"
+            <Picture
+              image={IMAGES.privacyHero}
+              sizes="(min-width: 1024px) 45vw, 100vw"
               alt="Bingooo data ethics"
               className="w-full h-full object-cover grayscale"
             />
@@ -201,7 +206,7 @@ export function PrivacyPolicyPage() {
                 </h3>
               </div>
               <p className="max-w-[300px] m-0 text-[#6f6a63] text-[11px] leading-[1.7]">
-                Artwork and typography uploaded to our 3D Customizer Studio remain strictly confidential. Your designs are used solely to produce your custom piece.
+                Artwork and typography uploaded to our Custom Studio remain strictly confidential. Your designs are used solely to produce your custom piece.
               </p>
             </article>
 
@@ -227,8 +232,9 @@ export function PrivacyPolicyPage() {
       ======================================================= */}
       <section className="grid grid-cols-1 lg:grid-cols-[55%_45%] min-h-[550px] lg:min-h-[600px]">
         <div className="min-h-[380px] lg:min-h-full overflow-hidden">
-          <img
-            src="/custom-studio.jpg"
+          <Picture
+            image={IMAGES.customStudio}
+            sizes="(min-width: 1024px) 55vw, 100vw"
             alt="Bingooo Custom Studio atelier"
             className="w-full h-full object-cover object-center"
           />
@@ -245,16 +251,16 @@ export function PrivacyPolicyPage() {
           </h2>
 
           <p className="max-w-[410px] m-0 mb-[30px] text-[#aaa7a1] text-[12px] leading-[1.8]">
-            When you upload illustrations, band logos, or custom text to our 3D Studio, you retain 100% of your copyright. We do not exhibit or reproduce your graphics on public collections without your written consent.
+            When you upload illustrations, band logos, or custom text to our Custom Studio, you retain 100% of your copyright. We do not exhibit or reproduce your graphics on public collections without your written consent.
           </p>
 
           <div>
             <Link
-              to="/customize"
+              to="/shop"
               onClick={() => triggerHaptic('medium')}
               className="inline-flex items-center justify-center min-h-[48px] px-[23px] rounded-[7px] bg-[#e6321c] text-white text-[10px] font-bold uppercase tracking-wider hover:bg-[#b91f12] hover:-translate-y-0.5 transition-all"
             >
-              EXPLORE 3D STUDIO →
+              EXPLORE THE ATELIER →
             </Link>
           </div>
         </div>
@@ -291,7 +297,7 @@ export function PrivacyPolicyPage() {
                   <strong className="text-[#171717]">Order Records:</strong> Items purchased, size selections, billing amounts, order timestamps, and invoice records for warranty and accounting.
                 </p>
                 <p>
-                  <strong className="text-[#171717]">Studio Uploads:</strong> High-resolution artwork files, image dimensions, and text customization coordinates configured in our 3D garment creator.
+                  <strong className="text-[#171717]">Studio Uploads:</strong> High-resolution artwork files, image dimensions, and text customization coordinates configured in our custom studio.
                 </p>
               </div>
             </article>

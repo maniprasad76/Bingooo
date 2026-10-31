@@ -1,9 +1,30 @@
 import { useState } from 'react';
+import { Picture } from '../components/ui/Picture';
+import { IMAGES } from '../lib/images';
 import { Link } from 'react-router-dom';
-import { CheckCircle2, PhoneCall, Mail } from 'lucide-react';
+import {
+  CheckCircle2,
+  PhoneCall,
+  Mail,
+  MapPin,
+  Navigation,
+  Star,
+  Copy,
+  Check,
+  Clock,
+  ExternalLink,
+} from 'lucide-react';
 import { SEO } from '../components/common/SEO';
-import { useToast } from '../components/ui/Toast';
+import {
+  generateLocalBusinessSchema,
+  GOOGLE_MAPS_STORE_URL,
+  GOOGLE_MAPS_DIRECTIONS_URL,
+  GOOGLE_MAPS_EMBED_URL,
+  GOOGLE_REVIEW_URL,
+} from '../lib/seo/schema';
+import { useToast } from '../components/ui/ToastContext';
 import { triggerHaptic } from '../lib/native/capacitorBridge';
+import { WhatsAppIcon, InstagramIcon } from '../components/ui/SocialIcons';
 import {
   BINGOOO_EMAIL_SUPPORT,
   BINGOOO_PHONE_DISPLAY,
@@ -11,9 +32,7 @@ import {
   BINGOOO_INSTAGRAM_URL,
   BINGOOO_INSTAGRAM_HANDLE,
   getWhatsAppUrl,
-  WhatsAppIcon,
-  InstagramIcon,
-} from '../components/ui/SocialIcons';
+} from '../lib/social';
 
 export function ContactPage() {
   const { toast } = useToast();
@@ -30,6 +49,21 @@ export function ContactPage() {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [copiedAddress, setCopiedAddress] = useState(false);
+
+  const handleCopyAddress = () => {
+    const fullAddress =
+      "Bingooo Men's Wear Flagship Atelier, 7 Roads Junction, Main Road, Srikakulam, Andhra Pradesh 532001, India";
+    navigator.clipboard.writeText(fullAddress);
+    setCopiedAddress(true);
+    triggerHaptic('light');
+    toast({
+      title: 'Store address copied',
+      description: 'Address copied to clipboard for GPS or navigation.',
+      variant: 'success',
+    });
+    setTimeout(() => setCopiedAddress(false), 3000);
+  };
 
   const validate = () => {
     const errs: Record<string, string> = {};
@@ -94,6 +128,11 @@ export function ContactPage() {
         title="Contact Us | Bingooo® Flagship Atelier Srikakulam, Andhra Pradesh"
         description="Get in touch with Bingooo. Visit our flagship store at 7 Roads Junction, Srikakulam, AP, or contact our support concierge via WhatsApp at +91 7981787317."
         canonical="https://www.bingooo.co.in/contact"
+        schema={[generateLocalBusinessSchema()]}
+        breadcrumbs={[
+          { name: 'Home', url: '/' },
+          { name: 'Contact', url: '/contact' },
+        ]}
       />
 
       {/* =======================================================
@@ -129,10 +168,12 @@ export function ContactPage() {
           </div>
 
           <div className="h-[380px] sm:h-[480px] lg:h-[570px] overflow-hidden bg-[#ede0cc] relative">
-            <img
-              src="https://images.unsplash.com/photo-1529139574466-a303027c1d8b?auto=format&fit=crop&w=1000&q=85"
+            <Picture
+              image={IMAGES.hero}
+              sizes="(min-width: 1024px) 50vw, 100vw"
+              loading="eager"
               alt="Bingooo fashion support editorial"
-              className="w-full h-full object-cover grayscale"
+              className="w-full h-full object-cover"
             />
             <div className="absolute bottom-5 left-5 bg-white px-[15px] py-3 text-[10px] font-extrabold tracking-[0.1em] uppercase text-[#171717] shadow-sm">
               Bingooo / Support
@@ -159,7 +200,7 @@ export function ContactPage() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 border-t border-l border-[#333333]">
             {/* Option 01 - Email */}
             <div className="min-h-[220px] p-7 border-r border-b border-[#333333] flex flex-col hover:bg-[#222222] transition-colors group">
-              <div className="text-[10px] text-[#777777] font-mono font-bold mb-8">
+              <div className="text-[10px] text-[#999999] font-mono font-bold mb-8">
                 01
               </div>
               <div className="w-[38px] h-[38px] border border-[#555555] grid place-items-center mb-5 text-[#e6321c]">
@@ -177,7 +218,7 @@ export function ContactPage() {
               <a
                 href={`mailto:${BINGOOO_EMAIL_SUPPORT}?subject=Inquiry%20from%20Bingooo%20Store`}
                 onClick={() => triggerHaptic('light')}
-                className="mt-6 text-[#e6321c] text-[11px] font-extrabold tracking-[0.06em] uppercase group-hover:translate-x-1 transition-transform inline-block"
+                className="mt-4 py-2 text-[#e6321c] text-[11px] font-extrabold tracking-[0.06em] uppercase group-hover:translate-x-1 transition-transform inline-block"
               >
                 Send Email →
               </a>
@@ -185,7 +226,7 @@ export function ContactPage() {
 
             {/* Option 02 - WhatsApp */}
             <div className="min-h-[220px] p-7 border-r border-b border-[#333333] flex flex-col hover:bg-[#222222] transition-colors group">
-              <div className="text-[10px] text-[#777777] font-mono font-bold mb-8">
+              <div className="text-[10px] text-[#999999] font-mono font-bold mb-8">
                 02
               </div>
               <div className="w-[38px] h-[38px] border border-[#555555] grid place-items-center mb-5 text-[#25D366]">
@@ -194,9 +235,9 @@ export function ContactPage() {
               <h3 className="text-[17px] font-bold uppercase tracking-[-0.02em] mb-1 text-white">
                 WhatsApp Chat
               </h3>
-              <div className="text-[11px] font-mono text-[#25D366] mb-2 select-all">
+              <a href={`https://wa.me/${BINGOOO_PHONE_RAW}`} target="_blank" rel="noopener noreferrer" className="self-start py-1 text-[11px] font-mono text-[#25D366] mb-1">
                 {BINGOOO_PHONE_DISPLAY}
-              </div>
+              </a>
               <p className="text-[#999999] text-[12px] leading-[1.7] mb-auto">
                 Direct WhatsApp assistance for orders, sizing recommendations, and custom design approvals.
               </p>
@@ -205,7 +246,7 @@ export function ContactPage() {
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={() => triggerHaptic('light')}
-                className="mt-6 text-[#25D366] text-[11px] font-extrabold tracking-[0.06em] uppercase group-hover:translate-x-1 transition-transform inline-block"
+                className="mt-4 py-2 text-[#25D366] text-[11px] font-extrabold tracking-[0.06em] uppercase group-hover:translate-x-1 transition-transform inline-block"
               >
                 Chat on WhatsApp →
               </a>
@@ -213,7 +254,7 @@ export function ContactPage() {
 
             {/* Option 03 - Phone Call */}
             <div className="min-h-[220px] p-7 border-r border-b border-[#333333] flex flex-col hover:bg-[#222222] transition-colors group">
-              <div className="text-[10px] text-[#777777] font-mono font-bold mb-8">
+              <div className="text-[10px] text-[#999999] font-mono font-bold mb-8">
                 03
               </div>
               <div className="w-[38px] h-[38px] border border-[#555555] grid place-items-center mb-5 text-[#e6321c]">
@@ -222,16 +263,16 @@ export function ContactPage() {
               <h3 className="text-[17px] font-bold uppercase tracking-[-0.02em] mb-1 text-white">
                 Direct Call
               </h3>
-              <div className="text-[11px] font-mono text-[#d4d1cc] mb-2 select-all">
+              <a href={`tel:+${BINGOOO_PHONE_RAW}`} className="self-start py-1 text-[11px] font-mono text-[#d4d1cc] mb-1">
                 {BINGOOO_PHONE_DISPLAY}
-              </div>
+              </a>
               <p className="text-[#999999] text-[12px] leading-[1.7] mb-auto">
                 Speak directly with our atelier team in Srikakulam (Mon–Sat, 9 AM – 9 PM IST).
               </p>
               <a
                 href={`tel:+${BINGOOO_PHONE_RAW}`}
                 onClick={() => triggerHaptic('light')}
-                className="mt-6 text-[#e6321c] text-[11px] font-extrabold tracking-[0.06em] uppercase group-hover:translate-x-1 transition-transform inline-block"
+                className="mt-4 py-2 text-[#e6321c] text-[11px] font-extrabold tracking-[0.06em] uppercase group-hover:translate-x-1 transition-transform inline-block"
               >
                 Call Concierge →
               </a>
@@ -239,7 +280,7 @@ export function ContactPage() {
 
             {/* Option 04 - Instagram */}
             <div className="min-h-[220px] p-7 border-r border-b border-[#333333] flex flex-col hover:bg-[#222222] transition-colors group">
-              <div className="text-[10px] text-[#777777] font-mono font-bold mb-8">
+              <div className="text-[10px] text-[#999999] font-mono font-bold mb-8">
                 04
               </div>
               <div className="w-[38px] h-[38px] border border-[#555555] grid place-items-center mb-5 text-[#E1306C]">
@@ -259,9 +300,9 @@ export function ContactPage() {
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={() => triggerHaptic('light')}
-                className="mt-6 text-[#E1306C] text-[11px] font-extrabold tracking-[0.06em] uppercase group-hover:translate-x-1 transition-transform inline-block"
+                className="mt-4 py-2 text-[#E1306C] text-[11px] font-extrabold tracking-[0.06em] uppercase group-hover:translate-x-1 transition-transform inline-block"
               >
-                Follow @bingooo.co →
+                Follow {BINGOOO_INSTAGRAM_HANDLE} →
               </a>
             </div>
           </div>
@@ -377,6 +418,7 @@ export function ContactPage() {
                   id="name"
                   type="text"
                   placeholder="Your name"
+                  autoComplete="name"
                   value={formData.name}
                   onChange={(e) => {
                     setFormData({ ...formData, name: e.target.value });
@@ -400,6 +442,7 @@ export function ContactPage() {
                   id="email"
                   type="email"
                   placeholder="you@example.com"
+                  autoComplete="email"
                   value={formData.email}
                   onChange={(e) => {
                     setFormData({ ...formData, email: e.target.value });
@@ -423,6 +466,7 @@ export function ContactPage() {
                   id="phone"
                   type="tel"
                   placeholder="+91 XXXXX XXXXX"
+                  autoComplete="tel"
                   value={formData.phone}
                   onChange={(e) => {
                     setFormData({ ...formData, phone: e.target.value });
@@ -526,6 +570,188 @@ export function ContactPage() {
       </section>
 
       {/* =======================================================
+           FLAGSHIP ATELIER & GOOGLE MAPS EXPERIENCE
+      ======================================================= */}
+      <section className="py-[75px] sm:py-[100px] bg-[#171717] text-white relative overflow-hidden">
+        {/* Subtle background monogram */}
+        <div className="absolute right-[-20px] top-[-60px] text-[280px] font-extrabold leading-none text-white/[0.02] select-none pointer-events-none">
+          B
+        </div>
+
+        <div className="container-bingooo relative z-10">
+          <div className="max-w-[720px] mb-12 sm:mb-16">
+            <div className="flex items-center gap-2.5 text-[11px] font-extrabold tracking-[0.14em] uppercase text-[#e6321c] mb-4 before:content-[''] before:w-7 before:h-[2px] before:bg-[#e6321c]">
+              FLAGSHIP ATELIER • GOOGLE BUSINESS PROFILE
+            </div>
+
+            <h2 className="m-0 text-[clamp(36px,6vw,72px)] leading-[0.92] tracking-[-0.06em] font-extrabold uppercase text-white">
+              VISIT OUR STORE.<br />
+              <span className="text-[#e6321c]">IN SRIKAKULAM.</span>
+            </h2>
+
+            <p className="mt-5 text-[#aaa7a1] text-[14px] sm:text-[15px] leading-[1.8] max-w-[620px]">
+              Touch our 240–280 GSM heavyweight cotton fabrics, test our relaxed drop-shoulder drape, or design bespoke custom tees with us in the studio. Walk-ins welcome daily.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-[1.1fr_1fr] gap-8 lg:gap-12 items-stretch">
+            {/* Store Card & Local Actions */}
+            <div className="bg-[#201e1c] border border-white/10 p-7 sm:p-10 flex flex-col justify-between">
+              <div>
+                <div className="flex items-center justify-between gap-4 mb-6 pb-5 border-b border-white/10">
+                  <div className="flex items-center gap-2.5 text-[12px] font-mono font-bold uppercase tracking-[0.12em] text-[#e6321c]">
+                    <span className="w-2.5 h-2.5 rounded-full bg-[#238636] animate-pulse" />
+                    <span>OPEN DAILY • 9:00 AM – 9:00 PM IST</span>
+                  </div>
+                  <span className="text-[10px] uppercase font-mono font-bold tracking-[0.12em] bg-white/10 px-2.5 py-1 text-[#f7eedb]">
+                    FLAGSHIP 01
+                  </span>
+                </div>
+
+                <h3 className="text-[24px] sm:text-[28px] font-extrabold uppercase tracking-tight text-white mb-2">
+                  BINGOOO MEN'S WEAR
+                </h3>
+                <p className="text-[#e6321c] text-[12px] font-mono font-bold uppercase tracking-wider mb-6">
+                  Heavyweight Menswear & Custom Garment Studio
+                </p>
+
+                <div className="space-y-4 mb-8">
+                  <div className="flex items-start gap-3.5">
+                    <MapPin className="w-5 h-5 text-[#e6321c] shrink-0 mt-0.5" />
+                    <div>
+                      <div className="text-[14px] font-bold text-white leading-snug">
+                        7 Roads Junction, Main Road
+                      </div>
+                      <div className="text-[13px] text-[#aaa7a1] mt-0.5">
+                        Srikakulam, Andhra Pradesh 532001, India
+                      </div>
+                      <div className="text-[11px] font-mono text-[#e6321c]/90 mt-1">
+                        Landmark: Near 7 Roads Junction
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="flex items-start gap-3.5">
+                    <Clock className="w-5 h-5 text-[#e6321c] shrink-0 mt-0.5" />
+                    <div>
+                      <div className="text-[14px] font-bold text-white">
+                        Monday – Sunday
+                      </div>
+                      <div className="text-[13px] text-[#aaa7a1] mt-0.5">
+                        09:00 AM – 09:00 PM IST (All 7 Days)
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* In-Store Highlights */}
+                <div className="mb-8 pt-6 border-t border-white/10">
+                  <div className="text-[10px] font-extrabold uppercase tracking-[0.14em] text-[#aaa7a1] mb-3">
+                    In-Store Features & Services
+                  </div>
+                  <div className="flex flex-wrap gap-2 text-[11px] font-mono">
+                    <span className="px-3 py-1 bg-white/5 border border-white/10 text-[#f7eedb]">
+                      240 GSM Fabric Rails
+                    </span>
+                    <span className="px-3 py-1 bg-white/5 border border-white/10 text-[#f7eedb]">
+                      Custom Studio
+                    </span>
+                    <span className="px-3 py-1 bg-white/5 border border-white/10 text-[#f7eedb]">
+                      Trial Rooms
+                    </span>
+                    <span className="px-3 py-1 bg-white/5 border border-white/10 text-[#f7eedb]">
+                      UPI / Card Accepted
+                    </span>
+                    <span className="px-3 py-1 bg-white/5 border border-white/10 text-[#f7eedb]">
+                      Instant Size Exchanges
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-6 border-t border-white/10">
+                <a
+                  href={GOOGLE_MAPS_DIRECTIONS_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={() => triggerHaptic('medium')}
+                  className="inline-flex items-center justify-center gap-2 h-12 px-4 bg-[#e6321c] text-white text-[11px] font-extrabold uppercase tracking-[0.06em] hover:bg-[#b91f12] transition-colors rounded-[8px]"
+                >
+                  <Navigation className="w-3.5 h-3.5 shrink-0" />
+                  <span>Directions</span>
+                </a>
+
+                <a
+                  href={GOOGLE_REVIEW_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={() => triggerHaptic('light')}
+                  className="inline-flex items-center justify-center gap-2 h-12 px-4 bg-white/10 border border-white/20 text-white text-[11px] font-extrabold uppercase tracking-[0.06em] hover:bg-white/20 hover:border-white/30 transition-colors rounded-[8px]"
+                >
+                  <Star className="w-3.5 h-3.5 text-[#F7EEDB] fill-[#F7EEDB] shrink-0" />
+                  <span>Review Us</span>
+                </a>
+
+                <button
+                  type="button"
+                  onClick={handleCopyAddress}
+                  className="inline-flex items-center justify-center gap-2 h-12 px-4 bg-white/10 border border-white/20 text-white text-[11px] font-extrabold uppercase tracking-[0.06em] hover:bg-white/20 hover:border-white/30 transition-colors rounded-[8px] cursor-pointer"
+                >
+                  {copiedAddress ? (
+                    <>
+                      <Check className="w-3.5 h-3.5 text-[#238636] shrink-0" />
+                      <span>Copied</span>
+                    </>
+                  ) : (
+                    <>
+                      <Copy className="w-3.5 h-3.5 shrink-0" />
+                      <span>Copy NAP</span>
+                    </>
+                  )}
+                </button>
+              </div>
+            </div>
+
+            {/* Google Maps Embed Frame */}
+            <div className="bg-[#201e1c] border border-white/10 flex flex-col overflow-hidden min-h-[420px] lg:min-h-[500px]">
+              {/* Map Header Bar */}
+              <div className="px-5 py-3.5 bg-[#171717] border-b border-white/10 flex items-center justify-between gap-4">
+                <div className="flex items-center gap-2 text-[11px] font-mono font-bold text-[#f7eedb]">
+                  <MapPin className="w-3.5 h-3.5 text-[#e6321c]" />
+                  <span>GPS: 18.2969° N, 83.8968° E</span>
+                </div>
+                <a
+                  href={GOOGLE_MAPS_STORE_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-[11px] font-mono text-[#e6321c] hover:underline inline-flex items-center gap-1"
+                >
+                  <span>Open Full Map</span>
+                  <ExternalLink className="w-3 h-3" />
+                </a>
+              </div>
+
+              {/* Map Iframe */}
+              <div className="relative w-full flex-1 min-h-[380px] bg-[#1a1a1a]">
+                <iframe
+                  title="Bingooo Flagship Atelier Google Maps Location"
+                  src={GOOGLE_MAPS_EMBED_URL}
+                  width="100%"
+                  height="100%"
+                  style={{ border: 0, minHeight: '380px', filter: 'contrast(1.05)' }}
+                  allowFullScreen
+                  loading="lazy"
+                  referrerPolicy="no-referrer-when-downgrade"
+                  className="w-full h-full"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* =======================================================
            FAQ SECTION
       ======================================================= */}
       <section className="py-20 bg-[#ede0cc]">
@@ -567,24 +793,24 @@ export function ContactPage() {
 
             <div className="relative z-10">
               <div className="text-[#e6321c] text-[10px] font-extrabold tracking-[0.15em] uppercase mb-4">
-                Custom Design Studio
+                Signature Atelier Drops
               </div>
 
               <h2 className="m-0 text-[clamp(36px,5vw,64px)] leading-[0.92] tracking-[-0.06em] font-extrabold uppercase text-white">
-                YOUR IDEA.<br />YOUR GARMENT.
+                WEAR WHAT<br />DEFINES YOU.
               </h2>
 
               <p className="mt-5 mb-0 text-[#999999] text-[14px] leading-[1.8] max-w-[560px]">
-                Have something specific in mind? Upload your artwork, customize your garment and create something that feels completely yours.
+                Explore our full catalog of heavyweight oversized tees, hoodies, and cargo pants tailored for modern streetwear.
               </p>
             </div>
 
             <Link
-              to="/customize"
+              to="/shop"
               onClick={() => triggerHaptic('medium')}
               className="relative z-10 inline-flex items-center justify-center h-[50px] px-[26px] bg-[#e6321c] text-white rounded-[10px] text-[11px] font-extrabold uppercase tracking-[0.05em] hover:bg-[#b91f12] transition-colors whitespace-nowrap"
             >
-              Create Your Design →
+              Explore Collection →
             </Link>
           </div>
         </div>

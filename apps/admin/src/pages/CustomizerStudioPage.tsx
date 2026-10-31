@@ -1,6 +1,14 @@
 import { useEffect, useState, useRef } from 'react';
-import { api } from '../lib/api';
+import { api, resolveImageUrl, STOREFRONT_URL } from '../lib/api';
 import { useToast } from '../components/Toast';
+import {
+  PrintAreaPreview,
+  printAreasFor,
+  checkGarmentPhoto,
+  shrinkGarmentPhoto,
+  CHECKERBOARD,
+  type PrintAreas,
+} from '../components/PrintAreaPreview';
 import {
   Palette,
   Plus,
@@ -11,10 +19,13 @@ import {
   LoaderCircle,
   X,
   Eye,
-  Camera,
   DollarSign,
   Ruler,
   Save,
+  Shirt,
+  AlertTriangle,
+  ImageOff,
+  RotateCcw,
 } from 'lucide-react';
 
 // ─── Types ──────────────────────────────────────────────────────────────────
@@ -36,11 +47,16 @@ export interface GarmentColor {
   isActive: boolean;
 }
 
+/** Drives print-area placement and size-chart columns on the storefront. */
+export type GarmentStyle = 'tshirt' | 'polo' | 'hoodie';
+
 export interface GarmentItem {
-  id: string; // 'tshirt' | 'oversized' | 'hoodie'
+  id: string;
   name: string;
+  shortName: string;
+  style: GarmentStyle;
   price: number;
-  compareAtPrice?: number;
+  compareAtPrice?: number | null;
   description: string;
   isActive: boolean;
   sizes: string[];
@@ -50,75 +66,87 @@ export interface GarmentItem {
     in: MeasurementRow[];
   };
   colors: GarmentColor[];
+  /** Where prints sit on this garment's photos; unset = the style's default placement. */
+  printAreas?: PrintAreas;
 }
 
 export interface CustomizerStudioConfig {
   garments: GarmentItem[];
-  updatedAt: string;
+  updatedAt: string | null;
 }
 
-// ─── Default Sizing Constants ───────────────────────────────────────────────
-const ALL_AVAILABLE_SIZES = ['XS', 'S', 'M', 'L', 'XL', 'XXL', '3XL'];
+// ─── Size presets ───────────────────────────────────────────────────────────
+const LETTER_SIZES = ['XS', 'S', 'M', 'L', 'XL', 'XXL', '3XL'];
+/** Upload target for photos chosen inside the add/edit colour dialog. */
+const MODAL_UPLOAD = '__colour-dialog__';
+const NUMERIC_SIZES = ['36', '38', '40', '42', '44', '46'];
 
-const DEFAULT_MEASUREMENTS: Record<string, { cm: MeasurementRow[]; in: MeasurementRow[] }> = {
-  oversized: {
-    cm: [
-      { size: 'XS', chest: '102 cm', length: '69 cm', shoulder: '51 cm', sleeve: '22 cm' },
-      { size: 'S', chest: '107 cm', length: '71 cm', shoulder: '53 cm', sleeve: '23 cm' },
-      { size: 'M', chest: '112 cm', length: '74 cm', shoulder: '56 cm', sleeve: '24 cm' },
-      { size: 'L', chest: '117 cm', length: '76 cm', shoulder: '58 cm', sleeve: '25 cm' },
-      { size: 'XL', chest: '122 cm', length: '79 cm', shoulder: '61 cm', sleeve: '26 cm' },
-      { size: 'XXL', chest: '127 cm', length: '81 cm', shoulder: '64 cm', sleeve: '27 cm' },
-      { size: '3XL', chest: '132 cm', length: '83 cm', shoulder: '67 cm', sleeve: '28 cm' },
-    ],
+const STYLE_OPTIONS: { id: GarmentStyle; label: string }[] = [
+  { id: 'tshirt', label: 'T-shirt (oversized / regular)' },
+  { id: 'polo', label: 'Polo shirt' },
+  { id: 'hoodie', label: 'Hoodie / sweatshirt' },
+];
+
+/** What still has to be filled in before a garment looks right on the storefront. */
+function garmentWarnings(g: GarmentItem): string[] {
+  const active = g.colors.filter((c) => c.isActive !== false);
+  const warnings: string[] = [];
+  if (active.length === 0) warnings.push('Add a colour');
+  else if (active.some((c) => !c.frontImageUrl)) warnings.push('Front photo missing');
+  if ((g.activeSizes || []).length === 0) warnings.push('Add sizes');
+  return warnings;
+}
+
+/** Typical charts, offered as a starting point ("Fill typical measurements"). */
+const DEFAULT_MEASUREMENTS: Record<GarmentStyle, { cm: MeasurementRow[]; in: MeasurementRow[] }> = {
+  tshirt: {
     in: [
-      { size: 'XS', chest: '40 in', length: '27 in', shoulder: '20 in', sleeve: '8.5 in' },
-      { size: 'S', chest: '42 in', length: '28 in', shoulder: '21 in', sleeve: '9.0 in' },
-      { size: 'M', chest: '44 in', length: '29 in', shoulder: '22 in', sleeve: '9.5 in' },
-      { size: 'L', chest: '46 in', length: '30 in', shoulder: '23 in', sleeve: '10.0 in' },
-      { size: 'XL', chest: '48 in', length: '31 in', shoulder: '24 in', sleeve: '10.5 in' },
-      { size: 'XXL', chest: '50 in', length: '32 in', shoulder: '25 in', sleeve: '11.0 in' },
-      { size: '3XL', chest: '52 in', length: '33 in', shoulder: '26.5 in', sleeve: '11.5 in' },
+      { size: 'S', chest: '42 in', length: '27.5 in', shoulder: '20 in', sleeve: '8.5 in' },
+      { size: 'M', chest: '44 in', length: '28 in', shoulder: '21 in', sleeve: '9 in' },
+      { size: 'L', chest: '46 in', length: '28.5 in', shoulder: '22 in', sleeve: '9.5 in' },
+      { size: 'XL', chest: '48 in', length: '29 in', shoulder: '23 in', sleeve: '10 in' },
+      { size: 'XXL', chest: '50 in', length: '29.5 in', shoulder: '24 in', sleeve: '10.5 in' },
+    ],
+    cm: [
+      { size: 'S', chest: '107 cm', length: '70 cm', shoulder: '51 cm', sleeve: '22 cm' },
+      { size: 'M', chest: '112 cm', length: '71 cm', shoulder: '53 cm', sleeve: '23 cm' },
+      { size: 'L', chest: '117 cm', length: '72 cm', shoulder: '56 cm', sleeve: '24 cm' },
+      { size: 'XL', chest: '122 cm', length: '74 cm', shoulder: '58 cm', sleeve: '25 cm' },
+      { size: 'XXL', chest: '127 cm', length: '75 cm', shoulder: '61 cm', sleeve: '27 cm' },
     ],
   },
-  tshirt: {
-    cm: [
-      { size: 'XS', chest: '96 cm', length: '66 cm', shoulder: '42 cm', sleeve: '20 cm' },
-      { size: 'S', chest: '102 cm', length: '68 cm', shoulder: '44 cm', sleeve: '21 cm' },
-      { size: 'M', chest: '108 cm', length: '70 cm', shoulder: '46 cm', sleeve: '22 cm' },
-      { size: 'L', chest: '114 cm', length: '72 cm', shoulder: '48 cm', sleeve: '23 cm' },
-      { size: 'XL', chest: '120 cm', length: '74 cm', shoulder: '50 cm', sleeve: '24 cm' },
-      { size: 'XXL', chest: '126 cm', length: '76 cm', shoulder: '52 cm', sleeve: '25 cm' },
-      { size: '3XL', chest: '132 cm', length: '78 cm', shoulder: '54 cm', sleeve: '26 cm' },
-    ],
+  polo: {
     in: [
-      { size: 'XS', chest: '38 in', length: '26 in', shoulder: '16.5 in', sleeve: '8 in' },
-      { size: 'S', chest: '40 in', length: '27 in', shoulder: '17.5 in', sleeve: '8.2 in' },
-      { size: 'M', chest: '42.5 in', length: '27.5 in', shoulder: '18 in', sleeve: '8.6 in' },
-      { size: 'L', chest: '45 in', length: '28.5 in', shoulder: '19 in', sleeve: '9 in' },
-      { size: 'XL', chest: '47 in', length: '29 in', shoulder: '19.5 in', sleeve: '9.4 in' },
-      { size: 'XXL', chest: '49.5 in', length: '30 in', shoulder: '20.5 in', sleeve: '9.8 in' },
-      { size: '3XL', chest: '52 in', length: '31 in', shoulder: '21.5 in', sleeve: '10.2 in' },
+      { size: '36', chest: '36 in', length: '26 in', shoulder: '16 in', sleeve: '8 in' },
+      { size: '38', chest: '38 in', length: '27 in', shoulder: '17 in', sleeve: '8.5 in' },
+      { size: '40', chest: '40 in', length: '28 in', shoulder: '17.5 in', sleeve: '9 in' },
+      { size: '42', chest: '42 in', length: '29 in', shoulder: '18 in', sleeve: '9.5 in' },
+      { size: '44', chest: '44 in', length: '30 in', shoulder: '18.5 in', sleeve: '10 in' },
+      { size: '46', chest: '46 in', length: '31 in', shoulder: '19 in', sleeve: '10.5 in' },
+    ],
+    cm: [
+      { size: '36', chest: '91 cm', length: '66 cm', shoulder: '41 cm', sleeve: '20 cm' },
+      { size: '38', chest: '97 cm', length: '68 cm', shoulder: '43 cm', sleeve: '22 cm' },
+      { size: '40', chest: '102 cm', length: '71 cm', shoulder: '44 cm', sleeve: '23 cm' },
+      { size: '42', chest: '107 cm', length: '74 cm', shoulder: '46 cm', sleeve: '24 cm' },
+      { size: '44', chest: '112 cm', length: '76 cm', shoulder: '47 cm', sleeve: '25 cm' },
+      { size: '46', chest: '117 cm', length: '79 cm', shoulder: '48 cm', sleeve: '27 cm' },
     ],
   },
   hoodie: {
-    cm: [
-      { size: 'XS', chest: '108 cm', length: '68 cm', shoulder: '52 cm', sleeve: '60 cm' },
-      { size: 'S', chest: '114 cm', length: '70 cm', shoulder: '54 cm', sleeve: '61 cm' },
-      { size: 'M', chest: '120 cm', length: '72 cm', shoulder: '56 cm', sleeve: '62 cm' },
-      { size: 'L', chest: '126 cm', length: '74 cm', shoulder: '58 cm', sleeve: '63 cm' },
-      { size: 'XL', chest: '132 cm', length: '76 cm', shoulder: '60 cm', sleeve: '64 cm' },
-      { size: 'XXL', chest: '138 cm', length: '78 cm', shoulder: '62 cm', sleeve: '65 cm' },
-      { size: '3XL', chest: '144 cm', length: '80 cm', shoulder: '64 cm', sleeve: '66 cm' },
-    ],
     in: [
-      { size: 'XS', chest: '42.5 in', length: '26.8 in', shoulder: '20.5 in', sleeve: '23.6 in' },
-      { size: 'S', chest: '44.8 in', length: '27.5 in', shoulder: '21.2 in', sleeve: '24 in' },
-      { size: 'M', chest: '47.2 in', length: '28.3 in', shoulder: '22.0 in', sleeve: '24.4 in' },
-      { size: 'L', chest: '49.6 in', length: '29.1 in', shoulder: '22.8 in', sleeve: '24.8 in' },
-      { size: 'XL', chest: '52.0 in', length: '30.0 in', shoulder: '23.6 in', sleeve: '25.2 in' },
-      { size: 'XXL', chest: '54.3 in', length: '30.7 in', shoulder: '24.4 in', sleeve: '25.6 in' },
-      { size: '3XL', chest: '56.7 in', length: '31.5 in', shoulder: '25.2 in', sleeve: '26.0 in' },
+      { size: 'S', chest: '42 in', length: '25 in', shoulder: '21 in', sleeve: '24 in' },
+      { size: 'M', chest: '44 in', length: '26 in', shoulder: '22 in', sleeve: '24.5 in' },
+      { size: 'L', chest: '46 in', length: '27 in', shoulder: '23 in', sleeve: '25 in' },
+      { size: 'XL', chest: '48 in', length: '28 in', shoulder: '24 in', sleeve: '25.5 in' },
+      { size: 'XXL', chest: '50 in', length: '29 in', shoulder: '25 in', sleeve: '26 in' },
+    ],
+    cm: [
+      { size: 'S', chest: '107 cm', length: '64 cm', shoulder: '53 cm', sleeve: '61 cm' },
+      { size: 'M', chest: '112 cm', length: '66 cm', shoulder: '56 cm', sleeve: '62 cm' },
+      { size: 'L', chest: '117 cm', length: '69 cm', shoulder: '58 cm', sleeve: '63 cm' },
+      { size: 'XL', chest: '122 cm', length: '71 cm', shoulder: '61 cm', sleeve: '65 cm' },
+      { size: 'XXL', chest: '127 cm', length: '74 cm', shoulder: '64 cm', sleeve: '66 cm' },
     ],
   },
 };
@@ -126,8 +154,8 @@ const DEFAULT_MEASUREMENTS: Record<string, { cm: MeasurementRow[]; in: Measureme
 const SIGNATURE_PALETTE = [
   { name: 'Obsidian Black', hex: '#171717', contrast: '#FFFFFF' },
   { name: 'Pure White', hex: '#FFFFFF', contrast: '#171717' },
-  { name: 'Washed Sand', hex: '#D8C8B1', contrast: '#171717' },
-  { name: 'Atelier Red', hex: '#E6321C', contrast: '#FFFFFF' },
+  { name: 'Washed Beige', hex: '#D8C8B1', contrast: '#171717' },
+  { name: 'Signal Red', hex: '#E6321C', contrast: '#FFFFFF' },
   { name: 'Sage Green', hex: '#4A584A', contrast: '#FFFFFF' },
   { name: 'Vintage Cream', hex: '#F7EEDB', contrast: '#171717' },
   { name: 'Deep Navy', hex: '#1D3557', contrast: '#FFFFFF' },
@@ -135,124 +163,19 @@ const SIGNATURE_PALETTE = [
   { name: 'Charcoal Grey', hex: '#2B2B2B', contrast: '#FFFFFF' },
 ];
 
-const DEFAULT_GARMENTS: GarmentItem[] = [
-  {
-    id: 'tshirt',
-    name: 'Classic T-Shirt',
-    price: 999,
-    compareAtPrice: 1499,
-    description: '100% Combed Cotton · Classic Everyday Crewneck (180 GSM)',
-    isActive: true,
-    sizes: [...ALL_AVAILABLE_SIZES],
-    activeSizes: ['XS', 'S', 'M', 'L', 'XL', 'XXL'],
-    sizeMeasurements: DEFAULT_MEASUREMENTS.tshirt,
-    colors: [
-      { id: 'black', name: 'Black', hex: '#171717', textContrast: '#FFFFFF', frontImageUrl: '/custom/black-front.png', backImageUrl: '/custom/black-back.png', isActive: true },
-      { id: 'white', name: 'White', hex: '#FFFFFF', textContrast: '#171717', frontImageUrl: '/custom/white-front.png', backImageUrl: '/custom/white-back.png', isActive: true },
-      { id: 'beige', name: 'Beige', hex: '#D8C8B1', textContrast: '#171717', frontImageUrl: '/custom/beige-front.png', backImageUrl: '/custom/beige-back.png', isActive: true },
-      { id: 'red', name: 'Red', hex: '#E6321C', textContrast: '#FFFFFF', frontImageUrl: '/custom/red-front.png', backImageUrl: '/custom/red-back.png', isActive: true },
-    ],
-  },
-  {
-    id: 'oversized',
-    name: 'Oversized Tee',
-    price: 1299,
-    compareAtPrice: 1799,
-    description: '240 GSM Heavyweight French Terry · Signature Drop-Shoulder Streetwear Cut',
-    isActive: true,
-    sizes: [...ALL_AVAILABLE_SIZES],
-    activeSizes: ['XS', 'S', 'M', 'L', 'XL', 'XXL'],
-    sizeMeasurements: DEFAULT_MEASUREMENTS.oversized,
-    colors: [
-      { id: 'black', name: 'Black', hex: '#171717', textContrast: '#FFFFFF', frontImageUrl: '/custom/black-front.png', backImageUrl: '/custom/black-back.png', isActive: true },
-      { id: 'white', name: 'White', hex: '#FFFFFF', textContrast: '#171717', frontImageUrl: '/custom/white-front.png', backImageUrl: '/custom/white-back.png', isActive: true },
-      { id: 'beige', name: 'Beige', hex: '#D8C8B1', textContrast: '#171717', frontImageUrl: '/custom/beige-front.png', backImageUrl: '/custom/beige-back.png', isActive: true },
-      { id: 'red', name: 'Red', hex: '#E6321C', textContrast: '#FFFFFF', frontImageUrl: '/custom/red-front.png', backImageUrl: '/custom/red-back.png', isActive: true },
-    ],
-  },
-  {
-    id: 'hoodie',
-    name: 'Heavyweight Hoodie',
-    price: 2499,
-    compareAtPrice: 3499,
-    description: '350 GSM Brushed Fleece Pullover · Double-Layered Thermal Hood',
-    isActive: true,
-    sizes: [...ALL_AVAILABLE_SIZES],
-    activeSizes: ['XS', 'S', 'M', 'L', 'XL', 'XXL'],
-    sizeMeasurements: DEFAULT_MEASUREMENTS.hoodie,
-    colors: [
-      { id: 'black', name: 'Black', hex: '#171717', textContrast: '#FFFFFF', frontImageUrl: '/custom/hoodie-black-front.png', backImageUrl: '/custom/hoodie-black-back.png', isActive: true },
-      { id: 'white', name: 'White', hex: '#FFFFFF', textContrast: '#171717', frontImageUrl: '/custom/hoodie-white-front.png', backImageUrl: '/custom/hoodie-white-back.png', isActive: true },
-      { id: 'beige', name: 'Beige', hex: '#D8C8B1', textContrast: '#171717', frontImageUrl: '', isActive: true },
-      { id: 'red', name: 'Red', hex: '#E6321C', textContrast: '#FFFFFF', frontImageUrl: '', isActive: true },
-    ],
-  },
-];
-
-function SilhouettePreview({ garmentId, colorHex }: { garmentId: string; colorHex: string }) {
-  const isLight = ['#FFFFFF', '#D8C8B1', '#F7EEDB', '#C8B99D', '#FAF6EE'].some(
-    (h) => colorHex?.toUpperCase() === h
-  );
-  const strokeColor = isLight ? '#2B2B2B' : '#FFFFFF';
-
-  if (garmentId === 'hoodie') {
-    return (
-      <svg viewBox="0 0 400 440" className="w-full h-full drop-shadow-md" fill="none">
-        <path
-          d="M130 65 C130 35, 270 35, 270 65 C280 85, 275 110, 260 115 C240 120, 210 118, 200 125 C190 118, 160 120, 140 115 C125 110, 120 85, 130 65 Z"
-          fill={colorHex}
-          stroke={strokeColor}
-          strokeWidth="3"
-        />
-        <path
-          d="M138 108 L55 185 C48 192, 42 208, 55 220 L80 238 C90 245, 102 238, 110 228 L142 188 L140 375 C140 388, 150 395, 165 395 L235 395 C250 395, 260 388, 260 375 L258 188 L290 228 C298 238, 310 245, 320 238 L345 220 C358 208, 352 192, 345 185 L262 108 C242 118, 222 122, 200 122 C178 122, 158 118, 138 108 Z"
-          fill={colorHex}
-          stroke={strokeColor}
-          strokeWidth="3.5"
-        />
-        <path
-          d="M165 290 L235 290 L248 355 L152 355 Z"
-          fill="none"
-          stroke={strokeColor}
-          strokeWidth="2.5"
-          opacity="0.6"
-        />
-      </svg>
-    );
-  }
-
-  const isOversized = garmentId === 'oversized';
-  return (
-    <svg viewBox="0 0 400 440" className="w-full h-full drop-shadow-md" fill="none">
-      <path
-        d={
-          isOversized
-            ? 'M145 78 C175 92, 225 92, 255 78 L330 135 C345 147, 335 175, 315 185 L285 195 L285 390 C285 402, 275 408, 260 408 L140 408 C125 408, 115 402, 115 390 L115 195 L85 185 C65 175, 55 147, 70 135 Z'
-            : 'M148 80 C175 92, 225 92, 252 80 L318 128 C330 137, 324 160, 308 168 L282 178 L282 388 C282 398, 274 405, 260 405 L140 405 C126 405, 118 398, 118 388 L118 178 L92 168 C76 160, 70 137, 82 128 Z'
-        }
-        fill={colorHex}
-        stroke={strokeColor}
-        strokeWidth="3.5"
-      />
-      <path
-        d="M148 80 C175 102, 225 102, 252 80"
-        fill="none"
-        stroke={strokeColor}
-        strokeWidth="3"
-        opacity="0.75"
-      />
-    </svg>
-  );
+function GarmentThumb({ garment }: { garment: GarmentItem }) {
+  const photo = garment.colors.find((c) => c.isActive !== false && c.frontImageUrl)?.frontImageUrl;
+  if (photo) return <img src={resolveImageUrl(photo)} alt="" className="w-full h-full object-contain" />;
+  return <ImageOff size={18} className="text-[#171717]/40" aria-label="No photo yet" />;
 }
 
 export function CustomizerStudioPage() {
   const { toast } = useToast();
 
-  const [config, setConfig] = useState<CustomizerStudioConfig>({
-    garments: DEFAULT_GARMENTS,
-    updatedAt: new Date().toISOString(),
-  });
-  const [selectedGarmentId, setSelectedGarmentId] = useState<string>('oversized');
+  const [config, setConfig] = useState<CustomizerStudioConfig>({ garments: [], updatedAt: null });
+  const [loadError, setLoadError] = useState<string | null>(null);
+  const [selectedGarmentId, setSelectedGarmentId] = useState<string>('');
+  const [newSize, setNewSize] = useState('');
   const [activeTab, setActiveTab] = useState<'pricing' | 'colors' | 'sizes' | 'preview'>('pricing');
 
   const [loading, setLoading] = useState<boolean>(true);
@@ -264,6 +187,7 @@ export function CustomizerStudioPage() {
   const [measureUnit, setMeasureUnit] = useState<'cm' | 'in'>('in');
   const [previewColorIndex, setPreviewColorIndex] = useState<number>(0);
   const [previewSide, setPreviewSide] = useState<'FRONT' | 'BACK'>('FRONT');
+  const [focusSpot, setFocusSpot] = useState<keyof PrintAreas | null>(null);
 
   const [showColorModal, setShowColorModal] = useState<boolean>(false);
   const [editingColorId, setEditingColorId] = useState<string | null>(null);
@@ -279,29 +203,32 @@ export function CustomizerStudioPage() {
   const uploadInputRef = useRef<HTMLInputElement>(null);
   const [activeUploadTarget, setActiveUploadTarget] = useState<{ colorId: string; side: 'front' | 'back' } | null>(null);
 
+  const GARMENT_ORDER = ['oversized', 'polo', 'hoodie'];
+
+  // Everything shown here comes from the backend; there are no built-in garments.
+  const applyConfig = (data: any) => {
+    const garments: GarmentItem[] = Array.isArray(data?.garments) ? [...data.garments] : [];
+    garments.sort((a, b) => {
+      const indexA = GARMENT_ORDER.indexOf(a.id);
+      const indexB = GARMENT_ORDER.indexOf(b.id);
+      const orderA = indexA === -1 ? 999 : indexA;
+      const orderB = indexB === -1 ? 999 : indexB;
+      return orderA - orderB;
+    });
+    setConfig({ garments, updatedAt: data?.updatedAt ?? null });
+    setSelectedGarmentId((current) => (garments.some((g) => g.id === current) ? current : garments[0]?.id || ''));
+  };
+
   const loadConfig = async () => {
     setLoading(true);
+    setLoadError(null);
     try {
-      const data = await api.get<any>('/customizations/studio/config');
-      const garmentsRaw = data?.data?.garments || data?.garments;
-      if (Array.isArray(garmentsRaw) && garmentsRaw.length > 0) {
-        const enriched = garmentsRaw.map((g: any) => ({
-          ...g,
-          sizes: g.sizes?.length ? g.sizes : [...ALL_AVAILABLE_SIZES],
-          activeSizes: g.activeSizes?.length ? g.activeSizes : ['XS', 'S', 'M', 'L', 'XL', 'XXL'],
-          sizeMeasurements: g.sizeMeasurements || DEFAULT_MEASUREMENTS[g.id] || DEFAULT_MEASUREMENTS.oversized,
-          compareAtPrice: g.compareAtPrice || Math.round(g.price * 1.4),
-        }));
-        setConfig({
-          garments: enriched,
-          updatedAt: data?.updatedAt || new Date().toISOString(),
-        });
-      }
-    } catch {
-      // Fallback
+      applyConfig(await api.get<any>('/customizations/studio/config'));
+      setHasUnsavedChanges(false);
+    } catch (err: any) {
+      setLoadError(err?.message || 'Could not load the custom studio.');
     } finally {
       setLoading(false);
-      setHasUnsavedChanges(false);
     }
   };
 
@@ -319,20 +246,59 @@ export function CustomizerStudioPage() {
     setHasUnsavedChanges(true);
   };
 
+  const handleAddGarment = () => {
+    const taken = new Set(config.garments.map((g) => g.id));
+    let id = 'new-garment';
+    for (let n = 2; taken.has(id); n++) id = `new-garment-${n}`;
+    const garment: GarmentItem = {
+      id,
+      name: 'New garment',
+      shortName: 'NEW',
+      style: 'tshirt',
+      price: 999,
+      compareAtPrice: null,
+      description: '',
+      // Hidden until it has a colour with photos and sizes.
+      isActive: false,
+      sizes: [],
+      activeSizes: [],
+      sizeMeasurements: { in: [], cm: [] },
+      colors: [],
+    };
+    setConfig((prev) => ({ ...prev, garments: [...prev.garments, garment] }));
+    setSelectedGarmentId(id);
+    setActiveTab('pricing');
+    setHasUnsavedChanges(true);
+  };
+
+  const handleDeleteGarment = () => {
+    if (!activeGarment) return;
+    if (!confirm(`Delete "${activeGarment.name}" from the custom studio? Click Publish to make it final.`)) return;
+    const remaining = config.garments.filter((g) => g.id !== activeGarment.id);
+    setConfig((prev) => ({ ...prev, garments: remaining }));
+    setSelectedGarmentId(remaining[0]?.id || '');
+    setHasUnsavedChanges(true);
+  };
+
   const handleSaveAll = async () => {
     setSaving(true);
     setStatusMessage(null);
     try {
-      const payload: CustomizerStudioConfig = {
-        garments: config.garments,
-        updatedAt: new Date().toISOString(),
-      };
-      await api.put('/customizations/studio/config', payload);
+      const sortedGarments = [...config.garments].sort((a, b) => {
+        const indexA = GARMENT_ORDER.indexOf(a.id);
+        const indexB = GARMENT_ORDER.indexOf(b.id);
+        const orderA = indexA === -1 ? 999 : indexA;
+        const orderB = indexB === -1 ? 999 : indexB;
+        return orderA - orderB;
+      });
+      const saved = await api.put<any>('/customizations/studio/config', { garments: sortedGarments });
+      // The server returns the cleaned config (final ids, sizes and photo links).
+      applyConfig(saved);
       setHasUnsavedChanges(false);
       toast.success('Live Customizer Updated', 'All prices, sizes, and colors are live on the customer customizer.');
       setStatusMessage({
         type: 'success',
-        text: '✓ Successfully published changes! Storefront is now synchronized.',
+        text: 'Published. The storefront custom studio now shows these garments.',
       });
       setTimeout(() => setStatusMessage(null), 5000);
     } catch (err: any) {
@@ -425,7 +391,63 @@ export function CustomizerStudioPage() {
     });
 
     setShowColorModal(false);
-    toast.success('Colorway Saved', `"${newColor.name}" updated. Click Publish Changes to deploy.`);
+    toast.success('Colorway Saved (Draft)', `"${newColor.name}" updated. Click Save to Frontend to make it live.`);
+  };
+
+  const handleSaveColorFormAndPublish = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    if (!colorForm.name.trim()) {
+      toast.error('Validation Error', 'Please enter a colorway name.');
+      return;
+    }
+    if (!activeGarment) return;
+
+    const colorId = editingColorId || colorForm.name.toLowerCase().replace(/[^a-z0-9]/g, '-');
+    const newColor: GarmentColor = {
+      id: colorId,
+      name: colorForm.name.trim(),
+      hex: colorForm.hex,
+      textContrast: colorForm.textContrast,
+      frontImageUrl: colorForm.frontImageUrl.trim(),
+      backImageUrl: colorForm.backImageUrl.trim() || undefined,
+      isActive: colorForm.isActive,
+    };
+
+    const colors = [...activeGarment.colors];
+    if (editingColorId) {
+      const idx = colors.findIndex((c) => c.id === editingColorId);
+      if (idx >= 0) colors[idx] = newColor;
+    } else {
+      const existingIdx = colors.findIndex((c) => c.id === colorId);
+      if (existingIdx >= 0) colors[existingIdx] = newColor;
+      else colors.push(newColor);
+    }
+
+    const updatedGarment = { ...activeGarment, colors };
+    const newGarments = config.garments.map((g) => (g.id === activeGarment.id ? updatedGarment : g));
+
+    setSaving(true);
+    setStatusMessage(null);
+    try {
+      const saved = await api.put<any>('/customizations/studio/config', { garments: newGarments });
+      applyConfig(saved);
+      setHasUnsavedChanges(false);
+      setShowColorModal(false);
+      toast.success('Saved & Published Live!', `"${newColor.name}" is now live on ${STOREFRONT_URL}/customize`);
+      setStatusMessage({
+        type: 'success',
+        text: `Published! "${newColor.name}" images are now visible on the storefront custom studio.`,
+      });
+      setTimeout(() => setStatusMessage(null), 6000);
+    } catch (err: any) {
+      toast.error('Save Failed', err?.message || 'Could not update studio config.');
+      setStatusMessage({
+        type: 'error',
+        text: err?.message || 'Failed to save changes.',
+      });
+    } finally {
+      setSaving(false);
+    }
   };
 
   const handleDeleteColor = (colorId: string) => {
@@ -448,13 +470,36 @@ export function CustomizerStudioPage() {
 
     const { colorId, side } = activeUploadTarget;
     setUploadingColorId(colorId);
+    if (file.size > 10 * 1024 * 1024) {
+      toast.error('Photo too large', 'Please use an image under 10 MB.');
+      setUploadingColorId(null);
+      setActiveUploadTarget(null);
+      if (uploadInputRef.current) uploadInputRef.current.value = '';
+      return;
+    }
+
+    const check = await checkGarmentPhoto(file);
+    if (check.error) {
+      toast.error('Photo not uploaded', check.error);
+      setUploadingColorId(null);
+      setActiveUploadTarget(null);
+      if (uploadInputRef.current) uploadInputRef.current.value = '';
+      return;
+    }
 
     try {
       // Goes through the API (not a relative URL, which on the deployed admin
       // hits the admin's own domain). No base64 fallback: embedding the image
       // in the studio config bloats the database and hides the failure.
-      const { url: finalUrl } = await api.upload(file, 'garments');
+      const { url: finalUrl } = await api.upload(await shrinkGarmentPhoto(file), 'garments');
       if (!finalUrl) throw new Error('Upload did not return an image URL.');
+
+      if (colorId === MODAL_UPLOAD) {
+        setColorForm((prev) => (side === 'front' ? { ...prev, frontImageUrl: finalUrl } : { ...prev, backImageUrl: finalUrl }));
+        toast.success('Photo uploaded', `${side === 'front' ? 'Front' : 'Back'} photo attached.`);
+        check.warnings.forEach((w) => toast.warning('Check this photo', w, 8000));
+        return;
+      }
 
       updateActiveGarment((prev) => ({
         ...prev,
@@ -466,7 +511,8 @@ export function CustomizerStudioPage() {
         }),
       }));
 
-      toast.success('Photo Attached', `Updated ${side} view for ${colorId}.`);
+      toast.success('Photo Attached!', `Updated ${side} photo. Click "SAVE TO FRONTEND" to show it live.`);
+      check.warnings.forEach((w) => toast.warning('Check this photo', w, 8000));
     } catch (err: any) {
       toast.error('Upload Error', err?.message || 'Could not upload image.');
     } finally {
@@ -483,16 +529,38 @@ export function CustomizerStudioPage() {
     let next: string[];
 
     if (exists) {
-      if (current.length <= 1) {
-        toast.error('Validation Warning', 'At least one size must remain active.');
-        return;
-      }
       next = current.filter((s) => s !== size);
     } else {
-      next = [...current, size];
+      // Keep the garment's own size order.
+      next = activeGarment.sizes.filter((s) => s === size || current.includes(s));
     }
 
     updateActiveGarment((prev) => ({ ...prev, activeSizes: next }));
+  };
+
+  const addSizes = (sizesToAdd: string[]) => {
+    if (!activeGarment) return;
+    const additions = sizesToAdd
+      .map((s) => s.trim().slice(0, 12))
+      .filter((s) => s && !activeGarment.sizes.some((x) => x.toLowerCase() === s.toLowerCase()));
+    if (additions.length === 0) return;
+    updateActiveGarment((prev) => ({
+      ...prev,
+      sizes: [...prev.sizes, ...additions],
+      activeSizes: [...(prev.activeSizes || []), ...additions],
+    }));
+  };
+
+  const removeSize = (size: string) => {
+    updateActiveGarment((prev) => ({
+      ...prev,
+      sizes: prev.sizes.filter((s) => s !== size),
+      activeSizes: (prev.activeSizes || []).filter((s) => s !== size),
+      sizeMeasurements: {
+        in: (prev.sizeMeasurements?.in || []).filter((r) => r.size !== size),
+        cm: (prev.sizeMeasurements?.cm || []).filter((r) => r.size !== size),
+      },
+    }));
   };
 
   const handleMeasurementChange = (
@@ -502,7 +570,7 @@ export function CustomizerStudioPage() {
     value: string
   ) => {
     updateActiveGarment((prev) => {
-      const baseMeasurements = prev.sizeMeasurements || DEFAULT_MEASUREMENTS[prev.id] || DEFAULT_MEASUREMENTS.oversized;
+      const baseMeasurements = prev.sizeMeasurements || { in: [], cm: [] };
       const rows = [...(baseMeasurements[unit] || [])];
       const idx = rows.findIndex((r) => r.size === size);
 
@@ -511,10 +579,10 @@ export function CustomizerStudioPage() {
       } else {
         rows.push({
           size,
-          chest: field === 'chest' ? value : '—',
-          length: field === 'length' ? value : '—',
-          shoulder: field === 'shoulder' ? value : '—',
-          sleeve: field === 'sleeve' ? value : '—',
+          chest: field === 'chest' ? value : '',
+          length: field === 'length' ? value : '',
+          shoulder: field === 'shoulder' ? value : '',
+          sleeve: field === 'sleeve' ? value : '',
         });
       }
 
@@ -530,28 +598,48 @@ export function CustomizerStudioPage() {
 
   const handleResetMeasurements = () => {
     if (!activeGarment) return;
-    if (!confirm(`Reset all measurements for ${activeGarment.name} to industry defaults?`)) return;
-    updateActiveGarment((prev) => ({
-      ...prev,
-      sizeMeasurements: DEFAULT_MEASUREMENTS[prev.id] || DEFAULT_MEASUREMENTS.oversized,
-    }));
-    toast.success('Measurements Reset', 'Restored standard garment dimension chart.');
+    if (!confirm(`Fill typical ${activeGarment.style} measurements for matching sizes? Your own values for those sizes are replaced.`)) return;
+    const typical = DEFAULT_MEASUREMENTS[activeGarment.style] || DEFAULT_MEASUREMENTS.tshirt;
+    updateActiveGarment((prev) => {
+      const merge = (unit: 'in' | 'cm') => {
+        const own = prev.sizeMeasurements?.[unit] || [];
+        return prev.sizes
+          .map((size) => typical[unit].find((r) => r.size === size) || own.find((r) => r.size === size))
+          .filter((r): r is MeasurementRow => Boolean(r));
+      };
+      return { ...prev, sizeMeasurements: { in: merge('in'), cm: merge('cm') } };
+    });
+    toast.success('Measurements filled', 'Typical values added where your sizes match. Adjust them to your garment.');
   };
 
   if (loading) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] gap-3">
         <LoaderCircle className="w-8 h-8 animate-spin text-[#E6321C]" />
-        <p className="text-sm font-bold text-gray-600">Loading 3D Customizer Studio...</p>
+        <p className="text-sm font-bold text-[#6F6A63]">Loading custom studio...</p>
+      </div>
+    );
+  }
+
+  if (loadError) {
+    return (
+      <div className="max-w-lg mx-auto mt-16 p-6 rounded-3xl border border-red-200 bg-red-50 text-center space-y-3">
+        <AlertTriangle className="w-7 h-7 mx-auto text-red-600" />
+        <p className="text-sm font-bold text-red-800">{loadError}</p>
+        <button type="button" onClick={loadConfig} className="btn-primary">Try again</button>
       </div>
     );
   }
 
   const activeColorObj = activeGarment?.colors?.[previewColorIndex] || activeGarment?.colors?.[0];
-  const activeImageUrl =
-    previewSide === 'BACK'
-      ? activeColorObj?.backImageUrl || activeColorObj?.frontImageUrl
-      : activeColorObj?.frontImageUrl;
+  const activeImageUrl = previewSide === 'BACK' ? activeColorObj?.backImageUrl : activeColorObj?.frontImageUrl;
+
+  // Print placement is per garment (shared by its colours), as a % of the photo.
+  const setPrintSpot = (key: keyof PrintAreas, axis: 'x' | 'y' | 'w', value: number) =>
+    updateActiveGarment((prev) => {
+      const current = printAreasFor(prev.style, prev.printAreas);
+      return { ...prev, printAreas: { ...current, [key]: { ...current[key], [axis]: value } } };
+    });
 
   return (
     <div className="space-y-6 max-w-7xl mx-auto pb-16">
@@ -559,32 +647,32 @@ export function CustomizerStudioPage() {
         type="file"
         ref={uploadInputRef}
         onChange={handleFileUploadAction}
-        accept="image/png, image/jpeg, image/webp"
+        accept="image/png, image/webp"
         className="hidden"
       />
 
       {/* TOP BANNER & ACTION HEADER */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-white p-5 rounded-3xl border border-gray-200 shadow-sm">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-white p-5 border-2 border-[#171717] shadow-[4px_4px_0px_#171717]">
         <div>
           <div className="flex items-center gap-2 mb-1">
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
-            <h1 className="text-xl sm:text-2xl font-black text-gray-900 uppercase tracking-tight">
-              3D Customizer Studio Manager
+            <span className="w-2.5 h-2.5 bg-[#E6321C] shadow-[1px_1px_0px_#171717]" />
+            <h1 className="text-xl sm:text-2xl font-black text-[#171717] uppercase tracking-tight">
+              Custom Studio Matrix
             </h1>
           </div>
-          <p className="text-xs text-gray-500">
-            Control garment silhouettes, live DTF pricing, active colorways, mockups, and measurement matrices.
+          <p className="text-xs text-[#171717]/70 font-medium">
+            Garments customers can design on /customize: prices, colours with real front and back photos, sizes and size charts.
           </p>
         </div>
 
         <div className="flex items-center gap-2.5">
           <a
-            href="https://bingooo.co.in/customize"
+            href={`${STOREFRONT_URL}/customize`}
             target="_blank"
             rel="noopener noreferrer"
-            className="px-3.5 py-2.5 rounded-xl border border-gray-200 hover:bg-gray-50 text-xs font-bold text-gray-700 flex items-center gap-1.5 transition-colors"
+            className="btn-outline text-xs gap-1.5 font-bold"
           >
-            <span>View Storefront Studio</span>
+            <span>Preview Frontend</span>
             <ExternalLink size={13} />
           </a>
 
@@ -592,21 +680,22 @@ export function CustomizerStudioPage() {
             type="button"
             onClick={handleSaveAll}
             disabled={saving}
-            className={`px-5 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider flex items-center gap-2 shadow-md transition-all cursor-pointer ${
+            className={`text-xs font-black uppercase tracking-wider px-5 py-2.5 border-2 border-[#171717] flex items-center gap-2 cursor-pointer transition-all ${
               hasUnsavedChanges
-                ? 'bg-[#E6321C] hover:bg-[#c92613] text-white animate-pulse'
-                : 'bg-gray-900 hover:bg-black text-white'
+                ? 'bg-[#E6321C] text-white shadow-[4px_4px_0px_#171717] hover:bg-[#ff3b20] hover:shadow-[6px_6px_0px_#171717] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none animate-pulse'
+                : 'bg-[#171717] text-white shadow-[3px_3px_0px_#171717] hover:bg-black'
             }`}
+            title="Save changes and make them live on the customer customizer"
           >
             {saving ? (
               <>
-                <LoaderCircle size={14} className="animate-spin" />
-                <span>Publishing...</span>
+                <LoaderCircle size={15} className="animate-spin" />
+                <span>SAVING TO FRONTEND...</span>
               </>
             ) : (
               <>
-                <Save size={14} />
-                <span>{hasUnsavedChanges ? 'Publish Changes *' : 'Publish Live'}</span>
+                <Save size={15} />
+                <span>{hasUnsavedChanges ? 'SAVE TO FRONTEND *' : 'SAVED TO FRONTEND ✓'}</span>
               </>
             )}
           </button>
@@ -615,96 +704,127 @@ export function CustomizerStudioPage() {
 
       {statusMessage && (
         <div
-          className={`p-3.5 rounded-2xl text-xs font-semibold flex items-center justify-between shadow-sm ${
+          className={`p-3.5 border-2 border-[#171717] text-xs font-bold flex items-center justify-between shadow-[2px_2px_0px_#171717] ${
             statusMessage.type === 'success'
-              ? 'bg-emerald-50 text-emerald-800 border border-emerald-200'
-              : 'bg-red-50 text-red-800 border border-red-200'
+              ? 'bg-emerald-100 text-emerald-950'
+              : 'bg-rose-100 text-rose-950'
           }`}
         >
           <span>{statusMessage.text}</span>
-          <button type="button" onClick={() => setStatusMessage(null)} className="text-gray-500 hover:text-gray-800">
+          <button type="button" onClick={() => setStatusMessage(null)} className="text-[#171717] hover:text-[#E6321C]">
             <X size={14} />
           </button>
         </div>
       )}
 
-      {/* GARMENT SILHOUETTES SWITCHER CARDS */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        {config.garments.map((garment) => {
-          const isSelected = garment.id === selectedGarmentId;
-          const activeColorCount = garment.colors?.filter((c) => c.isActive !== false).length || 0;
-          const sampleColorHex = garment.colors?.[0]?.hex || '#171717';
+      {/* GARMENT CARDS */}
+      {config.garments.length === 0 ? (
+        <div className="p-10 border-2 border-dashed border-[#171717] bg-white text-center space-y-3 shadow-[4px_4px_0px_#171717]">
+          <Shirt className="w-10 h-10 mx-auto text-[#171717]/40" />
+          <h2 className="text-base font-black text-[#171717] uppercase font-mono">No garments yet</h2>
+          <p className="text-xs text-[#171717]/70 max-w-md mx-auto">
+            Add a garment (e.g. Oversized T-shirt), set its price and sizes, then add colours with real front and back photos.
+            The storefront custom studio stays hidden until a garment is active.
+          </p>
+          <button type="button" onClick={handleAddGarment} className="btn-primary inline-flex items-center gap-1.5">
+            <Plus size={14} />
+            <span>Add garment</span>
+          </button>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+          {config.garments.map((garment) => {
+            const isSelected = garment.id === selectedGarmentId;
+            const activeColorCount = garment.colors?.filter((c) => c.isActive !== false).length || 0;
+            const warnings = garmentWarnings(garment);
 
-          return (
-            <div
-              key={garment.id}
-              onClick={() => {
-                setSelectedGarmentId(garment.id);
-                setPreviewColorIndex(0);
-              }}
-              className={`p-5 rounded-3xl border-2 transition-all cursor-pointer flex flex-col justify-between relative bg-white shadow-sm hover:shadow-md ${
-                isSelected ? 'border-[#E6321C] ring-2 ring-[#E6321C]/20' : 'border-gray-200 hover:border-gray-300'
-              }`}
-            >
-              <div className="flex items-center justify-between mb-3">
-                <span
-                  className={`text-[10px] font-mono font-bold uppercase px-2.5 py-0.5 rounded-full ${
-                    garment.isActive
-                      ? 'bg-emerald-100 text-emerald-800'
-                      : 'bg-gray-100 text-gray-500'
-                  }`}
-                >
-                  {garment.isActive ? 'Active on Store' : 'Hidden'}
-                </span>
-
-                <span className="text-[10px] font-mono text-gray-400">ID: {garment.id}</span>
-              </div>
-
-              <div className="flex items-center gap-4 my-2">
-                <div className="w-16 h-16 rounded-2xl bg-gray-50 border border-gray-100 flex items-center justify-center p-2 flex-shrink-0 overflow-hidden">
-                  <SilhouettePreview garmentId={garment.id} colorHex={sampleColorHex} />
+            return (
+              <button
+                type="button"
+                key={garment.id}
+                onClick={() => {
+                  setSelectedGarmentId(garment.id);
+                  setPreviewColorIndex(0);
+                }}
+                className={`p-4 border-2 transition-all cursor-pointer flex flex-col text-left ${
+                  isSelected
+                    ? 'border-[#171717] bg-[#F7EEDB] shadow-[5px_5px_0px_#E6321C]'
+                    : 'border-[#171717] bg-white shadow-[3px_3px_0px_#171717] hover:shadow-[5px_5px_0px_#171717]'
+                }`}
+              >
+                <div className="flex items-center justify-between gap-2 mb-3 w-full">
+                  <div className="flex items-center gap-1.5">
+                    <span
+                      className={`text-[10px] font-mono font-bold uppercase px-2 py-0.5 border border-[#171717] ${
+                        garment.isActive ? 'bg-emerald-100 text-emerald-950' : 'bg-zinc-200 text-zinc-700'
+                      }`}
+                    >
+                      {garment.isActive ? 'Live' : 'Hidden'}
+                    </span>
+                    <span className="text-[10px] font-mono font-bold uppercase px-1.5 py-0.5 bg-[#171717] text-white">
+                      {garment.shortName || garment.id}
+                    </span>
+                  </div>
+                  <span className="text-[10px] font-mono font-bold text-[#171717]/60 uppercase truncate">{garment.style}</span>
                 </div>
-                <div>
-                  <h3 className="text-base font-black text-gray-900 uppercase tracking-tight">{garment.name}</h3>
-                  <p className="text-[11px] text-gray-500 line-clamp-1">{garment.description}</p>
-                  <div className="flex items-center gap-2 mt-1.5">
-                    <span className="text-base font-extrabold text-[#E6321C]">₹{garment.price.toLocaleString('en-IN')}</span>
-                    {garment.compareAtPrice && garment.compareAtPrice > garment.price && (
-                      <span className="text-xs font-medium text-gray-400 line-through">
-                        ₹{garment.compareAtPrice.toLocaleString('en-IN')}
-                      </span>
-                    )}
+
+                <div className="flex items-center gap-3 w-full">
+                  <div className="w-16 h-16 border-2 border-[#171717] bg-[#FAF7F2] flex items-center justify-center p-1.5 flex-shrink-0 overflow-hidden shadow-[2px_2px_0px_#171717]">
+                    <GarmentThumb garment={garment} />
+                  </div>
+                  <div className="min-w-0">
+                    <h3 className="text-sm font-black text-[#171717] uppercase tracking-tight truncate">{garment.name}</h3>
+                    <div className="flex items-center gap-2 mt-1">
+                      <span className="text-base font-black font-mono text-[#E6321C]">₹{garment.price.toLocaleString('en-IN')}</span>
+                      {garment.compareAtPrice && garment.compareAtPrice > garment.price && (
+                        <span className="text-xs font-mono text-[#171717]/50 line-through">₹{garment.compareAtPrice.toLocaleString('en-IN')}</span>
+                      )}
+                    </div>
                   </div>
                 </div>
-              </div>
 
-              <div className="mt-3 pt-3 border-t border-gray-100 flex items-center justify-between text-[10px] text-gray-500 font-mono">
-                <span>{activeColorCount} Colors Configured</span>
-                <span>{(garment.activeSizes || []).join(', ')}</span>
-              </div>
-            </div>
-          );
-        })}
-      </div>
+                <div className="mt-3 pt-3 border-t-2 border-[#171717] w-full text-[10px] font-mono font-bold text-[#171717]/70 flex items-center justify-between gap-2 uppercase">
+                  <span>{activeColorCount} colour{activeColorCount === 1 ? '' : 's'}</span>
+                  <span className="truncate">{(garment.activeSizes || []).join(', ') || 'No sizes'}</span>
+                </div>
+                {warnings.length > 0 && (
+                  <div className="mt-2 w-full text-[10px] font-bold text-amber-800 flex items-center gap-1 font-mono uppercase">
+                    <AlertTriangle size={11} className="shrink-0" />
+                    <span className="truncate">{warnings.join(' · ')}</span>
+                  </div>
+                )}
+              </button>
+            );
+          })}
+          <button
+            type="button"
+            onClick={handleAddGarment}
+            className="p-4 border-2 border-dashed border-[#171717] bg-white/70 hover:bg-white text-[#171717] flex flex-col items-center justify-center gap-2 min-h-[150px] transition-colors cursor-pointer shadow-[2px_2px_0px_#171717]"
+          >
+            <Plus size={20} />
+            <span className="text-xs font-black uppercase font-mono tracking-wider">Add garment</span>
+          </button>
+        </div>
+      )}
 
       {/* SELECTED GARMENT CONTROLS */}
       {activeGarment && (
-        <div className="bg-white rounded-3xl border border-gray-200 shadow-sm overflow-hidden">
-          <div className="p-5 border-b border-gray-100 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-gray-50/50">
+        <div className="bg-white border-2 border-[#171717] shadow-[6px_6px_0px_#171717] overflow-hidden">
+          <div className="p-5 border-b-2 border-[#171717] flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-[#FAF7F2]">
             <div>
               <div className="flex items-center gap-2">
                 <span className="text-xs font-mono font-bold text-[#E6321C] uppercase tracking-wider">
                   Configuring Garment
                 </span>
-                <span className="text-xs text-gray-300">/</span>
-                <span className="text-sm font-black text-gray-900 uppercase">{activeGarment.name}</span>
+                <span className="text-xs text-[#171717]/40">/</span>
+                <span className="text-sm font-black text-[#171717] uppercase">{activeGarment.name}</span>
               </div>
-              <p className="text-xs text-gray-500 mt-0.5">
+              <p className="text-xs text-[#171717]/70 mt-0.5 font-medium">
                 Adjust prices, manage size charts, upload color mockups, or test in the live simulator.
               </p>
             </div>
 
-            <div className="flex p-1 bg-gray-100 rounded-2xl gap-1 max-w-full overflow-x-auto">
+            <div className="flex p-1 bg-[#F7EEDB] border-2 border-[#171717] gap-1 max-w-full overflow-x-auto shadow-[2px_2px_0px_#171717]">
               {[
                 { id: 'pricing' as const, label: 'Pricing & Details', icon: DollarSign },
                 { id: 'colors' as const, label: `Colorways (${activeGarment.colors?.length || 0})`, icon: Palette },
@@ -718,8 +838,8 @@ export function CustomizerStudioPage() {
                     key={tab.id}
                     type="button"
                     onClick={() => setActiveTab(tab.id)}
-                    className={`px-3 py-2 text-xs font-bold rounded-xl transition-all flex shrink-0 items-center gap-1.5 whitespace-nowrap cursor-pointer ${
-                      isCurrent ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-900'
+                    className={`px-3 py-1.5 text-xs font-black uppercase font-mono transition-all flex shrink-0 items-center gap-1.5 whitespace-nowrap cursor-pointer ${
+                      isCurrent ? 'bg-[#171717] text-white shadow-[2px_2px_0px_#E6321C]' : 'text-[#171717] hover:bg-white'
                     }`}
                   >
                     <Icon size={13} />
@@ -735,12 +855,12 @@ export function CustomizerStudioPage() {
             {activeTab === 'pricing' && (
               <div className="space-y-6 max-w-3xl">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div className="p-4 rounded-2xl border border-gray-200 bg-gray-50/50">
-                    <label className="text-[11px] font-bold uppercase tracking-wider text-gray-700 block mb-1.5">
+                  <div className="p-4 border-2 border-[#171717] bg-[#F7EEDB]">
+                    <label className="admin-label">
                       Base Customizer Selling Price (₹)
                     </label>
                     <div className="relative">
-                      <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 font-bold">₹</span>
+                      <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#6F6A63] font-bold">₹</span>
                       <input
                         type="number"
                         min="1"
@@ -749,39 +869,40 @@ export function CustomizerStudioPage() {
                           const val = Math.max(1, parseInt(e.target.value) || 0);
                           updateActiveGarment((prev) => ({ ...prev, price: val }));
                         }}
-                        className="w-full pl-8 pr-3 py-2.5 rounded-xl border border-gray-200 bg-white text-base font-extrabold text-gray-900 focus:outline-none focus:border-[#E6321C]"
+                        className="admin-input pl-8 pr-3 text-base font-extrabold"
                       />
                     </div>
-                    <p className="text-[10px] text-gray-500 mt-1.5">
+                    <p className="text-[10px] text-[#6F6A63] mt-1.5">
                       The live retail price shown on the customizer and added to the bag.
                     </p>
                   </div>
 
-                  <div className="p-4 rounded-2xl border border-gray-200 bg-gray-50/50">
-                    <label className="text-[11px] font-bold uppercase tracking-wider text-gray-700 block mb-1.5">
+                  <div className="p-4 border-2 border-[#171717] bg-[#F7EEDB]">
+                    <label className="admin-label">
                       Original Compare-at Price / MRP (₹)
                     </label>
                     <div className="relative">
-                      <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 font-bold">₹</span>
+                      <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#6F6A63] font-bold">₹</span>
                       <input
                         type="number"
                         min="1"
-                        value={activeGarment.compareAtPrice || Math.round(activeGarment.price * 1.4)}
+                        value={activeGarment.compareAtPrice ?? ''}
+                        placeholder="Optional"
                         onChange={(e) => {
-                          const val = Math.max(1, parseInt(e.target.value) || 0);
-                          updateActiveGarment((prev) => ({ ...prev, compareAtPrice: val }));
+                          const val = parseInt(e.target.value);
+                          updateActiveGarment((prev) => ({ ...prev, compareAtPrice: Number.isFinite(val) && val > 0 ? val : null }));
                         }}
-                        className="w-full pl-8 pr-3 py-2.5 rounded-xl border border-gray-200 bg-white text-base font-extrabold text-gray-900 focus:outline-none focus:border-[#E6321C]"
+                        className="admin-input pl-8 pr-3 text-base font-extrabold"
                       />
                     </div>
-                    <p className="text-[10px] text-gray-500 mt-1.5">
-                      Shown with strikethrough to highlight savings for customer value.
+                    <p className="text-[10px] text-[#6F6A63] mt-1.5">
+                      Optional. Shown crossed out when it is higher than the selling price.
                     </p>
                   </div>
                 </div>
 
                 <div>
-                  <label className="text-[10px] font-bold uppercase tracking-wider text-gray-500 block mb-2">
+                  <label className="admin-label text-[#6F6A63] mb-2">
                     Quick Price Adjustments
                   </label>
                   <div className="flex flex-wrap gap-2">
@@ -803,7 +924,7 @@ export function CustomizerStudioPage() {
                             return { ...prev, price: newPrice };
                           });
                         }}
-                        className="px-3 py-1.5 text-xs font-bold rounded-xl border border-gray-200 bg-white hover:bg-gray-50 text-gray-700 transition-colors"
+                        className="px-3 py-1.5 font-mono text-xs font-bold border-2 border-[#171717] bg-white hover:bg-[#EDE0CC] text-[#171717] shadow-[2px_2px_0px_#171717] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-colors"
                       >
                         {btn.label}
                       </button>
@@ -813,8 +934,8 @@ export function CustomizerStudioPage() {
 
                 <div className="space-y-4 pt-2">
                   <div>
-                    <label className="text-[11px] font-bold uppercase tracking-wider text-gray-700 block mb-1.5">
-                      Garment Silhouette Display Name
+                    <label className="admin-label">
+                      Garment Name
                     </label>
                     <input
                       type="text"
@@ -823,13 +944,13 @@ export function CustomizerStudioPage() {
                         const val = e.target.value;
                         updateActiveGarment((prev) => ({ ...prev, name: val }));
                       }}
-                      className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 bg-white text-sm font-semibold text-gray-900 focus:outline-none focus:border-[#E6321C]"
+                      className="admin-input text-sm"
                     />
                   </div>
 
                   <div>
-                    <label className="text-[11px] font-bold uppercase tracking-wider text-gray-700 block mb-1.5">
-                      Fabric & Specification Subtitle
+                    <label className="admin-label">
+                      Fabric & Details (shown under the name)
                     </label>
                     <input
                       type="text"
@@ -838,16 +959,55 @@ export function CustomizerStudioPage() {
                         const val = e.target.value;
                         updateActiveGarment((prev) => ({ ...prev, description: val }));
                       }}
-                      className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 bg-white text-sm font-semibold text-gray-900 focus:outline-none focus:border-[#E6321C]"
+                      className="admin-input text-sm"
                     />
                   </div>
                 </div>
 
-                <div className="pt-3 border-t border-gray-100 flex items-center justify-between">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <div className="text-sm font-bold text-gray-900">Silhouette Availability</div>
-                    <div className="text-xs text-gray-500">
-                      Enable or disable this garment type from appearing in the storefront customizer studio.
+                    <label className="admin-label">
+                      Button Label (short)
+                    </label>
+                    <input
+                      type="text"
+                      maxLength={24}
+                      value={activeGarment.shortName}
+                      onChange={(e) => {
+                        const val = e.target.value.toUpperCase();
+                        updateActiveGarment((prev) => ({ ...prev, shortName: val }));
+                      }}
+                      placeholder="e.g. OVERSIZED"
+                      className="admin-input text-sm"
+                    />
+                    <p className="text-[10px] text-[#6F6A63] mt-1">Shown on the garment picker on the storefront.</p>
+                  </div>
+                  <div>
+                    <label className="admin-label">
+                      Garment Style
+                    </label>
+                    <select
+                      value={activeGarment.style}
+                      onChange={(e) => {
+                        const val = e.target.value as GarmentStyle;
+                        // A new style starts from that style's default print placement.
+                        updateActiveGarment((prev) => ({ ...prev, style: val, printAreas: undefined }));
+                      }}
+                      className="admin-input text-sm"
+                    >
+                      {STYLE_OPTIONS.map((o) => (
+                        <option key={o.id} value={o.id}>{o.label}</option>
+                      ))}
+                    </select>
+                    <p className="text-[10px] text-[#6F6A63] mt-1">Sets where designs sit on the photo and the size-chart columns.</p>
+                  </div>
+                </div>
+
+                <div className="pt-3 border-t border-[#171717]/15 flex items-center justify-between">
+                  <div>
+                    <div className="text-sm font-bold text-[#171717]">Show on storefront</div>
+                    <div className="text-xs text-[#6F6A63]">
+                      Customers only see live garments. Add at least one colour with a front photo and some sizes first.
                     </div>
                   </div>
                   <label className="relative inline-flex items-center cursor-pointer">
@@ -863,27 +1023,64 @@ export function CustomizerStudioPage() {
                     <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#E6321C]"></div>
                   </label>
                 </div>
+
+                <div className="pt-4 border-t-2 border-[#171717]/15 flex items-center justify-between gap-3 flex-wrap">
+                  <button
+                    type="button"
+                    onClick={handleDeleteGarment}
+                    className="px-3 py-2 border-2 border-[#E6321C] bg-white text-[#E6321C] font-mono text-xs font-bold uppercase tracking-wider hover:bg-[#E6321C] hover:text-white flex items-center gap-1.5 cursor-pointer"
+                  >
+                    <Trash2 size={13} />
+                    <span>Delete this garment</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={handleSaveAll}
+                    disabled={saving}
+                    className="btn-primary text-xs gap-2 py-2 px-5 font-black uppercase tracking-wider"
+                  >
+                    {saving ? <LoaderCircle size={14} className="animate-spin" /> : <Save size={14} />}
+                    <span>{hasUnsavedChanges ? 'SAVE TO LIVE FRONTEND *' : 'SAVED TO FRONTEND ✓'}</span>
+                  </button>
+                </div>
               </div>
             )}
 
             {/* TAB 2: COLORS */}
             {activeTab === 'colors' && (
               <div className="space-y-6">
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-4 border-2 border-[#171717] bg-[#FAF7F2] shadow-[3px_3px_0px_#171717]">
                   <div>
-                    <h3 className="text-sm font-black text-gray-900 uppercase">Configured Colorways & Photo Mockups</h3>
-                    <p className="text-xs text-gray-500">
-                      Attach real-life front and back garment photography for photorealistic customer previews.
+                    <h3 className="text-sm font-black text-[#171717] uppercase tracking-tight">Colorways & Mockup Photos</h3>
+                    <p className="text-xs text-[#171717]/60 font-medium mt-0.5">
+                      Upload transparent PNG/WebP garment photos. Click <strong className="text-[#E6321C]">SAVE IMAGES TO FRONTEND</strong> to show your uploads on the live customizer.
                     </p>
                   </div>
-                  <button
-                    type="button"
-                    onClick={handleOpenAddColor}
-                    className="px-4 py-2 rounded-xl bg-gray-900 hover:bg-black text-white text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 shadow-sm self-start sm:self-auto cursor-pointer"
-                  >
-                    <Plus size={14} />
-                    <span>Add New Colorway</span>
-                  </button>
+                  <div className="flex items-center gap-2 self-start sm:self-auto flex-wrap">
+                    <button
+                      type="button"
+                      onClick={handleSaveAll}
+                      disabled={saving}
+                      className={`px-3.5 py-2 text-xs font-black uppercase font-mono border-2 border-[#171717] flex items-center gap-1.5 cursor-pointer transition-all shadow-[2px_2px_0px_#171717] ${
+                        hasUnsavedChanges
+                          ? 'bg-[#E6321C] text-white hover:bg-[#ff3820] animate-pulse'
+                          : 'bg-white text-[#171717] hover:bg-[#F7EEDB]'
+                      }`}
+                      title="Save all mockup images to the live customer studio"
+                    >
+                      {saving ? <LoaderCircle size={13} className="animate-spin" /> : <Save size={13} />}
+                      <span>{hasUnsavedChanges ? 'SAVE IMAGES TO FRONTEND *' : 'ALL IMAGES SAVED ✓'}</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={handleOpenAddColor}
+                      className="btn-primary text-xs gap-1.5"
+                    >
+                      <Plus size={14} />
+                      <span>Add Colorway</span>
+                    </button>
+                  </div>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -892,163 +1089,208 @@ export function CustomizerStudioPage() {
                     const hasBack = !!color.backImageUrl;
                     const isUploadingThis = uploadingColorId === color.id;
 
+                    const deleteImage = (side: 'front' | 'back') => {
+                      if (!confirm(`Delete ${side} mockup photo for "${color.name}"? Click Publish to make it final.`)) return;
+                      updateActiveGarment((prev) => ({
+                        ...prev,
+                        colors: prev.colors.map((c) =>
+                          c.id === color.id
+                            ? { ...c, ...(side === 'front' ? { frontImageUrl: '' } : { backImageUrl: '' }) }
+                            : c
+                        ),
+                      }));
+                      toast.success('Image Removed', `${side === 'front' ? 'Front' : 'Back'} mockup deleted. Click Publish Changes to update the store.`);
+                    };
+
                     return (
                       <div
                         key={color.id}
-                        className={`p-4 rounded-2xl border transition-all flex flex-col justify-between bg-white shadow-sm ${
-                          color.isActive !== false ? 'border-gray-200' : 'border-dashed border-gray-300 opacity-60'
+                        className={`border-2 transition-all flex flex-col bg-white ${
+                          color.isActive !== false
+                            ? 'border-[#171717] shadow-[4px_4px_0px_#171717]'
+                            : 'border-dashed border-[#171717]/40 opacity-60'
                         }`}
                       >
-                        <div>
-                          <div className="flex items-center justify-between mb-3">
-                            <div className="flex items-center gap-2.5">
-                              <div
-                                className="w-7 h-7 rounded-full border border-gray-300 shadow-sm flex items-center justify-center flex-shrink-0"
-                                style={{ backgroundColor: color.hex }}
-                              >
-                                <span className="text-[9px] font-bold" style={{ color: color.textContrast }}>
-                                  Aa
-                                </span>
-                              </div>
-                              <div>
-                                <div className="text-xs font-bold text-gray-900">{color.name}</div>
-                                <div className="text-[10px] font-mono text-gray-400">{color.hex}</div>
-                              </div>
+                        {/* Card Header */}
+                        <div className="flex items-center justify-between px-3 py-2 border-b-2 border-[#171717] bg-[#FAF7F2]">
+                          <div className="flex items-center gap-2">
+                            <div
+                              className="w-5 h-5 border-2 border-[#171717] flex-shrink-0"
+                              style={{ backgroundColor: color.hex }}
+                            />
+                            <div>
+                              <div className="text-[11px] font-black text-[#171717] uppercase tracking-tight">{color.name}</div>
+                              <div className="text-[9px] font-mono text-[#171717]/50">{color.hex}</div>
                             </div>
+                          </div>
+                          <div className="flex items-center gap-1">
+                            <button
+                              type="button"
+                              onClick={() => {
+                                updateActiveGarment((prev) => ({
+                                  ...prev,
+                                  colors: prev.colors.map((c) =>
+                                    c.id === color.id ? { ...c, isActive: !c.isActive } : c
+                                  ),
+                                }));
+                              }}
+                              className={`text-[9px] font-mono font-black uppercase px-2 py-0.5 border-2 border-[#171717] cursor-pointer transition-colors ${
+                                color.isActive !== false
+                                  ? 'bg-emerald-100 text-emerald-900'
+                                  : 'bg-zinc-200 text-zinc-700'
+                              }`}
+                            >
+                              {color.isActive !== false ? 'Live' : 'Off'}
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => handleOpenEditColor(color)}
+                              className="p-1 text-[#171717] hover:bg-[#F7EEDB] border-2 border-transparent hover:border-[#171717] transition-all cursor-pointer"
+                              title="Edit Colorway"
+                            >
+                              <Pencil size={12} />
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => handleDeleteColor(color.id)}
+                              className="p-1 text-[#E6321C] hover:bg-[#E6321C] hover:text-white border-2 border-transparent hover:border-[#171717] transition-all cursor-pointer"
+                              title="Delete entire colorway"
+                            >
+                              <Trash2 size={12} />
+                            </button>
+                          </div>
+                        </div>
 
-                            <div className="flex items-center gap-1">
+                        {/* Image Grid */}
+                        <div className="grid grid-cols-2 divide-x-2 divide-[#171717]">
+                          {/* FRONT IMAGE SLOT */}
+                          <div className="flex flex-col">
+                            <div className="text-[9px] font-mono font-black uppercase text-[#171717]/60 px-2 pt-2 pb-1 tracking-wider">Front</div>
+                            <div className="relative bg-[#F7EEDB] h-32 flex items-center justify-center overflow-hidden" style={hasFront ? CHECKERBOARD : undefined}>
+                              {isUploadingThis ? (
+                                <LoaderCircle className="w-6 h-6 animate-spin text-[#E6321C]" />
+                              ) : hasFront ? (
+                                <img
+                                  src={resolveImageUrl(color.frontImageUrl)}
+                                  alt={`${color.name} Front`}
+                                  className="w-full h-full object-contain p-1"
+                                />
+                              ) : (
+                                <div className="flex flex-col items-center justify-center gap-1 p-2 text-center">
+                                  <ImageOff size={22} className="text-[#171717]/35" />
+                                  <span className="text-[8px] font-mono text-[#171717]/40 uppercase">No Photo</span>
+                                </div>
+                              )}
+                            </div>
+                            {/* Front action buttons */}
+                            <div className="flex border-t-2 border-[#171717]">
                               <button
                                 type="button"
-                                onClick={() => handleOpenEditColor(color)}
-                                className="p-1.5 text-gray-400 hover:text-gray-900 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer"
-                                title="Edit Colorway"
+                                onClick={() => triggerPhotoUpload(color.id, 'front')}
+                                disabled={isUploadingThis}
+                                className="flex-1 flex items-center justify-center gap-1 py-1.5 text-[9px] font-black uppercase font-mono text-[#171717] hover:bg-[#171717] hover:text-white transition-colors cursor-pointer border-r border-[#171717]/20"
                               >
-                                <Pencil size={13} />
+                                <Upload size={9} />
+                                <span>{hasFront ? 'Replace' : 'Upload'}</span>
                               </button>
-                              <button
-                                type="button"
-                                onClick={() => handleDeleteColor(color.id)}
-                                className="p-1.5 text-gray-400 hover:text-red-600 rounded-lg hover:bg-red-50 transition-colors cursor-pointer"
-                                title="Delete Colorway"
-                              >
-                                <Trash2 size={13} />
-                              </button>
+                              {hasFront && (
+                                <button
+                                  type="button"
+                                  onClick={() => deleteImage('front')}
+                                  className="flex items-center justify-center gap-1 px-2 py-1.5 text-[9px] font-black uppercase font-mono bg-[#E6321C] text-white hover:bg-red-800 transition-colors cursor-pointer"
+                                  title="Delete front mockup"
+                                >
+                                  <Trash2 size={9} />
+                                </button>
+                              )}
                             </div>
                           </div>
 
-                          <div className="grid grid-cols-2 gap-2 my-2">
-                            <div className="relative rounded-xl border border-gray-100 bg-gray-50 h-28 flex flex-col items-center justify-center p-2 text-center overflow-hidden">
-                              {hasFront ? (
+                          {/* BACK IMAGE SLOT */}
+                          <div className="flex flex-col">
+                            <div className="text-[9px] font-mono font-black uppercase text-[#171717]/60 px-2 pt-2 pb-1 tracking-wider">Back</div>
+                            <div className="relative bg-[#F7EEDB] h-32 flex items-center justify-center overflow-hidden" style={hasBack ? CHECKERBOARD : undefined}>
+                              {isUploadingThis ? (
+                                <LoaderCircle className="w-6 h-6 animate-spin text-[#E6321C]" />
+                              ) : hasBack ? (
                                 <img
-                                  src={color.frontImageUrl}
-                                  alt={`${color.name} Front`}
-                                  className="w-full h-full object-contain"
-                                />
-                              ) : (
-                                <div className="text-center p-1">
-                                  <Camera size={18} className="mx-auto text-gray-400 mb-1" />
-                                  <span className="text-[9px] font-mono text-gray-500 block">No Front Photo</span>
-                                </div>
-                              )}
-
-                              <div className="absolute inset-0 bg-black/50 backdrop-blur-[2px] opacity-0 hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-1 p-2">
-                                <button
-                                  type="button"
-                                  onClick={() => triggerPhotoUpload(color.id, 'front')}
-                                  disabled={isUploadingThis}
-                                  className="px-2 py-1 rounded-lg bg-white text-gray-900 text-[9px] font-bold uppercase shadow-sm flex items-center gap-1 cursor-pointer"
-                                >
-                                  <Upload size={10} />
-                                  <span>{hasFront ? 'Replace Front' : 'Upload Front'}</span>
-                                </button>
-                                {hasFront && (
-                                  <button
-                                    type="button"
-                                    onClick={() => {
-                                      updateActiveGarment((prev) => ({
-                                        ...prev,
-                                        colors: prev.colors.map((c) =>
-                                          c.id === color.id ? { ...c, frontImageUrl: '' } : c
-                                        ),
-                                      }));
-                                    }}
-                                    className="text-[8px] text-white hover:underline cursor-pointer"
-                                  >
-                                    Remove Front
-                                  </button>
-                                )}
-                              </div>
-                            </div>
-
-                            <div className="relative rounded-xl border border-gray-100 bg-gray-50 h-28 flex flex-col items-center justify-center p-2 text-center overflow-hidden">
-                              {hasBack ? (
-                                <img
-                                  src={color.backImageUrl}
+                                  src={resolveImageUrl(color.backImageUrl!)}
                                   alt={`${color.name} Back`}
-                                  className="w-full h-full object-contain"
+                                  className="w-full h-full object-contain p-1"
                                 />
                               ) : (
-                                <div className="text-center p-1">
-                                  <Camera size={18} className="mx-auto text-gray-400 mb-1" />
-                                  <span className="text-[9px] font-mono text-gray-500 block">No Back Photo</span>
+                                <div className="flex flex-col items-center justify-center gap-1 p-2 text-center">
+                                  <ImageOff size={22} className="text-[#171717]/35" />
+                                  <span className="text-[8px] font-mono text-[#171717]/40 uppercase">No Photo</span>
                                 </div>
                               )}
-
-                              <div className="absolute inset-0 bg-black/50 backdrop-blur-[2px] opacity-0 hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-1 p-2">
+                            </div>
+                            {/* Back action buttons */}
+                            <div className="flex border-t-2 border-[#171717]">
+                              <button
+                                type="button"
+                                onClick={() => triggerPhotoUpload(color.id, 'back')}
+                                disabled={isUploadingThis}
+                                className="flex-1 flex items-center justify-center gap-1 py-1.5 text-[9px] font-black uppercase font-mono text-[#171717] hover:bg-[#171717] hover:text-white transition-colors cursor-pointer border-r border-[#171717]/20"
+                              >
+                                <Upload size={9} />
+                                <span>{hasBack ? 'Replace' : 'Upload'}</span>
+                              </button>
+                              {hasBack && (
                                 <button
                                   type="button"
-                                  onClick={() => triggerPhotoUpload(color.id, 'back')}
-                                  disabled={isUploadingThis}
-                                  className="px-2 py-1 rounded-lg bg-white text-gray-900 text-[9px] font-bold uppercase shadow-sm flex items-center gap-1 cursor-pointer"
+                                  onClick={() => deleteImage('back')}
+                                  className="flex items-center justify-center gap-1 px-2 py-1.5 text-[9px] font-black uppercase font-mono bg-[#E6321C] text-white hover:bg-red-800 transition-colors cursor-pointer"
+                                  title="Delete back mockup"
                                 >
-                                  <Upload size={10} />
-                                  <span>{hasBack ? 'Replace Back' : 'Upload Back'}</span>
+                                  <Trash2 size={9} />
                                 </button>
-                                {hasBack && (
-                                  <button
-                                    type="button"
-                                    onClick={() => {
-                                      updateActiveGarment((prev) => ({
-                                        ...prev,
-                                        colors: prev.colors.map((c) =>
-                                          c.id === color.id ? { ...c, backImageUrl: '' } : c
-                                        ),
-                                      }));
-                                    }}
-                                    className="text-[8px] text-white hover:underline cursor-pointer"
-                                  >
-                                    Remove Back
-                                  </button>
-                                )}
-                              </div>
+                              )}
                             </div>
                           </div>
                         </div>
 
-                        <div className="mt-2 pt-2 border-t border-gray-100 flex items-center justify-between text-[10px]">
-                          <span className={hasFront ? 'text-emerald-600 font-bold' : 'text-amber-600'}>
-                            {hasFront ? '✓ Photo Ready' : '• Vector Silhouette'}
+                        {/* Status bar */}
+                        <div className="px-3 py-1.5 border-t-2 border-[#171717] bg-[#FAF7F2]">
+                          <span className={`text-[9px] font-mono font-bold uppercase ${
+                            hasFront ? (hasBack ? 'text-emerald-700' : 'text-amber-700') : 'text-[#E6321C]'
+                          }`}>
+                            {hasFront ? (hasBack ? '✓ Front & back ready' : '⚠ Back photo missing') : '✗ Front photo required'}
                           </span>
-                          <button
-                            type="button"
-                            onClick={() => {
-                              updateActiveGarment((prev) => ({
-                                ...prev,
-                                colors: prev.colors.map((c) =>
-                                  c.id === color.id ? { ...c, isActive: !c.isActive } : c
-                                ),
-                              }));
-                            }}
-                            className={`px-2 py-0.5 rounded-md font-mono font-bold uppercase cursor-pointer ${
-                              color.isActive !== false ? 'bg-emerald-50 text-emerald-700' : 'bg-gray-100 text-gray-500'
-                            }`}
-                          >
-                            {color.isActive !== false ? 'Active' : 'Disabled'}
-                          </button>
                         </div>
                       </div>
                     );
                   })}
+                </div>
+
+                {/* Bottom Save Bar for Colors Tab */}
+                <div className="p-4 border-2 border-[#171717] bg-[#F7EEDB] flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 shadow-[3px_3px_0px_#171717]">
+                  <div>
+                    <div className="text-xs font-black uppercase text-[#171717]">
+                      {hasUnsavedChanges ? '⚠️ You have unsaved image or colorway changes' : '✓ All colorways and photos are published'}
+                    </div>
+                    <p className="text-[11px] text-[#6F6A63] mt-0.5">
+                      Save to immediately reflect your front and back mockup images on the customer customizer ({STOREFRONT_URL}/customize).
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={handleSaveAll}
+                    disabled={saving}
+                    className="btn-primary text-xs gap-2 py-2.5 px-6 font-black uppercase tracking-wider self-start sm:self-auto cursor-pointer"
+                  >
+                    {saving ? (
+                      <>
+                        <LoaderCircle size={14} className="animate-spin" />
+                        <span>SAVING...</span>
+                      </>
+                    ) : (
+                      <>
+                        <Save size={14} />
+                        <span>SAVE TO LIVE FRONTEND</span>
+                      </>
+                    )}
+                  </button>
                 </div>
               </div>
             )}
@@ -1056,64 +1298,97 @@ export function CustomizerStudioPage() {
             {/* TAB 3: SIZES */}
             {activeTab === 'sizes' && (
               <div className="space-y-6">
-                <div className="p-4 rounded-2xl border border-gray-200 bg-gray-50/50">
-                  <div className="flex items-center justify-between mb-3">
-                    <div>
-                      <h4 className="text-xs font-bold uppercase tracking-wider text-gray-900">
-                        Offered Sizes for {activeGarment.name}
-                      </h4>
-                      <p className="text-[11px] text-gray-500">
-                        Toggle which sizes customers can select. Inactive sizes are hidden on the customizer.
-                      </p>
-                    </div>
-
-                    <div className="flex gap-1.5">
-                      <button
-                        type="button"
-                        onClick={() => updateActiveGarment((prev) => ({ ...prev, activeSizes: [...ALL_AVAILABLE_SIZES] }))}
-                        className="text-[10px] font-bold text-gray-600 hover:text-gray-900 px-2 py-1 rounded-md bg-white border border-gray-200 cursor-pointer"
-                      >
-                        Enable All
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => updateActiveGarment((prev) => ({ ...prev, activeSizes: ['M', 'L', 'XL'] }))}
-                        className="text-[10px] font-bold text-gray-600 hover:text-gray-900 px-2 py-1 rounded-md bg-white border border-gray-200 cursor-pointer"
-                      >
-                        Standard (M-XL)
-                      </button>
-                    </div>
+                <div className="p-4 border-2 border-[#171717] bg-[#F7EEDB] space-y-4">
+                  <div>
+                    <h4 className="text-xs font-bold uppercase tracking-wider text-[#171717]">Sizes for {activeGarment.name}</h4>
+                    <p className="text-[11px] text-[#6F6A63]">
+                      Add the sizes you sell. Tap a size to switch it on or off for customers; use the x to remove it.
+                    </p>
                   </div>
 
                   <div className="flex flex-wrap gap-2">
-                    {ALL_AVAILABLE_SIZES.map((size) => {
-                      const isActive = (activeGarment.activeSizes || []).includes(size);
+                    {activeGarment.sizes.length === 0 && (
+                      <span className="text-xs text-[#6F6A63]">No sizes yet. Add them below.</span>
+                    )}
+                    {activeGarment.sizes.map((size) => {
+                      const isOn = (activeGarment.activeSizes || []).includes(size);
                       return (
-                        <button
+                        <span
                           key={size}
-                          type="button"
-                          onClick={() => toggleSizeActive(size)}
-                          className={`w-12 h-10 rounded-xl font-mono text-xs font-bold uppercase transition-all flex items-center justify-center cursor-pointer border ${
-                            isActive
-                              ? 'bg-gray-900 text-white border-gray-900 shadow-sm ring-2 ring-gray-900/10'
-                              : 'bg-white text-gray-400 border-gray-200 hover:border-gray-300'
+                          className={`inline-flex items-center border-2 overflow-hidden ${
+                            isOn ? 'border-[#171717]' : 'border-[#171717]/25'
                           }`}
                         >
-                          {size}
-                        </button>
+                          <button
+                            type="button"
+                            onClick={() => toggleSizeActive(size)}
+                            title={isOn ? 'Offered: tap to hide' : 'Hidden: tap to offer'}
+                            className={`h-9 px-3 font-mono text-xs font-bold uppercase cursor-pointer ${
+                              isOn ? 'bg-[#171717] text-white' : 'bg-white text-[#6F6A63]'
+                            }`}
+                          >
+                            {size}
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => removeSize(size)}
+                            aria-label={`Remove size ${size}`}
+                            className={`h-9 px-2 cursor-pointer ${isOn ? 'bg-[#2B2825] text-white/70 hover:text-white' : 'bg-white text-[#6F6A63] hover:text-red-600'}`}
+                          >
+                            <X size={12} />
+                          </button>
+                        </span>
                       );
                     })}
+                  </div>
+
+                  <div className="flex flex-wrap items-center gap-2">
+                    <form
+                      onSubmit={(e) => {
+                        e.preventDefault();
+                        addSizes(newSize.split(','));
+                        setNewSize('');
+                      }}
+                      className="flex items-center gap-2"
+                    >
+                      <input
+                        type="text"
+                        value={newSize}
+                        onChange={(e) => setNewSize(e.target.value)}
+                        placeholder="e.g. XL or 42 (comma-separate several)"
+                        maxLength={60}
+                        className="admin-input w-60 px-3 py-2 text-xs"
+                      />
+                      <button type="submit" className="px-3 py-2 border-2 border-[#171717] bg-[#171717] text-white font-mono text-xs font-bold uppercase tracking-wider shadow-[2px_2px_0px_#E6321C] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none flex items-center gap-1 cursor-pointer">
+                        <Plus size={12} />
+                        <span>Add size</span>
+                      </button>
+                    </form>
+                    <button
+                      type="button"
+                      onClick={() => addSizes(LETTER_SIZES)}
+                      className="px-3 py-2 border-2 border-[#171717] bg-white font-mono text-xs font-bold text-[#171717] shadow-[2px_2px_0px_#171717] hover:bg-[#EDE0CC] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none cursor-pointer"
+                    >
+                      Add XS–3XL
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => addSizes(NUMERIC_SIZES)}
+                      className="px-3 py-2 border-2 border-[#171717] bg-white font-mono text-xs font-bold text-[#171717] shadow-[2px_2px_0px_#171717] hover:bg-[#EDE0CC] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none cursor-pointer"
+                    >
+                      Add 36–46
+                    </button>
                   </div>
                 </div>
 
                 <div className="space-y-3">
                   <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
                     <div>
-                      <h4 className="text-xs font-bold uppercase tracking-wider text-gray-900">
+                      <h4 className="text-xs font-bold uppercase tracking-wider text-[#171717]">
                         Precision Size Measurement Chart
                       </h4>
-                      <p className="text-[11px] text-gray-500">
-                        Displayed in the customer dynamic size guide modal. Admin can customize every dimension.
+                      <p className="text-[11px] text-[#6F6A63]">
+                        Shown in the storefront size chart. Leave a cell empty if you don't measure it.
                       </p>
                     </div>
 
@@ -1121,17 +1396,17 @@ export function CustomizerStudioPage() {
                       <button
                         type="button"
                         onClick={handleResetMeasurements}
-                        className="text-[10px] font-bold text-gray-500 hover:text-gray-900 px-2 py-1 rounded-lg border border-gray-200 bg-white cursor-pointer"
+                        className="text-[10px] font-mono font-bold text-[#171717] px-2 py-1 border-2 border-[#171717] bg-white hover:bg-[#EDE0CC] cursor-pointer"
                       >
-                        Reset Defaults
+                        Fill typical values
                       </button>
 
-                      <div className="flex p-1 bg-gray-100 rounded-xl">
+                      <div className="flex p-1 bg-[#EDE0CC] border-2 border-[#171717]">
                         <button
                           type="button"
                           onClick={() => setMeasureUnit('in')}
                           className={`px-3 py-1 text-[10px] font-bold uppercase rounded-lg transition-colors cursor-pointer ${
-                            measureUnit === 'in' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500'
+                            measureUnit === 'in' ? 'bg-white text-[#171717] shadow-sm' : 'text-[#6F6A63]'
                           }`}
                         >
                           Inches (&quot;)
@@ -1140,7 +1415,7 @@ export function CustomizerStudioPage() {
                           type="button"
                           onClick={() => setMeasureUnit('cm')}
                           className={`px-3 py-1 text-[10px] font-bold uppercase rounded-lg transition-colors cursor-pointer ${
-                            measureUnit === 'cm' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500'
+                            measureUnit === 'cm' ? 'bg-white text-[#171717] shadow-sm' : 'text-[#6F6A63]'
                           }`}
                         >
                           Centimeters (cm)
@@ -1149,10 +1424,10 @@ export function CustomizerStudioPage() {
                     </div>
                   </div>
 
-                  <div className="overflow-x-auto rounded-2xl border border-gray-200">
+                  <div className="overflow-x-auto border-2 border-[#171717]">
                     <table className="w-full text-left text-xs">
                       <thead>
-                        <tr className="bg-gray-900 text-white font-mono text-[10px] uppercase">
+                        <tr className="bg-[#171717] text-white font-mono text-[10px] uppercase">
                           <th className="p-3">Size</th>
                           <th className="p-3">Status</th>
                           <th className="p-3">Chest (Round)</th>
@@ -1161,16 +1436,28 @@ export function CustomizerStudioPage() {
                           <th className="p-3">Sleeve Length</th>
                         </tr>
                       </thead>
-                      <tbody className="divide-y divide-gray-100 bg-white font-mono">
-                        {((activeGarment.sizeMeasurements || DEFAULT_MEASUREMENTS[activeGarment.id] || DEFAULT_MEASUREMENTS.oversized)[measureUnit] || []).map((row) => {
+                      <tbody className="divide-y divide-[#171717]/10 bg-white font-mono">
+                        {activeGarment.sizes.length === 0 && (
+                          <tr>
+                            <td colSpan={6} className="p-4 text-center text-xs text-[#6F6A63] font-sans">Add sizes above to fill in the chart.</td>
+                          </tr>
+                        )}
+                        {activeGarment.sizes.map((size) => {
+                          const row = (activeGarment.sizeMeasurements?.[measureUnit] || []).find((r) => r.size === size) || {
+                            size,
+                            chest: '',
+                            length: '',
+                            shoulder: '',
+                            sleeve: '',
+                          };
                           const isSizeActive = (activeGarment.activeSizes || []).includes(row.size);
                           return (
-                            <tr key={row.size} className={isSizeActive ? 'hover:bg-gray-50/70' : 'bg-gray-50/40 opacity-60'}>
-                              <td className="p-3 font-extrabold text-gray-900 text-sm">{row.size}</td>
+                            <tr key={row.size} className={isSizeActive ? 'hover:bg-[#F7EEDB]' : 'bg-[#EDE0CC]/40 opacity-60'}>
+                              <td className="p-3 font-extrabold text-[#171717] text-sm">{row.size}</td>
                               <td className="p-3">
                                 <span
                                   className={`text-[9px] font-bold px-2 py-0.5 rounded-full ${
-                                    isSizeActive ? 'bg-emerald-100 text-emerald-800' : 'bg-gray-200 text-gray-600'
+                                    isSizeActive ? 'bg-emerald-100 text-emerald-800' : 'bg-gray-200 text-[#6F6A63]'
                                   }`}
                                 >
                                   {isSizeActive ? 'Offered' : 'Disabled'}
@@ -1181,7 +1468,7 @@ export function CustomizerStudioPage() {
                                   type="text"
                                   value={row.chest}
                                   onChange={(e) => handleMeasurementChange(measureUnit, row.size, 'chest', e.target.value)}
-                                  className="w-28 px-2 py-1 rounded-lg border border-gray-200 bg-white text-xs font-semibold focus:outline-none focus:border-[#E6321C]"
+                                  className="admin-input w-28 px-2 py-1 text-xs"
                                 />
                               </td>
                               <td className="p-2">
@@ -1189,7 +1476,7 @@ export function CustomizerStudioPage() {
                                   type="text"
                                   value={row.length}
                                   onChange={(e) => handleMeasurementChange(measureUnit, row.size, 'length', e.target.value)}
-                                  className="w-28 px-2 py-1 rounded-lg border border-gray-200 bg-white text-xs font-semibold focus:outline-none focus:border-[#E6321C]"
+                                  className="admin-input w-28 px-2 py-1 text-xs"
                                 />
                               </td>
                               <td className="p-2">
@@ -1197,7 +1484,7 @@ export function CustomizerStudioPage() {
                                   type="text"
                                   value={row.shoulder}
                                   onChange={(e) => handleMeasurementChange(measureUnit, row.size, 'shoulder', e.target.value)}
-                                  className="w-28 px-2 py-1 rounded-lg border border-gray-200 bg-white text-xs font-semibold focus:outline-none focus:border-[#E6321C]"
+                                  className="admin-input w-28 px-2 py-1 text-xs"
                                 />
                               </td>
                               <td className="p-2">
@@ -1205,7 +1492,7 @@ export function CustomizerStudioPage() {
                                   type="text"
                                   value={row.sleeve}
                                   onChange={(e) => handleMeasurementChange(measureUnit, row.size, 'sleeve', e.target.value)}
-                                  className="w-28 px-2 py-1 rounded-lg border border-gray-200 bg-white text-xs font-semibold focus:outline-none focus:border-[#E6321C]"
+                                  className="admin-input w-28 px-2 py-1 text-xs"
                                 />
                               </td>
                             </tr>
@@ -1215,34 +1502,53 @@ export function CustomizerStudioPage() {
                     </table>
                   </div>
                 </div>
+
+                {/* Bottom Save Bar for Sizes Tab */}
+                <div className="p-4 border-2 border-[#171717] bg-[#F7EEDB] flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 shadow-[3px_3px_0px_#171717]">
+                  <div>
+                    <div className="text-xs font-black uppercase text-[#171717]">
+                      {hasUnsavedChanges ? '⚠️ You have unsaved size or measurement changes' : '✓ All sizes and measurements are saved'}
+                    </div>
+                    <p className="text-[11px] text-[#6F6A63] mt-0.5">
+                      Save to update available size selectors and size chart tables on {STOREFRONT_URL}/customize.
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={handleSaveAll}
+                    disabled={saving}
+                    className="btn-primary text-xs gap-2 py-2.5 px-6 font-black uppercase tracking-wider self-start sm:self-auto cursor-pointer"
+                  >
+                    {saving ? (
+                      <>
+                        <LoaderCircle size={14} className="animate-spin" />
+                        <span>SAVING...</span>
+                      </>
+                    ) : (
+                      <>
+                        <Save size={14} />
+                        <span>SAVE TO LIVE FRONTEND</span>
+                      </>
+                    )}
+                  </button>
+                </div>
               </div>
             )}
 
             {/* TAB 4: PREVIEW SIMULATOR */}
             {activeTab === 'preview' && (
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
-                <div className="p-6 rounded-3xl bg-[#ede0cc] border border-[#ddd3c5] flex flex-col items-center justify-center relative min-h-[420px]">
-                  <div className="relative w-full max-w-[340px] aspect-square flex items-center justify-center">
-                    {activeImageUrl ? (
-                      <img
-                        src={activeImageUrl}
-                        alt={`${activeGarment.name} preview`}
-                        className="max-h-[90%] max-w-[90%] object-contain drop-shadow-xl"
-                      />
-                    ) : (
-                      <div className="scale-110">
-                        <SilhouettePreview garmentId={activeGarment.id} colorHex={activeColorObj?.hex || '#171717'} />
-                      </div>
-                    )}
-
-                    <div className="absolute inset-0 m-auto w-28 h-28 border border-dashed border-[#E6321C]/60 rounded-xl flex items-center justify-center pointer-events-none">
-                      <span className="text-[8px] font-mono font-bold uppercase tracking-widest text-[#E6321C] opacity-75">
-                        DTF Print Zone
-                      </span>
-                    </div>
+                <div className="p-6 bg-[#EDE0CC] border-2 border-[#171717] flex flex-col items-center justify-center relative min-h-[420px]">
+                  <div className="relative w-full max-w-[360px] aspect-square border-2 border-[#171717] shadow-[4px_4px_0px_#171717] mt-8">
+                    <PrintAreaPreview
+                      photoUrl={activeImageUrl ? resolveImageUrl(activeImageUrl) : ''}
+                      side={previewSide}
+                      areas={printAreasFor(activeGarment.style, activeGarment.printAreas)}
+                      focus={focusSpot}
+                    />
                   </div>
 
-                  <div className="absolute top-4 right-4 flex gap-1 bg-white/90 backdrop-blur-sm p-1 rounded-xl border border-[#ddd3c5]">
+                  <div className="absolute top-4 right-4 flex gap-1 bg-white p-1 border-2 border-[#171717] shadow-[2px_2px_0px_#171717]">
                     <button
                       type="button"
                       onClick={() => setPreviewSide('FRONT')}
@@ -1269,14 +1575,14 @@ export function CustomizerStudioPage() {
                     <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-[#E6321C]">
                       Live Customer Experience
                     </span>
-                    <h3 className="text-xl font-black text-gray-900 uppercase mt-0.5">{activeGarment.name}</h3>
-                    <p className="text-xs text-gray-500">{activeGarment.description}</p>
+                    <h3 className="text-xl font-black text-[#171717] uppercase mt-0.5">{activeGarment.name}</h3>
+                    <p className="text-xs text-[#6F6A63]">{activeGarment.description}</p>
                     <div className="flex items-center gap-3 mt-2">
                       <span className="text-2xl font-black text-[#E6321C]">
                         ₹{activeGarment.price.toLocaleString('en-IN')}
                       </span>
                       {activeGarment.compareAtPrice && activeGarment.compareAtPrice > activeGarment.price && (
-                        <span className="text-sm font-semibold text-gray-400 line-through">
+                        <span className="text-sm font-semibold text-[#6F6A63] line-through">
                           ₹{activeGarment.compareAtPrice.toLocaleString('en-IN')}
                         </span>
                       )}
@@ -1284,7 +1590,7 @@ export function CustomizerStudioPage() {
                   </div>
 
                   <div>
-                    <label className="text-[10px] font-bold uppercase tracking-wider text-gray-500 block mb-2">
+                    <label className="admin-label text-[#6F6A63] mb-2">
                       Select Colorway ({activeGarment.colors.length} Available)
                     </label>
                     <div className="flex flex-wrap gap-2">
@@ -1294,7 +1600,7 @@ export function CustomizerStudioPage() {
                           type="button"
                           onClick={() => setPreviewColorIndex(idx)}
                           className={`w-8 h-8 rounded-full border-2 transition-transform cursor-pointer ${
-                            previewColorIndex === idx ? 'ring-2 ring-offset-2 ring-gray-900 scale-110' : 'hover:scale-105'
+                            previewColorIndex === idx ? 'ring-2 ring-offset-2 ring-[#171717] scale-110' : 'hover:scale-105'
                           }`}
                           style={{ backgroundColor: c.hex, borderColor: '#ddd3c5' }}
                           title={c.name}
@@ -1304,14 +1610,14 @@ export function CustomizerStudioPage() {
                   </div>
 
                   <div>
-                    <label className="text-[10px] font-bold uppercase tracking-wider text-gray-500 block mb-2">
+                    <label className="admin-label text-[#6F6A63] mb-2">
                       Available Sizes ({activeGarment.activeSizes?.length || 0} Offered)
                     </label>
                     <div className="flex flex-wrap gap-1.5">
                       {(activeGarment.activeSizes || []).map((sz) => (
                         <span
                           key={sz}
-                          className="px-3 py-1.5 rounded-xl border border-gray-200 bg-white font-mono text-xs font-bold uppercase text-gray-800"
+                          className="px-3 py-1.5 border-2 border-[#171717] bg-white font-mono text-xs font-bold uppercase text-[#171717]"
                         >
                           {sz}
                         </span>
@@ -1319,11 +1625,105 @@ export function CustomizerStudioPage() {
                     </div>
                   </div>
 
-                  <div className="p-4 rounded-2xl bg-gray-50 border border-gray-200 text-xs text-gray-600 space-y-1">
-                    <div className="font-bold text-gray-900">Storefront Status:</div>
-                    <div>• Silhouette: {activeGarment.isActive ? 'Active on /customize' : 'Hidden'}</div>
-                    <div>• Active Color: {activeColorObj?.name || 'Default'} ({activeColorObj?.hex})</div>
-                    <div>• Mockup Status: {activeImageUrl ? 'Real Photo Loaded' : 'Vector SVG Fallback'}</div>
+                  <div className="p-4 bg-white border-2 border-[#171717] shadow-[3px_3px_0px_#171717] space-y-4">
+                    <div className="flex items-start justify-between gap-3">
+                      <div>
+                        <div className="admin-label mb-0.5">Print placement</div>
+                        <p className="text-[11px] text-[#6F6A63] leading-snug">
+                          Line the {previewSide === 'FRONT' ? 'front' : 'back'} print areas up with the photo. Applies to every colour of this garment; Publish to save.
+                        </p>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => updateActiveGarment((prev) => ({ ...prev, printAreas: undefined }))}
+                        className="btn-outline shrink-0 text-[10px] px-2.5 py-1.5"
+                        title="Back to this style's default placement"
+                      >
+                        <RotateCcw size={12} />
+                        Reset
+                      </button>
+                    </div>
+                    {(previewSide === 'FRONT' ? (['front', 'chest'] as const) : (['back'] as const)).map((key) => {
+                      const spot = printAreasFor(activeGarment.style, activeGarment.printAreas)[key];
+                      return (
+                        <fieldset
+                          key={key}
+                          className="space-y-1.5"
+                          onPointerEnter={() => setFocusSpot(key)}
+                          onPointerLeave={() => setFocusSpot(null)}
+                          onFocus={() => setFocusSpot(key)}
+                          onBlur={() => setFocusSpot(null)}
+                        >
+                          <legend className="text-[11px] font-mono font-black uppercase tracking-wider text-[#171717] mb-1">
+                            {key === 'front' ? 'Front print' : key === 'chest' ? 'Left chest logo' : 'Back print'}
+                          </legend>
+                          {([
+                            ['x', 'Across', 5, 95],
+                            ['y', 'Down', 5, 95],
+                            ['w', 'Width', 5, 80],
+                          ] as const).map(([axis, label, min, max]) => (
+                            <label key={axis} className="grid grid-cols-[56px_1fr_48px] items-center gap-2 text-[11px] text-[#6F6A63]">
+                              <span>{label}</span>
+                              <input
+                                type="range"
+                                min={min}
+                                max={max}
+                                step={0.5}
+                                value={spot[axis]}
+                                onChange={(e) => setPrintSpot(key, axis, Number(e.target.value))}
+                                className="w-full accent-[#E6321C] cursor-pointer"
+                                aria-label={`${key} print ${label.toLowerCase()}`}
+                              />
+                              <span className="font-mono font-bold text-[#171717] text-right">{spot[axis]}%</span>
+                            </label>
+                          ))}
+                        </fieldset>
+                      );
+                    })}
+                  </div>
+
+                  <div className="p-4 bg-[#F7EEDB] border-2 border-[#171717] text-xs text-[#6F6A63] space-y-1">
+                    <div className="font-bold text-[#171717]">Storefront status</div>
+                    <div>• Garment: {activeGarment.isActive ? 'Live on /customize' : 'Hidden'}</div>
+                    <div>• Colour: {activeColorObj?.name || 'None'}{activeColorObj?.hex ? ` (${activeColorObj.hex})` : ''}</div>
+                    <div>
+                      • {previewSide === 'FRONT' ? 'Front' : 'Back'} photo:{' '}
+                      {activeImageUrl
+                        ? 'Uploaded'
+                        : previewSide === 'FRONT'
+                          ? 'Missing — this colour is hidden from customers until it has one'
+                          : 'Missing — customers see a “back photo coming soon” note'}
+                    </div>
+                  </div>
+
+                  {/* Bottom Save Bar for Preview Tab */}
+                  <div className="p-4 border-2 border-[#171717] bg-[#F7EEDB] flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 shadow-[3px_3px_0px_#171717]">
+                    <div>
+                      <div className="text-xs font-black uppercase text-[#171717]">
+                        {hasUnsavedChanges ? '⚠️ You have unsaved print area or garment changes' : '✓ Custom studio is ready and live'}
+                      </div>
+                      <p className="text-[11px] text-[#6F6A63] mt-0.5">
+                        Save all changes to update the live customer studio on {STOREFRONT_URL}/customize.
+                      </p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={handleSaveAll}
+                      disabled={saving}
+                      className="btn-primary text-xs gap-2 py-2.5 px-6 font-black uppercase tracking-wider self-start sm:self-auto cursor-pointer"
+                    >
+                      {saving ? (
+                        <>
+                          <LoaderCircle size={14} className="animate-spin" />
+                          <span>SAVING...</span>
+                        </>
+                      ) : (
+                        <>
+                          <Save size={14} />
+                          <span>SAVE TO LIVE FRONTEND</span>
+                        </>
+                      )}
+                    </button>
                   </div>
                 </div>
               </div>
@@ -1332,18 +1732,18 @@ export function CustomizerStudioPage() {
         </div>
       )}
 
-      {/* ADD / EDIT COLORWAY MODAL */}
+      {/* BAUHAUS ADD / EDIT COLORWAY MODAL */}
       {showColorModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-          <div className="bg-white rounded-3xl p-6 sm:p-8 max-w-lg w-full shadow-2xl border border-gray-200">
-            <div className="flex justify-between items-center pb-3 border-b border-gray-100 mb-5">
-              <h3 className="text-base font-black uppercase text-gray-900">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-xs animate-in fade-in duration-200">
+          <div className="bg-[#F7EEDB] border-2 border-[#171717] p-6 sm:p-7 max-w-lg w-full shadow-[8px_8px_0px_#171717]">
+            <div className="flex justify-between items-center pb-3 border-b-2 border-[#171717] mb-5">
+              <h3 className="text-base font-black uppercase tracking-wide text-[#171717] font-sans">
                 {editingColorId ? 'Edit Colorway' : 'Add New Colorway'}
               </h3>
               <button
                 type="button"
                 onClick={() => setShowColorModal(false)}
-                className="w-8 h-8 rounded-full border border-gray-200 flex items-center justify-center text-gray-400 hover:text-gray-900 cursor-pointer"
+                className="w-7 h-7 border-2 border-[#171717] bg-white hover:bg-[#E6321C] hover:text-white flex items-center justify-center text-[#171717] font-bold transition-colors shadow-[2px_2px_0px_#171717] cursor-pointer"
               >
                 <X size={15} />
               </button>
@@ -1351,20 +1751,20 @@ export function CustomizerStudioPage() {
 
             <form onSubmit={handleSaveColorForm} className="space-y-4">
               <div>
-                <label className="text-[11px] font-bold uppercase tracking-wider text-gray-700 block mb-1">
-                  Color Name
+                <label className="admin-label">
+                  Color Name *
                 </label>
                 <input
                   type="text"
                   value={colorForm.name}
                   onChange={(e) => setColorForm((prev) => ({ ...prev, name: e.target.value }))}
                   placeholder="e.g. Sage Green, Washed Charcoal"
-                  className="w-full px-3 py-2 rounded-xl border border-gray-200 text-sm font-semibold focus:outline-none focus:border-[#E6321C]"
+                  className="admin-input font-bold text-xs"
                 />
               </div>
 
               <div>
-                <label className="text-[10px] font-bold uppercase tracking-wider text-gray-500 block mb-1.5">
+                <label className="text-[10px] font-mono font-bold uppercase tracking-wider text-[#171717]/70 block mb-1.5">
                   Bingooo Signature Presets
                 </label>
                 <div className="flex flex-wrap gap-1.5">
@@ -1380,9 +1780,9 @@ export function CustomizerStudioPage() {
                           textContrast: item.contrast,
                         }));
                       }}
-                      className="px-2.5 py-1 rounded-lg border border-gray-200 text-[10px] font-bold flex items-center gap-1.5 bg-gray-50 hover:bg-white transition-colors cursor-pointer"
+                      className="px-2.5 py-1 border-2 border-[#171717] text-[10px] font-bold font-mono uppercase flex items-center gap-1.5 bg-white hover:bg-[#F7EEDB] transition-colors cursor-pointer shadow-[2px_2px_0px_#171717] active:translate-x-[1px] active:translate-y-[1px]"
                     >
-                      <span className="w-3 h-3 rounded-full border border-gray-300" style={{ backgroundColor: item.hex }} />
+                      <span className="w-3 h-3 border border-[#171717]" style={{ backgroundColor: item.hex }} />
                       <span>{item.name}</span>
                     </button>
                   ))}
@@ -1391,7 +1791,7 @@ export function CustomizerStudioPage() {
 
               <div className="grid grid-cols-2 gap-3 items-center">
                 <div>
-                  <label className="text-[11px] font-bold uppercase tracking-wider text-gray-700 block mb-1">
+                  <label className="admin-label">
                     Hex Code
                   </label>
                   <div className="flex items-center gap-2">
@@ -1399,29 +1799,29 @@ export function CustomizerStudioPage() {
                       type="color"
                       value={colorForm.hex}
                       onChange={(e) => handleHexChange(e.target.value)}
-                      className="w-9 h-9 rounded-xl border border-gray-200 p-0.5 cursor-pointer flex-shrink-0"
+                      className="w-9 h-9 border-2 border-[#171717] p-0.5 cursor-pointer flex-shrink-0 shadow-[2px_2px_0px_#171717]"
                     />
                     <input
                       type="text"
                       value={colorForm.hex}
                       onChange={(e) => handleHexChange(e.target.value)}
-                      className="w-full px-3 py-2 rounded-xl border border-gray-200 font-mono text-sm font-semibold uppercase"
+                      className="admin-input font-mono text-xs font-bold uppercase"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label className="text-[11px] font-bold uppercase tracking-wider text-gray-700 block mb-1">
+                  <label className="admin-label">
                     Ink Contrast
                   </label>
                   <div className="flex items-center gap-2">
                     <button
                       type="button"
                       onClick={() => setColorForm((p) => ({ ...p, textContrast: '#FFFFFF' }))}
-                      className={`flex-1 py-2 rounded-xl text-xs font-bold border transition-colors cursor-pointer ${
+                      className={`flex-1 py-2 text-xs font-mono font-bold uppercase border-2 border-[#171717] transition-all cursor-pointer ${
                         colorForm.textContrast === '#FFFFFF'
-                          ? 'bg-gray-900 text-white border-gray-900'
-                          : 'bg-white text-gray-700 border-gray-200'
+                          ? 'bg-[#171717] text-white shadow-[2px_2px_0px_#E6321C]'
+                          : 'bg-white text-[#171717] shadow-[2px_2px_0px_#171717]'
                       }`}
                     >
                       Light Ink
@@ -1429,10 +1829,10 @@ export function CustomizerStudioPage() {
                     <button
                       type="button"
                       onClick={() => setColorForm((p) => ({ ...p, textContrast: '#171717' }))}
-                      className={`flex-1 py-2 rounded-xl text-xs font-bold border transition-colors cursor-pointer ${
+                      className={`flex-1 py-2 text-xs font-mono font-bold uppercase border-2 border-[#171717] transition-all cursor-pointer ${
                         colorForm.textContrast === '#171717'
-                          ? 'bg-gray-900 text-white border-gray-900'
-                          : 'bg-white text-gray-700 border-gray-200'
+                          ? 'bg-[#171717] text-white shadow-[2px_2px_0px_#E6321C]'
+                          : 'bg-white text-[#171717] shadow-[2px_2px_0px_#171717]'
                       }`}
                     >
                       Dark Ink
@@ -1441,50 +1841,126 @@ export function CustomizerStudioPage() {
                 </div>
               </div>
 
-              <div className="space-y-2 pt-2 border-t border-gray-100">
+              <div className="space-y-3 pt-3 border-t-2 border-[#171717]">
                 <div>
-                  <label className="text-[10px] font-bold uppercase tracking-wider text-gray-500 block mb-1">
-                    Front Mockup URL (or upload from color card)
+                  <label className="text-[10px] font-mono font-bold uppercase tracking-wider text-[#171717] block mb-1">
+                    Front Photo *
                   </label>
-                  <input
-                    type="text"
-                    value={colorForm.frontImageUrl}
-                    onChange={(e) => setColorForm((prev) => ({ ...prev, frontImageUrl: e.target.value }))}
-                    placeholder="/custom/black-front.png or https://..."
-                    className="w-full px-3 py-1.5 rounded-xl border border-gray-200 text-xs font-mono"
-                  />
+                  <div className="flex items-center gap-2">
+                    {colorForm.frontImageUrl && (
+                      <img src={resolveImageUrl(colorForm.frontImageUrl)} alt="" className="w-10 h-10 object-contain border-2 border-[#171717] bg-white shadow-[2px_2px_0px_#171717]" />
+                    )}
+                    <button
+                      type="button"
+                      onClick={() => triggerPhotoUpload(MODAL_UPLOAD, 'front')}
+                      disabled={uploadingColorId === MODAL_UPLOAD}
+                      className="btn-secondary py-1 px-3 text-[10px] font-bold"
+                    >
+                      {uploadingColorId === MODAL_UPLOAD && activeUploadTarget?.side === 'front' ? <LoaderCircle size={12} className="animate-spin" /> : <Upload size={12} />}
+                      <span>{colorForm.frontImageUrl ? 'Replace' : 'Upload'}</span>
+                    </button>
+                    <input
+                      type="text"
+                      value={colorForm.frontImageUrl}
+                      onChange={(e) => setColorForm((prev) => ({ ...prev, frontImageUrl: e.target.value }))}
+                      placeholder="or paste an https:// image link"
+                      className="admin-input flex-1 min-w-0 text-xs font-mono"
+                    />
+                  </div>
                 </div>
 
                 <div>
-                  <label className="text-[10px] font-bold uppercase tracking-wider text-gray-500 block mb-1">
-                    Back Mockup URL (Optional)
+                  <label className="text-[10px] font-mono font-bold uppercase tracking-wider text-[#171717] block mb-1">
+                    Back Photo
                   </label>
-                  <input
-                    type="text"
-                    value={colorForm.backImageUrl}
-                    onChange={(e) => setColorForm((prev) => ({ ...prev, backImageUrl: e.target.value }))}
-                    placeholder="/custom/black-back.png or https://..."
-                    className="w-full px-3 py-1.5 rounded-xl border border-gray-200 text-xs font-mono"
-                  />
+                  <div className="flex items-center gap-2">
+                    {colorForm.backImageUrl && (
+                      <img src={resolveImageUrl(colorForm.backImageUrl)} alt="" className="w-10 h-10 object-contain border-2 border-[#171717] bg-white shadow-[2px_2px_0px_#171717]" />
+                    )}
+                    <button
+                      type="button"
+                      onClick={() => triggerPhotoUpload(MODAL_UPLOAD, 'back')}
+                      disabled={uploadingColorId === MODAL_UPLOAD}
+                      className="btn-secondary py-1 px-3 text-[10px] font-bold"
+                    >
+                      {uploadingColorId === MODAL_UPLOAD && activeUploadTarget?.side === 'back' ? <LoaderCircle size={12} className="animate-spin" /> : <Upload size={12} />}
+                      <span>{colorForm.backImageUrl ? 'Replace' : 'Upload'}</span>
+                    </button>
+                    <input
+                      type="text"
+                      value={colorForm.backImageUrl}
+                      onChange={(e) => setColorForm((prev) => ({ ...prev, backImageUrl: e.target.value }))}
+                      placeholder="or paste an https:// image link"
+                      className="admin-input flex-1 min-w-0 text-xs font-mono"
+                    />
+                  </div>
                 </div>
               </div>
 
-              <div className="pt-3 flex gap-2">
+              <div className="pt-3 flex flex-col sm:flex-row gap-2 border-t-2 border-[#171717]">
                 <button
                   type="button"
                   onClick={() => setShowColorModal(false)}
-                  className="flex-1 py-2.5 rounded-xl border border-gray-200 text-xs font-bold text-gray-700 hover:bg-gray-50 cursor-pointer"
+                  className="btn-outline flex-1 text-xs"
                 >
                   Cancel
                 </button>
                 <button
-                  type="submit"
-                  className="flex-1 py-2.5 rounded-xl bg-[#E6321C] hover:bg-[#c92613] text-white text-xs font-bold uppercase tracking-wider shadow-sm cursor-pointer"
+                  type="button"
+                  onClick={handleSaveColorFormAndPublish}
+                  disabled={saving}
+                  className="flex-1 py-2 px-3 text-xs font-black uppercase tracking-wider bg-[#E6321C] text-white border-2 border-[#171717] shadow-[3px_3px_0px_#171717] hover:bg-[#ff3820] flex items-center justify-center gap-1.5 cursor-pointer active:translate-x-[1px] active:translate-y-[1px]"
+                  title="Save this colorway and push all garments live to the customer storefront immediately"
                 >
-                  Save Colorway
+                  {saving ? <LoaderCircle size={14} className="animate-spin" /> : <Save size={14} />}
+                  <span>Save & Publish Live</span>
+                </button>
+                <button
+                  type="submit"
+                  className="flex-1 py-2 px-3 text-xs font-bold uppercase bg-[#171717] text-white border-2 border-[#171717] hover:bg-black flex items-center justify-center gap-1.5 cursor-pointer shadow-[2px_2px_0px_#171717]"
+                  title="Save changes in local memory; you can publish to frontend later"
+                >
+                  <span>Save Draft</span>
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* STICKY FLOATING ACTION BAR FOR UNSAVED CHANGES */}
+      {hasUnsavedChanges && (
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 w-[min(calc(100%-32px),680px)] bg-[#171717] text-white border-2 border-[#E6321C] shadow-[6px_6px_0px_#E6321C] p-3 sm:p-4 flex items-center justify-between gap-3 animate-in fade-in slide-in-from-bottom-4 duration-200">
+          <div className="flex items-center gap-2.5 min-w-0">
+            <span className="w-3 h-3 rounded-full bg-[#E6321C] animate-ping shrink-0" />
+            <div className="min-w-0">
+              <div className="text-xs font-black uppercase tracking-wider text-white truncate">
+                Unsaved Studio Changes Ready to Publish
+              </div>
+              <div className="text-[10px] text-[#F7EEDB]/80 truncate hidden sm:block">
+                Click Save to immediately display your uploaded images on {STOREFRONT_URL}/customize
+              </div>
+            </div>
+          </div>
+          <div className="flex items-center gap-2 shrink-0">
+            <button
+              type="button"
+              onClick={handleSaveAll}
+              disabled={saving}
+              className="px-4 py-2 bg-[#E6321C] text-white font-mono text-xs font-black uppercase tracking-wider border-2 border-white hover:bg-[#ff3b20] active:scale-95 transition-all shadow-[2px_2px_0px_white] flex items-center gap-1.5 cursor-pointer"
+            >
+              {saving ? (
+                <>
+                  <LoaderCircle size={13} className="animate-spin" />
+                  <span>SAVING...</span>
+                </>
+              ) : (
+                <>
+                  <Save size={13} />
+                  <span>SAVE TO FRONTEND NOW</span>
+                </>
+              )}
+            </button>
           </div>
         </div>
       )}

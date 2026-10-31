@@ -1,7 +1,7 @@
 # BINGOOO — Design System Audit & AI Image Generation Guide
 
 > **Source of truth audit** of `apps/frontend` (storefront) + `apps/admin`, extracted from:
-> `apps/frontend/tailwind.config.js`, `apps/frontend/src/styles/index.css`, `apps/frontend/src/styles/theme.ts`,
+> `apps/frontend/tailwind.config.js`, `apps/frontend/src/styles/index.css`,
 > `apps/admin/tailwind.config.js`, `apps/admin/src/styles/index.css`, `apps/frontend/index.html`,
 > and live components (`HomePage`, `Navbar`, `Footer`, `ProductCard`, `Button`, `Logo`, etc.)
 >

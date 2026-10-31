@@ -47,7 +47,18 @@ export class CheckoutService {
       }
 
       const product = db.products.find((p) => p.id === variant.product_id);
+      const productImages = product ? db.product_images.filter((img) => img.product_id === product.id) : [];
+      const primaryImg = productImages.find((img) => img.is_primary) || productImages[0];
       const customization = item.customization_id ? db.customizations.find((c) => c.id === item.customization_id) : null;
+      const imageUrl =
+        customization?.preview_url ||
+        customization?.preview_key ||
+        primaryImg?.url ||
+        primaryImg?.object_key ||
+        (product as any)?.image_url ||
+        (item as any)?.image ||
+        (item as any)?.imageUrl ||
+        null;
 
       return {
         variantId: variant.id,
@@ -61,7 +72,8 @@ export class CheckoutService {
         quantity: item.quantity,
         total: variant.price * item.quantity,
         customizationId: item.customization_id,
-        customizationPreview: customization?.preview_key || null,
+        customizationPreview: customization?.preview_key || customization?.preview_url || null,
+        imageUrl,
       };
     });
 
@@ -81,12 +93,12 @@ export class CheckoutService {
 
     const discountedSubtotal = Math.max(0, subtotal - discount);
 
-    // All orders are 100% secure prepaid; apply prepaid discount
     const prepaidPct = Number(db.settings.prepaid_discount_percentage) || 5;
     const prepaidDiscount = Math.round(discountedSubtotal * (prepaidPct / 100));
+    const shippingFee = 0; // Universal free shipping across India for all prepaid orders
 
     const tax = 0; // All prices are all-inclusive (no extra GST)
-    const total = Math.max(0, discountedSubtotal - prepaidDiscount);
+    const total = Math.max(0, discountedSubtotal - prepaidDiscount + shippingFee);
 
     return {
       isValid: true,
@@ -95,10 +107,11 @@ export class CheckoutService {
       subtotal,
       discount,
       prepaidDiscount,
+      shippingFee,
       coupon: couponInfo,
       tax,
       total,
-      paymentMethod: 'prepaid' as const,
+      paymentMethod: dto.paymentMethod,
       payableNow: total,
       shippingAddress: dto.shippingAddress,
     };

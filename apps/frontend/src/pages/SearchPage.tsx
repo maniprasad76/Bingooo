@@ -1,4 +1,6 @@
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo } from 'react';
+import { Picture } from '../components/ui/Picture';
+import { IMAGES } from '../lib/images';
 import { Link, useSearchParams } from 'react-router-dom';
 import { Search as SearchIcon, X, Truck, ShieldCheck, RotateCcw, Sparkles } from 'lucide-react';
 import { SEO } from '../components/common/SEO';
@@ -31,11 +33,12 @@ export function SearchPage() {
   const [searchQuery, setSearchQuery] = useState(initialQuery);
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
 
-  // Sync state when URL param changes
-  useEffect(() => {
-    const q = searchParams.get('q') || searchParams.get('search') || '';
-    setSearchQuery(q);
-  }, [searchParams]);
+  // Sync the input when the URL query changes (adjusted during render)
+  const [syncedQuery, setSyncedQuery] = useState(initialQuery);
+  if (initialQuery !== syncedQuery) {
+    setSyncedQuery(initialQuery);
+    setSearchQuery(initialQuery);
+  }
 
   // Query products with search filter
   const { data, isLoading } = useProducts({
@@ -43,7 +46,7 @@ export function SearchPage() {
     limit: 40,
   });
 
-  const products: any[] = Array.isArray(data) ? data : data?.data || [];
+  const products: any[] = useMemo(() => (Array.isArray(data) ? data : data?.data || []), [data]);
 
   // Filter by category tab if selected
   const filteredProducts = useMemo(() => {
@@ -153,10 +156,12 @@ export function SearchPage() {
         </div>
 
         <div className="h-[320px] sm:h-[400px] lg:h-auto overflow-hidden relative">
-          <img
-            src="https://images.unsplash.com/photo-1529139574466-a303027c1d8b?auto=format&fit=crop&w=1600&q=90"
+          <Picture
+            image={IMAGES.hero}
+            sizes="(min-width: 1024px) 50vw, 100vw"
+            loading="eager"
             alt="Bingooo search catalog"
-            className="w-full h-full object-cover grayscale contrast-105"
+            className="w-full h-full object-cover contrast-105"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-[#f7eedb] via-transparent to-transparent lg:hidden" />
         </div>
@@ -282,7 +287,7 @@ export function SearchPage() {
                 NO PIECES MATCH "{searchQuery}"
               </h3>
               <p className="max-w-[420px] mx-auto text-xs text-[#6f6a63] leading-relaxed mb-6">
-                Try searching for generic terms like "tee", "hoodie", "oversized", or design your own bespoke piece in our 3D Studio.
+                Try searching for generic terms like "tee", "hoodie", "oversized", or design your own bespoke piece in our Custom Studio.
               </p>
               <div className="flex flex-wrap items-center justify-center gap-3">
                 <button
@@ -293,10 +298,10 @@ export function SearchPage() {
                   CLEAR SEARCH FILTER
                 </button>
                 <Link
-                  to="/customize"
+                  to="/shop"
                   className="inline-flex items-center justify-center h-11 px-6 bg-white border border-[#ddd3c5] text-[#171717] text-[10px] font-extrabold uppercase tracking-wider hover:border-[#171717] transition-colors"
                 >
-                  CUSTOM DESIGN STUDIO →
+                  EXPLORE FULL CATALOG →
                 </Link>
               </div>
             </div>
@@ -329,8 +334,9 @@ export function SearchPage() {
       ======================================================= */}
       <section className="grid grid-cols-1 lg:grid-cols-[55%_45%] min-h-[520px] lg:min-h-[580px]">
         <div className="min-h-[360px] lg:min-h-full overflow-hidden">
-          <img
-            src="/custom-studio.jpg"
+          <Picture
+            image={IMAGES.customStudio}
+            sizes="(min-width: 1024px) 55vw, 100vw"
             alt="Bingooo Custom Studio atelier workshop"
             className="w-full h-full object-cover object-center"
           />
@@ -338,25 +344,25 @@ export function SearchPage() {
 
         <div className="flex flex-col justify-center p-[45px_24px] sm:p-[clamp(45px,7vw,100px)] bg-[#171717] text-white">
           <div className="text-[10px] font-semibold tracking-[0.2em] uppercase text-[#e6321c] mb-3">
-            BESPOKE CLOTHING
+            ATELIER DROPS
           </div>
 
           <h2 className="my-3 mb-5 text-[clamp(40px,5vw,70px)] font-extrabold leading-[0.88] tracking-[-0.065em] uppercase text-white">
-            CAN'T FIND IT?<br />
-            BUILD IT.
+            HEAVYWEIGHT<br />
+            STREETWEAR.
           </h2>
 
           <p className="max-w-[410px] m-0 mb-[30px] text-[#aaa7a1] text-[12px] leading-[1.8]">
-            Pick an oversized blank garment, upload your typography or artwork in high resolution, and inspect a realistic 3D preview before ordering.
+            240 GSM combed cotton tees, engineered drop-shoulder fits, and ribbed collars designed for long-lasting drape and all-day comfort.
           </p>
 
           <div>
             <Link
-              to="/customize"
+              to="/shop"
               onClick={() => triggerHaptic('medium')}
               className="inline-flex items-center justify-center min-h-[48px] px-[23px] rounded-[7px] bg-[#e6321c] text-white text-[10px] font-bold uppercase tracking-wider hover:bg-[#b91f12] hover:-translate-y-0.5 transition-all"
             >
-              START 3D CUSTOMIZER →
+              BROWSE READY-TO-WEAR →
             </Link>
           </div>
         </div>
@@ -372,7 +378,7 @@ export function SearchPage() {
               <Truck size={24} className="text-[#171717] shrink-0 stroke-[1.5]" />
               <div>
                 <div className="text-[9px] font-extrabold uppercase text-[#171717]">Fast Shipping</div>
-                <div className="text-[9px] text-[#6f6a63]">Free delivery on all orders</div>
+                <div className="text-[9px] text-[#6f6a63]">Free delivery on prepaid orders</div>
               </div>
             </div>
 

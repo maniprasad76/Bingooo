@@ -1,4 +1,6 @@
 import { Link } from 'react-router-dom';
+import { Picture } from '../components/ui/Picture';
+import { IMAGES } from '../lib/images';
 import { SEO } from '../components/common/SEO';
 import { triggerHaptic } from '../lib/native/capacitorBridge';
 
@@ -43,8 +45,10 @@ export function TermsPage() {
         </div>
 
         <div className="h-[400px] sm:h-[500px] lg:h-auto overflow-hidden bg-[#ede0cc]">
-          <img
-            src="/terms-hero.jpg"
+          <Picture
+            image={IMAGES.termsHero}
+            sizes="(min-width: 1024px) 55vw, 100vw"
+            loading="eager"
             alt="Bingooo Terms & Conditions"
             className="w-full h-full object-cover object-center"
           />
@@ -139,8 +143,9 @@ export function TermsPage() {
       ======================================================= */}
       <section className="grid grid-cols-1 lg:grid-cols-[55%_45%] min-h-[550px] lg:min-h-[600px]">
         <div className="min-h-[380px] lg:min-h-full overflow-hidden">
-          <img
-            src="/custom-studio.jpg"
+          <Picture
+            image={IMAGES.customStudio}
+            sizes="(min-width: 1024px) 55vw, 100vw"
             alt="Bingooo Custom Studio workshop"
             className="w-full h-full object-cover object-center"
           />
@@ -162,11 +167,11 @@ export function TermsPage() {
 
           <div>
             <Link
-              to="/customize"
+              to="/artwork-guidelines"
               onClick={() => triggerHaptic('medium')}
               className="inline-flex items-center justify-center min-h-[48px] px-[23px] rounded-[7px] bg-[#e6321c] text-white text-[10px] font-bold uppercase tracking-wider hover:bg-[#b91f12] hover:-translate-y-0.5 transition-all"
             >
-              CUSTOM STUDIO GUIDELINES →
+              ARTWORK GUIDELINES →
             </Link>
           </div>
         </div>
@@ -242,7 +247,7 @@ export function TermsPage() {
               </div>
               <div className="space-y-3 text-[13px] leading-[1.8] text-[#6f6a63]">
                 <p>
-                  Our 3D Customizer Lab produces bespoke garments tailored to your specifications. Due to the permanent nature of textile printing, custom pieces cannot be cancelled once heat-press curing begins.
+                  Our Custom Studio produces bespoke garments tailored to your specifications. Due to the permanent nature of textile printing, custom pieces cannot be cancelled once heat-press curing begins.
                 </p>
                 <p>
                   Customers must ensure artwork resolution is high (minimum 300 DPI recommended). Slight visual color variations between digital monitor displays and physical fabric ink absorption fall within acceptable craft tolerances.

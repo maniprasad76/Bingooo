@@ -1,15 +1,16 @@
-import { createBrowserRouter, Navigate, useParams } from 'react-router-dom';
+import { createBrowserRouter, Navigate } from 'react-router-dom';
 import { PageLayout } from '../components/layout/PageLayout';
 import { RequireAuth } from '../components/common/RequireAuth';
 import { RouteErrorBoundary } from '../components/common/RouteErrorBoundary';
 import { HomePage } from '../pages/HomePage';
-import { LoginPage } from '../pages/LoginPage';
-import { SignupPage } from '../pages/SignupPage';
-import { ForgotPasswordPage } from '../pages/ForgotPasswordPage';
-import { ResetPasswordPage } from '../pages/ResetPasswordPage';
 import { lazyPage } from './lazyPage';
 
 // ─── Lazy-loaded route components (code-splitting for faster first paint) ───
+// Auth pages pull in the form libraries (zod, react-hook-form); keep them out of the first load.
+const LoginPage = lazyPage(() => import('../pages/LoginPage'), 'LoginPage');
+const SignupPage = lazyPage(() => import('../pages/SignupPage'), 'SignupPage');
+const ForgotPasswordPage = lazyPage(() => import('../pages/ForgotPasswordPage'), 'ForgotPasswordPage');
+const ResetPasswordPage = lazyPage(() => import('../pages/ResetPasswordPage'), 'ResetPasswordPage');
 const ShopPage = lazyPage(() => import('../pages/ShopPage'), 'ShopPage');
 const ProductPage = lazyPage(() => import('../pages/ProductPage'), 'ProductPage');
 const CustomizerPage = lazyPage(() => import('../pages/CustomizerPage'), 'CustomizerPage');
@@ -19,7 +20,6 @@ const OrderSuccessPage = lazyPage(() => import('../pages/OrderSuccessPage'), 'Or
 const AccountPage = lazyPage(() => import('../pages/AccountPage'), 'AccountPage');
 const OrderDetailPage = lazyPage(() => import('../pages/OrderDetailPage'), 'OrderDetailPage');
 const WishlistPage = lazyPage(() => import('../pages/WishlistPage'), 'WishlistPage');
-const SavedDesignsPage = lazyPage(() => import('../pages/SavedDesignsPage'), 'SavedDesignsPage');
 const AddressesPage = lazyPage(() => import('../pages/AddressesPage'), 'AddressesPage');
 const SearchPage = lazyPage(() => import('../pages/SearchPage'), 'SearchPage');
 const PoliciesPage = lazyPage(() => import('../pages/PoliciesPage'), 'PoliciesPage');
@@ -38,23 +38,7 @@ const ArtworkGuidelinesPage = lazyPage(() => import('../pages/ArtworkGuidelinesP
 const NotFoundPage = lazyPage(() => import('../pages/NotFoundPage'), 'NotFoundPage');
 const AuthCallbackPage = lazyPage(() => import('../pages/AuthCallbackPage'), 'AuthCallbackPage');
 
-// Helper redirect component for legacy/sub-policy slugs to resolve cannibalization and redirect chains
-function PolicyRedirect() {
-  const { slug } = useParams<{ slug: string }>();
-  if (slug === 'size-guide') return <Navigate to="/size-guide" replace />;
-  if (slug?.startsWith('shipping')) return <Navigate to="/shipping-policy" replace />;
-  if (slug?.startsWith('return')) return <Navigate to="/returns-refunds" replace />;
-  if (slug?.startsWith('privacy')) return <Navigate to="/privacy-policy" replace />;
-  if (slug?.startsWith('terms')) return <Navigate to="/terms" replace />;
-  if (slug?.startsWith('cancellation')) return <Navigate to="/cancellation-policy" replace />;
-  return <Navigate to="/policies" replace />;
-}
-
-// Helper redirect component for collection slugs
-function CollectionRedirect() {
-  const { slug } = useParams<{ slug: string }>();
-  return <Navigate to={`/shop?collection=${slug || ''}`} replace />;
-}
+import { PolicyRedirect, CollectionRedirect } from './RouteRedirects';
 
 export const router = createBrowserRouter([
   {
@@ -69,11 +53,12 @@ export const router = createBrowserRouter([
 
       // Catalog & Categories
       { path: 'shop', element: <ShopPage /> },
+      { path: 'category/jeans', element: <Navigate to="/category/bottoms" replace /> },
       { path: 'category/:slug', element: <ShopPage /> },
       { path: 'collection/:slug', element: <CollectionRedirect /> },
       { path: 'product/:slug', element: <ProductPage /> },
 
-      // Custom Atelier
+      // Bauhaus Custom Studio
       { path: 'customize', element: <CustomizerPage /> },
       { path: 'customize/:productSlug', element: <CustomizerPage /> },
       { path: 'custom', element: <Navigate to="/customize" replace /> },
@@ -101,7 +86,7 @@ export const router = createBrowserRouter([
       { path: 'account/orders', element: <RequireAuth><AccountPage /></RequireAuth> },
       { path: 'account/orders/:orderNumber', element: <RequireAuth><OrderDetailPage /></RequireAuth> },
       { path: 'account/recently-viewed', element: <RecentlyViewedPage /> },
-      { path: 'account/designs', element: <RequireAuth><SavedDesignsPage /></RequireAuth> },
+      { path: 'account/designs', element: <Navigate to="/account" replace /> },
       { path: 'account/addresses', element: <RequireAuth><AddressesPage /></RequireAuth> },
 
       // Auth

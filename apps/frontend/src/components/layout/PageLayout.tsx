@@ -3,12 +3,8 @@ import { Outlet, useNavigate } from 'react-router-dom';
 import { Navbar } from './Navbar';
 import { MobileNav } from './MobileNav';
 import { Footer } from './Footer';
-import { CartDrawer } from '../cart/CartDrawer';
-import { SmartSearchModal } from '../search/SmartSearchModal';
+import { DeferredOverlays } from './DeferredOverlays';
 import { SocialFab } from '../ui/SocialFab';
-
-import { OfflineBanner } from '../common/OfflineBanner';
-import { CommunityInvitePopup } from '../common/CommunityInvitePopup';
 import { ScrollProgressBar } from '../common/ScrollProgressBar';
 import { ScrollToTop } from '../common/ScrollToTop';
 import { RouteFallback } from '../common/RouteFallback';
@@ -52,8 +48,7 @@ export function PageLayout() {
       {/* ─── Global Scroll Progress Bar ─── */}
       <ScrollProgressBar />
 
-      {/* ─── Connectivity Detection Offline Banner ─── */}
-      <OfflineBanner />
+      {/* The offline banner is rendered once, globally, in App.tsx. */}
 
       {/* ─── Responsive Sticky Header ─── */}
       <Navbar />
@@ -66,10 +61,9 @@ export function PageLayout() {
 
       <Footer />
       <MobileNav />
-      <CartDrawer />
-      <SmartSearchModal />
+      {/* Cart drawer, search and community invite (kept before SocialFab: same stacking as before). */}
+      <DeferredOverlays />
       <SocialFab />
-      <CommunityInvitePopup />
     </div>
   );
 }

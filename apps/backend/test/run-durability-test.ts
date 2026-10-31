@@ -196,7 +196,10 @@ async function run() {
     const { OrdersService } = await import('../src/orders/orders.service');
     const { CouponsService } = await import('../src/coupons/coupons.service');
     const whatsApp: any = { sendOrderConfirmation: async () => undefined, sendShippingUpdate: async () => undefined };
-    const orders = new OrdersService({} as any, whatsApp, { sendOrderStatusUpdateEmail: async () => ({ ok: true }) } as any);
+    const orders = new OrdersService({} as any, whatsApp, {
+      sendOrderStatusUpdateEmail: async () => ({ ok: true }),
+      sendOrderConfirmationEmail: async () => ({ ok: true }),
+    } as any);
 
     const variant = { id: `dur-var-${stamp}`, product_id: 'p', sku: 'DUR', stock_quantity: 5, reserved_quantity: 0 };
     db.product_variants.push(variant);
@@ -261,7 +264,7 @@ async function run() {
     process.env.RAZORPAY_KEY_ID = process.env.RAZORPAY_KEY_ID || 'rzp_test_dummy';
     process.env.RAZORPAY_KEY_SECRET = process.env.RAZORPAY_KEY_SECRET || 'dummy';
     const { PaymentsService } = await import('../src/payments/payments.service');
-    const payments = new PaymentsService(orders, whatsApp, { sendOrderConfirmationEmail: async () => ({ ok: true }) } as any);
+    const payments = new PaymentsService(orders);
     const refundCalls: any[] = [];
     let rejectNext = false;
     (payments as any).getRazorpayClient = () => ({

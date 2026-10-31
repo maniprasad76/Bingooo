@@ -589,14 +589,24 @@ async function runSecuritySuite() {
     process.env.SUPABASE_URL = fakeSupabaseHost;
     process.env.SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY || 'security-suite-anon-key';
     process.env.ADMIN_EMAILS = fakeAdminEmail;
+    // Supabase access tokens are JWTs issued by <SUPABASE_URL>/auth/v1; the guard
+    // only forwards tokens with that issuer to Supabase.
+    const sbToken = (name: string, iss = `${fakeSupabaseHost}/auth/v1`) =>
+      [
+        Buffer.from(JSON.stringify({ alg: 'HS256', typ: 'JWT' })).toString('base64url'),
+        Buffer.from(JSON.stringify({ iss, sub: name, exp: Math.floor(Date.now() / 1000) + 3600 })).toString('base64url'),
+        'supabase-signature',
+      ].join('.');
     const fakeSupabaseUsers: Record<string, any> = {
-      'sb-unconfirmed-admin': { id: `sb-u-${Date.now()}`, email: fakeAdminEmail, email_confirmed_at: null },
-      'sb-confirmed-admin': { id: `sb-c-${Date.now()}`, email: fakeAdminEmail, email_confirmed_at: new Date().toISOString() },
-      'sb-unconfirmed-takeover': { id: `sb-t-${Date.now()}`, email: userBEmail, email_confirmed_at: null },
+      [sbToken('sb-unconfirmed-admin')]: { id: `sb-u-${Date.now()}`, email: fakeAdminEmail, email_confirmed_at: null },
+      [sbToken('sb-confirmed-admin')]: { id: `sb-c-${Date.now()}`, email: fakeAdminEmail, email_confirmed_at: new Date().toISOString() },
+      [sbToken('sb-unconfirmed-takeover')]: { id: `sb-t-${Date.now()}`, email: userBEmail, email_confirmed_at: null },
     };
+    let supabaseCalls = 0;
     globalThis.fetch = (async (input: any, init?: any) => {
       const url = typeof input === 'string' ? input : input?.url;
       if (typeof url === 'string' && url.startsWith(`${fakeSupabaseHost}/auth/v1/user`)) {
+        supabaseCalls++;
         const auth = new Headers(init?.headers).get('Authorization') || '';
         const user = fakeSupabaseUsers[auth.replace('Bearer ', '')];
         return new Response(JSON.stringify(user || {}), { status: user ? 200 : 401 });
@@ -605,7 +615,7 @@ async function runSecuritySuite() {
     }) as typeof fetch;
     try {
       const unconfirmedAdminRes = await fetch(`${BASE_URL}/admin/settings`, {
-        headers: bearer('sb-unconfirmed-admin'),
+        headers: bearer(sbToken('sb-unconfirmed-admin')),
       });
       assert(
         unconfirmedAdminRes.status === 403,
@@ -617,7 +627,7 @@ async function runSecuritySuite() {
       db.users = db.users.filter((u) => u.email !== fakeAdminEmail);
 
       const confirmedAdminRes = await fetch(`${BASE_URL}/admin/settings`, {
-        headers: bearer('sb-confirmed-admin'),
+        headers: bearer(sbToken('sb-confirmed-admin')),
       });
       assert(
         confirmedAdminRes.status === 200,
@@ -626,12 +636,23 @@ async function runSecuritySuite() {
         `Got status ${confirmedAdminRes.status}`,
       );
 
-      const takeoverRes = await fetch(`${BASE_URL}/auth/me`, { headers: bearer('sb-unconfirmed-takeover') });
+      const takeoverRes = await fetch(`${BASE_URL}/auth/me`, { headers: bearer(sbToken('sb-unconfirmed-takeover')) });
       assert(
         takeoverRes.status === 401,
         'Audit Regressions',
         'An unconfirmed Supabase signup cannot take over an existing account by email',
         `Got status ${takeoverRes.status}`,
+      );
+
+      const callsBefore = supabaseCalls;
+      const foreignRes = await fetch(`${BASE_URL}/auth/me`, {
+        headers: bearer(sbToken('sb-confirmed-admin', 'https://attacker.example/auth/v1')),
+      });
+      assert(
+        foreignRes.status === 401 && supabaseCalls === callsBefore,
+        'Audit Regressions',
+        'A token from another issuer is rejected without calling Supabase',
+        `Got status ${foreignRes.status}, Supabase calls +${supabaseCalls - callsBefore}`,
       );
     } finally {
       globalThis.fetch = realFetch;
@@ -782,6 +803,77 @@ async function runSecuritySuite() {
       'Roles cannot be created with unknown permission codes',
       `Got status ${badRole.status}`,
     );
+
+    console.log('\n📦 SUITE 6: Shipping & Logistics');
+    // Never reach a real Shiprocket account from a test.
+    delete process.env.SHIPROCKET_EMAIL;
+    delete process.env.SHIPROCKET_PASSWORD;
+    const shipStamp = Date.now();
+    const shipOrder: any = {
+      id: `sec-ship-${shipStamp}`,
+      order_number: `BGO-SEC-${shipStamp}`,
+      user_id: admin.id,
+      status: 'processing',
+      payment_status: 'captured',
+      payment_method: 'prepaid',
+      total: 1079,
+      shipping_address: { name: '<script>alert(1)</script>Ravi', phone: '9876543210', line1: '1 Main Road', city: 'Srikakulam', state: 'Andhra Pradesh', postalCode: '532001', country: 'IN' },
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    };
+    db.orders.push(shipOrder);
+    db.order_items.push({ id: `${shipOrder.id}-item`, order_id: shipOrder.id, sku: 'SEC-TEE-M', title_snapshot: 'Security Tee', variant_snapshot_json: { size: 'M' }, quantity: 1, unit_price: 999, total: 999 });
+
+    const labelAnon = await fetch(`${BASE_URL}/shipping/label/${shipOrder.order_number}`);
+    assert(labelAnon.status === 401, 'Shipping', 'Shipping labels (customer name, phone, address) need a staff login', `HTTP ${labelAnon.status}`);
+    const labelStaff = await fetch(`${BASE_URL}/shipping/label/${shipOrder.order_number}`, { headers: asUser(admin.token) });
+    const labelHtml = await labelStaff.text();
+    assert(
+      labelStaff.status === 200 && !labelHtml.includes('<script>alert(1)') && labelHtml.includes('&lt;script&gt;'),
+      'Shipping',
+      'Customer-entered text on labels is escaped',
+      `HTTP ${labelStaff.status}`,
+    );
+    assert(
+      labelHtml.includes('Security Tee') && labelHtml.includes('PREPAID · ₹1079') && !labelHtml.includes('29AABCB1234F1Z8') && !labelHtml.includes('Bangalore'),
+      'Shipping',
+      'Labels show the real items, the prepaid watermark and the real return address',
+    );
+
+    const courierHook = (key: string) =>
+      fetch(`${BASE_URL}/shipping/shiprocket/webhook`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'x-api-key': key },
+        body: JSON.stringify({ order_id: shipOrder.order_number, current_status: 'DELIVERED' }),
+      });
+    const savedHookToken = process.env.SHIPROCKET_WEBHOOK_TOKEN;
+    process.env.SHIPROCKET_WEBHOOK_TOKEN = 'sec-webhook-token';
+    const forgedHook = await courierHook('guess');
+    assert(forgedHook.status === 401 && shipOrder.status === 'processing', 'Shipping', 'Courier webhook without the shared token is rejected', `HTTP ${forgedHook.status}`);
+    const realHook = await courierHook('sec-webhook-token');
+    assert(
+      realHook.status < 300 && shipOrder.status === 'delivered' && Boolean(shipOrder.delivered_at),
+      'Shipping',
+      'Courier "delivered" goes through the normal status flow (delivered_at set, so the review request follows)',
+      `HTTP ${realHook.status}, status ${shipOrder.status}`,
+    );
+    if (savedHookToken === undefined) delete process.env.SHIPROCKET_WEBHOOK_TOKEN;
+    else process.env.SHIPROCKET_WEBHOOK_TOKEN = savedHookToken;
+
+    const awbAttempt = await fetch(`${BASE_URL}/shipping/shiprocket/generate-awb/${shipOrder.id}`, { method: 'POST', headers: asUser(admin.token) });
+    assert(awbAttempt.status === 503 && !shipOrder.tracking_number, 'Shipping', 'Without Shiprocket no tracking number is invented or sent to the customer', `HTTP ${awbAttempt.status}`);
+
+    // All orders must be prepaid; COD or invalid paymentMethod is rejected
+    const codAttempt = await fetch(`${BASE_URL}/orders`, {
+      method: 'POST',
+      headers: { ...asUser(admin.token), 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        cartId: 'nonexistent-cart',
+        paymentMethod: 'cod',
+        shippingAddress: shipOrder.shipping_address,
+      }),
+    });
+    assert(codAttempt.status === 400, 'Checkout', 'COD paymentMethod is rejected by DTO validation', `HTTP ${codAttempt.status}`);
 
     db.users = db.users.filter((u) => ![support.id, productManager.id, admin.id].includes(u.id));
 

@@ -1,42 +1,19 @@
 import type { SVGProps, ImgHTMLAttributes } from 'react';
+import { Picture } from './Picture';
+import { IMAGES } from '../../lib/images';
 
 export interface SocialIconProps extends ImgHTMLAttributes<HTMLImageElement> {
   size?: number | string;
 }
 
-export const BINGOOO_PHONE_DISPLAY = '+91 79817 87317';
-export const BINGOOO_PHONE_RAW = '917981787317';
-export const BINGOOO_PHONE_TEL = 'tel:+917981787317';
-export const BINGOOO_EMAIL_SUPPORT = 'bingooo.sklm@gmail.com';
-export const BINGOOO_EMAIL_HELLO = 'bingooo.sklm@gmail.com';
-export const BINGOOO_INSTAGRAM_URL = 'https://www.instagram.com/bingooo.co';
-export const BINGOOO_INSTAGRAM_HANDLE = '@bingooo.co';
-export const BINGOOO_YOUTUBE_URL = 'https://www.youtube.com/@bingooo_co';
-export const BINGOOO_YOUTUBE_HANDLE = '@bingooo_co';
-export const BINGOOO_TWITTER_URL = 'https://twitter.com/bingooo_co';
-export const BINGOOO_TWITTER_HANDLE = '@bingooo_co';
-
-export function getWhatsAppUrl(message?: string): string {
-  const defaultMsg = 'Hi Bingooo, I would like to inquire about your menswear collection and custom designs.';
-  const text = encodeURIComponent(message || defaultMsg);
-  return `https://wa.me/${BINGOOO_PHONE_RAW}?text=${text}`;
-}
-
-export function getEmailUrl(subject?: string, body?: string): string {
-  const s = subject ? encodeURIComponent(subject) : encodeURIComponent('Inquiry from Bingooo Store');
-  const b = body ? `&body=${encodeURIComponent(body)}` : '';
-  return `mailto:${BINGOOO_EMAIL_SUPPORT}?subject=${s}${b}`;
-}
-
 export function WhatsAppIcon({ className = 'w-5 h-5', size, style, ...props }: SocialIconProps) {
   const styleObj = size ? { width: size, height: size, ...style } : style;
   return (
-    <img
-      src="/custom/whatsapp.png"
+    <Picture
+      image={IMAGES.whatsapp}
       alt="WhatsApp"
       className={`max-h-full max-w-full object-contain shrink-0 ${className}`}
       style={styleObj}
-      loading="lazy"
       {...props}
     />
   );
@@ -45,12 +22,11 @@ export function WhatsAppIcon({ className = 'w-5 h-5', size, style, ...props }: S
 export function InstagramIcon({ className = 'w-5 h-5', size, style, ...props }: SocialIconProps) {
   const styleObj = size ? { width: size, height: size, ...style } : style;
   return (
-    <img
-      src="/custom/instagram.png"
+    <Picture
+      image={IMAGES.instagram}
       alt="Instagram"
       className={`max-h-full max-w-full object-contain shrink-0 ${className}`}
       style={styleObj}
-      loading="lazy"
       {...props}
     />
   );
@@ -78,12 +54,11 @@ export function EmailIcon({ className = 'w-5 h-5', ...props }: SVGProps<SVGSVGEl
 export function YouTubeIcon({ className = 'w-5 h-5', size, style, ...props }: SocialIconProps) {
   const styleObj = size ? { width: size, height: size, ...style } : style;
   return (
-    <img
-      src="/custom/youtube.png"
+    <Picture
+      image={IMAGES.youtube}
       alt="YouTube"
       className={`max-h-full max-w-full object-contain shrink-0 ${className}`}
       style={styleObj}
-      loading="lazy"
       {...props}
     />
   );
@@ -106,12 +81,11 @@ export function PinterestIcon({ className = 'w-5 h-5', ...props }: SVGProps<SVGS
 export function XTwitterIcon({ className = 'w-5 h-5', size, style, ...props }: SocialIconProps) {
   const styleObj = size ? { width: size, height: size, ...style } : style;
   return (
-    <img
-      src="/custom/twitter.png"
+    <Picture
+      image={IMAGES.twitter}
       alt="Twitter (X)"
       className={`max-h-full max-w-full object-contain shrink-0 ${className}`}
       style={styleObj}
-      loading="lazy"
       {...props}
     />
   );

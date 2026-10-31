@@ -1,8 +1,8 @@
 # ⚖️ BINGOOO — Engineering Rules, Invariants & Guidelines (`rules.md`)
 
-> **Document Version:** 1.0.0  
+> **Document Version:** 1.2.0  
 > **Status:** Mandatory Enforcement  
-> **Last Updated:** September 2026  
+> **Last Updated:** October 10, 2026  
 > **Applies to:** All developers, contributors, and AI pair programmers working on `bingooo`
 
 ---
@@ -108,6 +108,10 @@
 ### 5.3 Network & Request Invariants
 - **Rule 26 (CORS Origin Whitelist):** Restrict CORS to authorized storefront domains and local development ports (`5173`, `5174`). Never use wildcard `origin: '*'` with credentials.
 - **Rule 27 (Rate Limiting):** Protect all endpoints via `@nestjs/throttler` (Burst: 25 req/10s; Default: 100 req/60s).
+
+### 5.4 Customizer & Data Integrity Invariants
+- **Rule 28 (Customizer Photography Authority & Zero Mockup Clipart):** The customer storefront and homepage customizer sections must never use fake clipart, cartoon shirt vectors, or synthetic text overlays (`"YOUR LINE HERE"`, `"BACK PRINT ARTWORK"`). All garment silhouettes, front/back layers, and swatches are dynamically driven by real transparent PNG photography managed via the Admin Customizer Studio.
+- **Rule 29 (Database & Order Integrity):** `store.json` must only contain genuine production orders and authentic customer data. Synthetic test orders and automated bot accounts are prohibited. All checkouts are 100% secure prepaid (COD decommissioned) with 100% universal free delivery Pan-India.
 
 ---
 

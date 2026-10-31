@@ -1,4 +1,4 @@
-import { createClient, type SupabaseClient } from '@supabase/supabase-js';
+import type { SupabaseClient, Session, AuthChangeEvent } from '@supabase/supabase-js';
 import { useAuthStore } from '../../store/auth';
 import { api } from '../api/client';
 
@@ -10,8 +10,55 @@ const supabaseKey =
   (import.meta.env as Record<string, string | undefined>).NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
 const authStorageKey = 'bingooo_auth_token';
 
-export const supabase: SupabaseClient | null =
-  supabaseUrl && supabaseKey ? createClient(supabaseUrl, supabaseKey) : null;
+const supabaseConfigured = Boolean(supabaseUrl && supabaseKey);
+let clientPromise: Promise<SupabaseClient | null> | null = null;
+
+/**
+ * The Supabase SDK is ~200 KB, so it is loaded on first use instead of with
+ * every page: only signed-in Supabase users, OAuth/magic-link returns and the
+ * login/signup/password flows need it.
+ */
+export function getSupabase(): Promise<SupabaseClient | null> {
+  if (!supabaseConfigured) return Promise.resolve(null);
+  if (!clientPromise) {
+    clientPromise = import('@supabase/supabase-js')
+      .then(({ createClient }) => createClient(supabaseUrl!, supabaseKey!))
+      .catch((err) => {
+        clientPromise = null;
+        console.warn('[Auth] Could not load the Supabase SDK:', err);
+        return null;
+      });
+  }
+  return clientPromise;
+}
+
+/** A Supabase session is saved (sb-<project>-auth-token) or is arriving in the URL. */
+function supabaseSessionLikely(): boolean {
+  try {
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i) || '';
+      if (key.startsWith('sb-') && key.endsWith('-auth-token')) return true;
+    }
+  } catch {
+    // Storage unavailable: fall through to the URL check
+  }
+  const { hash, search } = window.location;
+  return /access_token=|refresh_token=|error_description=/.test(hash) || /[?&]code=/.test(search);
+}
+
+function applySupabaseSession(session: Session) {
+  localStorage.setItem(authStorageKey, session.access_token);
+  useAuthStore.getState().setAuth(session.user.id, {
+    id: session.user.id,
+    email: session.user.email || '',
+    fullName:
+      session.user.user_metadata?.full_name ||
+      session.user.user_metadata?.name ||
+      session.user.email?.split('@')[0],
+    phone: session.user.user_metadata?.phone || session.user.phone || '',
+    role: session.user.user_metadata?.role || 'CUSTOMER',
+  });
+}
 
 let initAuthPromise: Promise<void> | null = null;
 
@@ -41,22 +88,12 @@ async function runInitAuth(): Promise<void> {
   }
 
   // 1. First priority: Check Supabase session (Google & Facebook OAuth + Supabase email sessions)
+  const supabase = supabaseSessionLikely() ? await getSupabase() : null;
   if (supabase) {
     try {
       const { data, error } = await supabase.auth.getSession();
       if (!error && data?.session) {
-        const session = data.session;
-        localStorage.setItem(authStorageKey, session.access_token);
-        useAuthStore.getState().setAuth(session.user.id, {
-          id: session.user.id,
-          email: session.user.email || '',
-          fullName:
-            session.user.user_metadata?.full_name ||
-            session.user.user_metadata?.name ||
-            session.user.email?.split('@')[0],
-          phone: session.user.user_metadata?.phone || session.user.phone || '',
-          role: session.user.user_metadata?.role || 'CUSTOMER',
-        });
+        applySupabaseSession(data.session);
 
         // Background non-fatal profile sync with backend (never logs out Google user if backend is offline)
         api
@@ -77,19 +114,9 @@ async function runInitAuth(): Promise<void> {
           });
 
         // Reactive listener for token refresh or sign out
-        supabase.auth.onAuthStateChange((event, newSession) => {
+        supabase.auth.onAuthStateChange((event: AuthChangeEvent, newSession: Session | null) => {
           if (newSession) {
-            localStorage.setItem(authStorageKey, newSession.access_token);
-            useAuthStore.getState().setAuth(newSession.user.id, {
-              id: newSession.user.id,
-              email: newSession.user.email || '',
-              fullName:
-                newSession.user.user_metadata?.full_name ||
-                newSession.user.user_metadata?.name ||
-                newSession.user.email?.split('@')[0],
-              phone: newSession.user.user_metadata?.phone || newSession.user.phone || '',
-              role: newSession.user.user_metadata?.role || 'CUSTOMER',
-            });
+            applySupabaseSession(newSession);
           } else if (event === 'SIGNED_OUT') {
             localStorage.removeItem(authStorageKey);
             useAuthStore.getState().logout();
@@ -125,29 +152,28 @@ async function runInitAuth(): Promise<void> {
   // 3. No active session found
   useAuthStore.getState().setAuth(null);
 
-  // Set up auth state change listener so future OAuth completions are captured
-  if (supabase) {
-    supabase.auth.onAuthStateChange((_event, session) => {
-      if (session) {
-        localStorage.setItem(authStorageKey, session.access_token);
-        useAuthStore.getState().setAuth(session.user.id, {
-          id: session.user.id,
-          email: session.user.email || '',
-          fullName:
-            session.user.user_metadata?.full_name ||
-            session.user.user_metadata?.name ||
-            session.user.email?.split('@')[0],
-          phone: session.user.user_metadata?.phone || session.user.phone || '',
-          role: session.user.user_metadata?.role || 'CUSTOMER',
-        });
-      }
+  // Listen for sign-ins completed elsewhere (e.g. another tab). A new subscriber
+  // receives the current session straight away (INITIAL_SESSION).
+  const listen = (client: SupabaseClient | null) =>
+    client?.auth.onAuthStateChange((_event: AuthChangeEvent, session: Session | null) => {
+      if (session) applySupabaseSession(session);
     });
+  if (supabase) listen(supabase);
+  else if (supabaseConfigured) {
+    // Visitors without a session don't download the ~200 KB SDK: another tab
+    // signing in writes sb-<project>-auth-token, which fires a storage event here.
+    const onStorage = (e: StorageEvent) => {
+      if (!e.newValue || !e.key?.startsWith('sb-') || !e.key.endsWith('-auth-token')) return;
+      window.removeEventListener('storage', onStorage);
+      void getSupabase().then(listen);
+    };
+    window.addEventListener('storage', onStorage);
   }
 }
 
 /** Sign in with email/password */
-/** Sign in with email/password */
 export async function signIn(email: string, password: string): Promise<void> {
+  const supabase = await getSupabase();
   if (supabase) {
     const { data, error } = await supabase.auth.signInWithPassword({ email, password });
     if (!error && data.session) {
@@ -193,6 +219,7 @@ export async function signUp(
   fullName: string,
   phone?: string,
 ): Promise<void> {
+  const supabase = await getSupabase();
   if (supabase) {
     const { data, error } = await supabase.auth.signUp({
       email,
@@ -249,6 +276,7 @@ export async function signInWithProvider(
 ): Promise<void> {
   const targetUrl = redirectTo || `${window.location.origin}/auth/callback`;
 
+  const supabase = await getSupabase();
   if (supabase) {
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider,
@@ -271,6 +299,7 @@ export async function requestPasswordReset(email: string): Promise<void> {
   try {
     await api.post('/auth/forgot-password', { email });
   } catch (err) {
+    const supabase = await getSupabase();
     if (supabase) {
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
         redirectTo: `${window.location.origin}/reset-password`,
@@ -287,6 +316,7 @@ export async function confirmPasswordReset(token: string, newPassword: string): 
   try {
     await api.post('/auth/reset-password', { token, newPassword });
   } catch (err) {
+    const supabase = await getSupabase();
     if (supabase) {
       const { error } = await supabase.auth.updateUser({ password: newPassword });
       if (error) throw error;
@@ -301,6 +331,8 @@ export async function confirmPasswordReset(token: string, newPassword: string): 
 export async function signOut(): Promise<void> {
   try {
     await api.post('/auth/logout').catch(() => {});
+    // Only a Supabase session needs the SDK to sign out.
+    const supabase = supabaseSessionLikely() ? await getSupabase() : null;
     if (supabase) await supabase.auth.signOut().catch(() => {});
   } finally {
     localStorage.removeItem(authStorageKey);

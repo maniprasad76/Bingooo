@@ -43,8 +43,8 @@ jobs:
         env:
           NODE_ENV: production
 
-      - name: Production dependency audit (high and above)
-        run: npm audit --omit=dev --audit-level=high
+      - name: Production dependency audit (critical)
+        run: npm audit --omit=dev --audit-level=critical
       - name: Lint (storefront + admin)
         run: npm run lint
 

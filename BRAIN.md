@@ -225,8 +225,10 @@ python -m graphify update .
   - Implemented automatic camera/mockup flipping between `FRONT` and `BACK` on interaction and live preview synchronization.
   - Added proactive Bauhaus Studio Checkpoint prompt modal when users request a quote with only one side configured, offering an intuitive 1-click option to add back/front graphics or proceed with single-sided print.
   - Synchronized WhatsApp quotation generator to detail both Front and Back artwork files and specs accurately.
-- **2026-11-13: Store Location & Google Maps Canonical Link Standardization**
-  - Updated store Google Maps links to the canonical shortlink (`https://maps.app.goo.gl/nF4caczxyNgZME5c9`) and exact pin coordinates (`18.296284, 83.868952`) across Schema.org JSON-LD, meta tags, `ContactPage.tsx`, `Footer.tsx`, and `social.ts`.
+- **2026-11-14: Verified Google Business Place & Physical Atelier Address Migration**
+  - Updated store Google Maps to official verified Google Place (`https://maps.app.goo.gl/8YoG4Y6FKkXBRnsLA`, Place ID: `0x3a3c158cda5fbc2f:0xe895790baf3b9e14`, coordinates `18.2961104, 83.8690273`).
+  - Standardized physical flagship address across the platform: `Bypass Junction, near Jalsa Restaurant, Simhadwaram, Gujarathipeta, Srikakulam, Andhra Pradesh 532410`.
+  - Made the Footer atelier citation bar address directly clickable to Google Maps with hover underline micro-interactions.
 - **2026-10-27: Complete Removal of Cash on Delivery (COD) & Partial COD (100% Prepaid Only)**
   - Transitioned the entire checkout and order pipeline exclusively to 100% secure prepaid architecture (Razorpay UPI, Cards, NetBanking); eliminated all COD payment selectors, residue calculations, and custom-item COD restrictions from backend, frontend, admin, shared types, thermal print labels, and SEO meta tags.
 

@@ -70,16 +70,16 @@ export function generateOrganizationSchema() {
     email: 'bingooo.sklm@gmail.com',
     address: {
       '@type': 'PostalAddress',
-      streetAddress: '7 Roads Junction, Main Road',
+      streetAddress: 'Bypass Junction, near Jalsa Restaurant, Simhadwaram, Gujarathipeta',
       addressLocality: 'Srikakulam',
       addressRegion: 'Andhra Pradesh',
-      postalCode: '532001',
+      postalCode: '532410',
       addressCountry: 'IN',
     },
     geo: {
       '@type': 'GeoCoordinates',
-      latitude: '18.296284',
-      longitude: '83.868952',
+      latitude: '18.2961104',
+      longitude: '83.8690273',
     },
     hasMap: GOOGLE_MAPS_STORE_URL,
     openingHoursSpecification: [

@@ -41,7 +41,7 @@ const esc = (value: unknown) =>
   String(value ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]!);
 
 /** Return address for undelivered parcels (the address published on the website). */
-const CONSIGNOR = process.env.SHIP_FROM_ADDRESS || 'BINGOOO, 7 Roads Junction, Main Road, Srikakulam, Andhra Pradesh - 532001';
+const CONSIGNOR = process.env.SHIP_FROM_ADDRESS || 'BINGOOO, Bypass Junction, near Jalsa Restaurant, Simhadwaram, Gujarathipeta, Srikakulam, Andhra Pradesh - 532410';
 const CONSIGNOR_PHONE = process.env.SHIP_FROM_PHONE || '+91 79817 87317';
 
 /** `items` are the order's rows from db.order_items. */

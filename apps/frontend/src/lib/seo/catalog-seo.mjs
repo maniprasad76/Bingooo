@@ -243,16 +243,16 @@ export function categorySchema(category, products = []) {
 }
 
 export const GOOGLE_MAPS_STORE_URL =
-  'https://maps.app.goo.gl/nF4caczxyNgZME5c9';
+  'https://maps.app.goo.gl/8YoG4Y6FKkXBRnsLA';
 
 export const GOOGLE_MAPS_DIRECTIONS_URL =
-  'https://www.google.com/maps/dir/?api=1&destination=18.296284,83.868952';
+  'https://www.google.com/maps/dir/?api=1&destination=18.2961104,83.8690273';
 
 export const GOOGLE_MAPS_EMBED_URL =
-  'https://maps.google.com/maps?q=18.296284,83.868952+(Bingooo%20Menswear%20Flagship%20Atelier)&t=&z=16&ie=UTF8&iwloc=B&output=embed';
+  'https://maps.google.com/maps?q=18.2961104,83.8690273+(Bingooo%20Menswear%20Flagship%20Atelier)&t=&z=16&ie=UTF8&iwloc=B&output=embed';
 
 export const GOOGLE_REVIEW_URL =
-  'https://maps.app.goo.gl/nF4caczxyNgZME5c9';
+  'https://maps.app.goo.gl/8YoG4Y6FKkXBRnsLA';
 
 export function localBusinessSchema() {
   return {
@@ -265,7 +265,7 @@ export function localBusinessSchema() {
     image: `${SITE_URL}/brand-logo.png`,
     logo: `${SITE_URL}/brand-logo.png`,
     description:
-      'Bingooo is India\'s premier heavyweight menswear brand offering 240–280 GSM oversized t-shirts, drop-shoulder hoodies, and bespoke custom-printed apparel made in our Srikakulam atelier. Located at 7 Roads Junction, Srikakulam, Andhra Pradesh.',
+      'Bingooo is India\'s premier heavyweight menswear brand offering 240–280 GSM oversized t-shirts, drop-shoulder hoodies, and bespoke custom-printed apparel made in our Srikakulam atelier. Located at Bypass Junction, near Jalsa Restaurant, Simhadwaram, Gujarathipeta, Srikakulam, Andhra Pradesh.',
     keywords:
       'oversized t-shirts for men, 240 gsm oversized t shirt, heavyweight streetwear, custom t-shirt printing, drop shoulder t-shirt, mens clothing store srikakulam, streetwear andhra pradesh',
     knowsAbout: [
@@ -281,16 +281,16 @@ export function localBusinessSchema() {
     email: 'bingooo.sklm@gmail.com',
     address: {
       '@type': 'PostalAddress',
-      streetAddress: '7 Roads Junction, Main Road',
+      streetAddress: 'Bypass Junction, near Jalsa Restaurant, Simhadwaram, Gujarathipeta',
       addressLocality: 'Srikakulam',
       addressRegion: 'Andhra Pradesh',
-      postalCode: '532001',
+      postalCode: '532410',
       addressCountry: 'IN',
     },
     geo: {
       '@type': 'GeoCoordinates',
-      latitude: '18.296284',
-      longitude: '83.868952',
+      latitude: '18.2961104',
+      longitude: '83.8690273',
     },
     hasMap: GOOGLE_MAPS_STORE_URL,
     areaServed: [

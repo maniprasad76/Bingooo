@@ -53,7 +53,7 @@ export function ContactPage() {
 
   const handleCopyAddress = () => {
     const fullAddress =
-      "Bingooo Men's Wear Flagship Atelier, 7 Roads Junction, Main Road, Srikakulam, Andhra Pradesh 532001, India";
+      "Bingooo Men's Wear Flagship Atelier, Bypass Junction, near Jalsa Restaurant, Simhadwaram, Gujarathipeta, Srikakulam, Andhra Pradesh 532410, India";
     navigator.clipboard.writeText(fullAddress);
     setCopiedAddress(true);
     triggerHaptic('light');
@@ -126,7 +126,7 @@ export function ContactPage() {
     <main className="bg-[#f7eedb] text-[#171717] font-sans antialiased min-h-screen">
       <SEO
         title="Contact Us | Bingooo® Flagship Atelier Srikakulam, Andhra Pradesh"
-        description="Get in touch with Bingooo. Visit our flagship store at 7 Roads Junction, Srikakulam, AP, or contact our support concierge via WhatsApp at +91 7981787317."
+        description="Get in touch with Bingooo. Visit our flagship store at Bypass Junction, near Jalsa Restaurant, Srikakulam, AP, or contact our support concierge via WhatsApp at +91 7981787317."
         canonical="https://www.bingooo.co.in/contact"
         schema={[generateLocalBusinessSchema()]}
         breadcrumbs={[
@@ -620,13 +620,13 @@ export function ContactPage() {
                     <MapPin className="w-5 h-5 text-[#e6321c] shrink-0 mt-0.5" />
                     <div>
                       <div className="text-[14px] font-bold text-white leading-snug">
-                        7 Roads Junction, Main Road
+                        Bypass Junction, near Jalsa Restaurant
                       </div>
                       <div className="text-[13px] text-[#aaa7a1] mt-0.5">
-                        Srikakulam, Andhra Pradesh 532001, India
+                        Simhadwaram, Gujarathipeta, Srikakulam, Andhra Pradesh 532410
                       </div>
                       <div className="text-[11px] font-mono text-[#e6321c]/90 mt-1">
-                        Landmark: Near 7 Roads Junction
+                        Landmark: Near Jalsa Restaurant, Simhadwaram
                       </div>
                     </div>
                   </div>
@@ -719,7 +719,7 @@ export function ContactPage() {
               <div className="px-5 py-3.5 bg-[#171717] border-b border-white/10 flex items-center justify-between gap-4">
                 <div className="flex items-center gap-2 text-[11px] font-mono font-bold text-[#f7eedb]">
                   <MapPin className="w-3.5 h-3.5 text-[#e6321c]" />
-                  <span>GPS: 18.296284° N, 83.868952° E</span>
+                  <span>GPS: 18.2961104° N, 83.8690273° E</span>
                 </div>
                 <a
                   href={GOOGLE_MAPS_STORE_URL}

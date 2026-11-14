@@ -353,7 +353,15 @@ export function Footer() {
               <MapPin className="w-3.5 h-3.5 text-[#E6321C] shrink-0" />
               <span>Flagship Atelier:</span>
             </span>
-            <span>7 Roads Junction, Main Road, Srikakulam, Andhra Pradesh 532001</span>
+            <a
+              href={GOOGLE_MAPS_STORE_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={() => triggerHaptic('light')}
+              className="hover:text-white transition-colors underline-offset-2 hover:underline"
+            >
+              Bypass Junction, near Jalsa Restaurant, Simhadwaram, Gujarathipeta, Srikakulam, AP 532410
+            </a>
             <span className="hidden sm:inline text-white/30">•</span>
             <span className="text-[#f7eedb] font-mono">Open Daily 9 AM–9 PM IST</span>
           </div>

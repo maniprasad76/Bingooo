@@ -620,7 +620,7 @@ export function ReturnsRefundsPage() {
                     </div>
                     <div>
                       <div className="font-bold text-[#171717] uppercase">Atelier Dispatch Workshop</div>
-                      <div className="text-[#6F6A63] font-mono text-[11px]">Srikakulam, Andhra Pradesh 532001, India</div>
+                      <div className="text-[#6F6A63] font-mono text-[11px]">Srikakulam, Andhra Pradesh 532410, India</div>
                     </div>
                   </div>
                 </div>

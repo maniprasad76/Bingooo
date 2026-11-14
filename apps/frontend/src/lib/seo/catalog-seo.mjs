@@ -243,16 +243,16 @@ export function categorySchema(category, products = []) {
 }
 
 export const GOOGLE_MAPS_STORE_URL =
-  'https://www.google.com/maps/search/?api=1&query=Bingooo+7+Roads+Junction+Main+Road+Srikakulam+Andhra+Pradesh+532001';
+  'https://maps.app.goo.gl/nF4caczxyNgZME5c9';
 
 export const GOOGLE_MAPS_DIRECTIONS_URL =
-  'https://www.google.com/maps/dir/?api=1&destination=18.2969,83.8968';
+  'https://www.google.com/maps/dir/?api=1&destination=18.296284,83.868952';
 
 export const GOOGLE_MAPS_EMBED_URL =
-  'https://maps.google.com/maps?q=18.2969,83.8968+(Bingooo%20Menswear%20Flagship%20Atelier)&t=&z=16&ie=UTF8&iwloc=B&output=embed';
+  'https://maps.google.com/maps?q=18.296284,83.868952+(Bingooo%20Menswear%20Flagship%20Atelier)&t=&z=16&ie=UTF8&iwloc=B&output=embed';
 
 export const GOOGLE_REVIEW_URL =
-  'https://www.google.com/maps/search/?api=1&query=Bingooo+7+Roads+Junction+Main+Road+Srikakulam+Andhra+Pradesh+532001';
+  'https://maps.app.goo.gl/nF4caczxyNgZME5c9';
 
 export function localBusinessSchema() {
   return {
@@ -289,8 +289,8 @@ export function localBusinessSchema() {
     },
     geo: {
       '@type': 'GeoCoordinates',
-      latitude: '18.2969',
-      longitude: '83.8968',
+      latitude: '18.296284',
+      longitude: '83.868952',
     },
     hasMap: GOOGLE_MAPS_STORE_URL,
     areaServed: [

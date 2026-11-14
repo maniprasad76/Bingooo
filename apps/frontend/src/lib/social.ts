@@ -10,6 +10,8 @@ export const BINGOOO_YOUTUBE_HANDLE = '@bingooo_co';
 export const BINGOOO_TWITTER_URL = 'https://twitter.com/bingooo_co';
 export const BINGOOO_TWITTER_HANDLE = '@bingooo_co';
 export const BINGOOO_COMMUNITY_URL = 'https://chat.whatsapp.com/HRFrD7YPl8f1xdLvPXvDiQ';
+export const BINGOOO_MAPS_URL = 'https://maps.app.goo.gl/nF4caczxyNgZME5c9';
+export const BINGOOO_GEO = { latitude: 18.296284, longitude: 83.868952 } as const;
 
 export function getWhatsAppUrl(message?: string): string {
   const defaultMsg = 'Hi Bingooo, I would like to inquire about your menswear collection and custom designs.';

@@ -78,9 +78,10 @@ export function generateOrganizationSchema() {
     },
     geo: {
       '@type': 'GeoCoordinates',
-      latitude: '18.2969',
-      longitude: '83.8968',
+      latitude: '18.296284',
+      longitude: '83.868952',
     },
+    hasMap: GOOGLE_MAPS_STORE_URL,
     openingHoursSpecification: [
       {
         '@type': 'OpeningHoursSpecification',
@@ -102,6 +103,7 @@ export function generateOrganizationSchema() {
       'https://www.youtube.com/@bingooo_co',
       'https://twitter.com/bingooo_co',
       'https://wa.me/917981787317',
+      GOOGLE_MAPS_STORE_URL,
     ],
     priceRange: '₹₹',
   };

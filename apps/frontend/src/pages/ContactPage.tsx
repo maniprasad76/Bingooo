@@ -719,7 +719,7 @@ export function ContactPage() {
               <div className="px-5 py-3.5 bg-[#171717] border-b border-white/10 flex items-center justify-between gap-4">
                 <div className="flex items-center gap-2 text-[11px] font-mono font-bold text-[#f7eedb]">
                   <MapPin className="w-3.5 h-3.5 text-[#e6321c]" />
-                  <span>GPS: 18.2969° N, 83.8968° E</span>
+                  <span>GPS: 18.296284° N, 83.868952° E</span>
                 </div>
                 <a
                   href={GOOGLE_MAPS_STORE_URL}

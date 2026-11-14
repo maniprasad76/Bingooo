@@ -1,44 +1,63 @@
-# Plan: Configure Exact Google Maps Location & Coordinates Across Bingooo
+# BINGOOO — Plan: Complete COD Reference Cleanup
 
-> **Target Location URL:** `https://maps.app.goo.gl/nF4caczxyNgZME5c9`  
-> **Resolved Coordinates:** `18.296284, 83.868952`  
-> **Destination:** Bingooo Men's Wear Flagship Atelier, 7 Roads Junction, Main Road, Srikakulam, Andhra Pradesh 532001
-
----
-
-## 1. Files to Modify
-
-1. **`apps/frontend/src/lib/seo/catalog-seo.mjs`**
-   - Update `GOOGLE_MAPS_STORE_URL` to `'https://maps.app.goo.gl/nF4caczxyNgZME5c9'`.
-   - Update `GOOGLE_MAPS_DIRECTIONS_URL` to `'https://www.google.com/maps/dir/?api=1&destination=18.296284,83.868952'`.
-   - Update `GOOGLE_MAPS_EMBED_URL` to `'https://maps.google.com/maps?q=18.296284,83.868952+(Bingooo%20Menswear%20Flagship%20Atelier)&t=&z=16&ie=UTF8&iwloc=B&output=embed'`.
-   - Update `GOOGLE_REVIEW_URL` to `'https://maps.app.goo.gl/nF4caczxyNgZME5c9'`.
-   - Update `localBusinessSchema()` geo coordinates: `latitude: '18.296284'`, `longitude: '83.868952'`.
-   - Ensure `hasMap` and `sameAs` reflect `GOOGLE_MAPS_STORE_URL`.
-
-2. **`apps/frontend/src/lib/seo/schema.ts`**
-   - Update `generateOrganizationSchema()` geo coordinates: `latitude: '18.296284'`, `longitude: '83.868952'`.
-   - Add `hasMap: GOOGLE_MAPS_STORE_URL` and append `GOOGLE_MAPS_STORE_URL` to `sameAs`.
-
-3. **`apps/frontend/src/lib/social.ts`**
-   - Export `BINGOOO_MAPS_URL = 'https://maps.app.goo.gl/nF4caczxyNgZME5c9'` and `BINGOOO_GEO = { latitude: 18.296284, longitude: 83.868952 }`.
-
-4. **`apps/frontend/index.html`**
-   - Update `<meta name="geo.position" content="18.296284;83.868952" />`.
-   - Update `<meta name="ICBM" content="18.296284, 83.868952" />`.
-   - In pre-rendered JSON-LD schema, update `geo.latitude` to `'18.296284'`, `geo.longitude` to `'83.868952'`.
-   - In pre-rendered JSON-LD schema, update `hasMap` and `sameAs` to `'https://maps.app.goo.gl/nF4caczxyNgZME5c9'`.
-
-5. **`apps/frontend/src/pages/ContactPage.tsx`**
-   - Update GPS text badge from `18.2969° N, 83.8968° E` to `18.296284° N, 83.868952° E`.
-
-6. **`BRAIN.md`**
-   - Update documentation notes with exact coordinates and store map link.
+> **Status:** In Progress
+> **Goal:** Remove all Cash on Delivery (COD) dead code from the codebase. COD is already rejected at the backend (PaymentMethod = 'prepaid' only). This plan cleans up legacy references in notifications, FAQ copy, and prerender script.
 
 ---
 
-## 2. Verification
+## Scope
 
-- Run `npm run typecheck` to confirm zero TypeScript errors across all packages and workspaces.
-- Check build of frontend (`npm run build` or targeted vite build).
-- Re-index graph with `python -m graphify update .`.
+### IN
+- `apps/backend/src/notifications/whatsapp.service.ts` — Remove `cod` variable, COD message branches, `WHATSAPP_COD_TEMPLATE` fallback
+- `apps/frontend/src/pages/FaqPage.tsx` — Reword FAQ entry away from "Is COD available?" framing (keep "No, prepaid only" answer)
+- `apps/frontend/scripts/prerender-seo.mjs` — Same FAQ entry in static prerender
+
+### OUT (do NOT touch)
+- `apps/backend/src/tests/run-security-suite.ts` — Keeps the COD-rejection security test; it's a guard not a feature
+- `apps/backend/src/shipping/shiprocket.service.ts` — `cod: '0'` is a Shiprocket API field; stays as-is
+- `packages/types/src/order.ts` — Already clean (`PaymentMethod = 'prepaid'`)
+
+---
+
+## File Changes
+
+### 1. `apps/backend/src/notifications/whatsapp.service.ts`
+
+**`formatOrderConfirmationMessage()`** (lines ~89–109):
+- Remove `const cod = order.payment_method === 'cod';`
+- Replace COD ternary in message text with prepaid-only text:
+  - Line 100: `...We've received your payment and your order *${orderNumber}* is confirmed.`
+  - Line 103: `*Paid:* ₹${this.amountPaid(order)}`
+
+**`sendOrderConfirmation()`** (lines ~132–153):
+- Remove `const cod = stored.payment_method === 'cod';`
+- Remove `&& !cod` from the guard condition (line 133 becomes: `if (stored.payment_status !== 'captured') return ...`)
+- Remove comment about COD template (line 143)
+- Change `templateEnv: cod ? 'WHATSAPP_COD_TEMPLATE' : 'WHATSAPP_ORDER_TEMPLATE'` → `templateEnv: 'WHATSAPP_ORDER_TEMPLATE'`
+
+### 2. `apps/frontend/src/pages/FaqPage.tsx`
+
+**FAQ entry `payments-1`** (lines ~120–126):
+- Change `question` from `'Is Cash on Delivery (COD) available?'` → `'Do you offer Cash on Delivery?'`
+- Keep the answer exactly as-is (already says No, prepaid only)
+- Update `searchKeywords` to remove redundant "cod" keyword (already covered by answer)
+
+### 3. `apps/frontend/scripts/prerender-seo.mjs`
+
+**FAQS array** (line ~354):
+- Change `['Is Cash on Delivery (COD) available?', '...']` → `['Do you offer Cash on Delivery?', '...']`
+- Keep answer text as-is
+
+---
+
+## Verification
+
+- [ ] `npm run typecheck` — 0 errors
+- [ ] `npm run test:security` — 49/49 pass (COD rejection test still passes since backend still rejects 'cod')
+- [ ] `npm run build --workspace=@bingooo/frontend` — builds clean
+- [ ] No remaining `WHATSAPP_COD_TEMPLATE` or `cod =` references in source (excluding test file and shiprocket)
+
+---
+
+## Commit Message
+`chore: remove COD dead code from whatsapp service and clean FAQ copy`

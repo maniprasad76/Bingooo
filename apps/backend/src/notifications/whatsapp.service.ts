@@ -86,7 +86,6 @@ export class WhatsAppService implements OnApplicationBootstrap {
   /** Plain-text version, used for the webhook and as the Cloud API fallback without a template. */
   formatOrderConfirmationMessage(order: any): string {
     const orderNumber = order.order_number || order.id;
-    const cod = order.payment_method === 'cod';
     const items: any[] = order.items || [];
     const lines = items.map((item) => {
       const title = item.title_snapshot || item.product_title || 'Item';
@@ -97,10 +96,10 @@ export class WhatsAppService implements OnApplicationBootstrap {
     return [
       '*BINGOOO.* — Order confirmed',
       '',
-      `Hi ${this.customerName(order)}, thank you for shopping with us! ${cod ? `Your order *${orderNumber}* is confirmed. Please pay in cash or UPI when it's delivered.` : `We've received your payment and your order *${orderNumber}* is confirmed.`}`,
+      `Hi ${this.customerName(order)}, thank you for shopping with us! We've received your payment and your order *${orderNumber}* is confirmed.`,
       ...(lines.length ? ['', ...lines] : []),
       '',
-      `${cod ? '*To pay on delivery:*' : '*Paid:*'} ₹${this.amountPaid(order)}`,
+      `*Paid:* ₹${this.amountPaid(order)}`,
       '',
       `Track your order: ${this.trackingUrl(orderNumber)}`,
       '',
@@ -129,8 +128,7 @@ export class WhatsAppService implements OnApplicationBootstrap {
   async sendOrderConfirmation(order: any): Promise<WhatsAppSendResult> {
     const stored = db.orders.find((o) => o.id === order?.id);
     if (!stored) return { success: false, mode: 'skipped', error: 'order not found' };
-    const cod = stored.payment_method === 'cod';
-    if (stored.payment_status !== 'captured' && !cod) return { success: false, mode: 'skipped', error: 'order not paid' };
+    if (stored.payment_status !== 'captured') return { success: false, mode: 'skipped', error: 'order not paid' };
     if (stored.whatsapp_confirmation?.status === 'sent' || stored.whatsapp_confirmation?.status === 'sending') {
       return { success: true, mode: 'skipped', error: 'already sent' };
     }
@@ -140,8 +138,7 @@ export class WhatsAppService implements OnApplicationBootstrap {
     return this.deliver(stored, 'whatsapp_confirmation', {
       event: 'order.confirmed',
       label: 'confirmation',
-      // The approved paid-order template says "paid"; COD uses its own (or the plain text).
-      templateEnv: cod ? 'WHATSAPP_COD_TEMPLATE' : 'WHATSAPP_ORDER_TEMPLATE',
+      templateEnv: 'WHATSAPP_ORDER_TEMPLATE',
       params: {
         customer_name: this.customerName(stored),
         order_number: String(orderNumber),

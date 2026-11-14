@@ -119,10 +119,10 @@ const FAQ_ITEMS: FaqItem[] = [
   {
     id: 'payments-1',
     category: 'payments',
-    question: 'Is Cash on Delivery (COD) available?',
+    question: 'Do you offer Cash on Delivery?',
     answer:
       'No. To guarantee prompt dispatch and eliminate delivery friction, Bingooo operates exclusively on a 100% secure prepaid architecture. We accept UPI (Google Pay, PhonePe, Paytm, CRED), Cards, and NetBanking via Razorpay with universal free delivery across India.',
-    searchKeywords: 'cash on delivery cod payment prepaid methods discounts online razorpay upi free delivery',
+    searchKeywords: 'payment prepaid methods discounts online razorpay upi free delivery no cod',
   },
   {
     id: 'payments-2',

@@ -6,7 +6,7 @@
 export const SITE_URL = 'https://www.bingooo.co.in';
 export const BRAND_NAME = 'Bingooo';
 export const BRAND_SUFFIX = ' | Bingooo®';
-export const DEFAULT_OG_IMAGE = `${SITE_URL}/brand-logo.png`;
+export const DEFAULT_OG_IMAGE = `${SITE_URL}/og-image.png`;
 
 // Kept in step with the Shipping and Returns policy pages.
 export const POLICY = {
